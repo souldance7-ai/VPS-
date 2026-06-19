@@ -5,6 +5,15 @@
 `Server AI Routing` 不是端口中转。  
 它是在当前 VPS 的 Xray 服务端内写入 routing，让 AI 域名走指定日本 / 台湾 Trojan outbound，其他普通流量仍走当前 VPS 默认出口。
 
+## 角色定义
+
+| 名称 | 说明 |
+|---|---|
+| 入口节点 | 客户端实际连接的 VPS，例如香港光维云 |
+| 普通出口 | 普通网站默认出口，通常仍然是入口 VPS 本机 |
+| AI 分流出口 | GPT / OpenAI / Claude / Gemini 被转发到的日本 / 台湾落地 |
+| 落地节点 | 日本 / 台湾 Trojan 节点，只写在入口 VPS 的 Xray outbound 里 |
+
 ## 应该在哪台 VPS 上执行？
 
 在“入口 VPS”上执行。

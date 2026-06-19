@@ -12,8 +12,9 @@
 - 支持 Xray 26.x 自签证书场景的 `pinnedPeerCertSha256`。
 - 留空 pinned 指纹时，自动通过 openssl 抓取落地节点 TLS SHA256。
 - 写入前自动备份，配置测试失败自动回滚。
-- 文档新增 AI_SERVICE_ROUTING.md。
-- README 新增服务端 AI 分流步骤、截图、验证方式与常见问题。
+- README 新增入口 IP、普通出口 IP、AI 分流出口 IP、落地节点的角色定义。
+- README 保留原有 BASIC / PROTOCOL / CHECK / BACKUP / DOWNLOAD / RELAY / TUNE 全菜单截图。
+- 新增更清楚的服务端 AI 分流流程图，避免误解为端口中转。
 
 ### 修正
 
