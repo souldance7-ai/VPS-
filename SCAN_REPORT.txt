@@ -2,17 +2,12 @@ bash -n syntax ok: True
 syntax stderr:
 
 
-Sensitive literal hits: []
-IPv4 constants found: ['0.0.0.0', '1.1.1.1', '119.29.29.29', '127.0.0.1', '198.18.0.1', '223.5.5.5', '8.8.8.8']
-Unexpected IPv4 constants: []
+Version grep:
+6:#  Update Date: 2026-06-20
+32:VER="正式 v1.2 · 服务端 AI 分流版"
+33:UPDATE_DATE="2026-06-20"
+418:  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2${R}  ${DIM}2026-06-20${R}\n"
+1446:  note "验证建议：客户端继续选择当前入口节点后，打开 https://ip.net.coffee/claude/ 检查 AI 出口是否显示日本/台湾。"
+2014:"Server AI Routing / 服务端AI分流"
+2015:"AI Route Show / 查看服务端AI分流"
 
-README structure:
-1. 新 VPS 快速建站流程（v1.0 主流程）
-2. 香港入口节点附挂小鸡使用 AI / GPT（v1.2 更新）
-3. 检查、导出与下载配置
-4. 备份、回滚与故障处理
-5. 完整菜单界面预览
-
-Images:
-- README uses synthetic privacy-safe guide diagrams.
-- Legacy menu screenshots are preserved.

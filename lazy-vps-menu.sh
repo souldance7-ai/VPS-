@@ -3,7 +3,7 @@
 # ==============================================================================
 #  LazyVPS Quick Menu Pack / 懒人建 VPS 快速菜单包
 #  Formal Version: v1.2
-#  Update Date: 2026-06-19
+#  Update Date: 2026-06-20
 # ==============================================================================
 #
 #  设计原则：
@@ -30,7 +30,7 @@ set -o pipefail
 
 APP="懒人建 VPS 快速菜单包"
 VER="正式 v1.2 · 服务端 AI 分流版"
-UPDATE_DATE="2026-06-19"
+UPDATE_DATE="2026-06-20"
 
 ROOT="/opt/lazy-vps-menu"
 OUT="$ROOT/outputs"
@@ -415,7 +415,7 @@ banner(){
   cover_line "${YLW}                   SUN  .  SAND${R}${WHT}  .  ${CYN}CODE${R}${WHT}  .  ${MAG}RELAX${R}"
 
   printf "${CYN}└────────────────────────────────────────────────────────────────────────────┘${R}\n"
-  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.1${R}  ${DIM}2026-06-19${R}\n"
+  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2${R}  ${DIM}2026-06-20${R}\n"
   printf "   ${CYN}少折腾${R}  ·  ${MAG}快部署${R}  ·  ${GRN}可回滚${R}  ·  ${YLW}可分享${R}\n"
   solid_line "$CYN"
 }
@@ -1442,7 +1442,8 @@ PY
     fix_xray_log_perm >/dev/null 2>&1 || true
     systemctl restart xray
     systemctl status xray --no-pager | sed -n '1,12p'
-    ok "已重启 Xray。现在客户端继续选择当前香港节点，GPT 流量会由服务端转到 AI 落地 outbound。\n  note "验证建议：客户端继续选择当前入口节点后，打开 https://ip.net.coffee/claude/ 检查 AI 出口是否显示日本/台湾。""
+    ok "已重启 Xray。现在客户端继续选择当前香港节点，GPT 流量会由服务端转到 AI 落地 outbound。"
+  note "验证建议：客户端继续选择当前入口节点后，打开 https://ip.net.coffee/claude/ 检查 AI 出口是否显示日本/台湾。"
   else
     warn "尚未重启。稍后执行 systemctl restart xray 才会生效。"
   fi
