@@ -1,5 +1,8 @@
 # LazyVPS Quick Menu Pack / 懒人建 VPS 快速菜单包
-
+快速使用一鍵下載命令
+wget -O lazy-vps-menu.sh https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh
+chmod +x lazy-vps-menu.sh
+bash lazy-vps-menu.sh
 <p align="center">
   <img src="./menu-basic.png" width="860">
 </p>
