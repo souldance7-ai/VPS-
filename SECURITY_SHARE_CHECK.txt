@@ -1,13 +1,13 @@
 # SECURITY SHARE CHECK
 
-检查日期：2026-06-19
+检查日期：2026-06-20
 
-结果：
-
-- 未硬编码个人 VPS IP。
-- 未硬编码私有域名。
-- 未硬编码节点密码。
-- 未硬编码订阅地址。
-- 远程总配置服务器必须由使用者手动输入。
-- 已存在 Trojan 时默认读取并继承当前 Xray 服务端真实 password。
-- 防火墙后端可选择 NONE，避免在不希望自动改规则的服务器上误操作。
+- 未内置个人 VPS IP。
+- 未内置私有域名。
+- 未内置节点密码。
+- 未内置订阅地址。
+- 未内置 Cloudflare Token。
+- 文档和截图中的 IP、password、pinnedPeerCertSha256 已脱敏。
+- Server AI Routing 写入前会自动备份。
+- Xray 配置测试失败会自动回滚。
+- v1.2 不再使用 allowInsecure，改用 pinnedPeerCertSha256。

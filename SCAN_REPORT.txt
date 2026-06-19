@@ -1,4 +1,11 @@
 bash -n syntax ok: True
-Blocked private-term hits: []
+syntax stderr:
+
+
+Sensitive literal hits: []
 IPv4 constants found: ['0.0.0.0', '1.1.1.1', '119.29.29.29', '127.0.0.1', '198.18.0.1', '223.5.5.5', '8.8.8.8']
 Unexpected IPv4 constants: []
+
+Note:
+- Documentation uses *** placeholders.
+- Runtime script contains no hard-coded personal VPS IP/password/subscription.

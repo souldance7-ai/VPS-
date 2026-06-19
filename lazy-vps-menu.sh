@@ -2,7 +2,7 @@
 #
 # ==============================================================================
 #  LazyVPS Quick Menu Pack / 懒人建 VPS 快速菜单包
-#  Formal Version: v1.1
+#  Formal Version: v1.2
 #  Update Date: 2026-06-19
 # ==============================================================================
 #
@@ -29,7 +29,7 @@
 set -o pipefail
 
 APP="懒人建 VPS 快速菜单包"
-VER="正式 v1.1 · 防火墙后端版"
+VER="正式 v1.2 · 服务端 AI 分流版"
 UPDATE_DATE="2026-06-19"
 
 ROOT="/opt/lazy-vps-menu"
@@ -425,11 +425,11 @@ install_base(){
   note "安装 curl / wget / openssl / ufw / tcpdump / jq / python3 等常用工具。"
   if has apt-get; then
     apt-get update -y
-    DEBIAN_FRONTEND=noninteractive apt-get install -y curl wget unzip tar socat cron ca-certificates openssl ufw htop tcpdump jq iproute2 python3 openssh-client nftables
+    DEBIAN_FRONTEND=noninteractive apt-get install -y curl wget unzip tar socat cron ca-certificates openssl ufw htop tcpdump jq iproute2 python3 openssh-client nftables openssl
   elif has dnf; then
-    dnf install -y curl wget unzip tar socat cronie ca-certificates openssl ufw htop tcpdump jq iproute python3 openssh-client nftabless
+    dnf install -y curl wget unzip tar socat cronie ca-certificates openssl ufw htop tcpdump jq iproute python3 openssh-client nftables openssls
   elif has yum; then
-    yum install -y curl wget unzip tar socat cronie ca-certificates openssl ufw htop tcpdump jq iproute python3 openssh-client nftabless
+    yum install -y curl wget unzip tar socat cronie ca-certificates openssl ufw htop tcpdump jq iproute python3 openssh-client nftables openssls
   else
     err "未识别包管理器，请手动安装基础套件。"
     return 1
@@ -1264,6 +1264,263 @@ PY
   ok "已写入 AI / 流媒体模板：$OUT/01_IMPORT_FLCLASH.yaml"
 }
 
+
+ai_service_route_apply(){
+  section "服务端 AI 分流 / Server-side AI Routing"
+  note "这个功能不是端口中转。它是在当前 VPS 的 Xray 服务端内写 routing。"
+  note "典型用法：客户端连香港节点；普通流量香港直出；ChatGPT/OpenAI/Claude/Gemini 自动走日本 Trojan outbound。Xray 26.x 自签证书使用 pinnedPeerCertSha256，不再使用 allowInsecure。"
+  note "适合：香港节点速度好，但香港出口不能 GPT，需要把 AI 域名丢给日本/台湾可解锁节点。"
+  echo
+  printf "${YLW}流量逻辑：${R}\n"
+  echo "  客户端 → 当前 VPS 入站"
+  echo "             ├─ 普通网站 → 当前 VPS freedom / 默认出口"
+  echo "             └─ AI 域名  → 你填入的日本/台湾 Trojan outbound"
+  echo
+
+  [[ -f "$XCONF" ]] || { err "未找到 Xray 配置：$XCONF。请先部署 Trojan / Reality，或确认 Xray 配置路径。"; return 1; }
+  [[ -x "$XRAY" ]] || { err "未找到 Xray 主程序：$XRAY。请先安装 Xray。"; return 1; }
+  has python3 || { err "缺少 python3，请先执行 System Init。"; return 1; }
+
+  local tag jp_server jp_port jp_pass jp_sni pcs restart_ans bak ans
+
+  tag="$(ask 'AI 出口 outboundTag，建议固定不改' 'ai-jp-out')"
+  jp_server="$(ask_required 'AI 落地节点 IP / 域名，例如日本 VPS IP 或域名')"
+  jp_port="$(ask 'AI 落地 Trojan 端口' '443')"
+  valid_port "$jp_port" || { err "端口无效"; return 1; }
+  jp_pass="$(ask_required 'AI 落地 Trojan password / 密码')"
+  jp_sni="$(ask 'AI 落地 Trojan SNI' 'www.microsoft.com')"
+  pcs="$(ask 'pinnedPeerCertSha256，留空则自动抓取；真实证书也可留空' '')"
+  if [[ -z "$pcs" ]]; then
+    if has openssl; then
+      step "自动抓取 AI 落地 TLS 证书 SHA256 指纹"
+      pcs="$(echo | openssl s_client -connect "${jp_server}:${jp_port}" -servername "$jp_sni" -showcerts 2>/dev/null | openssl x509 -outform DER 2>/dev/null | sha256sum | awk '{print $1}')"
+      if [[ -n "$pcs" ]]; then
+        ok "已自动抓取 pinnedPeerCertSha256：$pcs"
+      else
+        warn "自动抓取失败。如果落地使用自签证书，请先手动取得 pinnedPeerCertSha256 后再填写。"
+      fi
+    else
+      warn "未安装 openssl，无法自动抓取 pinnedPeerCertSha256。"
+    fi
+  fi
+
+  echo
+  warn "即将修改当前服务端 Xray routing。会先自动备份，失败会自动回滚。"
+  printf "${CYN}当前 VPS：${R}服务端入口；${CYN}AI 落地：${R}%s:%s，SNI=%s，Tag=%s，PCS=%s\n" "$jp_server" "$jp_port" "$jp_sni" "$tag" "${pcs:-未设置}"
+  read -rp "确认写入服务端 AI 分流？[y/N]: " ans
+  [[ "$ans" =~ ^[Yy]$ ]] || { warn "已取消。"; return 0; }
+
+  mkdir -p "$BAK"
+  bak="$BAK/xray_config_before_ai_route_$(ts).json"
+  cp "$XCONF" "$bak"
+  ok "已备份：$bak"
+
+  python3 - "$XCONF" "$tag" "$jp_server" "$jp_port" "$jp_pass" "$jp_sni" "$pcs" <<'PY'
+import json, sys
+from pathlib import Path
+
+cfg_path = Path(sys.argv[1])
+tag = sys.argv[2].strip() or "ai-jp-out"
+server = sys.argv[3].strip()
+port = int(sys.argv[4])
+password = sys.argv[5].strip()
+sni = sys.argv[6].strip() or "www.microsoft.com"
+pcs = sys.argv[7].strip().replace(":", "").lower()
+
+if not server or not password:
+    raise SystemExit("server/password is empty")
+
+cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+
+cfg.setdefault("outbounds", [])
+cfg.setdefault("routing", {})
+cfg["routing"].setdefault("rules", [])
+
+# 1) 开启 sniffing。没有 sniffing 就只能看到 IP，服务端无法按域名分流 GPT。
+for inbound in cfg.get("inbounds", []):
+    if not isinstance(inbound, dict):
+        continue
+    inbound["sniffing"] = {
+        "enabled": True,
+        "destOverride": ["http", "tls", "quic"],
+        "routeOnly": True
+    }
+
+# 2) 删除旧同名 outbound，避免重复。
+cfg["outbounds"] = [
+    o for o in cfg.get("outbounds", [])
+    if not (isinstance(o, dict) and o.get("tag") == tag)
+]
+
+# 3) 新增 AI 落地 Trojan outbound。
+# Xray 26.x 已移除 allowInsecure；自签证书请使用 pinnedPeerCertSha256。
+tls_settings = {
+    "serverName": sni,
+    "alpn": ["http/1.1"]
+}
+if pcs:
+    tls_settings["pinnedPeerCertSha256"] = pcs
+
+cfg["outbounds"].append({
+    "tag": tag,
+    "protocol": "trojan",
+    "settings": {
+        "servers": [
+            {
+                "address": server,
+                "port": port,
+                "password": password
+            }
+        ]
+    },
+    "streamSettings": {
+        "network": "tcp",
+        "security": "tls",
+        "tlsSettings": tls_settings
+    }
+})
+
+# 4) 删除旧同名规则，避免越写越多。
+cfg["routing"]["rules"] = [
+    r for r in cfg["routing"].get("rules", [])
+    if not (isinstance(r, dict) and r.get("outboundTag") == tag)
+]
+
+# 5) AI 域名规则插到最前面，优先级最高。
+ai_domains = [
+    "domain:chatgpt.com",
+    "domain:openai.com",
+    "domain:api.openai.com",
+    "domain:auth0.openai.com",
+    "domain:oaistatic.com",
+    "domain:oaiusercontent.com",
+    "domain:cdn.oaistatic.com",
+    "domain:ai.com",
+    "domain:openaicom.imgix.net",
+    "domain:openaiapi-site.azureedge.net",
+    "domain:oaidalleapiprodscus.blob.core.windows.net",
+    "domain:anthropic.com",
+    "domain:claude.ai",
+    "domain:perplexity.ai",
+    "domain:poe.com",
+    "domain:gemini.google.com",
+    "domain:aistudio.google.com",
+    "domain:generativelanguage.googleapis.com",
+    "domain:makersuite.google.com",
+    "domain:bard.google.com",
+    "domain:copilot.microsoft.com",
+    "domain:githubcopilot.com",
+    "domain:sydney.bing.com",
+    "domain:cursor.com",
+    "domain:cursor.sh",
+    "openai",
+    "chatgpt"
+]
+
+cfg["routing"].setdefault("domainStrategy", "IPIfNonMatch")
+cfg["routing"]["rules"].insert(0, {
+    "type": "field",
+    "domain": ai_domains,
+    "outboundTag": tag
+})
+
+cfg_path.write_text(json.dumps(cfg, indent=2, ensure_ascii=False), encoding="utf-8")
+print(f"OK: server-side AI routing written, outboundTag={tag}")
+PY
+
+  step "检查 Xray 配置"
+  if ! "$XRAY" run -test -config "$XCONF"; then
+    err "Xray 配置测试失败，自动回滚。"
+    cp "$bak" "$XCONF"
+    "$XRAY" run -test -config "$XCONF" || true
+    return 1
+  fi
+
+  ok "Xray 配置测试通过。"
+  read -rp "是否立即重启 Xray 让 AI 分流生效？[Y/n]: " restart_ans
+  if [[ ! "$restart_ans" =~ ^[Nn]$ ]]; then
+    fix_xray_log_perm >/dev/null 2>&1 || true
+    systemctl restart xray
+    systemctl status xray --no-pager | sed -n '1,12p'
+    ok "已重启 Xray。现在客户端继续选择当前香港节点，GPT 流量会由服务端转到 AI 落地 outbound。"
+  else
+    warn "尚未重启。稍后执行 systemctl restart xray 才会生效。"
+  fi
+}
+
+ai_service_route_show(){
+  section "查看服务端 AI 分流 / Show Server-side AI Routing"
+  [[ -f "$XCONF" ]] || { err "未找到 Xray 配置：$XCONF"; return 1; }
+  has python3 || { err "缺少 python3"; return 1; }
+
+  python3 - "$XCONF" <<'PY'
+import json, sys
+from pathlib import Path
+p = Path(sys.argv[1])
+cfg = json.loads(p.read_text(encoding="utf-8"))
+
+print("[inbound sniffing]")
+for i, inbound in enumerate(cfg.get("inbounds", []), 1):
+    sn = inbound.get("sniffing", {}) if isinstance(inbound, dict) else {}
+    print(f"  {i}. tag={inbound.get('tag','')} protocol={inbound.get('protocol','')} port={inbound.get('port','')} sniffing={sn.get('enabled', False)} destOverride={sn.get('destOverride', [])}")
+
+print("\n[AI outbound candidates]")
+found = False
+for o in cfg.get("outbounds", []):
+    if not isinstance(o, dict):
+        continue
+    tag = o.get("tag", "")
+    if tag.startswith("ai-") or "ai" in tag.lower():
+        found = True
+        proto = o.get("protocol", "")
+        server = ""
+        port = ""
+        sni = ""
+        if proto == "trojan":
+            ss = ((o.get("settings") or {}).get("servers") or [{}])[0]
+            server = ss.get("address", "")
+            port = ss.get("port", "")
+            tls = ((o.get("streamSettings") or {}).get("tlsSettings") or {})
+            sni = tls.get("serverName") or ""
+            pcs = tls.get("pinnedPeerCertSha256") or ""
+        print(f"  tag={tag} protocol={proto} server={server}:{port} sni={sni} pcs={pcs}")
+if not found:
+    print("  未发现 ai-* outbound。")
+
+print("\n[routing rules → AI outbound]")
+found = False
+for r in (cfg.get("routing") or {}).get("rules", []):
+    if not isinstance(r, dict):
+        continue
+    tag = r.get("outboundTag", "")
+    if tag.startswith("ai-") or "ai" in tag.lower():
+        found = True
+        domains = r.get("domain", [])
+        print(f"  outboundTag={tag} domains={len(domains)}")
+        for d in domains[:30]:
+            print(f"    - {d}")
+        if len(domains) > 30:
+            print(f"    ... +{len(domains)-30} more")
+if not found:
+    print("  未发现 AI routing 规则。")
+PY
+}
+
+ai_service_route_rollback(){
+  section "回滚服务端 AI 分流 / Rollback Server-side AI Routing"
+  local latest ans
+  latest="$(ls -t "$BAK"/xray_config_before_ai_route_*.json 2>/dev/null | head -1 || true)"
+  [[ -n "$latest" ]] || { err "没有找到 AI 分流备份。"; return 1; }
+  warn "将回滚到：$latest"
+  read -rp "确认回滚并重启 Xray？[y/N]: " ans
+  [[ "$ans" =~ ^[Yy]$ ]] || return 0
+  cp "$latest" "$XCONF"
+  "$XRAY" run -test -config "$XCONF" || { err "备份配置测试失败，未重启。"; return 1; }
+  systemctl restart xray
+  systemctl status xray --no-pager | sed -n '1,12p'
+  ok "已回滚服务端 AI 分流。"
+}
+
 write_forward_apply(){
   cat > "$FORWARD_APPLY" <<'EOS'
 #!/usr/bin/env bash
@@ -1469,7 +1726,7 @@ EOF
 }
 
 forward_add(){
-  section "新增落地中转规则 / Relay Forward"
+  section "端口中转规则 / Port Relay Forward"
   note "入口 VPS 端口 -> 后端 VPS 端口。支持按防火墙后端写入 UFW / NFT / IPTABLES / NONE。"
   install_base >/dev/null 2>&1 || true
 
@@ -1497,7 +1754,7 @@ forward_add(){
 }
 
 relay_client_config(){
-  section "生成落地中转客户端配置 / Relay Client"
+  section "端口中转客户端配置 / Port Relay Client"
   note "客户端连接入口 VPS，但密码 / SNI 仍沿用后端落地节点。"
   [[ -f "$OUT/latest_flclash_fragment.yaml" ]] || { err "请先在后端 VPS 部署节点或生成节点片段。"; return 1; }
   ensure_yaml || return 1
@@ -1752,11 +2009,14 @@ ITEMS=(
 "NodeQuality / 酒神测试"
 "Local Merge / 本机总配置合并"
 "Remote Merge / 总配置在其他 VPS"
-"AI Media Rules / 生成 AI流媒体规则"
-"Relay Forward / 新增落地中转规则"
-"Relay Client / 生成中转客户端配置"
-"Relay Show / 查看中转规则"
-"Relay Clear / 清空中转规则"
+"Client AI Rules / 客户端AI规则模板"
+"Server AI Routing / 服务端AI分流"
+"AI Route Show / 查看服务端AI分流"
+"AI Route Rollback / 回滚服务端AI分流"
+"Relay Forward / 端口中转规则"
+"Relay Client / 端口中转客户端"
+"Relay Show / 查看端口中转"
+"Relay Clear / 清空端口中转"
 "BBR v3 / 第三方 BBRv3 脚本"
 "DNS Unlock / DNS Alice 解锁"
 "NetSpeed / 锐速/BBRPlus/BBR2/BBR3"
@@ -1787,10 +2047,13 @@ DESCS=(
 "运行 run.NodeQuality.com"
 "总配置就在当前 VPS 时使用"
 "总配置在另一台 VPS / 订阅服务器时使用"
-"添加 OpenAI / ChatGPT / Claude / Netflix / YouTube"
-"入口 VPS 端口转发到后端落地 VPS"
+"客户端配置里的 AI/媒体规则，不改变服务端出口"
+"服务端按域名分流：普通走本机，GPT/AI 走日本/台湾落地"
+"查看当前 Xray 是否已写入 AI outbound 与 routing 规则"
+"恢复写入 AI 分流前的 Xray 配置"
+"入口端口转发到后端端口，适合整节点中转，不适合域名级 GPT 分流"
 "客户端连入口 VPS，但参数沿用后端落地"
-"显示本工具记录和 iptables LAZY 链"
+"显示本工具记录、iptables 与 nft 中转规则"
 "清空本工具的端口转发规则"
 "第三方脚本，可能换内核，请谨慎"
 "第三方 DNS 分流解锁工具"
@@ -1824,17 +2087,20 @@ run_choice(){
     19) merge_local_config ;;
     20) merge_remote_config ;;
     21) ai_media_template ;;
-    22) forward_add ;;
-    23) relay_client_config ;;
-    24) forward_show ;;
-    25) forward_clear ;;
-    26) run_bbrv3 ;;
-    27) run_dns_unlock ;;
-    28) run_tcpx ;;
-    29) run_tcp_window ;;
-    30) diagnose_repair ;;
-    31) view_current_trojan ;;
-    32) exit 0 ;;
+    22) ai_service_route_apply ;;
+    23) ai_service_route_show ;;
+    24) ai_service_route_rollback ;;
+    25) forward_add ;;
+    26) relay_client_config ;;
+    27) forward_show ;;
+    28) forward_clear ;;
+    29) run_bbrv3 ;;
+    30) run_dns_unlock ;;
+    31) run_tcpx ;;
+    32) run_tcp_window ;;
+    33) diagnose_repair ;;
+    34) view_current_trojan ;;
+    35) exit 0 ;;
   esac
 }
 
@@ -1860,8 +2126,8 @@ CAT_CN=(
 "退出"
 )
 
-CAT_START=(1 5 8 11 16 21 26 32)
-CAT_END=(4 7 10 15 20 25 31 32)
+CAT_START=(1 5 8 11 16 21 29 35)
+CAT_END=(4 7 10 15 20 28 34 35)
 CAT_FG=(45 213 82 220 75 207 208 196)
 CAT_BG=(24 90 22 58 18 53 94 52)
 
@@ -1947,7 +2213,7 @@ draw_menu(){
 
   banner
 
-  printf "${YLW}操作：${R}${B}↑↓${R} 选择功能  ${B}←→${R} 切换分区  ${B}Enter${R} 执行  ${B}1-32${R} 直达  ${B}Q${R} 退出\n\n"
+  printf "${YLW}操作：${R}${B}↑↓${R} 选择功能  ${B}←→${R} 切换分区  ${B}Enter${R} 执行  ${B}1-35${R} 直达  ${B}Q${R} 退出\n\n"
 
   draw_tabs "$cat"
   draw_panel "$cat" "$selected"
@@ -1969,7 +2235,7 @@ menu(){
     if [[ "$key" == "" ]]; then
       clear
       run_choice "$selected"
-      [[ "$selected" -ne 32 ]] && pause
+      [[ "$selected" -ne 35 ]] && pause
 
     elif [[ "$key" =~ [0-9] ]]; then
       num="$key"
@@ -1979,12 +2245,12 @@ menu(){
         num="${num}${key2}"
       done
 
-      if [[ "$num" =~ ^[0-9]+$ ]] && ((num>=1 && num<=32)); then
+      if [[ "$num" =~ ^[0-9]+$ ]] && ((num>=1 && num<=35)); then
         selected="$num"
         cat="$(find_category "$selected")"
         clear
         run_choice "$selected"
-        [[ "$selected" -ne 32 ]] && pause
+        [[ "$selected" -ne 35 ]] && pause
       fi
 
     elif [[ "$key" == "q" || "$key" == "Q" ]]; then
@@ -2035,6 +2301,9 @@ quick(){
     merge) merge_local_config ;;
     remote-merge) merge_remote_config ;;
     ai|media) ai_media_template ;;
+    ai-route|server-ai|service-ai) ai_service_route_apply ;;
+    ai-route-show|server-ai-show) ai_service_route_show ;;
+    ai-route-rollback|server-ai-rollback) ai_service_route_rollback ;;
     forward) forward_add ;;
     relay-client) relay_client_config ;;
     bbrv3) run_bbrv3 ;;
@@ -2043,7 +2312,7 @@ quick(){
     tcp-window) run_tcp_window ;;
     diagnose|repair) diagnose_repair ;;
     current) view_current_trojan ;;
-    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|forward|relay-client|bbrv3|dns-unlock|tcpx|tcp-window|diagnose|current" ;;
+    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|tcpx|tcp-window|diagnose|current" ;;
   esac
 }
 
