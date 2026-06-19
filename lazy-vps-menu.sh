@@ -2,7 +2,7 @@
 #
 # ==============================================================================
 #  LazyVPS Quick Menu Pack / 懒人建 VPS 快速菜单包
-#  Formal Version: v1.0
+#  Formal Version: v1.1
 #  Update Date: 2026-06-19
 # ==============================================================================
 #
@@ -29,7 +29,7 @@
 set -o pipefail
 
 APP="懒人建 VPS 快速菜单包"
-VER="正式 v1.0 · 面板定稿版"
+VER="正式 v1.1 · 防火墙后端版"
 UPDATE_DATE="2026-06-19"
 
 ROOT="/opt/lazy-vps-menu"
@@ -53,6 +53,8 @@ HTTP_PID="/tmp/lazy-vps-http.pid"
 FORWARD_RULES="/etc/lazy-vps-forward.rules"
 FORWARD_APPLY="/usr/local/sbin/lazy-vps-forward-apply.sh"
 FORWARD_SERVICE="/etc/systemd/system/lazy-vps-forward.service"
+FW_BACKEND_CONF="$ROOT/firewall_backend.conf"
+FW_OPEN_PORTS="$ROOT/firewall_open_ports.list"
 
 mkdir -p "$ROOT" "$OUT" "$BAK" "$HTTP_DIR" /var/log/xray 2>/dev/null || true
 touch "$LOG" 2>/dev/null || true
@@ -144,6 +146,226 @@ yaml_quote(){
   printf '"%s"' "$s"
 }
 
+fw_backend_default(){
+  if [[ -f "$FW_BACKEND_CONF" ]]; then
+    awk -F= '/^firewall_backend=/{print toupper($2)}' "$FW_BACKEND_CONF" | head -1
+  else
+    echo "AUTO"
+  fi
+}
+
+fw_backend_save(){
+  local mode="$1"
+  mode="$(printf "%s" "$mode" | tr 'a-z' 'A-Z')"
+  case "$mode" in
+    AUTO|UFW|NFT|IPTABLES|NONE) ;;
+    *) mode="AUTO" ;;
+  esac
+  mkdir -p "$ROOT"
+  echo "firewall_backend=$mode" > "$FW_BACKEND_CONF"
+  ok "防火墙后端已保存：$mode"
+}
+
+fw_backend_choose(){
+  local cur ans
+  cur="$(fw_backend_default)"
+  echo
+  printf "${CYN}请选择防火墙后端 / Firewall Backend：${R}\n"
+  printf "  1) AUTO      自动判断，优先使用当前系统环境\n"
+  printf "  2) UFW       新手默认，适合 Debian / Ubuntu 快速放行端口\n"
+  printf "  3) NFT       新 Debian / 中转推荐，使用 nftables 管理端口和转发\n"
+  printf "  4) IPTABLES  兼容旧系统，使用 iptables 管理端口和转发\n"
+  printf "  5) NONE      不改防火墙，只输出提示\n"
+  read -rp "序号 [当前/默认: $cur]: " ans
+  case "${ans:-}" in
+    1) fw_backend_save "AUTO" ;;
+    2) fw_backend_save "UFW" ;;
+    3) fw_backend_save "NFT" ;;
+    4) fw_backend_save "IPTABLES" ;;
+    5) fw_backend_save "NONE" ;;
+    "") fw_backend_save "$cur" ;;
+    *) warn "输入无效，保持 $cur"; fw_backend_save "$cur" ;;
+  esac
+}
+
+fw_backend_resolve(){
+  local mode
+  mode="$(fw_backend_default)"
+  mode="$(printf "%s" "$mode" | tr 'a-z' 'A-Z')"
+
+  if [[ "$mode" != "AUTO" ]]; then
+    echo "$mode"
+    return 0
+  fi
+
+  if has ufw && ufw status 2>/dev/null | grep -qw "active"; then
+    echo "UFW"
+  elif has nft; then
+    echo "NFT"
+  elif has iptables; then
+    echo "IPTABLES"
+  elif has ufw; then
+    echo "UFW"
+  else
+    echo "NONE"
+  fi
+}
+
+nft_ensure_include(){
+  mkdir -p /etc/nftables.d
+  if [[ ! -f /etc/nftables.conf ]]; then
+    cat > /etc/nftables.conf <<'EOF'
+#!/usr/sbin/nft -f
+flush ruleset
+include "/etc/nftables.d/*.nft"
+EOF
+  elif ! grep -qF 'include "/etc/nftables.d/*.nft"' /etc/nftables.conf; then
+    echo 'include "/etc/nftables.d/*.nft"' >> /etc/nftables.conf
+  fi
+  systemctl enable nftables >/dev/null 2>&1 || true
+}
+
+fw_record_port(){
+  local port="$1" proto="$2"
+  valid_port "$port" || return 1
+  mkdir -p "$ROOT"
+  touch "$FW_OPEN_PORTS"
+  grep -qx "${proto}|${port}" "$FW_OPEN_PORTS" 2>/dev/null || echo "${proto}|${port}" >> "$FW_OPEN_PORTS"
+}
+
+nft_render_ports(){
+  local conf="/etc/nftables.d/lazy-vps-ports.nft"
+  local tcp_ports udp_ports
+  nft_ensure_include
+
+  tcp_ports="$(awk -F'|' '$1=="tcp"{print $2}' "$FW_OPEN_PORTS" 2>/dev/null | sort -n | paste -sd, -)"
+  udp_ports="$(awk -F'|' '$1=="udp"{print $2}' "$FW_OPEN_PORTS" 2>/dev/null | sort -n | paste -sd, -)"
+
+  cat > "$conf" <<EOF
+#!/usr/sbin/nft -f
+table inet lazy_vps_ports {
+  chain input {
+    type filter hook input priority 0; policy accept;
+EOF
+
+  if [[ -n "$tcp_ports" ]]; then
+    echo "    tcp dport { ${tcp_ports} } accept" >> "$conf"
+  fi
+  if [[ -n "$udp_ports" ]]; then
+    echo "    udp dport { ${udp_ports} } accept" >> "$conf"
+  fi
+
+  cat >> "$conf" <<'EOF'
+  }
+}
+EOF
+
+  nft delete table inet lazy_vps_ports 2>/dev/null || true
+  nft -f "$conf" || warn "nft 端口规则加载失败，请手动检查：$conf"
+  systemctl restart nftables 2>/dev/null || true
+}
+
+iptables_open_port(){
+  local port="$1" proto="$2"
+  iptables -C INPUT -p "$proto" --dport "$port" -j ACCEPT 2>/dev/null || \
+    iptables -I INPUT -p "$proto" --dport "$port" -j ACCEPT 2>/dev/null || true
+
+  if has ip6tables; then
+    ip6tables -C INPUT -p "$proto" --dport "$port" -j ACCEPT 2>/dev/null || \
+      ip6tables -I INPUT -p "$proto" --dport "$port" -j ACCEPT 2>/dev/null || true
+  fi
+
+  if has netfilter-persistent; then
+    netfilter-persistent save >/dev/null 2>&1 || true
+  elif has iptables-save && [[ -d /etc/iptables ]]; then
+    iptables-save > /etc/iptables/rules.v4 2>/dev/null || true
+  fi
+}
+
+fw_open_port(){
+  local port="$1" proto="$2" be
+  valid_port "$port" || { warn "端口无效，跳过：$port"; return 1; }
+  proto="${proto:-tcp}"
+  be="$(fw_backend_resolve)"
+
+  case "$be" in
+    NONE)
+      warn "防火墙后端为 NONE，未自动放行 ${port}/${proto}。请自行确认安全组/防火墙。"
+      ;;
+    UFW)
+      if has ufw; then
+        ufw allow "${port}/${proto}" >/dev/null 2>&1 || true
+        info "UFW 已放行：${port}/${proto}"
+      else
+        warn "未安装 UFW，无法放行 ${port}/${proto}"
+      fi
+      ;;
+    NFT)
+      fw_record_port "$port" "$proto"
+      nft_render_ports
+      info "NFT 已写入放行：${port}/${proto}"
+      ;;
+    IPTABLES)
+      iptables_open_port "$port" "$proto"
+      info "iptables 已放行：${port}/${proto}"
+      ;;
+    *)
+      warn "未知防火墙后端：$be，未处理 ${port}/${proto}"
+      ;;
+  esac
+}
+
+fw_open_tcp_udp(){
+  local port="$1"
+  fw_open_port "$port" "tcp"
+  fw_open_port "$port" "udp"
+}
+
+fw_configure_backend(){
+  section "防火墙后端配置 / Firewall Backend"
+  note "可选择 AUTO / UFW / NFT / IPTABLES / NONE。"
+  note "AUTO 会根据系统环境自动判断；NONE 不修改防火墙，只输出提醒。"
+
+  fw_backend_choose
+  local be
+  be="$(fw_backend_resolve)"
+  info "当前解析后的实际后端：$be"
+
+  case "$be" in
+    UFW)
+      note "UFW 模式：适合新手快速放行常用端口。"
+      ufw --force reset >/dev/null 2>&1 || true
+      ufw default deny incoming >/dev/null 2>&1 || true
+      ufw default allow outgoing >/dev/null 2>&1 || true
+      ;;
+    NFT)
+      note "NFT 模式：适合新 Debian 与中转规则。"
+      nft_ensure_include
+      ;;
+    IPTABLES)
+      note "IPTABLES 模式：兼容旧系统。"
+      ;;
+    NONE)
+      warn "NONE 模式：不会修改任何防火墙规则。"
+      ;;
+  esac
+
+  fw_open_port 22 tcp
+  fw_open_port 443 tcp
+  fw_open_port 8443 tcp
+  fw_open_port 8443 udp
+  fw_open_port "$HTTP_PORT" tcp
+
+  if [[ "$be" == "UFW" ]]; then
+    ufw --force enable >/dev/null 2>&1 || true
+    ufw status
+  elif [[ "$be" == "NFT" ]]; then
+    nft list table inet lazy_vps_ports 2>/dev/null || true
+  elif [[ "$be" == "IPTABLES" ]]; then
+    iptables -S INPUT | grep -E 'dport (22|443|8443|8088)' || true
+  fi
+}
+
 strip_ansi(){
   printf "%b" "$1" | sed -E $'s/\x1B\\[[0-9;]*[mK]//g'
 }
@@ -193,7 +415,7 @@ banner(){
   cover_line "${YLW}                   SUN  .  SAND${R}${WHT}  .  ${CYN}CODE${R}${WHT}  .  ${MAG}RELAX${R}"
 
   printf "${CYN}└────────────────────────────────────────────────────────────────────────────┘${R}\n"
-  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.0${R}  ${DIM}2026-06-19${R}\n"
+  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.1${R}  ${DIM}2026-06-19${R}\n"
   printf "   ${CYN}少折腾${R}  ·  ${MAG}快部署${R}  ·  ${GRN}可回滚${R}  ·  ${YLW}可分享${R}\n"
   solid_line "$CYN"
 }
@@ -203,11 +425,11 @@ install_base(){
   note "安装 curl / wget / openssl / ufw / tcpdump / jq / python3 等常用工具。"
   if has apt-get; then
     apt-get update -y
-    DEBIAN_FRONTEND=noninteractive apt-get install -y curl wget unzip tar socat cron ca-certificates openssl ufw htop tcpdump jq iproute2 python3 openssh-client
+    DEBIAN_FRONTEND=noninteractive apt-get install -y curl wget unzip tar socat cron ca-certificates openssl ufw htop tcpdump jq iproute2 python3 openssh-client nftables
   elif has dnf; then
-    dnf install -y curl wget unzip tar socat cronie ca-certificates openssl ufw htop tcpdump jq iproute python3 openssh-clients
+    dnf install -y curl wget unzip tar socat cronie ca-certificates openssl ufw htop tcpdump jq iproute python3 openssh-client nftabless
   elif has yum; then
-    yum install -y curl wget unzip tar socat cronie ca-certificates openssl ufw htop tcpdump jq iproute python3 openssh-clients
+    yum install -y curl wget unzip tar socat cronie ca-certificates openssl ufw htop tcpdump jq iproute python3 openssh-client nftabless
   else
     err "未识别包管理器，请手动安装基础套件。"
     return 1
@@ -228,18 +450,7 @@ enable_ssh(){
 }
 
 ufw_basic(){
-  section "配置 UFW 防火墙 / Firewall"
-  note "默认拒绝入站，放行 22/tcp、443/tcp、8443/tcp、8443/udp、8088/tcp。"
-  ufw --force reset >/dev/null 2>&1 || true
-  ufw default deny incoming >/dev/null 2>&1 || true
-  ufw default allow outgoing >/dev/null 2>&1 || true
-  ufw allow 22/tcp >/dev/null 2>&1 || true
-  ufw allow 443/tcp >/dev/null 2>&1 || true
-  ufw allow 8443/tcp >/dev/null 2>&1 || true
-  ufw allow 8443/udp >/dev/null 2>&1 || true
-  ufw allow "$HTTP_PORT/tcp" >/dev/null 2>&1 || true
-  ufw --force enable >/dev/null 2>&1 || true
-  ufw status
+  fw_configure_backend
 }
 
 bbr(){
@@ -578,7 +789,7 @@ EOF
 
   chmod 755 /usr/local/etc "$XDIR"
   chmod 644 "$XCONF" "$XDIR/trojan-selfsigned.crt" "$XDIR/trojan-selfsigned.key"
-  ufw allow "$port/tcp" >/dev/null 2>&1 || true
+  fw_open_port "$port" "tcp"
 
   fix_xray_log_perm
   step "检查配置并启动 Xray"
@@ -653,7 +864,7 @@ EOF
 
   chmod 755 /usr/local/etc "$XDIR"
   chmod 644 "$XCONF"
-  ufw allow "$port/tcp" >/dev/null 2>&1 || true
+  fw_open_port "$port" "tcp"
   fix_xray_log_perm
   "$XRAY" run -test -config "$XCONF" || return 1
   systemctl daemon-reload
@@ -734,7 +945,7 @@ EOF
 
   chmod 755 "$HYDIR"
   chmod 644 "$HYCONF" "$HYDIR/server.crt" "$HYDIR/server.key"
-  ufw allow "$port/udp" >/dev/null 2>&1 || true
+  fw_open_port "$port" "udp"
   systemctl daemon-reload
   systemctl enable hysteria-server >/dev/null 2>&1 || true
   systemctl restart hysteria-server
@@ -774,8 +985,13 @@ status_check(){
   info "Hysteria2："
   systemctl status hysteria-server --no-pager 2>/dev/null | head -25 || true
   echo
+  info "防火墙后端：$(fw_backend_default) → 实际：$(fw_backend_resolve)"
+  echo
   info "UFW："
   ufw status || true
+  echo
+  info "NFT lazy_vps_ports："
+  nft list table inet lazy_vps_ports 2>/dev/null || true
   echo
   info "BBR："
   sysctl net.ipv4.tcp_congestion_control 2>/dev/null || true
@@ -871,7 +1087,7 @@ http_start(){
   [[ -f "$OUT/01_IMPORT_FLCLASH.yaml" ]] && cp -f "$OUT/01_IMPORT_FLCLASH.yaml" "$HTTP_DIR/"
   [[ -f "$OUT/02_IMPORT_SURGE.conf" ]] && cp -f "$OUT/02_IMPORT_SURGE.conf" "$HTTP_DIR/"
   [[ -f "$HTTP_PID" ]] && kill "$(cat "$HTTP_PID")" 2>/dev/null || true
-  ufw allow "$HTTP_PORT/tcp" >/dev/null 2>&1 || true
+  fw_open_port "$HTTP_PORT" "tcp"
   (cd "$HTTP_DIR" && nohup python3 -m http.server "$HTTP_PORT" --bind 0.0.0.0 >/tmp/lazy-vps-http.log 2>&1 & echo $! > "$HTTP_PID")
   ok "HTTP 下载已开启。"
   echo "FLClash: http://$ip:$HTTP_PORT/01_IMPORT_FLCLASH.yaml"
@@ -1052,44 +1268,185 @@ write_forward_apply(){
   cat > "$FORWARD_APPLY" <<'EOS'
 #!/usr/bin/env bash
 set -e
+
+ROOT="/opt/lazy-vps-menu"
 RULES="/etc/lazy-vps-forward.rules"
+FW_BACKEND_CONF="$ROOT/firewall_backend.conf"
 
-sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1 || true
+has(){ command -v "$1" >/dev/null 2>&1; }
 
-iptables -t nat -N LAZY_DNAT 2>/dev/null || true
-iptables -t nat -N LAZY_SNAT 2>/dev/null || true
-iptables -N LAZY_FORWARD 2>/dev/null || true
+backend_default(){
+  if [ -f "$FW_BACKEND_CONF" ]; then
+    awk -F= '/^firewall_backend=/{print toupper($2)}' "$FW_BACKEND_CONF" | head -1
+  else
+    echo "AUTO"
+  fi
+}
 
-iptables -t nat -C PREROUTING -j LAZY_DNAT 2>/dev/null || iptables -t nat -A PREROUTING -j LAZY_DNAT
-iptables -t nat -C POSTROUTING -j LAZY_SNAT 2>/dev/null || iptables -t nat -A POSTROUTING -j LAZY_SNAT
-iptables -C FORWARD -j LAZY_FORWARD 2>/dev/null || iptables -I FORWARD 1 -j LAZY_FORWARD
-
-iptables -t nat -F LAZY_DNAT
-iptables -t nat -F LAZY_SNAT
-iptables -F LAZY_FORWARD
-
-iptables -A LAZY_FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-
-[ -f "$RULES" ] || exit 0
-
-while IFS='|' read -r proto lport dip dport note; do
-  [ -z "$proto" ] && continue
-  case "$proto" in
-    tcp|both)
-      iptables -t nat -A LAZY_DNAT -p tcp --dport "$lport" -j DNAT --to-destination "$dip:$dport"
-      iptables -t nat -A LAZY_SNAT -p tcp -d "$dip" --dport "$dport" -j MASQUERADE
-      iptables -A LAZY_FORWARD -p tcp -d "$dip" --dport "$dport" -j ACCEPT
+backend_resolve(){
+  local mode
+  mode="$(backend_default)"
+  case "$mode" in
+    AUTO|"")
+      if has ufw && ufw status 2>/dev/null | grep -qw "active"; then
+        echo "UFW"
+      elif has nft; then
+        echo "NFT"
+      elif has iptables; then
+        echo "IPTABLES"
+      else
+        echo "NONE"
+      fi
       ;;
+    UFW|NFT|IPTABLES|NONE) echo "$mode" ;;
+    *) echo "AUTO" ;;
   esac
-  case "$proto" in
-    udp|both)
-      iptables -t nat -A LAZY_DNAT -p udp --dport "$lport" -j DNAT --to-destination "$dip:$dport"
-      iptables -t nat -A LAZY_SNAT -p udp -d "$dip" --dport "$dport" -j MASQUERADE
-      iptables -A LAZY_FORWARD -p udp -d "$dip" --dport "$dport" -j ACCEPT
+}
+
+ensure_forward(){
+  sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1 || true
+  mkdir -p /etc/sysctl.d
+  grep -q '^net.ipv4.ip_forward=1' /etc/sysctl.d/99-lazy-forward.conf 2>/dev/null || echo 'net.ipv4.ip_forward=1' > /etc/sysctl.d/99-lazy-forward.conf
+}
+
+apply_iptables(){
+  iptables -t nat -N LAZY_DNAT 2>/dev/null || true
+  iptables -t nat -N LAZY_SNAT 2>/dev/null || true
+  iptables -N LAZY_FORWARD 2>/dev/null || true
+
+  iptables -t nat -C PREROUTING -j LAZY_DNAT 2>/dev/null || iptables -t nat -A PREROUTING -j LAZY_DNAT
+  iptables -t nat -C POSTROUTING -j LAZY_SNAT 2>/dev/null || iptables -t nat -A POSTROUTING -j LAZY_SNAT
+  iptables -C FORWARD -j LAZY_FORWARD 2>/dev/null || iptables -I FORWARD 1 -j LAZY_FORWARD
+
+  iptables -t nat -F LAZY_DNAT
+  iptables -t nat -F LAZY_SNAT
+  iptables -F LAZY_FORWARD
+
+  iptables -A LAZY_FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+  [ -f "$RULES" ] || exit 0
+
+  while IFS='|' read -r proto lport dip dport note; do
+    [ -z "$proto" ] && continue
+    case "$proto" in
+      tcp|both)
+        iptables -t nat -A LAZY_DNAT -p tcp --dport "$lport" -j DNAT --to-destination "$dip:$dport"
+        iptables -t nat -A LAZY_SNAT -p tcp -d "$dip" --dport "$dport" -j MASQUERADE
+        iptables -A LAZY_FORWARD -p tcp -d "$dip" --dport "$dport" -j ACCEPT
+        ;;
+    esac
+    case "$proto" in
+      udp|both)
+        iptables -t nat -A LAZY_DNAT -p udp --dport "$lport" -j DNAT --to-destination "$dip:$dport"
+        iptables -t nat -A LAZY_SNAT -p udp -d "$dip" --dport "$dport" -j MASQUERADE
+        iptables -A LAZY_FORWARD -p udp -d "$dip" --dport "$dport" -j ACCEPT
+        ;;
+    esac
+  done < "$RULES"
+}
+
+apply_nft(){
+  local conf="/etc/nftables.d/lazy-vps-forward.nft"
+  mkdir -p /etc/nftables.d
+
+  if [ ! -f /etc/nftables.conf ]; then
+    cat > /etc/nftables.conf <<'EOF'
+#!/usr/sbin/nft -f
+flush ruleset
+include "/etc/nftables.d/*.nft"
+EOF
+  elif ! grep -qF 'include "/etc/nftables.d/*.nft"' /etc/nftables.conf; then
+    echo 'include "/etc/nftables.d/*.nft"' >> /etc/nftables.conf
+  fi
+
+  cat > "$conf" <<'EOF'
+#!/usr/sbin/nft -f
+table ip lazy_vps_forward {
+  chain prerouting {
+    type nat hook prerouting priority -100; policy accept;
+EOF
+
+  if [ -f "$RULES" ]; then
+    while IFS='|' read -r proto lport dip dport note; do
+      [ -z "$proto" ] && continue
+      case "$proto" in tcp|both) echo "    tcp dport ${lport} dnat to ${dip}:${dport}" >> "$conf" ;; esac
+      case "$proto" in udp|both) echo "    udp dport ${lport} dnat to ${dip}:${dport}" >> "$conf" ;; esac
+    done < "$RULES"
+  fi
+
+  cat >> "$conf" <<'EOF'
+  }
+
+  chain postrouting {
+    type nat hook postrouting priority 100; policy accept;
+EOF
+
+  if [ -f "$RULES" ]; then
+    while IFS='|' read -r proto lport dip dport note; do
+      [ -z "$proto" ] && continue
+      case "$proto" in tcp|both) echo "    ip daddr ${dip} tcp dport ${dport} masquerade" >> "$conf" ;; esac
+      case "$proto" in udp|both) echo "    ip daddr ${dip} udp dport ${dport} masquerade" >> "$conf" ;; esac
+    done < "$RULES"
+  fi
+
+  cat >> "$conf" <<'EOF'
+  }
+
+  chain forward {
+    type filter hook forward priority 0; policy accept;
+    ct state established,related accept;
+EOF
+
+  if [ -f "$RULES" ]; then
+    while IFS='|' read -r proto lport dip dport note; do
+      [ -z "$proto" ] && continue
+      case "$proto" in tcp|both) echo "    ip daddr ${dip} tcp dport ${dport} accept" >> "$conf" ;; esac
+      case "$proto" in udp|both) echo "    ip daddr ${dip} udp dport ${dport} accept" >> "$conf" ;; esac
+    done < "$RULES"
+  fi
+
+  cat >> "$conf" <<'EOF'
+  }
+}
+EOF
+
+  nft delete table ip lazy_vps_forward 2>/dev/null || true
+  nft -f "$conf"
+  systemctl enable nftables >/dev/null 2>&1 || true
+  systemctl restart nftables 2>/dev/null || true
+}
+
+apply_none(){
+  echo "[WARN] firewall_backend=NONE：未写入任何中转规则。"
+  echo "[WARN] 请自行配置 DNAT/SNAT/FORWARD 和云厂商安全组。"
+}
+
+main(){
+  ensure_forward
+  local be
+  be="$(backend_resolve)"
+
+  case "$be" in
+    NFT) apply_nft ;;
+    UFW)
+      apply_iptables
+      if has ufw && [ -f "$RULES" ]; then
+        while IFS='|' read -r proto lport dip dport note; do
+          [ -z "$proto" ] && continue
+          case "$proto" in tcp|both) ufw allow "${lport}/tcp" >/dev/null 2>&1 || true; ufw route allow proto tcp to "$dip" port "$dport" >/dev/null 2>&1 || true ;; esac
+          case "$proto" in udp|both) ufw allow "${lport}/udp" >/dev/null 2>&1 || true; ufw route allow proto udp to "$dip" port "$dport" >/dev/null 2>&1 || true ;; esac
+        done < "$RULES"
+      fi
       ;;
+    IPTABLES) apply_iptables ;;
+    NONE) apply_none ;;
+    *) apply_iptables ;;
   esac
-done < "$RULES"
+}
+
+main "$@"
 EOS
+
   chmod +x "$FORWARD_APPLY"
 
   cat > "$FORWARD_SERVICE" <<EOF
@@ -1113,7 +1470,7 @@ EOF
 
 forward_add(){
   section "新增落地中转规则 / Relay Forward"
-  note "入口 VPS 端口 -> 后端 VPS 端口。适用于入口与落地分离。"
+  note "入口 VPS 端口 -> 后端 VPS 端口。支持按防火墙后端写入 UFW / NFT / IPTABLES / NONE。"
   install_base >/dev/null 2>&1 || true
 
   local proto lport dip dport note_text
@@ -1129,8 +1486,8 @@ forward_add(){
   touch "$FORWARD_RULES"
   echo "${proto}|${lport}|${dip}|${dport}|${note_text}" >> "$FORWARD_RULES"
 
-  ufw allow "${lport}/tcp" >/dev/null 2>&1 || true
-  ufw allow "${lport}/udp" >/dev/null 2>&1 || true
+  fw_open_port "$lport" "tcp"
+  fw_open_port "$lport" "udp"
 
   write_forward_apply
   "$FORWARD_APPLY"
@@ -1197,9 +1554,14 @@ forward_show(){
     warn "暂无中转规则。"
   fi
   echo
+  info "防火墙后端：$(fw_backend_default) → 实际：$(fw_backend_resolve)"
+  echo
   info "当前 iptables LAZY 链："
   iptables -t nat -S LAZY_DNAT 2>/dev/null || true
   iptables -S LAZY_FORWARD 2>/dev/null || true
+  echo
+  info "当前 nft lazy_vps_forward 表："
+  nft list table ip lazy_vps_forward 2>/dev/null || true
 }
 
 forward_clear(){
@@ -1372,7 +1734,7 @@ stop_hy2(){
 ITEMS=(
 "System Init / 系统初始化"
 "Stable BBR / 开启 BBR+fq"
-"Firewall / 配置 UFW 防火墙"
+"Firewall Backend / 防火墙后端"
 "Xray Core / 安装或更新 Xray"
 "Trojan 443 / 部署 T 协议"
 "Reality 443 / 部署 R 协议"
@@ -1407,7 +1769,7 @@ ITEMS=(
 DESCS=(
 "安装基础依赖、确认 SSH、配置防火墙、开启 BBR"
 "启用 Linux 原生 BBR + fq，保守稳定"
-"重置并放行 22 / 443 / 8443 / 8088"
+"AUTO/UFW/NFT/IPTABLES/NONE，放行常用端口"
 "安装或更新 Xray-core"
 "稳定常用节点，默认继承当前服务端密码"
 "VLESS Reality，适合伪装直连场景"
@@ -1663,6 +2025,7 @@ quick(){
   case "$1" in
     init) init_system ;;
     bbr) bbr ;;
+    firewall) fw_configure_backend ;;
     trojan) deploy_trojan ;;
     reality|vless) deploy_reality ;;
     hysteria2|hy2) deploy_hy2 ;;
