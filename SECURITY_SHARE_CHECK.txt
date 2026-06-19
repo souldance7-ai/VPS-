@@ -7,7 +7,8 @@
 - 未内置节点密码。
 - 未内置订阅地址。
 - 未内置 Cloudflare Token。
-- 文档和截图中的 IP、password、pinnedPeerCertSha256 已脱敏。
+- README 新增图片均为重新绘制的脱敏示意图，不使用原始含敏感信息截图。
+- 文档中仅使用 `***.***.***.***`、`node_********`、`sha256: ********` 等占位符。
 - Server AI Routing 写入前会自动备份。
 - Xray 配置测试失败会自动回滚。
 - v1.2 不再使用 allowInsecure，改用 pinnedPeerCertSha256。

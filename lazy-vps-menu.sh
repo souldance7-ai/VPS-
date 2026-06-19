@@ -1442,7 +1442,7 @@ PY
     fix_xray_log_perm >/dev/null 2>&1 || true
     systemctl restart xray
     systemctl status xray --no-pager | sed -n '1,12p'
-    ok "已重启 Xray。现在客户端继续选择当前香港节点，GPT 流量会由服务端转到 AI 落地 outbound。"
+    ok "已重启 Xray。现在客户端继续选择当前香港节点，GPT 流量会由服务端转到 AI 落地 outbound。\n  note "验证建议：客户端继续选择当前入口节点后，打开 https://ip.net.coffee/claude/ 检查 AI 出口是否显示日本/台湾。""
   else
     warn "尚未重启。稍后执行 systemctl restart xray 才会生效。"
   fi

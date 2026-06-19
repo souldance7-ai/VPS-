@@ -65,11 +65,9 @@ bash lazy-vps-menu.sh --preview
 
 # v1.2 更新重点：服务端 AI 分流
 
-v1.2 的重点不是单纯新增一个菜单，而是把 **端口中转** 和 **服务端 AI 域名分流** 彻底拆开说明，避免新手把两个功能混在一起。
+v1.2 的重点是把 **端口中转** 和 **服务端 AI 域名分流** 拆开。
 
 ## 适用场景
-
-例如：
 
 ```text
 香港 VPS 速度很好，但香港出口不能直接使用 GPT / Claude。
@@ -90,11 +88,11 @@ GPT / OpenAI  → 由香港服务端自动转交日本 / 台湾落地节点
 |---|---|---|
 | 入口 IP | 用户客户端实际连接的 VPS，例如香港节点 | FLClash / Surge 节点 IP |
 | 普通出口 IP | 普通网站、ipinfo、部分测速看到的出口 | 通常仍是香港 |
-| AI 分流出口 IP | ChatGPT / OpenAI / Claude / Gemini 被服务端 routing 转交的出口 | 应显示日本 / 台湾 |
+| AI 分流出口 IP | GPT / OpenAI / Claude / Gemini 被转交的出口 | 应显示日本 / 台湾 |
 | 落地节点 | 被入口 VPS 调用的日本 / 台湾 Trojan outbound | 不需要出现在客户端配置里 |
 
-> 所以服务端 AI 分流成功后，`ipinfo.io` 仍显示香港是正常的。  
-> 判断是否成功，要看 AI 检测网站里的 **AI 出口 IP**。
+> 服务端 AI 分流成功后，`ipinfo.io` 仍显示香港是正常的。  
+> 判断是否成功，请看 AI 检测网站里的 **AI 出口 IP**。
 
 ---
 
@@ -132,29 +130,11 @@ bash /root/lazy-vps-menu.sh
 
 ### 第 3 步：按提示填写 AI 落地节点
 
-以日本 Trojan 节点为例：
+<p align="center">
+  <img src="./docs/images/ai-route-input-guide.png" width="860">
+</p>
 
-```text
-AI 出口 outboundTag：
-ai-jp-out
-
-AI 落地节点 IP / 域名：
-***.***.***.***
-
-AI 落地 Trojan 端口：
-443
-
-AI 落地 Trojan password：
-node_**************
-
-AI 落地 Trojan SNI：
-www.microsoft.com
-
-pinnedPeerCertSha256：
-直接留空，让脚本自动抓取
-```
-
-### 第 4 步：确认写入
+### 第 4 步：确认写入并重启 Xray
 
 脚本会自动执行：
 
@@ -170,51 +150,9 @@ pinnedPeerCertSha256：
 
 如果配置测试失败，会自动回滚。
 
-### 第 5 步：重启 Xray 生效
-
-看到：
-
-```text
-Configuration OK.
-[完成] Xray 配置测试通过。
-是否立即重启 Xray 让 AI 分流生效？[Y/n]:
-```
-
-输入：
-
-```text
-y
-```
-
 ---
 
-## v1.2 执行过程截图
-
-### 1. 填写 AI 落地节点参数
-
-<p align="center">
-  <img src="./docs/images/ai-route-input-masked.png" width="860">
-</p>
-
-### 2. 写入成功并重启 Xray
-
-<p align="center">
-  <img src="./docs/images/ai-route-success-masked.png" width="860">
-</p>
-
-### 3. AI IP 检测结果怎么看
-
-<p align="center">
-  <img src="./docs/images/ai-ip-check-demo-masked.png" width="860">
-</p>
-
-> 截图已脱敏，真实 IP、password、pinnedPeerCertSha256 均已遮蔽。
-
----
-
-## 如何确认成功
-
-### 1. 查看服务端 AI 分流
+## 如何确认写入成功
 
 菜单选择：
 
@@ -228,35 +166,23 @@ y
 bash /root/lazy-vps-menu.sh --quick ai-route-show
 ```
 
-应该看到：
+<p align="center">
+  <img src="./docs/images/ai-route-show-guide.png" width="860">
+</p>
 
-```text
-sniffing=True
-tag=ai-jp-xxxx
-protocol=trojan
-server=***.***.***.***:443
-sni=www.microsoft.com
-pinnedPeerCertSha256=********
-routing rules → AI outbound
-```
+---
 
-### 2. 客户端仍然选香港入口节点
+## AI IP 检测
 
-FLClash / Surge / Shadowrocket 仍然选择：
-
-```text
-香港入口节点
-```
-
-不要选日本。
-
-### 3. 访问 AI IP 检测网站
-
-连上香港入口节点后，访问：
+连上入口节点后，打开：
 
 ```text
 https://ip.net.coffee/claude/
 ```
+
+<p align="center">
+  <img src="./docs/images/ai-ip-check-guide.png" width="860">
+</p>
 
 正常现象：
 
@@ -444,7 +370,7 @@ Cloudflare Token
 SSH 登录信息
 ```
 
-截图与文档中的 IP、password、证书指纹均已脱敏处理。
+所有 README 示意图均已脱敏，不包含真实 IP、password、pinnedPeerCertSha256。
 
 ---
 
