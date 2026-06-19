@@ -1,9 +1,22 @@
 # LazyVPS v1.2 服务端 AI 分流说明
 
+## 快速定位
+
+| 你要做什么 | 看哪一段 |
+|---|---|
+| 香港入口节点要能用 GPT / Claude | 菜单 `22) Server AI Routing` |
+| 确认 AI 分流是否写入 | 菜单 `23) AI Route Show` |
+| 写错要回滚 | 菜单 `24) AI Route Rollback` |
+| 整个端口转发到后端 | 菜单 `25) Relay Forward` |
+
+---
+
 ## 一句话说明
 
 `Server AI Routing` 不是端口中转。  
 它是在当前 VPS 的 Xray 服务端内写入 routing，让 AI 域名走指定日本 / 台湾 Trojan outbound，其他普通流量仍走当前 VPS 默认出口。
+
+---
 
 ## 角色定义
 
@@ -13,6 +26,8 @@
 | 普通出口 | 普通网站默认出口，通常仍然是入口 VPS 本机 |
 | AI 分流出口 | GPT / OpenAI / Claude / Gemini 被转发到的日本 / 台湾落地 |
 | 落地节点 | 日本 / 台湾 Trojan 节点，只写在入口 VPS 的 Xray outbound 里 |
+
+---
 
 ## 应该在哪台 VPS 上执行？
 
@@ -24,6 +39,8 @@
 在香港 VPS 上执行菜单 22
 日本 VPS 只作为 AI outbound 落地
 ```
+
+---
 
 ## 执行流程
 
@@ -40,6 +57,8 @@
 10. 打开 https://ip.net.coffee/claude/ 验证 AI 出口
 ```
 
+---
+
 ## 必填参数说明
 
 | 参数 | 说明 | 示例 |
@@ -50,6 +69,8 @@
 | Trojan password | 落地 Trojan 密码 | `node_********` |
 | Trojan SNI | 落地 TLS SNI | `www.microsoft.com` |
 | pinnedPeerCertSha256 | Xray 26.x 自签证书校验指纹 | 留空自动抓取 |
+
+---
 
 ## 验证方式
 
@@ -66,6 +87,8 @@ https://ip.net.coffee/claude/
 AI 出口：日本 / 台湾落地
 Claude / GPT 支持地区：正常
 ```
+
+---
 
 ## 常见问题
 

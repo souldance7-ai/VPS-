@@ -6,7 +6,13 @@ Sensitive literal hits: []
 IPv4 constants found: ['0.0.0.0', '1.1.1.1', '119.29.29.29', '127.0.0.1', '198.18.0.1', '223.5.5.5', '8.8.8.8']
 Unexpected IPv4 constants: []
 
+README structure:
+1. 新 VPS 快速建站流程（v1.0 主流程）
+2. 香港入口节点附挂小鸡使用 AI / GPT（v1.2 更新）
+3. 检查、导出与下载配置
+4. 备份、回滚与故障处理
+5. 完整菜单界面预览
+
 Images:
-- All newly generated README images are synthetic diagrams, not raw terminal screenshots.
-- Real IP / password / pinnedPeerCertSha256 are not embedded in image-generation text.
-- README preserves original root menu screenshots and adds safe v1.2 diagrams.
+- README uses synthetic privacy-safe guide diagrams.
+- Legacy menu screenshots are preserved.
