@@ -7,8 +7,7 @@
 - 未内置节点密码。
 - 未内置订阅地址。
 - 未内置 Cloudflare Token。
-- README 新增图片均为重新绘制的脱敏示意图，不使用原始含敏感信息截图。
-- 文档中仅使用 `***.***.***.***`、`node_********`、`sha256: ********` 等占位符。
-- Server AI Routing 写入前会自动备份。
-- Xray 配置测试失败会自动回滚。
-- v1.2 不再使用 allowInsecure，改用 pinnedPeerCertSha256。
+- Zouter Media DNS `151.243.229.229` 为用户提供的公开服务 DNS，不属于个人节点密码或订阅信息。
+- DNS 写入前会备份 `/etc/resolv.conf` 与 systemd-resolved 相关配置。
+- DNS 支持回滚。
+- v1.2.2 已修正 Export 与 Relay Client 导出配置的 DNS 同步逻辑。

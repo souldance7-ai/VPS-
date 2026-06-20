@@ -1,0 +1,10 @@
+bash -n syntax ok: True
+syntax stderr:
+
+
+Required files missing: []
+docs folder exists: True
+
+Sensitive literal hits: []
+IPv4 constants found: ['0.0.0.0', '1.1.1.1', '119.29.29.29', '127.0.0.1', '151.243.229.229', '198.18.0.1', '223.5.5.5', '8.8.8.8']
+Unexpected IPv4 constants: []

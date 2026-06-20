@@ -1,37 +1,35 @@
 # CHANGELOG
 
-## 正式 v1.2 · 服务端 AI 分流版 — 2026-06-20
+## 正式 v1.2.2 · 媒体 DNS 导出修正版 — 2026-06-20
 
-### README 结构调整
+### 修正
 
-- README 调整为用户需求导向：
-  - 第一部分：新 VPS 快速建站流程，沿用 v1.0 主流程。
-  - 第二部分：香港入口节点附挂日本 / 台湾小鸡使用 AI / GPT，作为 v1.2 重点更新。
-  - 第三部分：检查、导出与下载配置。
-  - 第四部分：备份、回滚与故障处理。
-  - 第五部分：完整菜单界面预览。
-- 首页增加“你想做什么？先看这里”，方便用户快速跳到对应流程。
-- 保留原有 menu-basic / menu-protocol / menu-check / menu-backup / menu-download / menu-relay / menu-tune 截图。
-- 新增全部重新绘制的脱敏示意图，避免真实 IP / password / 证书指纹出现在公开仓库。
+- 修正 v1.2.1 中「VPS 系统 DNS 已设置 Media DNS，但 `10) Export` 导出的 FLClash 配置仍使用默认 DNS」的问题。
+- 设置 Media DNS 后，`01_IMPORT_FLCLASH.yaml` 会自动写入：
+  - `151.243.229.229`
+  - `1.1.1.1`
+  - `8.8.8.8`
+- 端口中转客户端配置 `01_IMPORT_FLCLASH_RELAY.yaml` 也会同步当前 Media DNS。
+- `dns-test` 支持输入完整 URL，会自动清洗为域名，例如 `https://chatgpt.com/` → `chatgpt.com`。
 
-### 功能新增
+### 保留
+
+- Zouter Media DNS 模板：`151.243.229.229`。
+- 自定义 Media DNS。
+- DNS 状态查看、解析测试与回滚。
+- 服务端 AI 分流 `22 / 23 / 24`。
+
+## 正式 v1.2.1 · 媒体 DNS 解锁辅助版
+
+- 扩展 `30) DNS Unlock / 媒体 DNS 解锁工具`。
+- 新增 Zouter Media DNS 模板：`151.243.229.229`。
+- 新增自定义 Media DNS。
+- 新增 DNS 状态查看与解析测试。
+- 新增 DNS 回滚功能。
+
+## 正式 v1.2 · 服务端 AI 分流版
 
 - 新增 `22) Server AI Routing / 服务端AI分流`。
 - 新增 `23) AI Route Show / 查看服务端AI分流`。
 - 新增 `24) AI Route Rollback / 回滚服务端AI分流`。
-- 将端口中转与服务端 AI 域名分流拆开，避免误操作。
-- 支持 ChatGPT / OpenAI / Claude / Gemini / Copilot / Cursor 等 AI 域名走指定 outbound。
-- 支持 Xray 26.x 自签证书场景的 `pinnedPeerCertSha256`。
-- 留空 pinned 指纹时，自动通过 openssl 抓取落地节点 TLS SHA256。
-- 新增 AI IP 检测网站引导：`https://ip.net.coffee/claude/`。
-
-### 修正
-
-- 不再使用已移除的 `allowInsecure` 写法。
-- 说明 09 导出文件只代表客户端入口配置，不代表服务端 AI outbound。
-- 说明成功后客户端仍选择香港入口节点，AI 出口由服务端 routing 决定。
-
-## 正式 v1.2 · 防火墙后端版
-
-- 新增 AUTO / UFW / NFT / IPTABLES / NONE 防火墙后端。
-- 普通端口放行与中转规则分离。
+- 使用 `pinnedPeerCertSha256` 兼容 Xray 26.x 自签证书场景。

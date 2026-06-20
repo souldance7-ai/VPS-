@@ -2,12 +2,45 @@ bash -n syntax ok: True
 syntax stderr:
 
 
-Version grep:
-6:#  Update Date: 2026-06-20
-32:VER="正式 v1.2 · 服务端 AI 分流版"
-33:UPDATE_DATE="2026-06-20"
-418:  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2${R}  ${DIM}2026-06-20${R}\n"
-1446:  note "验证建议：客户端继续选择当前入口节点后，打开 https://ip.net.coffee/claude/ 检查 AI 出口是否显示日本/台湾。"
-2014:"Server AI Routing / 服务端AI分流"
-2015:"AI Route Show / 查看服务端AI分流"
+grep:
+5:#  Formal Version: v1.2.2
+35:VER="正式 v1.2.2 · 媒体 DNS 导出修正版"
+632:flclash_dns_nameservers_yaml(){
+648:flclash_dns_nameservers_inline(){
+662:    note "检测到 Media DNS：$mdns，导出的 FLClash / 中转客户端配置会优先写入该 DNS。"
+664:    note "未检测到 Media DNS，导出的 FLClash 配置使用默认 DNS。"
+690:  nameserver:
+692:  flclash_dns_nameservers_yaml "    " >> "$OUT/01_IMPORT_FLCLASH.yaml"
+1820:    nameservers = [media_dns, "1.1.1.1", "8.8.8.8"]
+1822:    nameservers = ["223.5.5.5", "119.29.29.29", "1.1.1.1", "8.8.8.8"]
+1841:        "nameserver": nameservers
+1923:note=Media DNS 仅用于流媒体 DNS/CDN 解析辅助，不改变 VPS 出口 IP。
+1929:  section "Media DNS Unlock / 流媒体 DNS 解锁辅助"
+1930:  note "该功能用于接入商提供的流媒体 DNS，例如 Zouter 151.243.229.229。"
+1939:  read -rp "确认写入 Media DNS？[y/N]: " ans
+1961:nameserver $dns
+1962:nameserver 1.1.1.1
+1963:nameserver 8.8.8.8
+1977:  media_dns_apply "151.243.229.229" "Zouter Media DNS"
+1981:  section "Custom Media DNS / 自定义流媒体 DNS"
+1982:  note "请输入接入商提供的 DNS。示例：151.243.229.229"
+1985:  media_dns_apply "$dns" "Custom Media DNS"
+1989:  section "Media DNS 状态 / Show DNS"
+1991:    info "LazyVPS Media DNS 状态："
+1994:    warn "未发现 LazyVPS Media DNS 状态文件：$MEDIA_DNS_STATE"
+2014:    [[ -n "$dns" ]] || dns="151.243.229.229"
+2027:  section "Media DNS Rollback / 回滚 DNS"
+2052:  section "Media DNS Test / 解析测试"
+2055:  [[ -n "$dns" ]] || dns="151.243.229.229"
+2075:  info "使用 Media DNS：$dns"
+2084:  note "本菜单包含 Zouter Media DNS、自定义 Media DNS、Alice DNS Unlock、查看与回滚。"
+2085:  note "Media DNS 是流媒体 DNS/CDN 解析辅助，不等于更换出口 IP。"
+2091:  printf "  1) Zouter Media DNS / 使用 Zouter 流媒体 DNS：151.243.229.229
+2093:  printf "  2) Custom Media DNS / 自定义接入商流媒体 DNS
+2583:    dns-test) media_dns_test ;;
+2588:    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|media-dns|zouter-dns|dns-show|dns-rollback|dns-test|tcpx|tcp-window|diagnose|current" ;;
 
+
+Sensitive literal hits: []
+IPv4 constants found: ['0.0.0.0', '1.1.1.1', '119.29.29.29', '127.0.0.1', '151.243.229.229', '198.18.0.1', '223.5.5.5', '8.8.8.8']
+Unexpected IPv4 constants: []

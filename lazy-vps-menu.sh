@@ -2,7 +2,7 @@
 #
 # ==============================================================================
 #  LazyVPS Quick Menu Pack / 懒人建 VPS 快速菜单包
-#  Formal Version: v1.2
+#  Formal Version: v1.2.2
 #  Update Date: 2026-06-20
 # ==============================================================================
 #
@@ -23,13 +23,16 @@
 #   bash lazy-vps-menu.sh --quick http
 #   bash lazy-vps-menu.sh --quick remote-merge
 #   bash lazy-vps-menu.sh --quick diagnose
+#   bash lazy-vps-menu.sh --quick media-dns
+#   bash lazy-vps-menu.sh --quick dns-show
+#   bash lazy-vps-menu.sh --quick dns-rollback
 #
 # ==============================================================================
 
 set -o pipefail
 
 APP="懒人建 VPS 快速菜单包"
-VER="正式 v1.2 · 服务端 AI 分流版"
+VER="正式 v1.2.2 · 媒体 DNS 导出修正版"
 UPDATE_DATE="2026-06-20"
 
 ROOT="/opt/lazy-vps-menu"
@@ -55,6 +58,8 @@ FORWARD_APPLY="/usr/local/sbin/lazy-vps-forward-apply.sh"
 FORWARD_SERVICE="/etc/systemd/system/lazy-vps-forward.service"
 FW_BACKEND_CONF="$ROOT/firewall_backend.conf"
 FW_OPEN_PORTS="$ROOT/firewall_open_ports.list"
+MEDIA_DNS_DROPIN="/etc/systemd/resolved.conf.d/lazy-vps-media-dns.conf"
+MEDIA_DNS_STATE="$ROOT/media_dns_state.conf"
 
 mkdir -p "$ROOT" "$OUT" "$BAK" "$HTTP_DIR" /var/log/xray 2>/dev/null || true
 touch "$LOG" 2>/dev/null || true
@@ -415,7 +420,7 @@ banner(){
   cover_line "${YLW}                   SUN  .  SAND${R}${WHT}  .  ${CYN}CODE${R}${WHT}  .  ${MAG}RELAX${R}"
 
   printf "${CYN}└────────────────────────────────────────────────────────────────────────────┘${R}\n"
-  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2${R}  ${DIM}2026-06-20${R}\n"
+  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2.2${R}  ${DIM}2026-06-20${R}\n"
   printf "   ${CYN}少折腾${R}  ·  ${MAG}快部署${R}  ·  ${GRN}可回滚${R}  ·  ${YLW}可分享${R}\n"
   solid_line "$CYN"
 }
@@ -620,6 +625,47 @@ make_cert(){
     -addext "subjectAltName=DNS:$sni" >/dev/null 2>&1
 }
 
+media_dns_current(){
+  awk -F= '/^dns=/{print $2}' "$MEDIA_DNS_STATE" 2>/dev/null | head -1
+}
+
+flclash_dns_nameservers_yaml(){
+  local indent="${1:-    }"
+  local mdns
+  mdns="$(media_dns_current)"
+  if [[ -n "$mdns" ]]; then
+    printf "%s- %s\n" "$indent" "$mdns"
+    printf "%s- 1.1.1.1\n" "$indent"
+    printf "%s- 8.8.8.8\n" "$indent"
+  else
+    printf "%s- 223.5.5.5\n" "$indent"
+    printf "%s- 119.29.29.29\n" "$indent"
+    printf "%s- 1.1.1.1\n" "$indent"
+    printf "%s- 8.8.8.8\n" "$indent"
+  fi
+}
+
+flclash_dns_nameservers_inline(){
+  local mdns
+  mdns="$(media_dns_current)"
+  if [[ -n "$mdns" ]]; then
+    printf "%s,1.1.1.1,8.8.8.8" "$mdns"
+  else
+    printf "223.5.5.5,119.29.29.29,1.1.1.1,8.8.8.8"
+  fi
+}
+
+note_export_dns_profile(){
+  local mdns
+  mdns="$(media_dns_current)"
+  if [[ -n "$mdns" ]]; then
+    note "检测到 Media DNS：$mdns，导出的 FLClash / 中转客户端配置会优先写入该 DNS。"
+  else
+    note "未检测到 Media DNS，导出的 FLClash 配置使用默认 DNS。"
+  fi
+}
+
+
 write_imports(){
   local node node_q
   node="$(grep -m1 '^- name:' "$OUT/latest_flclash_fragment.yaml" 2>/dev/null | sed 's/^- name:[[:space:]]*//' | sed 's/^"//;s/"$//')"
@@ -642,10 +688,9 @@ dns:
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-    - 1.1.1.1
-    - 8.8.8.8
+EOF
+  flclash_dns_nameservers_yaml "    " >> "$OUT/01_IMPORT_FLCLASH.yaml"
+  cat >> "$OUT/01_IMPORT_FLCLASH.yaml" <<EOF
 
 proxies:
 EOF
@@ -1002,6 +1047,7 @@ status_check(){
 show_outputs(){
   [[ -f "$OUT/latest_flclash_fragment.yaml" ]] && write_imports
   section "节点输出 / Export Files"
+  note_export_dns_profile
   info "FLClash 只导入：$OUT/01_IMPORT_FLCLASH.yaml"
   info "Surge 只导入：$OUT/02_IMPORT_SURGE.conf"
   echo
@@ -1766,9 +1812,14 @@ relay_client_config(){
   valid_port "$port" || { err "端口无效"; return 1; }
   relay_name="$(ask '中转客户端节点名称' '入口VPS-后端落地-T中转')"
 
-  python3 - "$OUT/latest_flclash_fragment.yaml" "$OUT/01_IMPORT_FLCLASH_RELAY.yaml" "$entry" "$port" "$relay_name" <<'PY'
+  python3 - "$OUT/latest_flclash_fragment.yaml" "$OUT/01_IMPORT_FLCLASH_RELAY.yaml" "$entry" "$port" "$relay_name" "$(media_dns_current)" <<'PY'
 import sys, yaml
-frag_path, out_path, entry, port, name = sys.argv[1:6]
+frag_path, out_path, entry, port, name, media_dns = sys.argv[1:7]
+media_dns = (media_dns or "").strip()
+if media_dns:
+    nameservers = [media_dns, "1.1.1.1", "8.8.8.8"]
+else:
+    nameservers = ["223.5.5.5", "119.29.29.29", "1.1.1.1", "8.8.8.8"]
 fr = yaml.safe_load(open(frag_path, encoding="utf-8")) or []
 node = fr[0] if isinstance(fr, list) else fr
 node["name"] = name
@@ -1787,7 +1838,7 @@ cfg = {
         "listen": "127.0.0.1:1053",
         "enhanced-mode": "fake-ip",
         "fake-ip-range": "198.18.0.1/16",
-        "nameserver": ["223.5.5.5", "119.29.29.29", "1.1.1.1", "8.8.8.8"]
+        "nameserver": nameservers
     },
     "proxies": [node],
     "proxy-groups": [
@@ -1844,13 +1895,231 @@ run_bbrv3(){
   bash /root/install-bbr-v3.sh
 }
 
+media_dns_valid_ip(){
+  local ip="$1"
+  [[ "$ip" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] || return 1
+  local IFS='.' a b c d
+  read -r a b c d <<< "$ip"
+  for n in "$a" "$b" "$c" "$d"; do
+    [[ "$n" -ge 0 && "$n" -le 255 ]] || return 1
+  done
+}
+
+media_dns_backup(){
+  mkdir -p "$BAK"
+  [[ -f /etc/resolv.conf ]] && cp -a /etc/resolv.conf "$BAK/resolv.conf.before_media_dns_$(ts).bak" 2>/dev/null || true
+  [[ -f /etc/systemd/resolved.conf ]] && cp -a /etc/systemd/resolved.conf "$BAK/resolved.conf.before_media_dns_$(ts).bak" 2>/dev/null || true
+  [[ -f "$MEDIA_DNS_DROPIN" ]] && cp -a "$MEDIA_DNS_DROPIN" "$BAK/lazy-vps-media-dns.before_media_dns_$(ts).bak" 2>/dev/null || true
+  ok "已备份 DNS 相关配置到：$BAK"
+}
+
+media_dns_write_state(){
+  local label="$1" dns="$2" mode="$3"
+  cat > "$MEDIA_DNS_STATE" <<EOF
+label=$label
+dns=$dns
+mode=$mode
+updated=$(date '+%F %T')
+note=Media DNS 仅用于流媒体 DNS/CDN 解析辅助，不改变 VPS 出口 IP。
+EOF
+}
+
+media_dns_apply(){
+  local dns="$1" label="$2" mode="resolv.conf"
+  section "Media DNS Unlock / 流媒体 DNS 解锁辅助"
+  note "该功能用于接入商提供的流媒体 DNS，例如 Zouter 151.243.229.229。"
+  note "它可能改善 Netflix / Disney+ / YouTube 等平台的 DNS/CDN 区域解析。"
+  warn "它不会改变 VPS 出口 IP，也不能保证绕过所有平台的 IP 风控。"
+  warn "如果平台主要看出口 IP 是否可用，仍需要换落地 VPS、服务端分流或端口中转。"
+
+  media_dns_valid_ip "$dns" || { err "DNS IP 格式不正确：$dns"; return 1; }
+
+  echo
+  info "准备设置 DNS：$dns  ($label)"
+  read -rp "确认写入 Media DNS？[y/N]: " ans
+  [[ "$ans" =~ ^[Yy]$ ]] || return 0
+
+  media_dns_backup
+
+  if systemctl is-active --quiet systemd-resolved 2>/dev/null; then
+    mode="systemd-resolved"
+    mkdir -p /etc/systemd/resolved.conf.d
+    cat > "$MEDIA_DNS_DROPIN" <<EOF
+[Resolve]
+DNS=$dns
+FallbackDNS=1.1.1.1 8.8.8.8
+DNSStubListener=yes
+EOF
+    systemctl restart systemd-resolved
+    ok "已写入 systemd-resolved drop-in：$MEDIA_DNS_DROPIN"
+  else
+    mode="resolv.conf"
+    if [[ -L /etc/resolv.conf ]]; then
+      warn "/etc/resolv.conf 是软链接；若由云厂商或 systemd 管理，重启后可能被覆盖。"
+    fi
+    cat > /etc/resolv.conf <<EOF
+nameserver $dns
+nameserver 1.1.1.1
+nameserver 8.8.8.8
+EOF
+    ok "已写入 /etc/resolv.conf"
+  fi
+
+  media_dns_write_state "$label" "$dns" "$mode"
+  media_dns_show
+
+  echo
+  note "建议验证：重新连接客户端节点后，打开 Netflix / Disney+ / YouTube / TikTok 等检测。"
+  note "若无变化，说明该平台主要看出口 IP，不是 DNS 解析问题。"
+}
+
+media_dns_apply_zouter(){
+  media_dns_apply "151.243.229.229" "Zouter Media DNS"
+}
+
+media_dns_apply_custom(){
+  section "Custom Media DNS / 自定义流媒体 DNS"
+  note "请输入接入商提供的 DNS。示例：151.243.229.229"
+  read -rp "DNS IP: " dns
+  [[ -n "$dns" ]] || { warn "未输入 DNS。"; return; }
+  media_dns_apply "$dns" "Custom Media DNS"
+}
+
+media_dns_show(){
+  section "Media DNS 状态 / Show DNS"
+  if [[ -f "$MEDIA_DNS_STATE" ]]; then
+    info "LazyVPS Media DNS 状态："
+    cat "$MEDIA_DNS_STATE"
+  else
+    warn "未发现 LazyVPS Media DNS 状态文件：$MEDIA_DNS_STATE"
+  fi
+
+  echo
+  info "/etc/resolv.conf 指向："
+  readlink -f /etc/resolv.conf 2>/dev/null || true
+
+  echo
+  info "/etc/resolv.conf 内容："
+  sed -n '1,20p' /etc/resolv.conf 2>/dev/null || true
+
+  if has resolvectl; then
+    echo
+    info "resolvectl DNS："
+    resolvectl dns 2>/dev/null || true
+  fi
+
+  if has dig; then
+    local dns
+    dns="$(awk -F= '/^dns=/{print $2}' "$MEDIA_DNS_STATE" 2>/dev/null | head -1)"
+    [[ -n "$dns" ]] || dns="151.243.229.229"
+    echo
+    info "测试解析 netflix.com / disneyplus.com："
+    echo "dig @$dns netflix.com +short"
+    dig @"$dns" netflix.com +short 2>/dev/null | head -5 || true
+    echo "dig @$dns disneyplus.com +short"
+    dig @"$dns" disneyplus.com +short 2>/dev/null | head -5 || true
+  else
+    warn "未安装 dig，如需解析测试可执行：apt update && apt install -y dnsutils"
+  fi
+}
+
+media_dns_rollback(){
+  section "Media DNS Rollback / 回滚 DNS"
+  warn "将移除 LazyVPS systemd-resolved drop-in，并尝试恢复最近的 resolv.conf 备份。"
+  read -rp "确认回滚 DNS？[y/N]: " ans
+  [[ "$ans" =~ ^[Yy]$ ]] || return 0
+
+  rm -f "$MEDIA_DNS_DROPIN" 2>/dev/null || true
+
+  local latest
+  latest="$(ls -t "$BAK"/resolv.conf.before_media_dns_*.bak 2>/dev/null | head -1 || true)"
+  if [[ -n "$latest" ]]; then
+    cp -a "$latest" /etc/resolv.conf 2>/dev/null || warn "恢复 /etc/resolv.conf 失败，可能是软链接或权限问题。"
+    ok "已尝试恢复：$latest"
+  else
+    warn "没有找到 resolv.conf 备份。"
+  fi
+
+  if systemctl is-active --quiet systemd-resolved 2>/dev/null; then
+    systemctl restart systemd-resolved || true
+  fi
+
+  rm -f "$MEDIA_DNS_STATE" 2>/dev/null || true
+  media_dns_show
+}
+
+media_dns_test(){
+  section "Media DNS Test / 解析测试"
+  local dns domain
+  dns="$(awk -F= '/^dns=/{print $2}' "$MEDIA_DNS_STATE" 2>/dev/null | head -1)"
+  [[ -n "$dns" ]] || dns="151.243.229.229"
+  read -rp "测试 DNS [$dns]: " input_dns
+  dns="${input_dns:-$dns}"
+  read -rp "测试域名 [netflix.com]: " domain
+  domain="${domain:-netflix.com}"
+  domain="${domain#http://}"
+  domain="${domain#https://}"
+  domain="${domain%%/*}"
+  domain="${domain%%:*}"
+  if [[ -z "$domain" ]]; then
+    warn "域名为空，改用 netflix.com"
+    domain="netflix.com"
+  fi
+
+  if ! has dig; then
+    warn "未安装 dig，正在安装 dnsutils。"
+    apt update && apt install -y dnsutils || { err "dnsutils 安装失败。"; return 1; }
+  fi
+
+  echo
+  info "使用 Media DNS：$dns"
+  dig @"$dns" "$domain" +short || true
+  echo
+  info "对比 Cloudflare DNS：1.1.1.1"
+  dig @1.1.1.1 "$domain" +short || true
+}
+
 run_dns_unlock(){
-  section "DNS Alice Unlock 一键解锁 / DNS 分流"
-  warn "第三方 DNS 分流脚本，可能修改 dnsmasq / resolv / 端口 53。"
-  read -rp "继续运行？[y/N]: " ans
-  [[ "$ans" =~ ^[Yy]$ ]] || return
-  wget https://raw.githubusercontent.com/Jimmyzxk/DNS-Alice-Unlock/refs/heads/main/dns-unlock.sh -O /root/dns-unlock.sh
-  bash /root/dns-unlock.sh
+  section "DNS Unlock / 流媒体 DNS 解锁工具"
+  note "本菜单包含 Zouter Media DNS、自定义 Media DNS、Alice DNS Unlock、查看与回滚。"
+  note "Media DNS 是流媒体 DNS/CDN 解析辅助，不等于更换出口 IP。"
+  warn "若平台主要判断出口 IP 是否可用，DNS 解锁不会替代干净落地 IP。"
+
+  echo
+  printf "${CYN}请选择：${R}
+"
+  printf "  1) Zouter Media DNS / 使用 Zouter 流媒体 DNS：151.243.229.229
+"
+  printf "  2) Custom Media DNS / 自定义接入商流媒体 DNS
+"
+  printf "  3) Alice DNS Unlock / 第三方 DNS Alice 解锁脚本
+"
+  printf "  4) Show DNS / 查看当前 DNS 与解析测试
+"
+  printf "  5) Rollback DNS / 回滚 LazyVPS DNS 配置
+"
+  printf "  6) Test DNS / 指定域名解析对比
+"
+  printf "  0) 返回
+"
+  read -rp "序号: " ans
+
+  case "$ans" in
+    1) media_dns_apply_zouter ;;
+    2) media_dns_apply_custom ;;
+    3)
+      warn "第三方 DNS 分流脚本，可能修改 dnsmasq / resolv / 端口 53。"
+      read -rp "继续运行 Alice DNS Unlock？[y/N]: " y
+      [[ "$y" =~ ^[Yy]$ ]] || return
+      wget https://raw.githubusercontent.com/Jimmyzxk/DNS-Alice-Unlock/refs/heads/main/dns-unlock.sh -O /root/dns-unlock.sh
+      bash /root/dns-unlock.sh
+      ;;
+    4) media_dns_show ;;
+    5) media_dns_rollback ;;
+    6) media_dns_test ;;
+    0|"") return ;;
+    *) warn "输入无效。" ;;
+  esac
 }
 
 run_tcpx(){
@@ -2019,7 +2288,7 @@ ITEMS=(
 "Relay Show / 查看端口中转"
 "Relay Clear / 清空端口中转"
 "BBR v3 / 第三方 BBRv3 脚本"
-"DNS Unlock / DNS Alice 解锁"
+"DNS Unlock / 媒体 DNS 解锁与导出同步"
 "NetSpeed / 锐速/BBRPlus/BBR2/BBR3"
 "TCP Tune / TCP 窗口调优"
 "Diagnose / 一键诊断查修"
@@ -2057,7 +2326,7 @@ DESCS=(
 "显示本工具记录、iptables 与 nft 中转规则"
 "清空本工具的端口转发规则"
 "第三方脚本，可能换内核，请谨慎"
-"第三方 DNS 分流解锁工具"
+"Zouter/Custom/Alice，DNS/CDN 辅助，并同步到 FLClash 导出"
 "第三方内核加速脚本，可能重启"
 "第三方 TCP 参数调优工具"
 "检查服务/日志/配置并可重建导入文件"
@@ -2308,12 +2577,15 @@ quick(){
     forward) forward_add ;;
     relay-client) relay_client_config ;;
     bbrv3) run_bbrv3 ;;
-    dns-unlock) run_dns_unlock ;;
+    dns-unlock|media-dns|zouter-dns|dns) run_dns_unlock ;;
+    dns-show) media_dns_show ;;
+    dns-rollback) media_dns_rollback ;;
+    dns-test) media_dns_test ;;
     tcpx) run_tcpx ;;
     tcp-window) run_tcp_window ;;
     diagnose|repair) diagnose_repair ;;
     current) view_current_trojan ;;
-    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|tcpx|tcp-window|diagnose|current" ;;
+    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|media-dns|zouter-dns|dns-show|dns-rollback|dns-test|tcpx|tcp-window|diagnose|current" ;;
   esac
 }
 
