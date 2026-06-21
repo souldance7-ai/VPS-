@@ -2,7 +2,7 @@
 #
 # ==============================================================================
 #  LazyVPS Quick Menu Pack / 懒人建 VPS 快速菜单包
-#  Formal Version: v1.2.2
+#  Formal Version: v1.2.3
 #  Update Date: 2026-06-20
 # ==============================================================================
 #
@@ -26,13 +26,19 @@
 #   bash lazy-vps-menu.sh --quick media-dns
 #   bash lazy-vps-menu.sh --quick dns-show
 #   bash lazy-vps-menu.sh --quick dns-rollback
+#   bash lazy-vps-menu.sh --quick public-ip
+#   bash lazy-vps-menu.sh --quick export-check
+#   bash lazy-vps-menu.sh --quick remote-publish
+#   bash lazy-vps-menu.sh --quick node-test
+#   bash lazy-vps-menu.sh --quick nq-archive
+#   bash lazy-vps-menu.sh --quick airport-chain
 #
 # ==============================================================================
 
 set -o pipefail
 
 APP="懒人建 VPS 快速菜单包"
-VER="正式 v1.2.2 · 媒体 DNS 导出修正版"
+VER="正式 v1.2.3 · 稳定增强与订阅发布版"
 UPDATE_DATE="2026-06-20"
 
 ROOT="/opt/lazy-vps-menu"
@@ -40,6 +46,7 @@ OUT="$ROOT/outputs"
 BAK="$ROOT/backups"
 HTTP_DIR="$ROOT/http-download"
 LOG="$ROOT/lazy-vps.log"
+REPORTS="$ROOT/reports"
 
 XRAY="/usr/local/bin/xray"
 XDIR="/usr/local/etc/xray"
@@ -61,7 +68,7 @@ FW_OPEN_PORTS="$ROOT/firewall_open_ports.list"
 MEDIA_DNS_DROPIN="/etc/systemd/resolved.conf.d/lazy-vps-media-dns.conf"
 MEDIA_DNS_STATE="$ROOT/media_dns_state.conf"
 
-mkdir -p "$ROOT" "$OUT" "$BAK" "$HTTP_DIR" /var/log/xray 2>/dev/null || true
+mkdir -p "$ROOT" "$OUT" "$BAK" "$HTTP_DIR" "$REPORTS" /var/log/xray 2>/dev/null || true
 touch "$LOG" 2>/dev/null || true
 
 R=$'\033[0m'
@@ -109,11 +116,50 @@ rand_pass(){
 
 ts(){ date '+%Y%m%d_%H%M%S'; }
 
+is_private_ip(){
+  local ip="$1" a b
+  [[ "$ip" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] || return 1
+  IFS='.' read -r a b _ <<< "$ip"
+  if (( a == 10 )); then return 0; fi
+  if (( a == 172 && b >= 16 && b <= 31 )); then return 0; fi
+  if (( a == 192 && b == 168 )); then return 0; fi
+  if (( a == 100 && b >= 64 && b <= 127 )); then return 0; fi
+  if (( a == 127 )); then return 0; fi
+  return 1
+}
+
+public_ip_override(){
+  awk -F= '/^PUBLIC_IP_OVERRIDE=/{print $2}' "$ROOT/public_ip_override.conf" 2>/dev/null | head -1
+}
+
+ip4_external(){
+  local ip
+  for url in "https://api.ipify.org" "https://ifconfig.me" "https://icanhazip.com"; do
+    ip="$(curl -4 -s --max-time 6 "$url" 2>/dev/null | tr -d ' \r\n' || true)"
+    if [[ -n "$ip" && "$ip" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] && ! is_private_ip "$ip"; then
+      echo "$ip"; return 0
+    fi
+  done
+  return 1
+}
+
 ip4(){
   local ip
-  ip="$(curl -4 -s --max-time 5 https://ifconfig.me 2>/dev/null || true)"
-  [[ -n "$ip" ]] || ip="$(curl -4 -s --max-time 5 https://api.ipify.org 2>/dev/null || true)"
-  [[ -n "$ip" ]] || ip="$(ip route get 1.1.1.1 2>/dev/null | grep -oP 'src \K[0-9.]+' | head -1 || true)"
+  ip="$(public_ip_override)"
+  if [[ -n "$ip" ]]; then echo "$ip"; return 0; fi
+  ip="$(ip4_external || true)"
+  if [[ -n "$ip" ]]; then echo "$ip"; return 0; fi
+  ip="$(ip route get 1.1.1.1 2>/dev/null | grep -oP 'src \K[0-9.]+' | head -1 || true)"
+  echo "$ip"
+}
+
+public_ip_for_links(){
+  local ip
+  ip="$(ip4)"
+  if [[ -z "$ip" || "$(is_private_ip "$ip" && echo yes || echo no)" == "yes" ]]; then
+    warn "检测到公网 IP 为空或为私网 IP：${ip:-EMPTY}。可能是 NAT VPS 或 DNS 解析异常。"
+    warn "请运行 35) Public IP Guard 手动设置真实公网 IP / 域名，避免 HTTP 下载链接错误。"
+  fi
   echo "$ip"
 }
 
@@ -420,7 +466,7 @@ banner(){
   cover_line "${YLW}                   SUN  .  SAND${R}${WHT}  .  ${CYN}CODE${R}${WHT}  .  ${MAG}RELAX${R}"
 
   printf "${CYN}└────────────────────────────────────────────────────────────────────────────┘${R}\n"
-  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2.2${R}  ${DIM}2026-06-20${R}\n"
+  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2.3${R}  ${DIM}2026-06-20${R}\n"
   printf "   ${CYN}少折腾${R}  ·  ${MAG}快部署${R}  ·  ${GRN}可回滚${R}  ·  ${YLW}可分享${R}\n"
   solid_line "$CYN"
 }
@@ -1066,7 +1112,7 @@ export_pkg(){
   [[ -f "$OUT/latest_flclash_fragment.yaml" ]] && write_imports
 
   local ip now dir pkg
-  ip="$(ip4)"
+  ip="$(public_ip_for_links)"
   now="$(ts)"
   dir="/root/LazyVPS_Node_Output_${ip}_${now}"
   pkg="${dir}.tar.gz"
@@ -1123,7 +1169,7 @@ EOF
 
 http_start(){
   local ip
-  ip="$(ip4)"
+  ip="$(public_ip_for_links)"
   mkdir -p "$HTTP_DIR"
   if [[ ! -f /root/lazy-vps-output-latest.tar.gz ]]; then
     warn "未发现导出包，正在自动导出。"
@@ -2258,6 +2304,247 @@ stop_hy2(){
   ok "Hysteria2 已停止。"
 }
 
+public_ip_guard(){
+  section "Public IP Guard / NAT 公网 IP 识别保护"
+  note "用于避免 NAT VPS / DNS 故障时，把 10.x / 172.16-31.x / 192.168.x / 100.64.x 误当公网 IP。"
+  local ext routeip hostips ov ans manual
+  ov="$(public_ip_override)"
+  ext="$(ip4_external || true)"
+  routeip="$(ip route get 1.1.1.1 2>/dev/null | grep -oP 'src \K[0-9.]+' | head -1 || true)"
+  hostips="$(hostname -I 2>/dev/null || true)"
+  info "当前 override：${ov:-未设置}"
+  info "外部服务检测公网 IPv4：${ext:-失败/为空}"
+  info "系统路由源地址：${routeip:-未知}"
+  info "hostname -I：${hostips:-未知}"
+  if [[ -n "$routeip" ]] && is_private_ip "$routeip"; then
+    warn "系统路由源地址是私网 IP：$routeip，不能用于 HTTP 下载链接。"
+  fi
+  if [[ -n "$ext" ]]; then
+    ok "外部公网 IP 检测可用：$ext"
+    read -rp "是否保存 $ext 为下载链接使用的公网 IP？[y/N]: " ans
+    if [[ "$ans" =~ ^[Yy]$ ]]; then
+      echo "PUBLIC_IP_OVERRIDE=$ext" > "$ROOT/public_ip_override.conf"
+      ok "已保存 override：$ext"
+    fi
+  else
+    warn "外部公网 IP 检测失败。可能是 DNS、网络或当前 VPS 是 NAT 场景。"
+  fi
+  read -rp "是否手动输入真实公网 IP / 域名作为 override？[y/N]: " ans
+  if [[ "$ans" =~ ^[Yy]$ ]]; then
+    read -rp "真实公网 IP / 域名: " manual
+    if [[ -n "$manual" ]]; then
+      echo "PUBLIC_IP_OVERRIDE=$manual" > "$ROOT/public_ip_override.conf"
+      ok "已保存 override：$manual"
+    fi
+  fi
+  info "当前用于链接显示的 IP / 域名：$(ip4)"
+}
+
+export_safety_check(){
+  section "Export Safety Check / 导出配置安全检查"
+  ensure_yaml || return 1
+  local file="${1:-$OUT/01_IMPORT_FLCLASH.yaml}" now report rc
+  [[ -f "$file" ]] || { warn "未发现 $file，尝试执行导出。"; export_pkg >/dev/null 2>&1 || true; }
+  [[ -f "$file" ]] || { err "仍未发现配置：$file"; return 1; }
+  now="$(ts)"
+  report="$REPORTS/export_safety_${now}.md"
+  python3 - "$file" "$report" <<'PY_LAZY_EXPORT_CHECK'
+import sys, yaml, collections, ipaddress
+f, report = sys.argv[1:3]
+issues=[]; warns=[]; ok=[]
+try:
+    cfg=yaml.safe_load(open(f,encoding='utf-8')) or {}
+    ok.append('YAML 解析成功')
+except Exception as e:
+    cfg={}; issues.append(f'YAML 解析失败：{e}')
+proxies=cfg.get('proxies') or []
+names=[]
+for i,p in enumerate(proxies):
+    if not isinstance(p,dict): issues.append(f'proxies[{i}] 不是对象'); continue
+    name=p.get('name'); names.append(name)
+    for k in ['server','port','type']:
+        if not p.get(k): issues.append(f'节点 {name or i} 缺少 {k}')
+    if p.get('type') in ['trojan','vless'] and not (p.get('password') or p.get('uuid')):
+        warns.append(f'节点 {name} 可能缺少 password/uuid')
+for n,c in collections.Counter(names).items():
+    if n and c>1: issues.append(f'重复节点名：{n} × {c}')
+node_set=set(n for n in names if n)
+groups=cfg.get('proxy-groups') or []
+group_names=[x.get('name') for x in groups if isinstance(x,dict)]
+for g in groups:
+    if not isinstance(g,dict): continue
+    gname=g.get('name')
+    for p in g.get('proxies') or []:
+        if p in ['DIRECT','REJECT','GLOBAL','PROXY','PASS'] or p in node_set or p in group_names: continue
+        warns.append(f'策略组 {gname} 引用了可能不存在的节点/组：{p}')
+rules=cfg.get('rules') or []
+if not rules: warns.append('rules 为空')
+if not any(str(r).startswith('MATCH,') for r in rules): warns.append('未发现 MATCH 兜底规则')
+if any('DO_NOT_IMPORT' in str(x) for x in [f]+rules): issues.append('疑似包含 DO_NOT_IMPORT 片段')
+for p in proxies:
+    if isinstance(p,dict):
+        s=str(p.get('server',''))
+        try:
+            ip=ipaddress.ip_address(s)
+            if ip.is_private: warns.append(f'节点 {p.get("name")} server 是私网 IP：{s}')
+        except Exception: pass
+status='PASS' if not issues else 'FAIL'
+lines=['# Export Safety Report','',f'- 文件：`{f}`',f'- 结果：**{status}**',f'- 节点数：{len(proxies)}',f'- 策略组数：{len(groups)}',f'- 规则数：{len(rules)}','']
+lines+=['## 通过项']+[f'- {x}' for x in ok]+['']
+lines+=['## 错误']+([f'- {x}' for x in issues] or ['- 无'])+['']
+lines+=['## 警告']+([f'- {x}' for x in warns] or ['- 无'])+['']
+open(report,'w',encoding='utf-8').write('\n'.join(lines))
+print('\n'.join(lines))
+sys.exit(1 if issues else 0)
+PY_LAZY_EXPORT_CHECK
+  rc=$?
+  cp "$report" "$REPORTS/export_safety_latest.md" 2>/dev/null || true
+  if [[ $rc -eq 0 ]]; then ok "导出配置安全检查通过：$report"; else err "导出配置安全检查发现错误：$report"; fi
+  return $rc
+}
+
+export_verify(){
+  section "Export Verify / 导出后验证"
+  export_pkg >/dev/null 2>&1 || true
+  export_safety_check "$OUT/01_IMPORT_FLCLASH.yaml"
+}
+
+remote_publish(){
+  section "Remote Publish / 远程订阅发布"
+  note "将当前导出的 sub.yaml / surge.conf 上传到远程订阅服务器，并在远端自动备份上一版。"
+  [[ -f "$OUT/01_IMPORT_FLCLASH.yaml" ]] || export_pkg >/dev/null 2>&1 || true
+  export_safety_check "$OUT/01_IMPORT_FLCLASH.yaml" || { warn "安全检查未通过，仍要继续请手动确认。"; read -rp "继续发布？[y/N]: " go; [[ "$go" =~ ^[Yy]$ ]] || return 1; }
+  local user host r_sub r_surge web_sub web_surge tsnow
+  user="$(ask '远程 VPS 用户' 'root')"
+  host="$(ask_required '远程 VPS IP / 域名')"
+  r_sub="$(ask '远程暂存 sub.yaml' '/root/sub.yaml')"
+  r_surge="$(ask '远程暂存 surge.conf' '/root/surge.conf')"
+  web_sub="$(ask 'Web 订阅 sub.yaml 路径' '/var/www/html/sub.yaml')"
+  web_surge="$(ask 'Web 订阅 surge.conf 路径' '/var/www/html/surge.conf')"
+  tsnow="$(ts)"
+  step "上传文件"
+  scp "$OUT/01_IMPORT_FLCLASH.yaml" "${user}@${host}:${r_sub}" || { err "上传 sub.yaml 失败"; return 1; }
+  [[ -f "$OUT/02_IMPORT_SURGE.conf" ]] && scp "$OUT/02_IMPORT_SURGE.conf" "${user}@${host}:${r_surge}" || true
+  step "远端备份并发布"
+  ssh "${user}@${host}" "mkdir -p /var/www/html/backups; [[ -f '$web_sub' ]] && cp '$web_sub' '/var/www/html/backups/sub_${tsnow}.yaml' || true; [[ -f '$web_surge' ]] && cp '$web_surge' '/var/www/html/backups/surge_${tsnow}.conf' || true; mkdir -p \$(dirname '$web_sub') \$(dirname '$web_surge'); cp '$r_sub' '$web_sub'; [[ -f '$r_surge' ]] && cp '$r_surge' '$web_surge' || true; chmod 644 '$web_sub' '$web_surge' 2>/dev/null || true; (nginx -t && systemctl reload nginx) 2>/dev/null || systemctl restart nginx 2>/dev/null || true"
+  ok "远程发布完成。"
+  echo "测试：curl -I http://${host}/sub.yaml"
+}
+
+node_test_pack(){
+  section "Node Test Pack / 节点体检包"
+  local now report csv ip port node
+  now="$(ts)"; report="$REPORTS/node_test_${now}.md"; csv="$REPORTS/node_test_${now}.csv"; ip="$(ip4)"
+  port="$(python3 - <<'PY_LAZY_PORT' 2>/dev/null
+import json
+try:
+  c=json.load(open('/usr/local/etc/xray/config.json'))
+  print(c.get('inbounds',[{}])[0].get('port','443'))
+except Exception: print('443')
+PY_LAZY_PORT
+)"
+  node="$(grep -m1 '^- name:' "$OUT/latest_flclash_fragment.yaml" 2>/dev/null | sed 's/^- name:[[:space:]]*//;s/^"//;s/"$//' || true)"
+  {
+    echo "# Node Test Pack"
+    echo
+    echo "- 时间：$(date '+%F %T')"
+    echo "- 节点：${node:-未知}"
+    echo "- 公网 IP：${ip:-未知}"
+    echo "- 端口：$port"
+    echo
+    echo "## 服务状态"
+    systemctl is-active xray 2>/dev/null | sed 's/^/- Xray: /' || true
+    echo
+    echo "## 端口监听"
+    ss -lntup | grep -E ":($port|443|8443|8088)" || true
+    echo
+    echo "## Xray 配置测试"
+    "$XRAY" run -test -config "$XCONF" 2>&1 || true
+    echo
+    echo "## DNS"
+    sed -n '1,10p' /etc/resolv.conf 2>/dev/null || true
+    echo
+    echo "## 外部连通"
+    curl -4 -I --connect-timeout 8 https://www.gstatic.com/generate_204 2>/dev/null | head -5 || true
+    curl -4 -I --connect-timeout 8 https://chatgpt.com 2>/dev/null | head -5 || true
+    curl -4 -I --connect-timeout 8 https://www.netflix.com 2>/dev/null | head -5 || true
+  } | tee "$report"
+  echo "metric,value" > "$csv"
+  echo "public_ip,${ip:-unknown}" >> "$csv"
+  echo "port,$port" >> "$csv"
+  echo "xray,$(systemctl is-active xray 2>/dev/null || echo unknown)" >> "$csv"
+  ln -sf "$report" "$REPORTS/node_test_latest.md" 2>/dev/null || true
+  ok "节点体检完成：$report"
+  info "CSV：$csv"
+}
+
+nodequality_archive(){
+  section "NodeQuality 快速归档"
+  mkdir -p "$REPORTS/nodequality"
+  local now logf
+  now="$(ts)"; logf="$REPORTS/nodequality/nodequality_${now}.log"
+  note "运行 run.NodeQuality.com，并保存日志到：$logf"
+  read -rp "开始？[Y/n]: " ans
+  [[ "$ans" =~ ^[Nn]$ ]] && return 0
+  bash <(curl -sL https://run.NodeQuality.com) 2>&1 | tee "$logf"
+  ln -sf "$logf" "$REPORTS/nodequality_latest.log" 2>/dev/null || true
+  ok "NodeQuality 日志已归档：$logf"
+}
+
+airport_chain_template(){
+  section "Airport Chain Template / 机场链规则模板"
+  note "生成 AI / 媒体机场链策略组模板；不内置任何机场订阅 URL、Token 或节点密码。"
+  local out_yaml="$OUT/airport_chain_template.yaml" out_md="$OUT/airport_chain_template.md"
+  cat > "$out_yaml" <<'EOF'
+# LazyVPS Airport Chain Template / 机场链规则模板
+# 使用方式：先在客户端导入自己的机场订阅，再把下列策略组中的占位项替换为自己的机场策略组或节点名。
+proxy-groups:
+  - name: 🤖 AI机场链
+    type: select
+    proxies:
+      - 手动选择你的机场AI节点或策略组
+      - 🏗️ 自建VPS总组
+      - DIRECT
+  - name: 🎬 流媒体机场链
+    type: select
+    proxies:
+      - 手动选择你的机场媒体节点或策略组
+      - 🏗️ 自建VPS总组
+      - DIRECT
+rules:
+  - DOMAIN-SUFFIX,chatgpt.com,🤖 AI机场链
+  - DOMAIN-SUFFIX,openai.com,🤖 AI机场链
+  - DOMAIN-SUFFIX,oaistatic.com,🤖 AI机场链
+  - DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI机场链
+  - DOMAIN-SUFFIX,claude.ai,🤖 AI机场链
+  - DOMAIN-SUFFIX,anthropic.com,🤖 AI机场链
+  - DOMAIN-SUFFIX,gemini.google.com,🤖 AI机场链
+  - DOMAIN-SUFFIX,netflix.com,🎬 流媒体机场链
+  - DOMAIN-SUFFIX,nflxvideo.net,🎬 流媒体机场链
+  - DOMAIN-SUFFIX,disneyplus.com,🎬 流媒体机场链
+  - DOMAIN-SUFFIX,disney-plus.net,🎬 流媒体机场链
+  - DOMAIN-SUFFIX,youtube.com,🎬 流媒体机场链
+  - DOMAIN-SUFFIX,googlevideo.com,🎬 流媒体机场链
+  - DOMAIN-SUFFIX,tiktok.com,🎬 流媒体机场链
+EOF
+  cat > "$out_md" <<'EOF'
+# Airport Chain Template / 机场链模板说明
+
+机场链适合：自建 VPS 作为普通入口，AI / 流媒体域名交给外购机场节点或机场策略组。
+
+安全原则：
+
+- 不在开源脚本内置机场订阅 URL
+- 不内置 Token
+- 不内置节点 password
+- 只提供策略组和规则模板
+
+模板文件：airport_chain_template.yaml
+EOF
+  ok "已生成：$out_yaml"
+  ok "说明：$out_md"
+}
+
 ITEMS=(
 "System Init / 系统初始化"
 "Stable BBR / 开启 BBR+fq"
@@ -2293,6 +2580,12 @@ ITEMS=(
 "TCP Tune / TCP 窗口调优"
 "Diagnose / 一键诊断查修"
 "Current Trojan / 查看当前 T 参数"
+"Public IP Guard / NAT 公网 IP 识别保护"
+"Export Safety / 导出配置安全检查"
+"Remote Publish / 远程订阅发布"
+"Node Test Pack / 节点体检包"
+"NodeQuality Archive / 酒神测试归档"
+"Airport Chain Template / 机场链规则模板"
 "Exit / 退出"
 )
 
@@ -2331,6 +2624,12 @@ DESCS=(
 "第三方 TCP 参数调优工具"
 "检查服务/日志/配置并可重建导入文件"
 "显示当前服务端端口/SNI/密码，避免误用旧配置"
+"检测 NAT / 私网 IP，手动设置真实公网 IP / 域名"
+"检查 YAML、重复节点、策略组引用、缺失字段"
+"发布 sub.yaml / surge.conf 到远程订阅服务器并备份"
+"生成节点体检报告与 CSV"
+"运行 NodeQuality 并保存日志归档"
+"生成 AI / 媒体机场链策略组模板，不内置订阅"
 "退出菜单"
 )
 
@@ -2370,7 +2669,13 @@ run_choice(){
     32) run_tcp_window ;;
     33) diagnose_repair ;;
     34) view_current_trojan ;;
-    35) exit 0 ;;
+    35) public_ip_guard ;;
+    36) export_safety_check ;;
+    37) remote_publish ;;
+    38) node_test_pack ;;
+    39) nodequality_archive ;;
+    40) airport_chain_template ;;
+    41) exit 0 ;;
   esac
 }
 
@@ -2396,8 +2701,8 @@ CAT_CN=(
 "退出"
 )
 
-CAT_START=(1 5 8 11 16 21 29 35)
-CAT_END=(4 7 10 15 20 28 34 35)
+CAT_START=(1 5 8 11 16 21 29 41)
+CAT_END=(4 7 10 15 20 28 40 41)
 CAT_FG=(45 213 82 220 75 207 208 196)
 CAT_BG=(24 90 22 58 18 53 94 52)
 
@@ -2483,7 +2788,7 @@ draw_menu(){
 
   banner
 
-  printf "${YLW}操作：${R}${B}↑↓${R} 选择功能  ${B}←→${R} 切换分区  ${B}Enter${R} 执行  ${B}1-35${R} 直达  ${B}Q${R} 退出\n\n"
+  printf "${YLW}操作：${R}${B}↑↓${R} 选择功能  ${B}←→${R} 切换分区  ${B}Enter${R} 执行  ${B}1-41${R} 直达  ${B}Q${R} 退出\n\n"
 
   draw_tabs "$cat"
   draw_panel "$cat" "$selected"
@@ -2505,7 +2810,7 @@ menu(){
     if [[ "$key" == "" ]]; then
       clear
       run_choice "$selected"
-      [[ "$selected" -ne 35 ]] && pause
+      [[ "$selected" -ne 41 ]] && pause
 
     elif [[ "$key" =~ [0-9] ]]; then
       num="$key"
@@ -2515,12 +2820,12 @@ menu(){
         num="${num}${key2}"
       done
 
-      if [[ "$num" =~ ^[0-9]+$ ]] && ((num>=1 && num<=35)); then
+      if [[ "$num" =~ ^[0-9]+$ ]] && ((num>=1 && num<=41)); then
         selected="$num"
         cat="$(find_category "$selected")"
         clear
         run_choice "$selected"
-        [[ "$selected" -ne 35 ]] && pause
+        [[ "$selected" -ne 41 ]] && pause
       fi
 
     elif [[ "$key" == "q" || "$key" == "Q" ]]; then
@@ -2585,7 +2890,14 @@ quick(){
     tcp-window) run_tcp_window ;;
     diagnose|repair) diagnose_repair ;;
     current) view_current_trojan ;;
-    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|media-dns|zouter-dns|dns-show|dns-rollback|dns-test|tcpx|tcp-window|diagnose|current" ;;
+    public-ip|ip-guard) public_ip_guard ;;
+    export-check|config-lint|lint) export_safety_check ;;
+    export-verify) export_verify ;;
+    remote-publish|publish) remote_publish ;;
+    node-test) node_test_pack ;;
+    nq-archive|nodequality-archive) nodequality_archive ;;
+    airport-chain) airport_chain_template ;;
+    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|media-dns|zouter-dns|dns-show|dns-rollback|dns-test|tcpx|tcp-window|diagnose|current|public-ip|export-check|remote-publish|node-test|nq-archive|airport-chain" ;;
   esac
 }
 

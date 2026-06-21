@@ -1,16 +1,2 @@
-# SECURITY SHARE CHECK
 
-检查日期：2026-06-20
-
-- 未内置个人 VPS IP。
-- 未内置私有域名。
-- 未内置节点密码。
-- 未内置订阅地址。
-- 未内置 Cloudflare Token。
-- 未内置机场订阅 URL / Token。
-- Zouter Media DNS `151.243.229.229` 为公开服务 DNS 模板，不属于个人节点密码或订阅信息。
-- README 新增图片均为重新绘制的脱敏示意图，不使用原始含敏感信息截图。
-- 文档中仅使用 `***.***.***.***`、`node_********`、`sha256: ********` 等占位符。
-- DNS 写入前会备份 `/etc/resolv.conf` 与 systemd-resolved 相关配置。
-- DNS 支持回滚。
-- v1.2.2 已修正 Export 与 Relay Client 导出配置的 DNS 同步逻辑。
+- v1.2.3 新增功能不内置远程订阅服务器 IP、机场订阅 URL、Token 或节点密码。

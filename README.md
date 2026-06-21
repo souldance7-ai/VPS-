@@ -5,14 +5,14 @@
 </p>
 
 <p align="center">
-  <b>少折腾 · 快部署 · 可回滚 · 可分享 · 支持服务端 AI 分流与媒体 DNS 辅助</b>
+  <b>少折腾 · 快部署 · 可回滚 · 可分享 · 支持服务端 AI 分流、媒体 DNS 与订阅发布体检</b>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-v1.2.2-blue">
+  <img src="https://img.shields.io/badge/Version-v1.2.3-blue">
   <img src="https://img.shields.io/badge/Shell-Bash-green">
   <img src="https://img.shields.io/badge/Xray-26.x-orange">
-  <img src="https://img.shields.io/badge/Media_DNS-Export_Sync-brightgreen">
+  <img src="https://img.shields.io/badge/Stability_Toolkit-Export_Check-brightgreen">
 </p>
 
 ---
@@ -25,15 +25,12 @@
 | **香港节点要能用 GPT / Claude** | [二、香港入口节点附挂小鸡使用 AI / GPT](#二香港入口节点附挂小鸡使用-ai--gptv12-更新) | 香港节点速度好，但香港出口不能 GPT，需要把 AI 域名分流到日本 / 台湾落地 |
 | **流媒体 DNS / CDN 区域解析辅助** | [三、媒体 DNS 解锁辅助](#三媒体-dns-解锁辅助v122-更新) | 接入商提供 Media DNS，例如 Zouter `151.243.229.229`，用于改善流媒体 DNS/CDN 解析 |
 | **机场链 / 外购节点做 AI 或媒体落地** | [四、机场链 / 外购节点链路思路](#四机场链--外购节点链路思路可用于-ai--媒体) | 自建 VPS 做入口，AI / 流媒体走外购机场策略组或纯净节点 |
-| **检查、导出、下载配置** | [五、检查、导出与下载配置](#五检查导出与下载配置) | 看 Xray 是否运行、端口是否监听、导出客户端配置 |
-| **出问题要回滚** | [六、备份、回滚与故障处理](#六备份回滚与故障处理) | 改坏配置、Xray 启动失败、AI 分流或 DNS 写错 |
-| **完整菜单截图** | [七、完整菜单界面预览](#七完整菜单界面预览) | 了解 BASIC / PROTOCOL / CHECK / BACKUP / DOWNLOAD / RELAY / TUNE |
+| **发布前检查 / 远程订阅发布** | [五、v1.2.3 稳定增强工具链](#五v123-稳定增强工具链) | 防止私网 IP、YAML 错误、订阅发布覆盖错误、测试结果无法归档 |
+| **完整菜单截图** | [六、完整菜单界面预览](#六完整菜单界面预览) | 了解 BASIC / PROTOCOL / CHECK / BACKUP / DOWNLOAD / RELAY / TUNE |
 
 ---
 
 # 一、新 VPS 快速建站流程（v1.0 主流程）
-
-## 1. 一键下载并运行
 
 ```bash
 wget -O lazy-vps-menu.sh https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh
@@ -41,59 +38,43 @@ chmod +x lazy-vps-menu.sh
 bash lazy-vps-menu.sh
 ```
 
-一行命令：
+推荐执行顺序：
 
-```bash
-wget -O lazy-vps-menu.sh https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh && chmod +x lazy-vps-menu.sh && bash lazy-vps-menu.sh
+```text
+1) System Init
+2) Stable BBR
+3) Firewall Backend
+4) Xray Core
+5) Trojan 443
+8) Status
+10) Export
+16) HTTP On
+17) HTTP Off
 ```
 
-仅预览界面：
+FLClash 只导入：
 
-```bash
-bash lazy-vps-menu.sh --preview
+```text
+01_IMPORT_FLCLASH.yaml
 ```
 
-## 2. 新 VPS 推荐执行顺序
+Surge 导入：
 
-| 顺序 | 菜单 | 用途 |
-|---|---|---|
-| 1 | `1) System Init / 系统初始化` | 安装基础依赖、确认 SSH、配置防火墙、开启 BBR |
-| 2 | `2) Stable BBR / 开启 BBR+fq` | 开启 Linux 原生 BBR + fq，保持稳定 |
-| 3 | `3) Firewall Backend / 防火墙后端` | 选择 AUTO / UFW / NFT / IPTABLES / NONE |
-| 4 | `4) Xray Core / 安装或更新 Xray` | 安装或更新 Xray Core |
-| 5 | `5) Trojan 443 / 部署 T 协议` | 新手推荐，兼容性好 |
-| 6 | `8) Status / 状态检查` | 确认 Xray active、端口监听、防火墙放行 |
-| 7 | `10) Export / 导出配置包` | 导出 FLClash / Surge 配置 |
-| 8 | `16) HTTP On / 开启 HTTP 下载` | 临时开启网页下载配置 |
-| 9 | `17) HTTP Off / 停止 HTTP 下载` | 下载完成后关闭临时服务 |
+```text
+02_IMPORT_SURGE.conf
+```
 
 ---
 
 # 二、香港入口节点附挂小鸡使用 AI / GPT（v1.2 更新）
 
-适合这种场景：
-
-```text
-香港 VPS 速度很好，普通网站体验好；
-但是香港出口不能直接使用 GPT / Claude；
-手上另有日本 / 台湾 VPS 可以解锁 AI；
-希望普通网站继续香港出口，AI 域名走日本 / 台湾落地。
-```
-
-## 正确逻辑
+适合这种场景：香港 VPS 速度好，但香港出口不能 GPT / Claude；另有日本 / 台湾 VPS 可以作为 AI 落地。
 
 <p align="center">
   <img src="./docs/images/server-ai-routing-flow.png" width="860">
 </p>
 
-| 名称 | 含义 |
-|---|---|
-| 入口节点 / 入口 IP | 客户端实际连接的 VPS，例如香港节点 |
-| 普通出口 IP | 普通网站、ipinfo、普通测速看到的出口，通常仍是香港 |
-| AI 分流出口 IP | GPT / OpenAI / Claude / Gemini 被转交的出口，应显示日本 / 台湾 |
-| 落地小鸡 | 被入口 VPS 调用的日本 / 台湾 Trojan outbound，不需要出现在客户端配置里 |
-
-## 菜单怎么选？
+菜单：
 
 ```text
 22) Server AI Routing / 服务端AI分流
@@ -101,193 +82,115 @@ bash lazy-vps-menu.sh --preview
 24) AI Route Rollback / 回滚服务端AI分流
 ```
 
-> 香港节点要 GPT，用 `22) Server AI Routing`。  
-> 不要用 `25) Relay Forward` 去解决 GPT 域名分流问题。
-
-## 验证
-
-连接香港入口节点后，打开：
+验证：
 
 ```text
 https://ip.net.coffee/claude/
-```
-
-正常结果：
-
-```text
-普通出口：香港
-AI 出口：日本 / 台湾
-GPT / Claude 支持地区：正常
 ```
 
 ---
 
 # 三、媒体 DNS 解锁辅助（v1.2.2 更新）
 
-v1.2.2 新增 **Media DNS Unlock / 媒体 DNS 解锁辅助**，并修正导出同步问题。
+Media DNS 用于流媒体 DNS / CDN 解析辅助，不改变 VPS 出口 IP。
 
 <p align="center">
   <img src="./docs/images/media-dns-routing-flow.png" width="860">
 </p>
 
-## 功能定位
-
-Media DNS 适合：
-
-```text
-VPS 出口 IP 本身可用；
-但 Netflix / Disney+ / YouTube / TikTok 等流媒体出现 DNS 区域、CDN 分配不理想；
-接入商提供专用流媒体 DNS。
-```
-
-它不适合：
-
-```text
-平台主要判断 VPS 出口 IP 是否为机房、是否干净、是否支持地区。
-这种情况 DNS 改了也不一定有用，需要换出口 IP、服务端分流、端口中转或机场链。
-```
-
-## 内置模板
+内置模板：
 
 ```text
 Zouter Media DNS：151.243.229.229
 ```
 
-## 菜单入口
+菜单：
 
 ```text
 30) DNS Unlock / 媒体 DNS 解锁与导出同步
 ```
 
-子菜单：
-
-```text
-1) Zouter Media DNS / 使用 Zouter 流媒体 DNS：151.243.229.229
-2) Custom Media DNS / 自定义接入商流媒体 DNS
-3) Alice DNS Unlock / 第三方 DNS Alice 解锁脚本
-4) Show DNS / 查看当前 DNS 与解析测试
-5) Rollback DNS / 回滚 LazyVPS DNS 配置
-6) Test DNS / 指定域名解析对比
-```
-
-## v1.2.2 导出修正
-
-设置 Media DNS 后，再执行：
-
-```text
-10) Export / 导出配置包
-```
-
-导出的 `01_IMPORT_FLCLASH.yaml` 会自动同步当前 Media DNS：
-
-```yaml
-dns:
-  nameserver:
-    - 151.243.229.229
-    - 1.1.1.1
-    - 8.8.8.8
-```
-
-如果未设置 Media DNS，则继续使用默认 DNS。
+v1.2.2 起，设置 Media DNS 后，再执行 `10) Export`，导出的 FLClash 配置会同步当前 Media DNS。
 
 ---
 
 # 四、机场链 / 外购节点链路思路（可用于 AI / 媒体）
 
-除了 Media DNS，AI 和流媒体也可以通过 **机场链 / 外购节点策略组** 来处理。
+机场链适合：自建 VPS 做普通入口，AI / 流媒体域名交给外购机场节点或机场策略组。
 
 <p align="center">
   <img src="./docs/images/airport-chain-flow.png" width="860">
 </p>
 
-## 什么是机场链？
-
-简单说就是：
-
-```text
-自建 VPS 做入口 / 普通出口；
-AI 或流媒体域名交给外购机场节点或机场策略组；
-客户端规则按域名分流。
-```
-
-典型场景：
-
-```text
-普通网站：自建 VPS / 香港入口
-GPT / Claude：机场 AI 策略组
-Netflix / Disney+：机场流媒体策略组
-```
-
-## 与 Media DNS 的区别
+三种模式区别：
 
 <p align="center">
   <img src="./docs/images/unlock-mode-compare.png" width="860">
 </p>
 
-| 方式 | 解决什么 | 出口 IP 会不会变 |
+开源安全原则：脚本只提供模板，不内置机场订阅 URL、Token、节点密码。
+
+---
+
+# 五、v1.2.3 稳定增强工具链
+
+v1.2.3 的目标是解决配置越来越多之后的稳定性问题：公网 IP 误判、导出 YAML 错误、远程发布覆盖、测试无归档等。
+
+<p align="center">
+  <img src="./docs/images/v123-stability-toolkit-flow.png" width="860">
+</p>
+
+## 新增菜单
+
+| 菜单 | 功能 | 说明 |
 |---|---|---|
-| Server AI Routing | 香港入口不能 GPT，把 AI 域名转给日本 / 台湾小鸡 | AI 流量出口会变 |
-| Media DNS Unlock | 流媒体 DNS / CDN 解析错误 | 出口 IP 不一定变 |
-| Airport Chain / 机场链 | AI / 流媒体需要外购落地、家宽、低风控节点 | 指定域名出口会变 |
+| `35) Public IP Guard` | NAT 公网 IP 识别保护 | 避免 10.x / 172.16-31.x / 192.168.x / 100.64.x 被误用于下载链接 |
+| `36) Export Safety` | 导出配置安全检查 | 检查 YAML、重复节点、策略组引用、缺失字段 |
+| `37) Remote Publish` | 远程订阅发布 | 上传 sub.yaml / surge.conf 到远程订阅服务器并备份旧版 |
+| `38) Node Test Pack` | 节点体检包 | 生成 Markdown 与 CSV 体检报告 |
+| `39) NodeQuality Archive` | 酒神测试归档 | 运行 NodeQuality 并保存日志 |
+| `40) Airport Chain Template` | 机场链规则模板 | 生成 AI / 媒体机场链模板，不内置订阅 |
 
-## 开源安全原则
+## Public IP Guard
 
-脚本可以提供规则模板和说明，但不应该内置：
+<p align="center">
+  <img src="./docs/images/public-ip-guard-flow.png" width="860">
+</p>
 
-```text
-机场订阅 URL
-机场 Token
-节点 password
-个人私有域名
-```
-
-使用者应该自己在 FLClash / Mihomo / Surge 中导入机场订阅，再把 AI / 流媒体规则指向自己的策略组。
-
----
-
-# 五、检查、导出与下载配置
-
-常用菜单：
-
-```text
-8) Status / 状态检查
-9) Output / 查看节点输出
-10) Export / 导出配置包
-16) HTTP On / 开启 HTTP 下载
-17) HTTP Off / 停止 HTTP 下载
-```
-
----
-
-# 六、备份、回滚与故障处理
-
-常用菜单：
-
-```text
-11) Backup / 备份当前配置
-12) Rollback Xray / 回滚 Xray
-24) AI Route Rollback / 回滚服务端AI分流
-30) DNS Unlock → 5) Rollback DNS
-33) Diagnose / 一键诊断查修
-```
-
-查看 Xray 状态：
+快速命令：
 
 ```bash
-systemctl status xray --no-pager
+bash /root/lazy-vps-menu.sh --quick public-ip
 ```
 
-查看日志：
+## Remote Publish
+
+<p align="center">
+  <img src="./docs/images/remote-publish-flow.png" width="860">
+</p>
+
+快速命令：
 
 ```bash
-journalctl -u xray -n 80 --no-pager
+bash /root/lazy-vps-menu.sh --quick remote-publish
+```
+
+## Node Test Pack / NodeQuality Archive
+
+<p align="center">
+  <img src="./docs/images/node-test-archive-flow.png" width="860">
+</p>
+
+快速命令：
+
+```bash
+bash /root/lazy-vps-menu.sh --quick node-test
+bash /root/lazy-vps-menu.sh --quick nq-archive
 ```
 
 ---
 
-# 七、完整菜单界面预览
-
-v1.2.2 保留原有分区式菜单流程，并在 RELAY 分区明确服务端 AI 分流，在 TUNE 分区扩展媒体 DNS 解锁。
+# 六、完整菜单界面预览
 
 ## BASIC / 基础环境
 
