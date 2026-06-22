@@ -1,30 +1,45 @@
 # CHANGELOG
 
-## 正式 v1.2.5 · 界面精简与 VLESS 稳定版 — 2026-06-22
+## 正式 v1.2.6 · 图文说明与流程向导版 — 2026-06-22
 
-### 调整
+### README 优化
 
-- 主功能栏不再继续增加，避免 TUNE 页面过长。
-- 将 v1.2.3 稳定增强功能收纳到 `35) Stability Suite / 稳定增强工具箱`。
-- 将 v1.2.4 进阶模板功能收纳到 `36) Advanced Suite / 进阶模板工具箱`。
-- 主菜单直达编号减少为 `1-37`。
+- README 改为图文并茂结构。
+- 增加快速入口表，按用户需求直接跳转。
+- 增加实际界面截图：
+  - BASIC
+  - PROTOCOL
+  - CHECK
+  - BACKUP
+  - DOWNLOAD
+  - RELAY
+  - TUNE
+  - Advanced Suite
+  - VLESS Timeout Tips
+- 所有截图底部公网 IP 已脱敏。
+- 保留核心逻辑图：
+  - Server AI Routing
+  - Media DNS
+  - Airport Chain
+  - VLESS Vision / Advanced Export
 
-### 新增
+### 脚本优化
 
-- 新增 `VLESS Timeout Tips / VLESS 间歇 Timeout 排查建议`。
-- 说明 VLESS Reality Vision 偶发 Timeout 的常见原因：
-  - 本地网络 / 5G CPE 抖动
-  - 运营商路由瞬时波动
-  - Reality 握手偶发失败
-  - 客户端内核版本兼容问题
-  - tcp-concurrent 在个别环境下可能波动
+- 新增 `Guided Workflows / 快速流程向导`。
+- 路径：`35) Stability Suite → 1) Guided Workflows`
+- 把常用流程收进互动菜单，减少用户跳出菜单手动执行命令。
+- 新增流程：
+  - 新 VPS 快速建站
+  - 导出与下载
+  - 香港入口 + AI 小鸡
+  - Media DNS 流媒体辅助
+  - VLESS 稳定性检查
+  - 远程订阅发布
 
 ### 保留
 
-- VLESS Reality Vision 支持。
-- 进阶 FLClash 导出模板。
-- 成熟策略组模板。
-- 节点分类命名整理。
-- 协议导出体检。
-- Media DNS 与 Export 同步。
-- Server AI Routing。
+- v1.2.5 主菜单精简。
+- v1.2.4 VLESS Reality Vision 与进阶模板。
+- v1.2.3 稳定增强。
+- v1.2.2 Media DNS 导出同步。
+- v1.2 Server AI Routing。

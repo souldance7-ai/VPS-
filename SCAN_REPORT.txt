@@ -2,16 +2,14 @@ bash -n syntax ok: True
 syntax stderr:
 
 
-grep:
-5:#  Formal Version: v1.2.5
-46:VER="正式 v1.2.5 · 界面精简与 VLESS 稳定版"
-2968:    section "Stability Suite / 稳定增强工具箱"
-2992:    section "Advanced Suite / 进阶模板工具箱"
-3001:    printf "  7) VLESS Timeout Tips / VLESS 间歇 Timeout 排查建议\n"
-3019:  section "VLESS Timeout Tips / VLESS 间歇 Timeout 排查建议"
-3101:"Stability Suite / 稳定增强工具箱"
-3102:"Advanced Suite / 进阶模板工具箱"
-3297:  printf "${YLW}操作：${R}${B}↑↓${R} 选择功能  ${B}←→${R} 切换分区  ${B}Enter${R} 执行  ${B}1-37${R} 直达  ${B}Q${R} 退出\n\n"
-
-
 Sensitive literal hits: []
+
+README:
+- 图文并茂
+- 含快速指令
+- 含快速跳页
+- 含面板对应位置
+- 含建议快速执行顺序
+- 含实际界面截图，公网 IP 已脱敏
+- 含逻辑图
+- 含交互菜单内的流程向导

@@ -2,7 +2,7 @@
 #
 # ==============================================================================
 #  LazyVPS Quick Menu Pack / 懒人建 VPS 快速菜单包
-#  Formal Version: v1.2.5
+#  Formal Version: v1.2.6
 #  Update Date: 2026-06-22
 # ==============================================================================
 #
@@ -43,7 +43,7 @@
 set -o pipefail
 
 APP="懒人建 VPS 快速菜单包"
-VER="正式 v1.2.5 · 界面精简与 VLESS 稳定版"
+VER="正式 v1.2.6 · 图文说明与流程向导版"
 UPDATE_DATE="2026-06-22"
 
 ROOT="/opt/lazy-vps-menu"
@@ -471,7 +471,7 @@ banner(){
   cover_line "${YLW}                   SUN  .  SAND${R}${WHT}  .  ${CYN}CODE${R}${WHT}  .  ${MAG}RELAX${R}"
 
   printf "${CYN}└────────────────────────────────────────────────────────────────────────────┘${R}\n"
-  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2.5${R}  ${DIM}2026-06-22${R}\n"
+  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2.6${R}  ${DIM}2026-06-22${R}\n"
   printf "   ${CYN}少折腾${R}  ·  ${MAG}快部署${R}  ·  ${GRN}可回滚${R}  ·  ${YLW}可分享${R}\n"
   solid_line "$CYN"
 }
@@ -2963,24 +2963,85 @@ EOF
 }
 
 
+
+guided_workflows(){
+  while true; do
+    section "Guided Workflows / 快速流程向导"
+    note "这里把常用流程收进互动菜单，不需要跳出菜单手动执行命令。"
+    echo
+    printf "  1) 新 VPS 快速建站流程：初始化 → BBR → 防火墙 → Xray\n"
+    printf "  2) 导出与下载流程：Export → Export Safety → HTTP On\n"
+    printf "  3) 香港入口 + AI 小鸡流程：Server AI Routing → AI Route Show\n"
+    printf "  4) Media DNS 流媒体辅助流程：DNS Unlock → Show DNS → Export\n"
+    printf "  5) VLESS 稳定性检查流程：Protocol Lint → Node Test → Status\n"
+    printf "  6) 远程订阅发布流程：Export Safety → Remote Publish\n"
+    printf "  0) 返回\n"
+    read -rp "序号: " ans
+    case "$ans" in
+      1)
+        note "建议顺序：1) System Init → 2) Stable BBR → 3) Firewall Backend → 4) Xray Core → 5/6/7 部署协议。"
+        read -rp "是否现在依次执行初始化、BBR、防火墙、Xray Core？[y/N]: " y
+        if [[ "$y" =~ ^[Yy]$ ]]; then
+          init_system; bbr; ufw_basic; install_xray
+          ok "基础环境已执行完毕。请回 PROTOCOL 分区选择 5 Trojan / 6 VLESS / 7 Hysteria2。"
+        fi
+        pause ;;
+      2)
+        note "导出流程会先生成配置，再做安全检查，最后可开启 HTTP 下载。"
+        export_pkg
+        export_safety_check || true
+        read -rp "是否开启 HTTP 下载？[y/N]: " y
+        [[ "$y" =~ ^[Yy]$ ]] && http_start
+        pause ;;
+      3)
+        note "适合香港入口节点速度好，但 GPT/Claude 需要日本/台湾落地。"
+        ai_service_route_apply
+        ai_service_route_show
+        pause ;;
+      4)
+        note "适合 Zouter / 自定义 Media DNS，用于流媒体 DNS/CDN 解析辅助。"
+        run_dns_unlock
+        media_dns_show || true
+        read -rp "是否重新导出 FLClash，使 Media DNS 同步到配置？[y/N]: " y
+        [[ "$y" =~ ^[Yy]$ ]] && export_pkg
+        pause ;;
+      5)
+        note "适合 VLESS Reality 偶尔 Timeout 或节点不稳定时检查。"
+        protocol_export_lint || true
+        node_test_pack || true
+        status_check
+        pause ;;
+      6)
+        note "适合把 sub.yaml / surge.conf 发布到远程订阅服务器。"
+        export_safety_check || true
+        remote_publish
+        pause ;;
+      0|"") return ;;
+      *) warn "输入无效。" ;;
+    esac
+  done
+}
+
 stability_suite(){
   while true; do
     section "Stability Suite / 稳定增强工具箱"
     note "把 v1.2.3 的长功能项收纳为子菜单，主界面保持简洁。"
     echo
-    printf "  1) Public IP Guard / NAT 公网 IP 识别保护\n"
-    printf "  2) Export Safety / 导出配置安全检查\n"
-    printf "  3) Remote Publish / 远程订阅发布\n"
-    printf "  4) Node Test Pack / 节点体检包\n"
-    printf "  5) NodeQuality Archive / 酒神测试归档\n"
+    printf "  1) Guided Workflows / 快速流程向导\n"
+    printf "  2) Public IP Guard / NAT 公网 IP 识别保护\n"
+    printf "  3) Export Safety / 导出配置安全检查\n"
+    printf "  4) Remote Publish / 远程订阅发布\n"
+    printf "  5) Node Test Pack / 节点体检包\n"
+    printf "  6) NodeQuality Archive / 酒神测试归档\n"
     printf "  0) 返回\n"
     read -rp "序号: " ans
     case "$ans" in
-      1) public_ip_guard; pause ;;
-      2) export_safety_check; pause ;;
-      3) remote_publish; pause ;;
-      4) node_test_pack; pause ;;
-      5) nodequality_archive; pause ;;
+      1) guided_workflows; pause ;;
+      2) public_ip_guard; pause ;;
+      3) export_safety_check; pause ;;
+      4) remote_publish; pause ;;
+      5) node_test_pack; pause ;;
+      6) nodequality_archive; pause ;;
       0|"") return ;;
       *) warn "输入无效。" ;;
     esac
@@ -3138,7 +3199,7 @@ DESCS=(
 "第三方 TCP 参数调优工具"
 "检查服务/日志/配置并可重建导入文件"
 "显示当前服务端端口/SNI/密码，避免误用旧配置"
-"收纳 Public IP、Export Safety、Remote Publish、Node Test、NodeQuality"
+"收纳流程向导、Public IP、Export Safety、Remote Publish、Node Test、NodeQuality"
 "收纳机场链、进阶导出、策略组、节点分类、协议体检、VLESS说明"
 "退出菜单"
 )
