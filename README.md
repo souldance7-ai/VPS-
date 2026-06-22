@@ -5,32 +5,19 @@
 </p>
 
 <p align="center">
-  <b>少折腾 · 快部署 · 可回滚 · 可分享 · 支持 VLESS Reality Vision 与进阶 FLClash 模板</b>
+  <b>少折腾 · 快部署 · 可回滚 · 可分享 · 菜单精简 · 支持 VLESS Reality Vision 稳定排查</b>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-v1.2.4-blue">
+  <img src="https://img.shields.io/badge/Version-v1.2.5-blue">
   <img src="https://img.shields.io/badge/Shell-Bash-green">
-  <img src="https://img.shields.io/badge/VLESS-Reality_Vision-orange">
-  <img src="https://img.shields.io/badge/Advanced_FLClash-Template-brightgreen">
+  <img src="https://img.shields.io/badge/UI-Compact-orange">
+  <img src="https://img.shields.io/badge/VLESS-Stability-brightgreen">
 </p>
 
 ---
 
-## 你想做什么？先看这里
-
-| 需求 | 直接看哪一段 | 适合场景 |
-|---|---|---|
-| 新 VPS 快速建站 / 建节点 | 一、新 VPS 快速建站流程 | 新买 VPS，要快速部署 Trojan / VLESS Reality / Hysteria2 |
-| VLESS Reality Vision | 二、VLESS Reality Vision 支持 | 想用更现代的 VLESS Reality Vision 模板 |
-| 进阶 FLClash 总配置 | 三、进阶 FLClash 导出模板 | 需要成熟策略组、高级 DNS、AI/媒体分类 |
-| 节点命名与分类 | 四、节点命名与分类整理 | 自建 VPS、外购 VPN、机场节点越来越多 |
-| 协议导出体检 | 五、协议导出体检 | 检查 VLESS/Trojan/Hysteria2 缺字段、重复名、策略组引用 |
-| AI / 媒体解锁 | 六、服务端 AI 分流、Media DNS、机场链 | 香港入口 + 日本小鸡 / Zouter DNS / 外购机场链 |
-
----
-
-# 一、新 VPS 快速建站流程
+## 快速使用
 
 ```bash
 wget -O lazy-vps-menu.sh https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh
@@ -38,190 +25,121 @@ chmod +x lazy-vps-menu.sh
 bash lazy-vps-menu.sh
 ```
 
-推荐流程：
-
-```text
-1) System Init
-2) Stable BBR
-3) Firewall Backend
-4) Xray Core
-5) Trojan 443 或 6) VLESS Reality Vision
-8) Status
-10) Export
-41) Advanced Export
-44) Protocol Lint
-```
-
 ---
 
-# 二、VLESS Reality Vision 支持
+## v1.2.5 更新重点
 
-v1.2.4 将原本 Reality 功能明确升级为：
+这版主要不是继续堆功能，而是整理 v1.2.4 后主菜单过长的问题。
 
-```text
-6) VLESS Reality Vision / 部署 VLESS-R 协议
-```
-
-核心字段：
-
-```yaml
-type: vless
-tls: true
-flow: xtls-rprx-vision
-servername: www.microsoft.com
-reality-opts:
-  public-key: <public-key>
-  short-id: <short-id>
-client-fingerprint: chrome
-```
-
-<p align="center">
-  <img src="./docs/images/vless-vision-advanced-flow.png" width="860">
-</p>
-
-说明：
-
-- 适合新版 Mihomo / FLClash。
-- 若导入后 Timeout，先运行 `44) Protocol Lint` 检查字段。
-- Surge 对 VLESS Reality 支持受版本影响，建议以 FLClash / Mihomo 为主测试。
-
----
-
-# 三、进阶 FLClash 导出模板
-
-基础导出仍然是：
-
-```text
-10) Export / 导出配置包
-```
-
-v1.2.4 新增：
-
-```text
-41) Advanced Export / 进阶 FLClash 导出
-```
-
-会生成：
-
-```text
-/opt/lazy-vps-menu/outputs/01_IMPORT_FLCLASH_ADVANCED.yaml
-```
-
-<p align="center">
-  <img src="./docs/images/advanced-flclash-template-flow.png" width="860">
-</p>
-
-进阶模板包含：
-
-- fake-ip-filter
-- fallback DNS / fallback-filter
-- AUTO / AI / 流媒体 / Apple / Google / Microsoft / Telegram / Game / FINAL
-- 自建 VPS / 外购 VPN / 机场链策略组
-- Media DNS 自动同步
-
----
-
-# 四、节点命名与分类整理
-
-新增：
-
-```text
-43) Node Classify / 节点分类命名整理
-```
-
-会输出：
-
-```text
-/opt/lazy-vps-menu/reports/node_classify_时间.csv
-/opt/lazy-vps-menu/reports/node_classify_时间.md
-```
-
-推荐命名：
-
-```text
-自建 VPS：
-🇭🇰 香港-Zouter-T协议
-🇯🇵 日本-光维云01-T协议
-
-外购 VPN：
-🇯🇵-VK-纯度10%-JP-SH-11
-🇹🇼-wget企业-纯度15%-台湾02
-
-机场节点：
-🇭🇰 HK-Optim-01-VLESS
-🇯🇵 JP-Optim-01-VLESS
-```
-
----
-
-# 五、协议导出体检
-
-新增：
-
-```text
-44) Protocol Lint / 协议导出体检
-```
-
-检查内容：
-
-| 协议 | 检查字段 |
+| 更新 | 说明 |
 |---|---|
-| VLESS Reality | uuid / tls / flow / servername / public-key / short-id / client-fingerprint |
-| Trojan | server / port / password / sni |
-| Hysteria2 | server / port / password / sni |
-| 通用 | 节点名重复、字段为空、YAML 解析失败 |
+| 菜单精简 | 主功能栏不再继续增加，TUNE 分区收纳为两个工具箱 |
+| 稳定增强工具箱 | Public IP Guard / Export Safety / Remote Publish / Node Test / NodeQuality Archive |
+| 进阶模板工具箱 | Airport Chain / Advanced Export / Strategy Template / Node Classify / Protocol Lint / VLESS Guide |
+| VLESS Timeout Tips | 增加 VLESS Reality Vision 偶发 Timeout 排查说明 |
+| VLESS 建议 | 对偶发 Timeout 的 Reality 节点，优先做协议体检、日志检查和客户端内核版本确认 |
 
 ---
 
-# 六、服务端 AI 分流、Media DNS、机场链
+## 当前主菜单结构
 
-保留原有：
-
-```text
-22) Server AI Routing / 服务端AI分流
-30) DNS Unlock / 媒体 DNS 解锁与导出同步
-40) Airport Chain Template / 机场链规则模板
-42) Strategy Template / 成熟策略组模板
-```
-
-三种方式区别：
-
-| 方式 | 解决什么 | 出口是否改变 |
-|---|---|---|
-| Server AI Routing | 香港入口不能 GPT，把 AI 域名转到日本/台湾小鸡 | AI 出口会变 |
-| Media DNS Unlock | 流媒体 DNS / CDN 解析错误 | 出口 IP 不一定变 |
-| Airport Chain | AI / 媒体走外购机场策略组或纯净节点 | 指定域名出口会变 |
+| 分区 | 内容 |
+|---|---|
+| BASIC | 初始化、BBR、防火墙、Xray Core |
+| PROTOCOL | Trojan、VLESS Reality Vision、Hysteria2 |
+| CHECK | Status、Output、Export |
+| BACKUP | Backup、Rollback、Stop |
+| DOWNLOAD | HTTP 下载、NodeQuality、Local/Remote Merge |
+| RELAY | AI 规则、服务端 AI 分流、端口中转 |
+| TUNE | BBRv3、DNS Unlock、NetSpeed、TCP Tune、Diagnose、Current Trojan、两个工具箱 |
 
 ---
 
-# 七、菜单编号变化
+## TUNE 分区新布局
 
-v1.2.4 新增：
+原本 v1.2.4 的 TUNE 页面太长，v1.2.5 改为：
 
 ```text
-41) Advanced Export / 进阶 FLClash 导出
-42) Strategy Template / 成熟策略组模板
-43) Node Classify / 节点分类命名整理
-44) Protocol Lint / 协议导出体检
-45) VLESS Vision Guide / VLESS Reality Vision 说明
-46) Exit / 退出
+29) BBR v3
+30) DNS Unlock
+31) NetSpeed
+32) TCP Tune
+33) Diagnose
+34) Current Trojan
+35) Stability Suite
+36) Advanced Suite
+37) Exit
 ```
 
-快速命令：
+### 35) Stability Suite / 稳定增强工具箱
+
+包含：
+
+```text
+1) Public IP Guard
+2) Export Safety
+3) Remote Publish
+4) Node Test Pack
+5) NodeQuality Archive
+```
+
+### 36) Advanced Suite / 进阶模板工具箱
+
+包含：
+
+```text
+1) Airport Chain Template
+2) Advanced Export
+3) Strategy Template
+4) Node Classify
+5) Protocol Lint
+6) VLESS Vision Guide
+7) VLESS Timeout Tips
+```
+
+---
+
+## VLESS Reality Vision 偶发 Timeout 怎么看？
+
+如果节点多数时候可连，偶尔 Timeout，通常不是字段完全错。优先检查：
 
 ```bash
-bash /root/lazy-vps-menu.sh --quick advanced-export
-bash /root/lazy-vps-menu.sh --quick strategy-template
-bash /root/lazy-vps-menu.sh --quick node-classify
 bash /root/lazy-vps-menu.sh --quick protocol-lint
-bash /root/lazy-vps-menu.sh --quick vless-guide
+bash /root/lazy-vps-menu.sh --quick node-test
+systemctl status xray --no-pager
+journalctl -u xray -n 80 --no-pager
 ```
+
+常见原因：
+
+```text
+1. 5G CPE / 本地网络抖动
+2. 运营商路由瞬时波动
+3. Reality 握手偶发失败
+4. 客户端内核版本对 VLESS Reality 支持不稳定
+5. tcp-concurrent 在个别网络环境下可能带来波动，可临时对比关闭
+```
+
+如果 nPerf / TANet 能跑到数百 Mbps，但节点偶尔 Timeout，多半是握手或路由瞬时问题，不是带宽不足。
+
+---
+
+## 版本主线
+
+| 版本 | 重点 |
+|---|---|
+| v1.0 | 新 VPS 快速建站 |
+| v1.2 | 服务端 AI 分流 |
+| v1.2.2 | Media DNS 与 Export 同步 |
+| v1.2.3 | Public IP Guard / Remote Publish / Node Test |
+| v1.2.4 | VLESS Reality Vision / Advanced Export |
+| v1.2.5 | 主界面精简 / 工具箱化 / VLESS Timeout 排查 |
 
 ---
 
 ## 分享安全
 
-本项目不内置以下敏感信息：
+本项目不内置：
 
 ```text
 VPS IP

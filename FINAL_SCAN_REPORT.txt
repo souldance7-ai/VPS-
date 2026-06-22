@@ -2,26 +2,16 @@ bash -n syntax ok: True
 syntax stderr:
 
 
-Version / feature grep:
-5:#  Formal Version: v1.2.4
-46:VER="正式 v1.2.4 · VLESS Vision 与进阶模板版"
-2560:  section "Advanced Strategy Template / 成熟策略组模板"
-2820:  section "Node Classify / 节点分类与命名整理"
-2824:  [[ -f "$file" ]] || { err "未找到可分析的 FLClash 配置，请先执行 10) Export 或 41) Advanced Export。"; return 1; }
-2929:  section "VLESS Reality Vision / 支持说明"
-2932:# VLESS Reality Vision 支持说明
-2934:LazyVPS 的 `6) VLESS Reality Vision / 部署 VLESS-R 协议` 会生成：
-2958:- 若导入后 Timeout，请先执行 `44) Protocol Lint` 检查字段，再检查服务端 Xray 日志。
-2971:"VLESS Reality Vision / 部署 VLESS-R 协议"
-3006:"Advanced Export / 进阶 FLClash 导出"
-3007:"Strategy Template / 成熟策略组模板"
-3008:"Node Classify / 节点分类命名整理"
-3009:"Protocol Lint / 协议导出体检"
-3010:"VLESS Vision Guide / VLESS Reality Vision 说明"
-3020:"VLESS Reality Vision，含 flow/public-key/short-id/client-fingerprint"
-3059:"说明 VLESS Reality Vision 字段和兼容注意事项"
+grep:
+5:#  Formal Version: v1.2.5
+46:VER="正式 v1.2.5 · 界面精简与 VLESS 稳定版"
+2968:    section "Stability Suite / 稳定增强工具箱"
+2992:    section "Advanced Suite / 进阶模板工具箱"
+3001:    printf "  7) VLESS Timeout Tips / VLESS 间歇 Timeout 排查建议\n"
+3019:  section "VLESS Timeout Tips / VLESS 间歇 Timeout 排查建议"
+3101:"Stability Suite / 稳定增强工具箱"
+3102:"Advanced Suite / 进阶模板工具箱"
+3297:  printf "${YLW}操作：${R}${B}↑↓${R} 选择功能  ${B}←→${R} 切换分区  ${B}Enter${R} 执行  ${B}1-37${R} 直达  ${B}Q${R} 退出\n\n"
 
 
 Sensitive literal hits: []
-IPv4 constants found: ['0.0.0.0', '1.1.1.1', '119.29.29.29', '127.0.0.1', '151.243.229.229', '198.18.0.1', '223.5.5.5', '240.0.0.0', '8.8.8.8']
-Unexpected IPv4 constants: ['240.0.0.0']

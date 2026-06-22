@@ -2,7 +2,7 @@
 #
 # ==============================================================================
 #  LazyVPS Quick Menu Pack / 懒人建 VPS 快速菜单包
-#  Formal Version: v1.2.4
+#  Formal Version: v1.2.5
 #  Update Date: 2026-06-22
 # ==============================================================================
 #
@@ -43,7 +43,7 @@
 set -o pipefail
 
 APP="懒人建 VPS 快速菜单包"
-VER="正式 v1.2.4 · VLESS Vision 与进阶模板版"
+VER="正式 v1.2.5 · 界面精简与 VLESS 稳定版"
 UPDATE_DATE="2026-06-22"
 
 ROOT="/opt/lazy-vps-menu"
@@ -471,7 +471,7 @@ banner(){
   cover_line "${YLW}                   SUN  .  SAND${R}${WHT}  .  ${CYN}CODE${R}${WHT}  .  ${MAG}RELAX${R}"
 
   printf "${CYN}└────────────────────────────────────────────────────────────────────────────┘${R}\n"
-  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2.4${R}  ${DIM}2026-06-22${R}\n"
+  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2.5${R}  ${DIM}2026-06-22${R}\n"
   printf "   ${CYN}少折腾${R}  ·  ${MAG}快部署${R}  ·  ${GRN}可回滚${R}  ·  ${YLW}可分享${R}\n"
   solid_line "$CYN"
 }
@@ -2962,6 +2962,107 @@ EOF
   sed -n '1,80p' "$md"
 }
 
+
+stability_suite(){
+  while true; do
+    section "Stability Suite / 稳定增强工具箱"
+    note "把 v1.2.3 的长功能项收纳为子菜单，主界面保持简洁。"
+    echo
+    printf "  1) Public IP Guard / NAT 公网 IP 识别保护\n"
+    printf "  2) Export Safety / 导出配置安全检查\n"
+    printf "  3) Remote Publish / 远程订阅发布\n"
+    printf "  4) Node Test Pack / 节点体检包\n"
+    printf "  5) NodeQuality Archive / 酒神测试归档\n"
+    printf "  0) 返回\n"
+    read -rp "序号: " ans
+    case "$ans" in
+      1) public_ip_guard; pause ;;
+      2) export_safety_check; pause ;;
+      3) remote_publish; pause ;;
+      4) node_test_pack; pause ;;
+      5) nodequality_archive; pause ;;
+      0|"") return ;;
+      *) warn "输入无效。" ;;
+    esac
+  done
+}
+
+advanced_suite(){
+  while true; do
+    section "Advanced Suite / 进阶模板工具箱"
+    note "把 v1.2.4 的进阶模板、分类、体检功能收纳为子菜单。"
+    echo
+    printf "  1) Airport Chain Template / 机场链规则模板\n"
+    printf "  2) Advanced Export / 进阶 FLClash 导出\n"
+    printf "  3) Strategy Template / 成熟策略组模板\n"
+    printf "  4) Node Classify / 节点分类命名整理\n"
+    printf "  5) Protocol Lint / 协议导出体检\n"
+    printf "  6) VLESS Vision Guide / VLESS Reality Vision 说明\n"
+    printf "  7) VLESS Timeout Tips / VLESS 间歇 Timeout 排查建议\n"
+    printf "  0) 返回\n"
+    read -rp "序号: " ans
+    case "$ans" in
+      1) airport_chain_template; pause ;;
+      2) export_advanced_flclash; pause ;;
+      3) advanced_strategy_template; pause ;;
+      4) node_classify_rename; pause ;;
+      5) protocol_export_lint; pause ;;
+      6) vless_vision_guide; pause ;;
+      7) vless_timeout_tips; pause ;;
+      0|"") return ;;
+      *) warn "输入无效。" ;;
+    esac
+  done
+}
+
+vless_timeout_tips(){
+  section "VLESS Timeout Tips / VLESS 间歇 Timeout 排查建议"
+  local md="$OUT/vless_timeout_tips.md"
+  cat > "$md" <<'EOF'
+# VLESS Reality Vision 间歇 Timeout 排查建议
+
+## 先判断
+
+如果节点多数时候可连接，但偶尔 Timeout，通常不是字段完全错误，而是以下几类问题：
+
+1. 本地网络抖动、5G CPE 抖动、运营商路由波动。
+2. 服务端 CPU / 内存没问题，但链路存在瞬时丢包。
+3. Reality 握手目标、SNI、public-key、short-id、client-fingerprint 组合可用但偶发失败。
+4. 客户端内核版本或 VLESS Reality 支持不稳定。
+5. 全局 `tcp-concurrent: true` 在部分网络环境下可能带来连接波动，可用稳定模板对比。
+
+## 推荐检查顺序
+
+```bash
+bash /root/lazy-vps-menu.sh --quick protocol-lint
+bash /root/lazy-vps-menu.sh --quick node-test
+systemctl status xray --no-pager
+journalctl -u xray -n 80 --no-pager
+```
+
+## 客户端建议
+
+- FLClash / Mihomo 尽量使用新版。
+- 保持：
+  - `type: vless`
+  - `tls: true`
+  - `flow: xtls-rprx-vision`
+  - `client-fingerprint: chrome`
+  - `reality-opts.public-key`
+  - `reality-opts.short-id`
+- 如果偶发 Timeout：
+  - 先重新测速，不要只看单次 Timeout。
+  - 对比 `01_IMPORT_FLCLASH.yaml` 与 `01_IMPORT_FLCLASH_ADVANCED.yaml`。
+  - 如有需要，可将全局 `tcp-concurrent` 临时改为 `false` 做对比。
+
+## 速度测试解读
+
+如果 nPerf / TANet 能达到数百 Mbps，但节点偶发 Timeout，多半是握手或路由瞬时问题，不是带宽不足。
+EOF
+  ok "已生成排查建议：$md"
+  sed -n '1,100p' "$md"
+}
+
 ITEMS=(
 "System Init / 系统初始化"
 "Stable BBR / 开启 BBR+fq"
@@ -2997,17 +3098,8 @@ ITEMS=(
 "TCP Tune / TCP 窗口调优"
 "Diagnose / 一键诊断查修"
 "Current Trojan / 查看当前 T 参数"
-"Public IP Guard / NAT 公网 IP 识别保护"
-"Export Safety / 导出配置安全检查"
-"Remote Publish / 远程订阅发布"
-"Node Test Pack / 节点体检包"
-"NodeQuality Archive / 酒神测试归档"
-"Airport Chain Template / 机场链规则模板"
-"Advanced Export / 进阶 FLClash 导出"
-"Strategy Template / 成熟策略组模板"
-"Node Classify / 节点分类命名整理"
-"Protocol Lint / 协议导出体检"
-"VLESS Vision Guide / VLESS Reality Vision 说明"
+"Stability Suite / 稳定增强工具箱"
+"Advanced Suite / 进阶模板工具箱"
 "Exit / 退出"
 )
 
@@ -3046,17 +3138,8 @@ DESCS=(
 "第三方 TCP 参数调优工具"
 "检查服务/日志/配置并可重建导入文件"
 "显示当前服务端端口/SNI/密码，避免误用旧配置"
-"检测 NAT / 私网 IP，手动设置真实公网 IP / 域名"
-"检查 YAML、重复节点、策略组引用、缺失字段"
-"发布 sub.yaml / surge.conf 到远程订阅服务器并备份"
-"生成节点体检报告与 CSV"
-"运行 NodeQuality 并保存日志归档"
-"生成 AI / 媒体机场链策略组模板，不内置订阅"
-"生成进阶 FLClash 配置，含成熟 DNS 与策略组"
-"生成成熟机场式策略组模板"
-"分析节点分类并给出统一命名建议"
-"检查 VLESS / Trojan / Hysteria2 导出字段完整性"
-"说明 VLESS Reality Vision 字段和兼容注意事项"
+"收纳 Public IP、Export Safety、Remote Publish、Node Test、NodeQuality"
+"收纳机场链、进阶导出、策略组、节点分类、协议体检、VLESS说明"
 "退出菜单"
 )
 
@@ -3096,18 +3179,9 @@ run_choice(){
     32) run_tcp_window ;;
     33) diagnose_repair ;;
     34) view_current_trojan ;;
-    35) public_ip_guard ;;
-    36) export_safety_check ;;
-    37) remote_publish ;;
-    38) node_test_pack ;;
-    39) nodequality_archive ;;
-    40) airport_chain_template ;;
-    41) export_advanced_flclash ;;
-    42) advanced_strategy_template ;;
-    43) node_classify_rename ;;
-    44) protocol_export_lint ;;
-    45) vless_vision_guide ;;
-    46) exit 0 ;;
+    35) stability_suite ;;
+    36) advanced_suite ;;
+    37) exit 0 ;;
   esac
 }
 
@@ -3133,8 +3207,8 @@ CAT_CN=(
 "退出"
 )
 
-CAT_START=(1 5 8 11 16 21 29 46)
-CAT_END=(4 7 10 15 20 28 45 46)
+CAT_START=(1 5 8 11 16 21 29 37)
+CAT_END=(4 7 10 15 20 28 36 37)
 CAT_FG=(45 213 82 220 75 207 208 196)
 CAT_BG=(24 90 22 58 18 53 94 52)
 
@@ -3220,7 +3294,7 @@ draw_menu(){
 
   banner
 
-  printf "${YLW}操作：${R}${B}↑↓${R} 选择功能  ${B}←→${R} 切换分区  ${B}Enter${R} 执行  ${B}1-46${R} 直达  ${B}Q${R} 退出\n\n"
+  printf "${YLW}操作：${R}${B}↑↓${R} 选择功能  ${B}←→${R} 切换分区  ${B}Enter${R} 执行  ${B}1-37${R} 直达  ${B}Q${R} 退出\n\n"
 
   draw_tabs "$cat"
   draw_panel "$cat" "$selected"
@@ -3242,7 +3316,7 @@ menu(){
     if [[ "$key" == "" ]]; then
       clear
       run_choice "$selected"
-      [[ "$selected" -ne 46 ]] && pause
+      [[ "$selected" -ne 37 ]] && pause
 
     elif [[ "$key" =~ [0-9] ]]; then
       num="$key"
@@ -3252,12 +3326,12 @@ menu(){
         num="${num}${key2}"
       done
 
-      if [[ "$num" =~ ^[0-9]+$ ]] && ((num>=1 && num<=46)); then
+      if [[ "$num" =~ ^[0-9]+$ ]] && ((num>=1 && num<=37)); then
         selected="$num"
         cat="$(find_category "$selected")"
         clear
         run_choice "$selected"
-        [[ "$selected" -ne 46 ]] && pause
+        [[ "$selected" -ne 37 ]] && pause
       fi
 
     elif [[ "$key" == "q" || "$key" == "Q" ]]; then
@@ -3334,7 +3408,7 @@ quick(){
     node-classify|rename-nodes) node_classify_rename ;;
     protocol-lint|proto-lint|vision-lint) protocol_export_lint ;;
     vless-guide|vision-guide) vless_vision_guide ;;
-    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|media-dns|zouter-dns|dns-show|dns-rollback|dns-test|tcpx|tcp-window|diagnose|current|public-ip|export-check|remote-publish|node-test|nq-archive|airport-chain|advanced-export|strategy-template|node-classify|protocol-lint|vless-guide" ;;
+    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|media-dns|zouter-dns|dns-show|dns-rollback|dns-test|tcpx|tcp-window|diagnose|current|public-ip|export-check|remote-publish|node-test|nq-archive|airport-chain|advanced-export|strategy-template|node-classify|protocol-lint|vless-guide|vless-timeout" ;;
   esac
 }
 

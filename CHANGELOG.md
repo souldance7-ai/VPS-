@@ -1,35 +1,30 @@
 # CHANGELOG
 
-## 正式 v1.2.4 · VLESS Vision 与进阶模板版 — 2026-06-22
+## 正式 v1.2.5 · 界面精简与 VLESS 稳定版 — 2026-06-22
+
+### 调整
+
+- 主功能栏不再继续增加，避免 TUNE 页面过长。
+- 将 v1.2.3 稳定增强功能收纳到 `35) Stability Suite / 稳定增强工具箱`。
+- 将 v1.2.4 进阶模板功能收纳到 `36) Advanced Suite / 进阶模板工具箱`。
+- 主菜单直达编号减少为 `1-37`。
 
 ### 新增
 
-- 明确升级 `6) Reality` 为 `VLESS Reality Vision / 部署 VLESS-R 协议`。
-- 新增 `41) Advanced Export / 进阶 FLClash 导出`。
-- 新增 `42) Strategy Template / 成熟策略组模板`。
-- 新增 `43) Node Classify / 节点分类命名整理`。
-- 新增 `44) Protocol Lint / 协议导出体检`。
-- 新增 `45) VLESS Vision Guide / VLESS Reality Vision 说明`。
-- 新增 VLESS Reality Vision 字段检查：
-  - uuid
-  - tls
-  - flow=xtls-rprx-vision
-  - servername
-  - reality-opts.public-key
-  - reality-opts.short-id
-  - client-fingerprint
-- 新增进阶 FLClash 模板：
-  - fake-ip-filter
-  - fallback DNS
-  - AUTO / AI / Media / Apple / Google / Microsoft / Telegram / Game / FINAL
-  - 自建 VPS / 外购 VPN / 机场链策略组
-- 新增节点分类与命名建议报告。
-- 新增脱敏图：
-  - vless-vision-advanced-flow.png
-  - advanced-flclash-template-flow.png
+- 新增 `VLESS Timeout Tips / VLESS 间歇 Timeout 排查建议`。
+- 说明 VLESS Reality Vision 偶发 Timeout 的常见原因：
+  - 本地网络 / 5G CPE 抖动
+  - 运营商路由瞬时波动
+  - Reality 握手偶发失败
+  - 客户端内核版本兼容问题
+  - tcp-concurrent 在个别环境下可能波动
 
 ### 保留
 
-- v1.2 服务端 AI 分流。
-- v1.2.2 Media DNS 与 Export 同步。
-- v1.2.3 Public IP Guard / Remote Publish / Node Test Pack / NodeQuality Archive / Airport Chain Template。
+- VLESS Reality Vision 支持。
+- 进阶 FLClash 导出模板。
+- 成熟策略组模板。
+- 节点分类命名整理。
+- 协议导出体检。
+- Media DNS 与 Export 同步。
+- Server AI Routing。
