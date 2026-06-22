@@ -2,8 +2,8 @@
 #
 # ==============================================================================
 #  LazyVPS Quick Menu Pack / 懒人建 VPS 快速菜单包
-#  Formal Version: v1.2.3
-#  Update Date: 2026-06-20
+#  Formal Version: v1.2.4
+#  Update Date: 2026-06-22
 # ==============================================================================
 #
 #  设计原则：
@@ -32,14 +32,19 @@
 #   bash lazy-vps-menu.sh --quick node-test
 #   bash lazy-vps-menu.sh --quick nq-archive
 #   bash lazy-vps-menu.sh --quick airport-chain
+#   bash lazy-vps-menu.sh --quick advanced-export
+#   bash lazy-vps-menu.sh --quick strategy-template
+#   bash lazy-vps-menu.sh --quick node-classify
+#   bash lazy-vps-menu.sh --quick protocol-lint
+#   bash lazy-vps-menu.sh --quick vless-guide
 #
 # ==============================================================================
 
 set -o pipefail
 
 APP="懒人建 VPS 快速菜单包"
-VER="正式 v1.2.3 · 稳定增强与订阅发布版"
-UPDATE_DATE="2026-06-20"
+VER="正式 v1.2.4 · VLESS Vision 与进阶模板版"
+UPDATE_DATE="2026-06-22"
 
 ROOT="/opt/lazy-vps-menu"
 OUT="$ROOT/outputs"
@@ -466,7 +471,7 @@ banner(){
   cover_line "${YLW}                   SUN  .  SAND${R}${WHT}  .  ${CYN}CODE${R}${WHT}  .  ${MAG}RELAX${R}"
 
   printf "${CYN}└────────────────────────────────────────────────────────────────────────────┘${R}\n"
-  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2.3${R}  ${DIM}2026-06-20${R}\n"
+  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2.4${R}  ${DIM}2026-06-22${R}\n"
   printf "   ${CYN}少折腾${R}  ·  ${MAG}快部署${R}  ·  ${GRN}可回滚${R}  ·  ${YLW}可分享${R}\n"
   solid_line "$CYN"
 }
@@ -1119,6 +1124,8 @@ export_pkg(){
 
   mkdir -p "$dir/DO_NOT_IMPORT_fragments" "$dir/server_config_backup" "$dir/status"
   [[ -f "$OUT/01_IMPORT_FLCLASH.yaml" ]] && cp "$OUT/01_IMPORT_FLCLASH.yaml" "$dir/01_IMPORT_FLCLASH.yaml"
+  export_advanced_flclash >/dev/null 2>&1 || true
+  [[ -f "$OUT/01_IMPORT_FLCLASH_ADVANCED.yaml" ]] && cp "$OUT/01_IMPORT_FLCLASH_ADVANCED.yaml" "$dir/01_IMPORT_FLCLASH_ADVANCED.yaml"
   [[ -f "$OUT/02_IMPORT_SURGE.conf" ]] && cp "$OUT/02_IMPORT_SURGE.conf" "$dir/02_IMPORT_SURGE.conf"
   [[ -f "$OUT/latest_flclash_fragment.yaml" ]] && cp "$OUT/latest_flclash_fragment.yaml" "$dir/DO_NOT_IMPORT_fragments/"
   [[ -f "$XCONF" ]] && cp "$XCONF" "$dir/server_config_backup/xray_config_current.json"
@@ -1156,6 +1163,7 @@ EOF
   rm -f "$HTTP_DIR"/*
   cp /root/lazy-vps-output-latest.tar.gz "$HTTP_DIR/lazy-vps-output-latest.tar.gz"
   [[ -f "$OUT/01_IMPORT_FLCLASH.yaml" ]] && cp "$OUT/01_IMPORT_FLCLASH.yaml" "$HTTP_DIR/01_IMPORT_FLCLASH.yaml"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_ADVANCED.yaml" ]] && cp "$OUT/01_IMPORT_FLCLASH_ADVANCED.yaml" "$HTTP_DIR/01_IMPORT_FLCLASH_ADVANCED.yaml"
   [[ -f "$OUT/02_IMPORT_SURGE.conf" ]] && cp "$OUT/02_IMPORT_SURGE.conf" "$HTTP_DIR/02_IMPORT_SURGE.conf"
 
   ok "导出完成：$pkg"
@@ -1177,12 +1185,14 @@ http_start(){
   fi
   cp -f /root/lazy-vps-output-latest.tar.gz "$HTTP_DIR/" 2>/dev/null || true
   [[ -f "$OUT/01_IMPORT_FLCLASH.yaml" ]] && cp -f "$OUT/01_IMPORT_FLCLASH.yaml" "$HTTP_DIR/"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_ADVANCED.yaml" ]] && cp -f "$OUT/01_IMPORT_FLCLASH_ADVANCED.yaml" "$HTTP_DIR/"
   [[ -f "$OUT/02_IMPORT_SURGE.conf" ]] && cp -f "$OUT/02_IMPORT_SURGE.conf" "$HTTP_DIR/"
   [[ -f "$HTTP_PID" ]] && kill "$(cat "$HTTP_PID")" 2>/dev/null || true
   fw_open_port "$HTTP_PORT" "tcp"
   (cd "$HTTP_DIR" && nohup python3 -m http.server "$HTTP_PORT" --bind 0.0.0.0 >/tmp/lazy-vps-http.log 2>&1 & echo $! > "$HTTP_PID")
   ok "HTTP 下载已开启。"
   echo "FLClash: http://$ip:$HTTP_PORT/01_IMPORT_FLCLASH.yaml"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_ADVANCED.yaml" ]] && echo "进阶FLClash: http://$ip:$HTTP_PORT/01_IMPORT_FLCLASH_ADVANCED.yaml"
   echo "Surge:    http://$ip:$HTTP_PORT/02_IMPORT_SURGE.conf"
   echo "整包:     http://$ip:$HTTP_PORT/lazy-vps-output-latest.tar.gz"
 }
@@ -2545,13 +2555,420 @@ EOF
   ok "说明：$out_md"
 }
 
+
+advanced_strategy_template(){
+  section "Advanced Strategy Template / 成熟策略组模板"
+  mkdir -p "$OUT"
+  local out_yaml="$OUT/advanced_strategy_template.yaml" out_md="$OUT/advanced_strategy_template.md"
+  cat > "$out_yaml" <<'EOF'
+# LazyVPS Advanced Strategy Groups / 成熟策略组模板
+# 用法：合并到 FLClash/Mihomo 配置后，把占位策略组中的节点替换成自己的自建 VPS、外购 VPN 或机场策略组。
+proxy-groups:
+  - name: 🚦 PROXY
+    type: select
+    proxies:
+      - 🌏 AUTO
+      - 🏗️ 自建VPS
+      - 🧩 外购VPN
+      - ⛓️ AI/媒体机场链
+      - DIRECT
+
+  - name: 🌏 AUTO
+    type: url-test
+    proxies:
+      - 手动替换为你的节点
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+
+  - name: 🏗️ 自建VPS
+    type: select
+    proxies:
+      - 手动替换为你的自建VPS节点
+      - DIRECT
+
+  - name: 🧩 外购VPN
+    type: select
+    proxies:
+      - 手动替换为你的外购VPN节点
+      - DIRECT
+
+  - name: 🤖 AI组
+    type: select
+    proxies:
+      - ⛓️ AI/媒体机场链
+      - 🏗️ 自建VPS
+      - 🧩 外购VPN
+      - 🚦 PROXY
+      - DIRECT
+
+  - name: 🎬 流媒体
+    type: select
+    proxies:
+      - ⛓️ AI/媒体机场链
+      - 🧩 外购VPN
+      - 🏗️ 自建VPS
+      - 🚦 PROXY
+      - DIRECT
+
+  - name: ⛓️ AI/媒体机场链
+    type: select
+    proxies:
+      - 手动替换为你的机场AI/媒体策略组
+      - 🧩 外购VPN
+      - 🏗️ 自建VPS
+      - DIRECT
+
+  - name: 🍎 Apple
+    type: select
+    proxies:
+      - DIRECT
+      - 🚦 PROXY
+
+  - name: 🔍 Google
+    type: select
+    proxies:
+      - 🚦 PROXY
+      - DIRECT
+
+  - name: 🪟 Microsoft
+    type: select
+    proxies:
+      - DIRECT
+      - 🚦 PROXY
+
+  - name: 📟 Telegram
+    type: select
+    proxies:
+      - 🚦 PROXY
+      - 🧩 外购VPN
+
+  - name: 🎮 Game
+    type: select
+    proxies:
+      - 🚦 PROXY
+      - DIRECT
+
+  - name: 🐠 FINAL
+    type: select
+    proxies:
+      - 🚦 PROXY
+      - DIRECT
+
+rules:
+  - DOMAIN-SUFFIX,chatgpt.com,🤖 AI组
+  - DOMAIN-SUFFIX,openai.com,🤖 AI组
+  - DOMAIN-SUFFIX,oaistatic.com,🤖 AI组
+  - DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI组
+  - DOMAIN-SUFFIX,claude.ai,🤖 AI组
+  - DOMAIN-SUFFIX,anthropic.com,🤖 AI组
+  - DOMAIN-SUFFIX,gemini.google.com,🤖 AI组
+  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,🤖 AI组
+  - DOMAIN-SUFFIX,netflix.com,🎬 流媒体
+  - DOMAIN-SUFFIX,nflxvideo.net,🎬 流媒体
+  - DOMAIN-SUFFIX,disneyplus.com,🎬 流媒体
+  - DOMAIN-SUFFIX,disney-plus.net,🎬 流媒体
+  - DOMAIN-SUFFIX,youtube.com,🎬 流媒体
+  - DOMAIN-SUFFIX,googlevideo.com,🎬 流媒体
+  - DOMAIN-SUFFIX,telegram.org,📟 Telegram
+  - DOMAIN-SUFFIX,t.me,📟 Telegram
+  - DOMAIN-SUFFIX,apple.com,🍎 Apple
+  - DOMAIN-SUFFIX,icloud.com,🍎 Apple
+  - DOMAIN-SUFFIX,microsoft.com,🪟 Microsoft
+  - DOMAIN-SUFFIX,windows.com,🪟 Microsoft
+  - GEOIP,CN,DIRECT
+  - MATCH,🐠 FINAL
+EOF
+
+  cat > "$out_md" <<'EOF'
+# Advanced Strategy Groups / 成熟策略组模板
+
+该模板吸收成熟机场配置的策略组思路，但不内置任何机场订阅 URL、Token、节点密码或私有域名。
+
+推荐策略：
+
+- `🚦 PROXY`：主代理入口。
+- `🌏 AUTO`：自动测速节点组。
+- `🏗️ 自建VPS`：自建 VPS 节点。
+- `🧩 外购VPN`：外购 VPN / 纯净度节点。
+- `⛓️ AI/媒体机场链`：用户自己导入的机场 AI / 媒体策略组。
+- `🤖 AI组`：ChatGPT / Claude / Gemini / OpenAI。
+- `🎬 流媒体`：Netflix / Disney+ / YouTube 等。
+- `🐠 FINAL`：最终兜底。
+
+使用方式：复制 YAML 片段后，根据自己的节点名替换占位项。
+EOF
+
+  ok "已生成成熟策略组模板：$out_yaml"
+  ok "说明文档：$out_md"
+}
+
+export_advanced_flclash(){
+  section "Advanced FLClash Export / 进阶 FLClash 导出模板"
+  ensure_yaml || return 1
+  [[ -f "$OUT/01_IMPORT_FLCLASH.yaml" ]] || { warn "未发现基础导出，尝试先执行 10) Export 生成基础配置。"; [[ -f "$OUT/latest_flclash_fragment.yaml" ]] && write_imports; }
+  [[ -f "$OUT/01_IMPORT_FLCLASH.yaml" ]] || { err "未找到 $OUT/01_IMPORT_FLCLASH.yaml，请先部署节点或执行 10) Export。"; return 1; }
+
+  local out_file="$OUT/01_IMPORT_FLCLASH_ADVANCED.yaml"
+  python3 - "$OUT/01_IMPORT_FLCLASH.yaml" "$out_file" <<'PY_ADV_EXPORT'
+import sys, yaml, re
+src, dst = sys.argv[1:3]
+cfg = yaml.safe_load(open(src, encoding="utf-8")) or {}
+proxies = cfg.get("proxies") or []
+names = [p.get("name") for p in proxies if isinstance(p, dict) and p.get("name")]
+if not names:
+    names = ["DIRECT"]
+
+def has_kw(s, kws):
+    s = str(s)
+    return any(k.lower() in s.lower() for k in kws)
+
+self_kws = ["Zouter","GoMami","光维","光維","100TB","isvoro","JPCR","腾讯","騰訊","SKYSTROLL","Neburst","TCS","ISIF","V.PS","搬瓦工","BWG"]
+external_kws = ["VK","wget","Optin","Optim","纯度","純度","MISAKA","AWS","ATT","HINET"]
+
+self_nodes = [n for n in names if has_kw(n, self_kws)]
+external_nodes = [n for n in names if has_kw(n, external_kws) and n not in self_nodes]
+if not self_nodes:
+    self_nodes = names[:]
+if not external_nodes:
+    external_nodes = names[:]
+
+media_dns = None
+for ns in (cfg.get("dns") or {}).get("nameserver", []) or []:
+    if str(ns).strip() == "151.243.229.229":
+        media_dns = "151.243.229.229"
+
+dns_nameservers = []
+if media_dns:
+    dns_nameservers.append(media_dns)
+dns_nameservers += ["223.5.5.5","119.29.29.29","1.1.1.1","8.8.8.8"]
+# de-duplicate
+dns_nameservers = list(dict.fromkeys(dns_nameservers))
+
+groups = [
+    {"name":"🚦 PROXY","type":"select","proxies":["🌏 AUTO","🏗️ 自建VPS","🧩 外购VPN","⛓️ AI/媒体机场链","DIRECT"]},
+    {"name":"🌏 AUTO","type":"url-test","proxies":names,"url":"https://www.gstatic.com/generate_204","interval":300,"tolerance":50},
+    {"name":"🏗️ 自建VPS","type":"select","proxies":self_nodes + ["DIRECT"]},
+    {"name":"🧩 外购VPN","type":"select","proxies":external_nodes + ["DIRECT"]},
+    {"name":"⛓️ AI/媒体机场链","type":"select","proxies":["🧩 外购VPN","🏗️ 自建VPS","🚦 PROXY","DIRECT"]},
+    {"name":"🤖 AI组","type":"select","proxies":["⛓️ AI/媒体机场链","🏗️ 自建VPS","🧩 外购VPN","🚦 PROXY","DIRECT"]},
+    {"name":"🎬 流媒体","type":"select","proxies":["⛓️ AI/媒体机场链","🧩 外购VPN","🏗️ 自建VPS","🚦 PROXY","DIRECT"]},
+    {"name":"🍎 Apple","type":"select","proxies":["DIRECT","🚦 PROXY"]},
+    {"name":"🔍 Google","type":"select","proxies":["🚦 PROXY","DIRECT"]},
+    {"name":"🪟 Microsoft","type":"select","proxies":["DIRECT","🚦 PROXY"]},
+    {"name":"📟 Telegram","type":"select","proxies":["🚦 PROXY","🧩 外购VPN","DIRECT"]},
+    {"name":"🎮 Game","type":"select","proxies":["🚦 PROXY","DIRECT"]},
+    {"name":"🐠 FINAL","type":"select","proxies":["🚦 PROXY","DIRECT"]},
+]
+
+rules = [
+    "DOMAIN-SUFFIX,chatgpt.com,🤖 AI组",
+    "DOMAIN-SUFFIX,openai.com,🤖 AI组",
+    "DOMAIN-SUFFIX,oaistatic.com,🤖 AI组",
+    "DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI组",
+    "DOMAIN-SUFFIX,claude.ai,🤖 AI组",
+    "DOMAIN-SUFFIX,anthropic.com,🤖 AI组",
+    "DOMAIN-SUFFIX,gemini.google.com,🤖 AI组",
+    "DOMAIN-SUFFIX,generativelanguage.googleapis.com,🤖 AI组",
+    "DOMAIN-SUFFIX,netflix.com,🎬 流媒体",
+    "DOMAIN-SUFFIX,nflxvideo.net,🎬 流媒体",
+    "DOMAIN-SUFFIX,disneyplus.com,🎬 流媒体",
+    "DOMAIN-SUFFIX,disney-plus.net,🎬 流媒体",
+    "DOMAIN-SUFFIX,youtube.com,🎬 流媒体",
+    "DOMAIN-SUFFIX,googlevideo.com,🎬 流媒体",
+    "DOMAIN-SUFFIX,telegram.org,📟 Telegram",
+    "DOMAIN-SUFFIX,t.me,📟 Telegram",
+    "DOMAIN-SUFFIX,apple.com,🍎 Apple",
+    "DOMAIN-SUFFIX,icloud.com,🍎 Apple",
+    "DOMAIN-SUFFIX,google.com,🔍 Google",
+    "DOMAIN-SUFFIX,microsoft.com,🪟 Microsoft",
+    "GEOIP,CN,DIRECT",
+    "MATCH,🐠 FINAL",
+]
+
+adv = {
+    "mixed-port": cfg.get("mixed-port", 7890),
+    "allow-lan": cfg.get("allow-lan", False),
+    "mode": "rule",
+    "log-level": cfg.get("log-level", "info"),
+    "ipv6": False,
+    "unified-delay": True,
+    "tcp-concurrent": True,
+    "dns": {
+        "enable": True,
+        "listen": "127.0.0.1:1053",
+        "enhanced-mode": "fake-ip",
+        "fake-ip-range": "198.18.0.1/16",
+        "fake-ip-filter": ["*.lan","localhost","*.local","*.xboxlive.com","*.msftconnecttest.com","*.msftncsi.com"],
+        "default-nameserver": ["223.5.5.5","119.29.29.29"],
+        "nameserver": dns_nameservers,
+        "fallback": ["tls://1.1.1.1","tls://8.8.8.8"],
+        "fallback-filter": {"geoip": True, "geoip-code": "CN", "ipcidr": ["240.0.0.0/4"]}
+    },
+    "proxies": proxies,
+    "proxy-groups": groups,
+    "rules": rules
+}
+open(dst, "w", encoding="utf-8").write("# LazyVPS Advanced FLClash Template / 进阶导出配置\n" + yaml.safe_dump(adv, allow_unicode=True, sort_keys=False))
+print(dst)
+PY_ADV_EXPORT
+  ok "已生成进阶 FLClash 配置：$out_file"
+  note "建议先导入基础配置确认节点可用，再尝试进阶模板。"
+}
+
+node_classify_rename(){
+  section "Node Classify / 节点分类与命名整理"
+  ensure_yaml || return 1
+  local file="${1:-$OUT/01_IMPORT_FLCLASH_ADVANCED.yaml}"
+  [[ -f "$file" ]] || file="$OUT/01_IMPORT_FLCLASH.yaml"
+  [[ -f "$file" ]] || { err "未找到可分析的 FLClash 配置，请先执行 10) Export 或 41) Advanced Export。"; return 1; }
+  local csv="$REPORTS/node_classify_$(ts).csv" md="$REPORTS/node_classify_$(ts).md"
+  python3 - "$file" "$csv" "$md" <<'PY_NODE_CLASSIFY'
+import sys, yaml, re, csv
+f, out_csv, out_md = sys.argv[1:4]
+cfg = yaml.safe_load(open(f, encoding="utf-8")) or {}
+proxies = cfg.get("proxies") or []
+self_kws = ["Zouter","GoMami","光维","光維","100TB","isvoro","JPCR","腾讯","騰訊","SKYSTROLL","Neburst","TCS","ISIF","V.PS","搬瓦工","BWG"]
+external_kws = ["VK","wget","Optin","Optim","纯度","純度","MISAKA","AWS","ATT","HINET"]
+region_map = [("香港","🇭🇰 香港"),("HK","🇭🇰 香港"),("日本","🇯🇵 日本"),("JP","🇯🇵 日本"),("台湾","🇹🇼 台湾"),("TW","🇹🇼 台湾"),("新加坡","🇸🇬 新加坡"),("SG","🇸🇬 新加坡"),("韩国","🇰🇷 韩国"),("KR","🇰🇷 韩国"),("美国","🇺🇸 美国"),("US","🇺🇸 美国")]
+def contains(s, kws):
+    sl=s.lower()
+    return any(k.lower() in sl for k in kws)
+def region(name):
+    for k,v in region_map:
+        if k.lower() in name.lower():
+            return v
+    return "🌐 未识别"
+def proto_code(t):
+    return {"trojan":"T协议","vless":"R协议","hysteria2":"H协议","ss":"S协议","shadowsocks":"S协议"}.get(str(t).lower(), str(t).upper())
+def vendor(name):
+    for v in ["Zouter","GoMami","光维云","光維云","100TB","isvoro","JPCR-B","腾讯云","騰訊雲","SKYSTROLL","Neburst","VK","wget企业","Optim","Optin","MISAKA"]:
+        if v.lower() in name.lower(): return v
+    return "自定义"
+rows=[]
+for p in proxies:
+    if not isinstance(p, dict): continue
+    name=str(p.get("name",""))
+    t=str(p.get("type",""))
+    cat="自建VPS" if contains(name,self_kws) else ("外购VPN/机场" if contains(name,external_kws) else "待人工确认")
+    reg=region(name)
+    ven=vendor(name)
+    suggested=f"{reg}-{ven}-{proto_code(t)}"
+    rows.append([name,t,p.get("server",""),cat,reg,ven,suggested])
+with open(out_csv,"w",encoding="utf-8-sig",newline="") as fp:
+    w=csv.writer(fp); w.writerow(["原节点名","协议","server","分类","地区","商家/来源","建议命名"]); w.writerows(rows)
+with open(out_md,"w",encoding="utf-8") as fp:
+    fp.write("# LazyVPS 节点分类与命名建议\n\n")
+    fp.write("| 原节点名 | 协议 | 分类 | 地区 | 商家/来源 | 建议命名 |\n|---|---|---|---|---|---|\n")
+    for r in rows:
+        fp.write("| " + " | ".join(str(x).replace("|","/") for x in [r[0],r[1],r[3],r[4],r[5],r[6]]) + " |\n")
+print(out_csv)
+print(out_md)
+PY_NODE_CLASSIFY
+  ok "节点分类 CSV：$csv"
+  ok "命名建议报告：$md"
+}
+
+protocol_export_lint(){
+  section "Protocol Export Lint / VLESS/Trojan/Hysteria2 导出体检"
+  ensure_yaml || return 1
+  local file="${1:-$OUT/01_IMPORT_FLCLASH.yaml}" report="$REPORTS/protocol_lint_$(ts).md"
+  [[ -f "$file" ]] || { err "未找到配置：$file"; return 1; }
+  python3 - "$file" "$report" <<'PY_PROTOCOL_LINT'
+import sys, yaml
+f, report = sys.argv[1:3]
+cfg=yaml.safe_load(open(f,encoding="utf-8")) or {}
+issues=[]; warnings=[]; ok=[]
+proxies=cfg.get("proxies") or []
+for i,p in enumerate(proxies):
+    if not isinstance(p,dict):
+        issues.append(f"proxies[{i}] 不是对象"); continue
+    name=p.get("name",f"node-{i}")
+    t=str(p.get("type","")).lower()
+    for k in ["server","port","type"]:
+        if not p.get(k): issues.append(f"{name}: 缺少 {k}")
+    if t=="vless":
+        for k in ["uuid","tls","servername","client-fingerprint"]:
+            if not p.get(k): issues.append(f"{name}: VLESS 缺少 {k}")
+        if p.get("flow")!="xtls-rprx-vision":
+            warnings.append(f"{name}: VLESS 未使用 xtls-rprx-vision")
+        ro=p.get("reality-opts") or {}
+        if not ro.get("public-key"): issues.append(f"{name}: Reality 缺少 public-key")
+        if not ro.get("short-id"): issues.append(f"{name}: Reality 缺少 short-id")
+        ok.append(f"{name}: VLESS Reality 字段已检查")
+    elif t=="trojan":
+        for k in ["password","sni"]:
+            if not p.get(k): issues.append(f"{name}: Trojan 缺少 {k}")
+        if p.get("network","tcp")!="tcp":
+            warnings.append(f"{name}: Trojan network 不是 tcp，请确认客户端兼容")
+        ok.append(f"{name}: Trojan 字段已检查")
+    elif t in ("hysteria2","hy2"):
+        for k in ["password","sni"]:
+            if not p.get(k): issues.append(f"{name}: Hysteria2 缺少 {k}")
+        ok.append(f"{name}: Hysteria2 字段已检查")
+    else:
+        warnings.append(f"{name}: 协议 {t} 未纳入深度检查")
+with open(report,"w",encoding="utf-8") as fp:
+    fp.write("# LazyVPS 协议导出体检报告\n\n")
+    fp.write(f"配置文件：`{f}`\n\n")
+    fp.write("## 严重问题\n")
+    fp.write("\n".join(f"- {x}" for x in issues) if issues else "- 未发现\n")
+    fp.write("\n\n## 警告\n")
+    fp.write("\n".join(f"- {x}" for x in warnings) if warnings else "- 未发现\n")
+    fp.write("\n\n## 通过项\n")
+    fp.write("\n".join(f"- {x}" for x in ok) if ok else "- 无\n")
+print(report)
+if issues:
+    sys.exit(2)
+PY_PROTOCOL_LINT
+  local rc=$?
+  if [[ $rc -eq 0 ]]; then ok "协议导出体检通过：$report"; else warn "协议导出体检发现问题：$report"; fi
+}
+
+vless_vision_guide(){
+  section "VLESS Reality Vision / 支持说明"
+  local md="$OUT/vless_reality_vision_guide.md"
+  cat > "$md" <<'EOF'
+# VLESS Reality Vision 支持说明
+
+LazyVPS 的 `6) VLESS Reality Vision / 部署 VLESS-R 协议` 会生成：
+
+服务端：
+- Xray VLESS inbound
+- Reality security
+- `flow=xtls-rprx-vision`
+- x25519 private/public key
+- short-id
+- client fingerprint: chrome
+
+FLClash/Mihomo 侧：
+```yaml
+type: vless
+tls: true
+flow: xtls-rprx-vision
+servername: www.microsoft.com
+reality-opts:
+  public-key: <public-key>
+  short-id: <short-id>
+client-fingerprint: chrome
+```
+
+注意：
+- VLESS Reality 对客户端内核版本要求较高，建议使用新版 Mihomo / FLClash。
+- 若导入后 Timeout，请先执行 `44) Protocol Lint` 检查字段，再检查服务端 Xray 日志。
+- Surge 对 VLESS Reality 支持情况和版本有关，建议以 FLClash/Mihomo 为主测试。
+EOF
+  ok "已生成说明：$md"
+  sed -n '1,80p' "$md"
+}
+
 ITEMS=(
 "System Init / 系统初始化"
 "Stable BBR / 开启 BBR+fq"
 "Firewall Backend / 防火墙后端"
 "Xray Core / 安装或更新 Xray"
 "Trojan 443 / 部署 T 协议"
-"Reality 443 / 部署 R 协议"
+"VLESS Reality Vision / 部署 VLESS-R 协议"
 "Hysteria2 8443 / 部署 H 协议"
 "Status / 状态检查"
 "Output / 查看节点输出"
@@ -2586,6 +3003,11 @@ ITEMS=(
 "Node Test Pack / 节点体检包"
 "NodeQuality Archive / 酒神测试归档"
 "Airport Chain Template / 机场链规则模板"
+"Advanced Export / 进阶 FLClash 导出"
+"Strategy Template / 成熟策略组模板"
+"Node Classify / 节点分类命名整理"
+"Protocol Lint / 协议导出体检"
+"VLESS Vision Guide / VLESS Reality Vision 说明"
 "Exit / 退出"
 )
 
@@ -2595,7 +3017,7 @@ DESCS=(
 "AUTO/UFW/NFT/IPTABLES/NONE，放行常用端口"
 "安装或更新 Xray-core"
 "稳定常用节点，默认继承当前服务端密码"
-"VLESS Reality，适合伪装直连场景"
+"VLESS Reality Vision，含 flow/public-key/short-id/client-fingerprint"
 "UDP 协议，适合移动网络和高吞吐测试"
 "查看端口、服务、防火墙、BBR"
 "查看 01_IMPORT_FLCLASH.yaml 与节点片段"
@@ -2630,6 +3052,11 @@ DESCS=(
 "生成节点体检报告与 CSV"
 "运行 NodeQuality 并保存日志归档"
 "生成 AI / 媒体机场链策略组模板，不内置订阅"
+"生成进阶 FLClash 配置，含成熟 DNS 与策略组"
+"生成成熟机场式策略组模板"
+"分析节点分类并给出统一命名建议"
+"检查 VLESS / Trojan / Hysteria2 导出字段完整性"
+"说明 VLESS Reality Vision 字段和兼容注意事项"
 "退出菜单"
 )
 
@@ -2675,7 +3102,12 @@ run_choice(){
     38) node_test_pack ;;
     39) nodequality_archive ;;
     40) airport_chain_template ;;
-    41) exit 0 ;;
+    41) export_advanced_flclash ;;
+    42) advanced_strategy_template ;;
+    43) node_classify_rename ;;
+    44) protocol_export_lint ;;
+    45) vless_vision_guide ;;
+    46) exit 0 ;;
   esac
 }
 
@@ -2701,8 +3133,8 @@ CAT_CN=(
 "退出"
 )
 
-CAT_START=(1 5 8 11 16 21 29 41)
-CAT_END=(4 7 10 15 20 28 40 41)
+CAT_START=(1 5 8 11 16 21 29 46)
+CAT_END=(4 7 10 15 20 28 45 46)
 CAT_FG=(45 213 82 220 75 207 208 196)
 CAT_BG=(24 90 22 58 18 53 94 52)
 
@@ -2788,7 +3220,7 @@ draw_menu(){
 
   banner
 
-  printf "${YLW}操作：${R}${B}↑↓${R} 选择功能  ${B}←→${R} 切换分区  ${B}Enter${R} 执行  ${B}1-41${R} 直达  ${B}Q${R} 退出\n\n"
+  printf "${YLW}操作：${R}${B}↑↓${R} 选择功能  ${B}←→${R} 切换分区  ${B}Enter${R} 执行  ${B}1-46${R} 直达  ${B}Q${R} 退出\n\n"
 
   draw_tabs "$cat"
   draw_panel "$cat" "$selected"
@@ -2810,7 +3242,7 @@ menu(){
     if [[ "$key" == "" ]]; then
       clear
       run_choice "$selected"
-      [[ "$selected" -ne 41 ]] && pause
+      [[ "$selected" -ne 46 ]] && pause
 
     elif [[ "$key" =~ [0-9] ]]; then
       num="$key"
@@ -2820,12 +3252,12 @@ menu(){
         num="${num}${key2}"
       done
 
-      if [[ "$num" =~ ^[0-9]+$ ]] && ((num>=1 && num<=41)); then
+      if [[ "$num" =~ ^[0-9]+$ ]] && ((num>=1 && num<=46)); then
         selected="$num"
         cat="$(find_category "$selected")"
         clear
         run_choice "$selected"
-        [[ "$selected" -ne 41 ]] && pause
+        [[ "$selected" -ne 46 ]] && pause
       fi
 
     elif [[ "$key" == "q" || "$key" == "Q" ]]; then
@@ -2897,7 +3329,12 @@ quick(){
     node-test) node_test_pack ;;
     nq-archive|nodequality-archive) nodequality_archive ;;
     airport-chain) airport_chain_template ;;
-    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|media-dns|zouter-dns|dns-show|dns-rollback|dns-test|tcpx|tcp-window|diagnose|current|public-ip|export-check|remote-publish|node-test|nq-archive|airport-chain" ;;
+    advanced-export|adv-export) export_advanced_flclash ;;
+    strategy-template|strategy) advanced_strategy_template ;;
+    node-classify|rename-nodes) node_classify_rename ;;
+    protocol-lint|proto-lint|vision-lint) protocol_export_lint ;;
+    vless-guide|vision-guide) vless_vision_guide ;;
+    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|media-dns|zouter-dns|dns-show|dns-rollback|dns-test|tcpx|tcp-window|diagnose|current|public-ip|export-check|remote-publish|node-test|nq-archive|airport-chain|advanced-export|strategy-template|node-classify|protocol-lint|vless-guide" ;;
   esac
 }
 

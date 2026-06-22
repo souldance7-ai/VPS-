@@ -5,14 +5,14 @@
 </p>
 
 <p align="center">
-  <b>少折腾 · 快部署 · 可回滚 · 可分享 · 支持服务端 AI 分流、媒体 DNS 与订阅发布体检</b>
+  <b>少折腾 · 快部署 · 可回滚 · 可分享 · 支持 VLESS Reality Vision 与进阶 FLClash 模板</b>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-v1.2.3-blue">
+  <img src="https://img.shields.io/badge/Version-v1.2.4-blue">
   <img src="https://img.shields.io/badge/Shell-Bash-green">
-  <img src="https://img.shields.io/badge/Xray-26.x-orange">
-  <img src="https://img.shields.io/badge/Stability_Toolkit-Export_Check-brightgreen">
+  <img src="https://img.shields.io/badge/VLESS-Reality_Vision-orange">
+  <img src="https://img.shields.io/badge/Advanced_FLClash-Template-brightgreen">
 </p>
 
 ---
@@ -21,16 +21,16 @@
 
 | 需求 | 直接看哪一段 | 适合场景 |
 |---|---|---|
-| **新 VPS 快速建站 / 建节点** | [一、新 VPS 快速建站流程](#一新-vps-快速建站流程v10-主流程) | 新买 VPS，要快速部署 Trojan / Reality / Hysteria2，并导出 FLClash / Surge 配置 |
-| **香港节点要能用 GPT / Claude** | [二、香港入口节点附挂小鸡使用 AI / GPT](#二香港入口节点附挂小鸡使用-ai--gptv12-更新) | 香港节点速度好，但香港出口不能 GPT，需要把 AI 域名分流到日本 / 台湾落地 |
-| **流媒体 DNS / CDN 区域解析辅助** | [三、媒体 DNS 解锁辅助](#三媒体-dns-解锁辅助v122-更新) | 接入商提供 Media DNS，例如 Zouter `151.243.229.229`，用于改善流媒体 DNS/CDN 解析 |
-| **机场链 / 外购节点做 AI 或媒体落地** | [四、机场链 / 外购节点链路思路](#四机场链--外购节点链路思路可用于-ai--媒体) | 自建 VPS 做入口，AI / 流媒体走外购机场策略组或纯净节点 |
-| **发布前检查 / 远程订阅发布** | [五、v1.2.3 稳定增强工具链](#五v123-稳定增强工具链) | 防止私网 IP、YAML 错误、订阅发布覆盖错误、测试结果无法归档 |
-| **完整菜单截图** | [六、完整菜单界面预览](#六完整菜单界面预览) | 了解 BASIC / PROTOCOL / CHECK / BACKUP / DOWNLOAD / RELAY / TUNE |
+| 新 VPS 快速建站 / 建节点 | 一、新 VPS 快速建站流程 | 新买 VPS，要快速部署 Trojan / VLESS Reality / Hysteria2 |
+| VLESS Reality Vision | 二、VLESS Reality Vision 支持 | 想用更现代的 VLESS Reality Vision 模板 |
+| 进阶 FLClash 总配置 | 三、进阶 FLClash 导出模板 | 需要成熟策略组、高级 DNS、AI/媒体分类 |
+| 节点命名与分类 | 四、节点命名与分类整理 | 自建 VPS、外购 VPN、机场节点越来越多 |
+| 协议导出体检 | 五、协议导出体检 | 检查 VLESS/Trojan/Hysteria2 缺字段、重复名、策略组引用 |
+| AI / 媒体解锁 | 六、服务端 AI 分流、Media DNS、机场链 | 香港入口 + 日本小鸡 / Zouter DNS / 外购机场链 |
 
 ---
 
-# 一、新 VPS 快速建站流程（v1.0 主流程）
+# 一、新 VPS 快速建站流程
 
 ```bash
 wget -O lazy-vps-menu.sh https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh
@@ -38,201 +38,184 @@ chmod +x lazy-vps-menu.sh
 bash lazy-vps-menu.sh
 ```
 
-推荐执行顺序：
+推荐流程：
 
 ```text
 1) System Init
 2) Stable BBR
 3) Firewall Backend
 4) Xray Core
-5) Trojan 443
+5) Trojan 443 或 6) VLESS Reality Vision
 8) Status
 10) Export
-16) HTTP On
-17) HTTP Off
-```
-
-FLClash 只导入：
-
-```text
-01_IMPORT_FLCLASH.yaml
-```
-
-Surge 导入：
-
-```text
-02_IMPORT_SURGE.conf
+41) Advanced Export
+44) Protocol Lint
 ```
 
 ---
 
-# 二、香港入口节点附挂小鸡使用 AI / GPT（v1.2 更新）
+# 二、VLESS Reality Vision 支持
 
-适合这种场景：香港 VPS 速度好，但香港出口不能 GPT / Claude；另有日本 / 台湾 VPS 可以作为 AI 落地。
+v1.2.4 将原本 Reality 功能明确升级为：
+
+```text
+6) VLESS Reality Vision / 部署 VLESS-R 协议
+```
+
+核心字段：
+
+```yaml
+type: vless
+tls: true
+flow: xtls-rprx-vision
+servername: www.microsoft.com
+reality-opts:
+  public-key: <public-key>
+  short-id: <short-id>
+client-fingerprint: chrome
+```
 
 <p align="center">
-  <img src="./docs/images/server-ai-routing-flow.png" width="860">
+  <img src="./docs/images/vless-vision-advanced-flow.png" width="860">
 </p>
 
-菜单：
+说明：
+
+- 适合新版 Mihomo / FLClash。
+- 若导入后 Timeout，先运行 `44) Protocol Lint` 检查字段。
+- Surge 对 VLESS Reality 支持受版本影响，建议以 FLClash / Mihomo 为主测试。
+
+---
+
+# 三、进阶 FLClash 导出模板
+
+基础导出仍然是：
+
+```text
+10) Export / 导出配置包
+```
+
+v1.2.4 新增：
+
+```text
+41) Advanced Export / 进阶 FLClash 导出
+```
+
+会生成：
+
+```text
+/opt/lazy-vps-menu/outputs/01_IMPORT_FLCLASH_ADVANCED.yaml
+```
+
+<p align="center">
+  <img src="./docs/images/advanced-flclash-template-flow.png" width="860">
+</p>
+
+进阶模板包含：
+
+- fake-ip-filter
+- fallback DNS / fallback-filter
+- AUTO / AI / 流媒体 / Apple / Google / Microsoft / Telegram / Game / FINAL
+- 自建 VPS / 外购 VPN / 机场链策略组
+- Media DNS 自动同步
+
+---
+
+# 四、节点命名与分类整理
+
+新增：
+
+```text
+43) Node Classify / 节点分类命名整理
+```
+
+会输出：
+
+```text
+/opt/lazy-vps-menu/reports/node_classify_时间.csv
+/opt/lazy-vps-menu/reports/node_classify_时间.md
+```
+
+推荐命名：
+
+```text
+自建 VPS：
+🇭🇰 香港-Zouter-T协议
+🇯🇵 日本-光维云01-T协议
+
+外购 VPN：
+🇯🇵-VK-纯度10%-JP-SH-11
+🇹🇼-wget企业-纯度15%-台湾02
+
+机场节点：
+🇭🇰 HK-Optim-01-VLESS
+🇯🇵 JP-Optim-01-VLESS
+```
+
+---
+
+# 五、协议导出体检
+
+新增：
+
+```text
+44) Protocol Lint / 协议导出体检
+```
+
+检查内容：
+
+| 协议 | 检查字段 |
+|---|---|
+| VLESS Reality | uuid / tls / flow / servername / public-key / short-id / client-fingerprint |
+| Trojan | server / port / password / sni |
+| Hysteria2 | server / port / password / sni |
+| 通用 | 节点名重复、字段为空、YAML 解析失败 |
+
+---
+
+# 六、服务端 AI 分流、Media DNS、机场链
+
+保留原有：
 
 ```text
 22) Server AI Routing / 服务端AI分流
-23) AI Route Show / 查看服务端AI分流
-24) AI Route Rollback / 回滚服务端AI分流
-```
-
-验证：
-
-```text
-https://ip.net.coffee/claude/
-```
-
----
-
-# 三、媒体 DNS 解锁辅助（v1.2.2 更新）
-
-Media DNS 用于流媒体 DNS / CDN 解析辅助，不改变 VPS 出口 IP。
-
-<p align="center">
-  <img src="./docs/images/media-dns-routing-flow.png" width="860">
-</p>
-
-内置模板：
-
-```text
-Zouter Media DNS：151.243.229.229
-```
-
-菜单：
-
-```text
 30) DNS Unlock / 媒体 DNS 解锁与导出同步
+40) Airport Chain Template / 机场链规则模板
+42) Strategy Template / 成熟策略组模板
 ```
 
-v1.2.2 起，设置 Media DNS 后，再执行 `10) Export`，导出的 FLClash 配置会同步当前 Media DNS。
+三种方式区别：
 
----
-
-# 四、机场链 / 外购节点链路思路（可用于 AI / 媒体）
-
-机场链适合：自建 VPS 做普通入口，AI / 流媒体域名交给外购机场节点或机场策略组。
-
-<p align="center">
-  <img src="./docs/images/airport-chain-flow.png" width="860">
-</p>
-
-三种模式区别：
-
-<p align="center">
-  <img src="./docs/images/unlock-mode-compare.png" width="860">
-</p>
-
-开源安全原则：脚本只提供模板，不内置机场订阅 URL、Token、节点密码。
-
----
-
-# 五、v1.2.3 稳定增强工具链
-
-v1.2.3 的目标是解决配置越来越多之后的稳定性问题：公网 IP 误判、导出 YAML 错误、远程发布覆盖、测试无归档等。
-
-<p align="center">
-  <img src="./docs/images/v123-stability-toolkit-flow.png" width="860">
-</p>
-
-## 新增菜单
-
-| 菜单 | 功能 | 说明 |
+| 方式 | 解决什么 | 出口是否改变 |
 |---|---|---|
-| `35) Public IP Guard` | NAT 公网 IP 识别保护 | 避免 10.x / 172.16-31.x / 192.168.x / 100.64.x 被误用于下载链接 |
-| `36) Export Safety` | 导出配置安全检查 | 检查 YAML、重复节点、策略组引用、缺失字段 |
-| `37) Remote Publish` | 远程订阅发布 | 上传 sub.yaml / surge.conf 到远程订阅服务器并备份旧版 |
-| `38) Node Test Pack` | 节点体检包 | 生成 Markdown 与 CSV 体检报告 |
-| `39) NodeQuality Archive` | 酒神测试归档 | 运行 NodeQuality 并保存日志 |
-| `40) Airport Chain Template` | 机场链规则模板 | 生成 AI / 媒体机场链模板，不内置订阅 |
-
-## Public IP Guard
-
-<p align="center">
-  <img src="./docs/images/public-ip-guard-flow.png" width="860">
-</p>
-
-快速命令：
-
-```bash
-bash /root/lazy-vps-menu.sh --quick public-ip
-```
-
-## Remote Publish
-
-<p align="center">
-  <img src="./docs/images/remote-publish-flow.png" width="860">
-</p>
-
-快速命令：
-
-```bash
-bash /root/lazy-vps-menu.sh --quick remote-publish
-```
-
-## Node Test Pack / NodeQuality Archive
-
-<p align="center">
-  <img src="./docs/images/node-test-archive-flow.png" width="860">
-</p>
-
-快速命令：
-
-```bash
-bash /root/lazy-vps-menu.sh --quick node-test
-bash /root/lazy-vps-menu.sh --quick nq-archive
-```
+| Server AI Routing | 香港入口不能 GPT，把 AI 域名转到日本/台湾小鸡 | AI 出口会变 |
+| Media DNS Unlock | 流媒体 DNS / CDN 解析错误 | 出口 IP 不一定变 |
+| Airport Chain | AI / 媒体走外购机场策略组或纯净节点 | 指定域名出口会变 |
 
 ---
 
-# 六、完整菜单界面预览
+# 七、菜单编号变化
 
-## BASIC / 基础环境
+v1.2.4 新增：
 
-<p align="center">
-  <img src="./menu-basic.png" width="860">
-</p>
+```text
+41) Advanced Export / 进阶 FLClash 导出
+42) Strategy Template / 成熟策略组模板
+43) Node Classify / 节点分类命名整理
+44) Protocol Lint / 协议导出体检
+45) VLESS Vision Guide / VLESS Reality Vision 说明
+46) Exit / 退出
+```
 
-## PROTOCOL / 协议部署
+快速命令：
 
-<p align="center">
-  <img src="./menu-protocol.png" width="860">
-</p>
-
-## CHECK / 检查导出
-
-<p align="center">
-  <img src="./menu-check.png" width="860">
-</p>
-
-## BACKUP / 备份服务
-
-<p align="center">
-  <img src="./menu-backup.png" width="860">
-</p>
-
-## DOWNLOAD / 下载合并
-
-<p align="center">
-  <img src="./menu-download.png" width="860">
-</p>
-
-## RELAY / 分流中转
-
-<p align="center">
-  <img src="./menu-relay.png" width="860">
-</p>
-
-## TUNE / 调优诊断
-
-<p align="center">
-  <img src="./menu-tune.png" width="860">
-</p>
+```bash
+bash /root/lazy-vps-menu.sh --quick advanced-export
+bash /root/lazy-vps-menu.sh --quick strategy-template
+bash /root/lazy-vps-menu.sh --quick node-classify
+bash /root/lazy-vps-menu.sh --quick protocol-lint
+bash /root/lazy-vps-menu.sh --quick vless-guide
+```
 
 ---
 
@@ -244,10 +227,9 @@ bash /root/lazy-vps-menu.sh --quick nq-archive
 VPS IP
 私有域名
 Trojan / Hysteria2 密码
-订阅地址
+机场订阅 URL / Token
 Cloudflare Token
 SSH 登录信息
-机场订阅 URL / Token
 ```
 
 所有 README 示意图均为脱敏示意图，不包含真实 IP、password、pinnedPeerCertSha256 或机场订阅信息。

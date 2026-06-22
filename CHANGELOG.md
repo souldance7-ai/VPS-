@@ -1,25 +1,35 @@
 # CHANGELOG
 
-## 正式 v1.2.3 · 稳定增强与订阅发布版 — 2026-06-21
+## 正式 v1.2.4 · VLESS Vision 与进阶模板版 — 2026-06-22
 
 ### 新增
 
-- `35) Public IP Guard / NAT 公网 IP 识别保护`
-- `36) Export Safety / 导出配置安全检查`
-- `37) Remote Publish / 远程订阅发布`
-- `38) Node Test Pack / 节点体检包`
-- `39) NodeQuality Archive / 酒神测试归档`
-- `40) Airport Chain Template / 机场链规则模板`
-- 新增 `V123_STABILITY_TOOLKIT.md`
-- README 新增 v1.2.3 稳定增强工具链说明图
+- 明确升级 `6) Reality` 为 `VLESS Reality Vision / 部署 VLESS-R 协议`。
+- 新增 `41) Advanced Export / 进阶 FLClash 导出`。
+- 新增 `42) Strategy Template / 成熟策略组模板`。
+- 新增 `43) Node Classify / 节点分类命名整理`。
+- 新增 `44) Protocol Lint / 协议导出体检`。
+- 新增 `45) VLESS Vision Guide / VLESS Reality Vision 说明`。
+- 新增 VLESS Reality Vision 字段检查：
+  - uuid
+  - tls
+  - flow=xtls-rprx-vision
+  - servername
+  - reality-opts.public-key
+  - reality-opts.short-id
+  - client-fingerprint
+- 新增进阶 FLClash 模板：
+  - fake-ip-filter
+  - fallback DNS
+  - AUTO / AI / Media / Apple / Google / Microsoft / Telegram / Game / FINAL
+  - 自建 VPS / 外购 VPN / 机场链策略组
+- 新增节点分类与命名建议报告。
+- 新增脱敏图：
+  - vless-vision-advanced-flow.png
+  - advanced-flclash-template-flow.png
 
-### 修正
+### 保留
 
-- HTTP 下载链接改用 Public IP Guard 逻辑，避免 NAT VPS 显示 10.x 私网地址。
-- 远程发布前增加 Export Safety 检查。
-- NodeQuality 支持日志归档。
-
-## 正式 v1.2.2 · 媒体 DNS 导出修正版
-
-- 设置 Media DNS 后，`10) Export` 导出的 FLClash 配置会同步当前 Media DNS。
-- 支持 Zouter Media DNS `151.243.229.229`。
+- v1.2 服务端 AI 分流。
+- v1.2.2 Media DNS 与 Export 同步。
+- v1.2.3 Public IP Guard / Remote Publish / Node Test Pack / NodeQuality Archive / Airport Chain Template。
