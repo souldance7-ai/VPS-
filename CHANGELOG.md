@@ -1,45 +1,28 @@
 # CHANGELOG
 
-## 正式 v1.2.6 · 图文说明与流程向导版 — 2026-06-22
+## 正式 v1.2.7 · VLESS Reality 修复与稳定导出版 — 2026-06-22
 
-### README 优化
+### 新增
 
-- README 改为图文并茂结构。
-- 增加快速入口表，按用户需求直接跳转。
-- 增加实际界面截图：
-  - BASIC
-  - PROTOCOL
-  - CHECK
-  - BACKUP
-  - DOWNLOAD
-  - RELAY
-  - TUNE
-  - Advanced Suite
-  - VLESS Timeout Tips
-- 所有截图底部公网 IP 已脱敏。
-- 保留核心逻辑图：
-  - Server AI Routing
-  - Media DNS
-  - Airport Chain
-  - VLESS Vision / Advanced Export
+- 默认 Reality serverName 改为 `www.cloudflare.com`。
+- 新增 `VLESS Reality Repair / Reality 修复向导`。
+- 新增 `Reality SNI Switch / Reality 目标切换`。
+- 新增 `VLESS Stable Export / VLESS 稳定导出`。
+- Stable Export 生成 `01_IMPORT_FLCLASH_VLESS_STABLE.yaml`。
+- 导出自动加入代理服务器 IP / 域名 DIRECT,no-resolve 规则。
+- SNI 可在以下目标间切换：
+  - `www.cloudflare.com`
+  - `www.microsoft.com`
+  - `www.apple.com`
+  - `www.yahoo.com`
 
-### 脚本优化
+### 修正
 
-- 新增 `Guided Workflows / 快速流程向导`。
-- 路径：`35) Stability Suite → 1) Guided Workflows`
-- 把常用流程收进互动菜单，减少用户跳出菜单手动执行命令。
-- 新增流程：
-  - 新 VPS 快速建站
-  - 导出与下载
-  - 香港入口 + AI 小鸡
-  - Media DNS 流媒体辅助
-  - VLESS 稳定性检查
-  - 远程订阅发布
+- 避免每次 Export 覆盖用户手动加入的代理服务器直连规则。
+- 明确 Advanced Export 适合总配置 / 多策略组，不建议作为单节点首测。
+- 增强 VLESS Reality Timeout 排查流程。
 
-### 保留
+### 实测记录
 
-- v1.2.5 主菜单精简。
-- v1.2.4 VLESS Reality Vision 与进阶模板。
-- v1.2.3 稳定增强。
-- v1.2.2 Media DNS 导出同步。
-- v1.2 Server AI Routing。
+- 日本 Zouter VLESS Reality：`www.microsoft.com` 目标 Timeout。
+- 切换为 `www.cloudflare.com` 后节点恢复正常。

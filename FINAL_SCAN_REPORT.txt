@@ -2,14 +2,24 @@ bash -n syntax ok: True
 syntax stderr:
 
 
-Sensitive literal hits: []
+Feature grep:
+5:#  Formal Version: v1.2.7
+46:VER="正式 v1.2.7 · VLESS Reality 修复与稳定导出版"
+998:  sni="$(ask 'Reality serverName，推荐统一使用 Cloudflare；可填 www.microsoft.com / www.apple.com / www.yahoo.com' 'www.cloudflare.com')"
+3010:servername: www.cloudflare.com
+3018:- 默认推荐 `servername: www.cloudflare.com`。VLESS Reality 对客户端内核版本要求较高，建议使用新版 Mihomo / FLClash。
+3124:    printf "  8) VLESS Reality Repair / Reality 修复向导\n"
+3125:    printf "  9) Reality SNI Switch / Reality 目标切换\n"
+3126:    printf " 10) VLESS Stable Export / VLESS 稳定导出\n"
+3197:  section "Reality SNI Switch / Reality 目标切换"
+3198:  note "建议默认统一使用 www.cloudflare.com。"
+3201:  printf "  1) www.cloudflare.com  （推荐默认）\n"
+3210:    1) sni="www.cloudflare.com" ;;
+3250:  section "VLESS Stable Export / VLESS 稳定导出"
+3263:  section "VLESS Reality Repair / Reality 修复向导"
+3278:  warn "如果 UUID / public-key / short-id / flow 都正确，但仍 Timeout，优先切换 Reality SNI 到 www.cloudflare.com，并生成 VLESS Stable Export。"
+3282:  read -rp "是否生成 VLESS Stable Export？[y/N]: " se
+3679:    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|media-dns|zouter-dns|dns-show|dns-rollback|dns-test|tcpx|tcp-window|diagnose|current|public-ip|export-check|remote-publish|node-test|nq-archive|airport-chain|advanced-export|strategy-template|node-classify|protocol-lint|vless-guide|vless-timeout|reality-repair|sni-switch|vless-stable" ;;
 
-README:
-- 图文并茂
-- 含快速指令
-- 含快速跳页
-- 含面板对应位置
-- 含建议快速执行顺序
-- 含实际界面截图，公网 IP 已脱敏
-- 含逻辑图
-- 含交互菜单内的流程向导
+
+Sensitive literal hits: []

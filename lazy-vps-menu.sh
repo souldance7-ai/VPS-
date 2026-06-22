@@ -2,7 +2,7 @@
 #
 # ==============================================================================
 #  LazyVPS Quick Menu Pack / 懒人建 VPS 快速菜单包
-#  Formal Version: v1.2.6
+#  Formal Version: v1.2.7
 #  Update Date: 2026-06-22
 # ==============================================================================
 #
@@ -43,7 +43,7 @@
 set -o pipefail
 
 APP="懒人建 VPS 快速菜单包"
-VER="正式 v1.2.6 · 图文说明与流程向导版"
+VER="正式 v1.2.7 · VLESS Reality 修复与稳定导出版"
 UPDATE_DATE="2026-06-22"
 
 ROOT="/opt/lazy-vps-menu"
@@ -471,7 +471,7 @@ banner(){
   cover_line "${YLW}                   SUN  .  SAND${R}${WHT}  .  ${CYN}CODE${R}${WHT}  .  ${MAG}RELAX${R}"
 
   printf "${CYN}└────────────────────────────────────────────────────────────────────────────┘${R}\n"
-  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2.6${R}  ${DIM}2026-06-22${R}\n"
+  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2.7${R}  ${DIM}2026-06-22${R}\n"
   printf "   ${CYN}少折腾${R}  ·  ${MAG}快部署${R}  ·  ${GRN}可回滚${R}  ·  ${YLW}可分享${R}\n"
   solid_line "$CYN"
 }
@@ -717,11 +717,68 @@ note_export_dns_profile(){
 }
 
 
+
+proxy_server_from_latest(){
+  awk '
+    /^[[:space:]]*server:[[:space:]]*/ {
+      gsub(/"/, "", $2);
+      print $2;
+      exit
+    }' "$OUT/latest_flclash_fragment.yaml" 2>/dev/null
+}
+
+clash_direct_rule_for_server(){
+  local server="$1"
+  [[ -n "$server" ]] || return 0
+  if [[ "$server" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
+    echo "  - IP-CIDR,${server}/32,DIRECT,no-resolve"
+  elif [[ "$server" == *:* ]]; then
+    echo "  - IP-CIDR6,${server}/128,DIRECT,no-resolve"
+  else
+    echo "  - DOMAIN,${server},DIRECT"
+  fi
+}
+
+inject_direct_rule_into_yaml(){
+  local file="$1" server="$2"
+  [[ -f "$file" && -n "$server" ]] || return 0
+  python3 - "$file" "$server" <<'PY_DIRECT_RULE'
+import sys, re
+path, server = sys.argv[1:3]
+s = open(path, encoding="utf-8").read()
+if re.match(r"^(\d{1,3}\.){3}\d{1,3}$", server):
+    rule = f"  - IP-CIDR,{server}/32,DIRECT,no-resolve"
+elif ":" in server:
+    rule = f"  - IP-CIDR6,{server}/128,DIRECT,no-resolve"
+else:
+    rule = f"  - DOMAIN,{server},DIRECT"
+if rule not in s and "rules:\n" in s:
+    s = s.replace("rules:\n", "rules:\n" + rule + "\n", 1)
+open(path, "w", encoding="utf-8").write(s)
+PY_DIRECT_RULE
+}
+
+patch_vless_servername_in_outputs(){
+  local sni="$1"
+  [[ -n "$sni" ]] || return 0
+  for f in "$OUT"/01_IMPORT_FLCLASH*.yaml "$OUT"/latest_flclash_fragment.yaml "$OUT"/03_DO_NOT_IMPORT_NODE_FRAGMENT.yaml; do
+    [[ -f "$f" ]] || continue
+    python3 - "$f" "$sni" <<'PY_PATCH_SNI'
+import sys, re
+path, sni = sys.argv[1:3]
+text = open(path, encoding="utf-8").read()
+text = re.sub(r'(?m)^(\s*servername:\s*).+$', r'\1' + sni, text)
+open(path, "w", encoding="utf-8").write(text)
+PY_PATCH_SNI
+  done
+}
+
 write_imports(){
-  local node node_q
+  local node node_q proxy_server
   node="$(grep -m1 '^- name:' "$OUT/latest_flclash_fragment.yaml" 2>/dev/null | sed 's/^- name:[[:space:]]*//' | sed 's/^"//;s/"$//')"
   [[ -n "$node" ]] || node="GF-Node"
   node_q="$(yaml_quote "$node")"
+  proxy_server="$(proxy_server_from_latest)"
 
   cat > "$OUT/01_IMPORT_FLCLASH.yaml" <<EOF
 # $APP $VER | Update: $UPDATE_DATE | 完整 FLClash 单节点配置
@@ -761,6 +818,9 @@ proxy-groups:
       - DIRECT
 
 rules:
+EOF
+  clash_direct_rule_for_server "$proxy_server" >> "$OUT/01_IMPORT_FLCLASH.yaml"
+  cat >> "$OUT/01_IMPORT_FLCLASH.yaml" <<EOF
   - MATCH,PROXY
 EOF
 
@@ -787,6 +847,7 @@ GLOBAL = select, ${sname}, DIRECT
 PROXY = select, ${sname}, DIRECT
 
 [Rule]
+# 代理服务器本身直连，避免回环
 FINAL,PROXY
 EOF
   fi
@@ -934,7 +995,7 @@ deploy_reality(){
   name="$(auto_name R)"
   port="$(ask 'Reality 端口，建议 443' '443')"
   valid_port "$port" || { err "端口无效"; return 1; }
-  sni="$(ask 'Reality serverName' 'www.microsoft.com')"
+  sni="$(ask 'Reality serverName，推荐统一使用 Cloudflare；可填 www.microsoft.com / www.apple.com / www.yahoo.com' 'www.cloudflare.com')"
 
   uuid="$($XRAY uuid)"
   key="$($XRAY x25519)"
@@ -2946,7 +3007,7 @@ FLClash/Mihomo 侧：
 type: vless
 tls: true
 flow: xtls-rprx-vision
-servername: www.microsoft.com
+servername: www.cloudflare.com
 reality-opts:
   public-key: <public-key>
   short-id: <short-id>
@@ -2954,7 +3015,7 @@ client-fingerprint: chrome
 ```
 
 注意：
-- VLESS Reality 对客户端内核版本要求较高，建议使用新版 Mihomo / FLClash。
+- 默认推荐 `servername: www.cloudflare.com`。VLESS Reality 对客户端内核版本要求较高，建议使用新版 Mihomo / FLClash。
 - 若导入后 Timeout，请先执行 `44) Protocol Lint` 检查字段，再检查服务端 Xray 日志。
 - Surge 对 VLESS Reality 支持情况和版本有关，建议以 FLClash/Mihomo 为主测试。
 EOF
@@ -3060,6 +3121,9 @@ advanced_suite(){
     printf "  5) Protocol Lint / 协议导出体检\n"
     printf "  6) VLESS Vision Guide / VLESS Reality Vision 说明\n"
     printf "  7) VLESS Timeout Tips / VLESS 间歇 Timeout 排查建议\n"
+    printf "  8) VLESS Reality Repair / Reality 修复向导\n"
+    printf "  9) Reality SNI Switch / Reality 目标切换\n"
+    printf " 10) VLESS Stable Export / VLESS 稳定导出\n"
     printf "  0) 返回\n"
     read -rp "序号: " ans
     case "$ans" in
@@ -3070,10 +3134,153 @@ advanced_suite(){
       5) protocol_export_lint; pause ;;
       6) vless_vision_guide; pause ;;
       7) vless_timeout_tips; pause ;;
+      8) vless_reality_repair; pause ;;
+      9) vless_sni_switch; pause ;;
+      10) vless_stable_export; pause ;;
       0|"") return ;;
       *) warn "输入无效。" ;;
     esac
   done
+}
+
+
+vless_reality_current_info(){
+  python3 - <<'PY_VLESS_INFO'
+import json, subprocess, sys, os, re
+path="/usr/local/etc/xray/config.json"
+try:
+    cfg=json.load(open(path))
+except Exception as e:
+    print("读取 Xray 配置失败:", e)
+    sys.exit(1)
+found=False
+for ib in cfg.get("inbounds", []):
+    if ib.get("protocol") == "vless":
+        found=True
+        st=ib.get("streamSettings", {})
+        rs=st.get("realitySettings", {})
+        print("port =", ib.get("port"))
+        print("network =", st.get("network"))
+        print("security =", st.get("security"))
+        print("dest =", rs.get("dest"))
+        print("serverNames =", rs.get("serverNames"))
+        print("shortIds =", rs.get("shortIds"))
+        print("privateKey =", "********" if rs.get("privateKey") else "")
+        print("clients =")
+        for c in ib.get("settings", {}).get("clients", []):
+            print(" ", c)
+if not found:
+    print("未发现 VLESS inbound")
+PY_VLESS_INFO
+}
+
+vless_reality_public_key(){
+  local priv
+  priv="$(python3 - <<'PY_PRIV'
+import json
+cfg=json.load(open('/usr/local/etc/xray/config.json'))
+for ib in cfg.get("inbounds", []):
+    rs=ib.get("streamSettings", {}).get("realitySettings", {})
+    if rs.get("privateKey"):
+        print(rs.get("privateKey"))
+        break
+PY_PRIV
+)"
+  if [[ -z "$priv" ]]; then
+    warn "未找到 Reality privateKey。"
+    return 1
+  fi
+  "$XRAY" x25519 -i "$priv" 2>/dev/null | grep -iE "Public|Password" || true
+}
+
+vless_sni_switch(){
+  section "Reality SNI Switch / Reality 目标切换"
+  note "建议默认统一使用 www.cloudflare.com。"
+  note "如果某个目标偶发 Timeout，可在 Cloudflare / Microsoft / Apple / Yahoo 间切换。"
+  echo
+  printf "  1) www.cloudflare.com  （推荐默认）\n"
+  printf "  2) www.microsoft.com   （旧默认，部分线路可能不稳）\n"
+  printf "  3) www.apple.com\n"
+  printf "  4) www.yahoo.com\n"
+  printf "  5) 自定义\n"
+  printf "  0) 返回\n"
+  read -rp "序号: " ans
+  local sni
+  case "$ans" in
+    1) sni="www.cloudflare.com" ;;
+    2) sni="www.microsoft.com" ;;
+    3) sni="www.apple.com" ;;
+    4) sni="www.yahoo.com" ;;
+    5) read -rp "请输入 Reality serverName: " sni ;;
+    0|"") return ;;
+    *) warn "输入无效。"; return ;;
+  esac
+  [[ -n "$sni" ]] || { warn "SNI 为空。"; return; }
+
+  backup_all
+  cp "$XCONF" "$XCONF.bak.reality_sni.$(ts)" 2>/dev/null || true
+  python3 - "$sni" <<'PY_SWITCH_SNI'
+import sys, json
+sni=sys.argv[1]
+path="/usr/local/etc/xray/config.json"
+cfg=json.load(open(path))
+changed=False
+for ib in cfg.get("inbounds", []):
+    if ib.get("protocol")=="vless":
+        st=ib.setdefault("streamSettings", {})
+        rs=st.setdefault("realitySettings", {})
+        rs["dest"]=f"{sni}:443"
+        rs["serverNames"]=[sni]
+        changed=True
+open(path,"w").write(json.dumps(cfg, indent=2, ensure_ascii=False))
+print("changed =", changed)
+print("serverName =", sni)
+PY_SWITCH_SNI
+
+  "$XRAY" run -test -config "$XCONF" || { err "Xray 配置测试失败，已保留备份，请手动检查。"; return 1; }
+  systemctl restart xray
+  ok "已切换服务端 Reality dest/serverNames 为：$sni"
+
+  patch_vless_servername_in_outputs "$sni"
+  note "已尝试同步 outputs 内客户端配置 servername。建议重新执行 10) Export / 41) Advanced Export。"
+  curl -I --connect-timeout 8 "https://${sni}" 2>/dev/null | head -5 || warn "目标站连接测试无输出，仍可继续客户端测试。"
+}
+
+vless_stable_export(){
+  section "VLESS Stable Export / VLESS 稳定导出"
+  [[ -f "$OUT/01_IMPORT_FLCLASH.yaml" ]] || { warn "未发现基础配置，尝试执行 10) Export。"; export_pkg || return 1; }
+  local src="$OUT/01_IMPORT_FLCLASH.yaml" dst="$OUT/01_IMPORT_FLCLASH_VLESS_STABLE.yaml"
+  local server
+  server="$(awk '/^[[:space:]]*server:[[:space:]]*/{print $2; exit}' "$src" | tr -d '"')"
+  cp "$src" "$dst"
+  sed -i 's/tcp-concurrent: true/tcp-concurrent: false/g' "$dst"
+  inject_direct_rule_into_yaml "$dst" "$server"
+  ok "已生成 VLESS 稳定导出：$dst"
+  note "稳定版会设置 tcp-concurrent:false，并加入代理服务器 IP/DNS 直连规则。"
+}
+
+vless_reality_repair(){
+  section "VLESS Reality Repair / Reality 修复向导"
+  note "用于排查服务端正常、443 可达，但 FLClash Reality 节点 Timeout 的情况。"
+  echo
+  info "1) 当前服务端 VLESS / Reality 信息："
+  vless_reality_current_info || true
+  echo
+  info "2) 当前 Reality public-key："
+  vless_reality_public_key || true
+  echo
+  info "3) 协议导出体检："
+  protocol_export_lint || true
+  echo
+  info "4) 节点体检："
+  node_test_pack || true
+  echo
+  warn "如果 UUID / public-key / short-id / flow 都正确，但仍 Timeout，优先切换 Reality SNI 到 www.cloudflare.com，并生成 VLESS Stable Export。"
+  echo
+  read -rp "是否切换 Reality SNI？[y/N]: " sw
+  [[ "$sw" =~ ^[Yy]$ ]] && vless_sni_switch
+  read -rp "是否生成 VLESS Stable Export？[y/N]: " se
+  [[ "$se" =~ ^[Yy]$ ]] && vless_stable_export
 }
 
 vless_timeout_tips(){
@@ -3113,7 +3320,7 @@ journalctl -u xray -n 80 --no-pager
   - `reality-opts.short-id`
 - 如果偶发 Timeout：
   - 先重新测速，不要只看单次 Timeout。
-  - 对比 `01_IMPORT_FLCLASH.yaml` 与 `01_IMPORT_FLCLASH_ADVANCED.yaml`。
+  - 对比 `01_IMPORT_FLCLASH.yaml`、`01_IMPORT_FLCLASH_VLESS_STABLE.yaml` 与 `01_IMPORT_FLCLASH_ADVANCED.yaml`。
   - 如有需要，可将全局 `tcp-concurrent` 临时改为 `false` 做对比。
 
 ## 速度测试解读
@@ -3469,7 +3676,7 @@ quick(){
     node-classify|rename-nodes) node_classify_rename ;;
     protocol-lint|proto-lint|vision-lint) protocol_export_lint ;;
     vless-guide|vision-guide) vless_vision_guide ;;
-    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|media-dns|zouter-dns|dns-show|dns-rollback|dns-test|tcpx|tcp-window|diagnose|current|public-ip|export-check|remote-publish|node-test|nq-archive|airport-chain|advanced-export|strategy-template|node-classify|protocol-lint|vless-guide|vless-timeout" ;;
+    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|media-dns|zouter-dns|dns-show|dns-rollback|dns-test|tcpx|tcp-window|diagnose|current|public-ip|export-check|remote-publish|node-test|nq-archive|airport-chain|advanced-export|strategy-template|node-classify|protocol-lint|vless-guide|vless-timeout|reality-repair|sni-switch|vless-stable" ;;
   esac
 }
 
