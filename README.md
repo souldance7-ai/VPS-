@@ -1,40 +1,61 @@
 # LazyVPS Quick Menu Pack / 懒人建 VPS 快速菜单包
 
-<p align="center">
-  <img src="./docs/images/readme-navigation-overview-v127.png" width="900">
-</p>
+> 少折腾、快部署、可回滚、可分享。适合新手快速建 VPS，也适合反复测试节点、导出 FLClash / Surge 配置、做 AI / 媒体 / IPv6 / 双栈排查。
+
+![LazyVPS 主菜单](docs/images/01-main-menu.png)
 
 <p align="center">
-  <b>少折腾 · 快部署 · 可回滚 · 可分享 · 图文说明 · 快速流程向导 · VLESS Reality 修复</b>
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Version-v1.2.7-blue">
-  <img src="https://img.shields.io/badge/Shell-Bash-green">
-  <img src="https://img.shields.io/badge/Reality_Default-www.cloudflare.com-orange">
-  <img src="https://img.shields.io/badge/VLESS_Stable_Export-On-brightgreen">
-  <img src="https://img.shields.io/badge/README-图文增强-purple">
+  <img alt="Version" src="https://img.shields.io/badge/Version-v1.2.15-00d4ff">
+  <img alt="Shell" src="https://img.shields.io/badge/Shell-Bash-44cc44">
+  <img alt="Xray" src="https://img.shields.io/badge/Xray-26.x-orange">
+  <img alt="IPv6" src="https://img.shields.io/badge/IPv6-Reality_443-success">
+  <img alt="V4V6" src="https://img.shields.io/badge/V4%2FV6-Split%20Strategy-blueviolet">
+  <img alt="Client" src="https://img.shields.io/badge/Client-FLClash%2FMihomo-blue">
 </p>
 
 ---
 
-## 📌 快速使用
+## 目录 / 快速跳转
 
-### VPS 内一键下载并运行
+- [一键快速运行](#一键快速运行)
+- [你想做什么？先看这里](#你想做什么先看这里)
+- [推荐执行顺序](#推荐执行顺序)
+- [新 VPS 快速建站流程](#一-新-vps-快速建站流程-v10-主流程)
+- [IPv6 Reality 443 推荐方案](#二-ipv6-reality-443-推荐方案-v1214)
+- [V4/V6 独立端口与双栈策略](#三-v4v6-独立端口与双栈策略-v1215)
+- [香港入口 + AI 小鸡服务端分流](#四-香港入口--ai-小鸡服务端分流-v12)
+- [媒体 DNS 解锁辅助](#五-媒体-dns-解锁辅助-v121--v122)
+- [导出 / 下载 / 导入](#六-导出--下载--导入)
+- [功能面板总览](#功能面板总览)
+- [安全提醒](#安全提醒)
+- [开源文件结构](#开源文件结构)
+
+---
+
+## 一键快速运行
+
+### 方式一：下载后运行，适合开源审查
+
+**VPS / Linux 执行：**
 
 ```bash
+apt update && apt install -y curl wget
 wget -O lazy-vps-menu.sh https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh
 chmod +x lazy-vps-menu.sh
 bash lazy-vps-menu.sh
 ```
 
-### 一行命令
+### 方式二：一行命令直接进入互动界面
+
+**VPS / Linux 执行：**
 
 ```bash
-wget -O lazy-vps-menu.sh https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh && chmod +x lazy-vps-menu.sh && bash lazy-vps-menu.sh
+bash <(curl -Ls https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh)
 ```
 
-### 仅预览界面
+### 预览界面
+
+**VPS / Linux 执行：**
 
 ```bash
 bash lazy-vps-menu.sh --preview
@@ -42,453 +63,277 @@ bash lazy-vps-menu.sh --preview
 
 ---
 
-## 🚀 你想做什么？先看这里
+## 你想做什么？先看这里
 
-| 需求 | 菜单路径 | 快速命令 | 适合场景 |
-|---|---|---|---|
-| 新 VPS 快速建站 | `35 → 1 → 1` | 交互菜单执行 | 初始化、BBR、防火墙、Xray Core |
-| 部署 Trojan | `2) PROTOCOL → 5` | `--quick trojan` | 稳定主用、兼容性优先 |
-| 部署 VLESS Reality Vision | `2) PROTOCOL → 6` | `--quick reality` | 进阶协议、Reality Vision |
-| 导出并开启下载 | `35 → 1 → 2` | `--quick export` | Export → Safety Check → HTTP On |
-| 香港入口 + AI 小鸡 | `35 → 1 → 3` | `--quick ai-route` | 普通走香港，AI 走日本/台湾落地 |
-| Media DNS 流媒体辅助 | `35 → 1 → 4` | `--quick media-dns` | Zouter / Custom / Alice DNS |
-| VLESS 偶发 Timeout 排查 | `35 → 1 → 5` 或 `36 → 8/9/10` | `--quick reality-repair` | Reality 握手不稳、测速 Timeout |
-| 远程订阅发布 | `35 → 1 → 6` | `--quick remote-publish` | 发布 sub.yaml / surge.conf 到订阅服务器 |
-| 进阶 FLClash 模板 | `36 → 2` | `--quick advanced-export` | 多策略组、机场链、自建/外购分类 |
-| 节点分类命名 | `36 → 4` | `--quick node-classify` | 节点越来越多时整理命名 |
-| 协议导出体检 | `36 → 5` | `--quick protocol-lint` | 检查 VLESS / Trojan / Hysteria2 字段完整性 |
-
-> 建议新手优先走菜单流程，不需要记命令。  
-> 快速命令主要给进阶用户或远程维护时使用。
-
----
-
-## 🧭 版本主线
-
-| 版本 | 重点 |
-|---|---|
-| **v1.0** | 新 VPS 快速建站、Trojan 443、导出配置、HTTP 下载 |
-| **v1.2** | 服务端 AI 分流：香港入口 + 日本 / 台湾 AI 落地 |
-| **v1.2.2** | Media DNS 与 Export 同步 |
-| **v1.2.3** | Public IP Guard / Remote Publish / Node Test / NodeQuality 归档 |
-| **v1.2.4** | VLESS Reality Vision / Advanced Export / 节点分类 / 协议体检 |
-| **v1.2.5** | 主界面精简，Stability Suite / Advanced Suite 工具箱化 |
-| **v1.2.6** | 图文 README、实际界面截图、Guided Workflows 流程向导 |
-| **v1.2.7** | Reality 默认改为 `www.cloudflare.com`，新增 Reality 修复向导与稳定导出 |
-
----
-
-# 一、主菜单布局
-
-<p align="center">
-  <img src="./docs/images/menu-basic-v125.png" width="860">
-</p>
-
-v1.2.7 主菜单保持精简，不再把所有功能堆到同一页。
-
-| 分区 | 菜单范围 | 说明 |
+| 需求 | 推荐入口 | 适合场景 |
 |---|---|---|
-| BASIC | `1-4` | 初始化、BBR、防火墙、Xray |
-| PROTOCOL | `5-7` | Trojan / VLESS Reality Vision / Hysteria2 |
-| CHECK | `8-10` | Status / Output / Export |
-| BACKUP | `11-15` | 备份、回滚、停止服务 |
-| DOWNLOAD | `16-20` | HTTP 下载、NodeQuality、配置合并 |
-| RELAY | `21-28` | AI 规则、服务端 AI 分流、端口中转 |
-| TUNE | `29-37` | 调优、诊断、Stability Suite、Advanced Suite |
+| 新 VPS 快速建站 | `1 → 2 → 3 → 4 → 5/6/7 → 10 → 16` | 刚买 VPS，想快速部署协议并导入 FLClash |
+| IPv6 静态公网加速 | `35 → 7 → 10` | IPv6 原生公网、纯净度好、速度高，推荐 Reality 443 |
+| 指定 V4 / 指定 V6 | `35 → 7 → 12 → 13` | 同一台 VPS 同时保留 IPv6 主力与 IPv4 备用 |
+| 双栈自动切换 | `35 → 7 → 13` | 生成 `V4V6_SPLIT`，Auto 优先 V6，失败切 V4 |
+| AI / GPT 香港入口失败 | `35 → 3` 或 `22 Server AI Routing` | 香港速度好，但 AI 出口要转日本 / 台湾落地 |
+| 流媒体 DNS 辅助 | `30 DNS Unlock` | 仅用于媒体 CDN / DNS 解析辅助，不替代干净落地 |
+| 导出给电脑 / 手机 | `10 Export → 16 HTTP On` | 生成 `01_IMPORT_FLCLASH*.yaml`，浏览器/手机导入 |
+| 配置坏了回滚 | `11 Backup / 12 Rollback Xray` | 改错配置、Xray 起不来、想恢复上一版 |
 
 ---
 
-# 二、BASIC / 基础环境
+## 推荐执行顺序
 
-<p align="center">
-  <img src="./docs/images/menu-basic-v125.png" width="860">
-</p>
+![v1.2.15 推荐执行顺序](docs/images/09-v1215-recommended-flow.png)
 
-推荐新 VPS 先执行：
+### 常规新机
 
 ```text
-1) System Init
-2) Stable BBR
-3) Firewall Backend
-4) Xray Core
+1) System Init → 2) Stable BBR → 3) Firewall Backend → 4) Xray Core → 5/6/7 部署协议 → 10 Export → 16 HTTP On
 ```
 
-对应用途：
-
-| 菜单 | 用途 |
-|---|---|
-| `1) System Init` | 安装基础依赖、确认 SSH、配置基础环境 |
-| `2) Stable BBR` | 开启 Linux 原生 BBR + fq |
-| `3) Firewall Backend` | AUTO / UFW / NFT / IPTABLES / NONE |
-| `4) Xray Core` | 安装或更新 Xray Core |
-
----
-
-# 三、PROTOCOL / 协议部署
-
-<p align="center">
-  <img src="./docs/images/menu-protocol-v125.png" width="860">
-</p>
-
-| 菜单 | 协议 | 建议 |
-|---|---|---|
-| `5) Trojan 443` | Trojan TCP 443 | 稳定主用，兼容性好 |
-| `6) VLESS Reality Vision` | VLESS Reality Vision | 进阶协议，支持 flow / public-key / short-id / fingerprint |
-| `7) Hysteria2 8443` | Hysteria2 UDP | 移动网络、高吞吐测试场景 |
-
-## VLESS Reality Vision 推荐字段
-
-v1.2.7 起默认推荐：
-
-```yaml
-type: vless
-tls: true
-flow: xtls-rprx-vision
-servername: www.cloudflare.com
-reality-opts:
-  public-key: <public-key>
-  short-id: <short-id>
-client-fingerprint: chrome
-```
-
-> 说明：  
-> 之前 `www.microsoft.com` 在日本 Zouter 测试中出现 Timeout；切换 `www.cloudflare.com` 后恢复正常，因此 v1.2.7 默认统一为 Cloudflare。
-
----
-
-# 四、CHECK / 检查导出
-
-<p align="center">
-  <img src="./docs/images/menu-check-v125.png" width="860">
-</p>
-
-| 菜单 | 用途 |
-|---|---|
-| `8) Status` | 查看 Xray、端口、防火墙、BBR |
-| `9) Output` | 查看导出片段 |
-| `10) Export` | 导出 FLClash / Surge / 整包 |
-
-导出文件：
+### IPv6 主力 + IPv4 备用
 
 ```text
-01_IMPORT_FLCLASH.yaml
-02_IMPORT_SURGE.conf
-lazy-vps-output-latest.tar.gz
-```
-
----
-
-# 五、BACKUP / 备份服务
-
-<p align="center">
-  <img src="./docs/images/menu-backup-v125.png" width="860">
-</p>
-
-| 菜单 | 用途 |
-|---|---|
-| `11) Backup` | 备份 Xray / Hysteria2 / BBR 配置 |
-| `12) Rollback Xray` | 回滚最近一次 Xray 配置 |
-| `13) Rollback Hysteria2` | 回滚最近一次 Hysteria2 配置 |
-| `14) Stop Xray` | 停止并禁用 Xray |
-| `15) Stop Hysteria2` | 停止并禁用 Hysteria2 |
-
----
-
-# 六、DOWNLOAD / 下载合并
-
-<p align="center">
-  <img src="./docs/images/menu-download-v125.png" width="860">
-</p>
-
-| 菜单 | 用途 |
-|---|---|
-| `16) HTTP On` | 开启 8088 临时下载 |
-| `17) HTTP Off` | 关闭临时下载 |
-| `18) NodeQuality` | 运行酒神测试 |
-| `19) Local Merge` | 当前 VPS 本机总配置合并 |
-| `20) Remote Merge` | 总配置在其他 VPS / 订阅服务器时使用 |
-
----
-
-# 七、RELAY / 分流中转
-
-<p align="center">
-  <img src="./docs/images/menu-relay-v125.png" width="860">
-</p>
-
-| 菜单 | 功能 | 说明 |
-|---|---|---|
-| `21) Client AI Rules` | 客户端 AI 规则模板 | 不改变服务端出口 |
-| `22) Server AI Routing` | 服务端 AI 分流 | 普通走本机，GPT/AI 走日本/台湾落地 |
-| `23) AI Route Show` | 查看服务端 AI 分流 | 查看 Xray 是否写入 AI outbound / routing |
-| `24) AI Route Rollback` | 回滚服务端 AI 分流 | 恢复写入 AI 分流前配置 |
-| `25-28)` | Relay Forward / Client / Show / Clear | 端口中转，不适合域名级 GPT 分流 |
-
-## Server AI Routing 逻辑图
-
-<p align="center">
-  <img src="./docs/images/server-ai-routing-flow.png" width="860">
-</p>
-
----
-
-# 八、TUNE / 调优诊断
-
-<p align="center">
-  <img src="./docs/images/menu-tune-v125.png" width="860">
-</p>
-
-v1.2.7 的 TUNE 不再无限拉长：
-
-```text
-29) BBR v3
-30) DNS Unlock
-31) NetSpeed
-32) TCP Tune
-33) Diagnose
-34) Current Trojan
 35) Stability Suite
-36) Advanced Suite
-37) Exit
+  7) IPv6 Mode
+    10) IPv6 Reality 443 Clean
+    12) IPv4 Fallback Port
+    13) V4/V6 Split Export
+16) HTTP On
+```
+
+对应 quick 命令：
+
+```bash
+bash /root/lazy-vps-menu.sh --quick ipv6-r443
+bash /root/lazy-vps-menu.sh --quick v4-fallback
+bash /root/lazy-vps-menu.sh --quick v4v6-split
+bash /root/lazy-vps-menu.sh --quick http
 ```
 
 ---
 
-# 九、Guided Workflows / 快速流程向导
+# 一、新 VPS 快速建站流程（v1.0 主流程）
 
-路径：
+![新 VPS 快速建站流程](docs/images/03-quick-start-flow.png)
+
+| 顺序 | 菜单 | 用途 |
+|---:|---|---|
+| 1 | `1) System Init` | 安装依赖、确认 SSH、基础环境 |
+| 2 | `2) Stable BBR` | 开启 BBR + fq |
+| 3 | `3) Firewall Backend` | AUTO / UFW / NFT / IPTABLES / NONE |
+| 4 | `4) Xray Core` | 安装 / 更新 Xray-core |
+| 5 | `5) Trojan 443` 或 `6) VLESS Reality` | 部署协议 |
+| 6 | `8) Status` | 检查 Xray、端口、防火墙 |
+| 7 | `10) Export` | 导出 FLClash / Surge 配置 |
+| 8 | `16) HTTP On` | 开启临时下载，电脑/手机导入 |
+
+---
+
+# 二、IPv6 Reality 443 推荐方案（v1.2.14）
+
+![IPv6 Reality 443 定版逻辑](docs/images/04-ipv6-reality-443-flow.png)
+
+实测结论：
+
+| 方案 | 结果 | 建议 |
+|---|---|---|
+| Trojan IPv6 443 / 2443 | 在部分 FLClash / Mihomo 环境持续 Timeout | 不作为主线 |
+| VLESS Reality IPv6 2444 | 可部署，但非 443 有额外风险提示 | 仅排查 |
+| VLESS Reality IPv6 443 + hosts 固定解析 | 实测可通，卡片显示 `Vless` | 推荐主线 |
+
+推荐路径：
 
 ```text
 35) Stability Suite / 稳定增强工具箱
-1) Guided Workflows / 快速流程向导
+7) IPv6 Mode / IPv6 模式管理
+10) IPv6 Reality 443 Clean / 推荐：纯 IPv6 VLESS Reality 443
 ```
 
-<p align="center">
-  <img src="./docs/images/guided-workflows-flow.png" width="860">
-</p>
-
-| 序号 | 流程 | 实际执行 |
-|---|---|---|
-| `1` | 新 VPS 快速建站 | 初始化 → BBR → 防火墙 → Xray |
-| `2` | 导出与下载 | Export → Export Safety → HTTP On |
-| `3` | 香港入口 + AI 小鸡 | Server AI Routing → AI Route Show |
-| `4` | Media DNS 流媒体辅助 | DNS Unlock → Show DNS → Export |
-| `5` | VLESS 稳定性检查 | Protocol Lint → Node Test → Status |
-| `6` | 远程订阅发布 | Export Safety → Remote Publish |
-
----
-
-# 十、Advanced Suite / 进阶模板工具箱
-
-路径：
-
-```text
-36) Advanced Suite / 进阶模板工具箱
-```
-
-<p align="center">
-  <img src="./docs/images/menu-advanced-suite-v125.png" width="860">
-</p>
-
-包含：
-
-```text
-1) Airport Chain Template
-2) Advanced Export
-3) Strategy Template
-4) Node Classify
-5) Protocol Lint
-6) VLESS Vision Guide
-7) VLESS Timeout Tips
-8) VLESS Reality Repair
-9) Reality SNI Switch
-10) VLESS Stable Export
-```
-
----
-
-# 十一、VLESS Reality 修复与稳定导出（v1.2.7）
-
-<p align="center">
-  <img src="./docs/images/vless-reality-repair-flow.png" width="860">
-</p>
-
-## 什么时候用？
-
-适合这种情况：
-
-```text
-Windows → VPS:443 可以通
-Xray active running
-UUID / public-key / short-id / flow 都一致
-但是 FLClash Reality 节点 Timeout
-```
-
-## 修复入口
-
-菜单路径：
-
-```text
-36) Advanced Suite
-8) VLESS Reality Repair / Reality 修复向导
-9) Reality SNI Switch / Reality 目标切换
-10) VLESS Stable Export / VLESS 稳定导出
-```
-
-快速命令：
+快捷命令：
 
 ```bash
-bash /root/lazy-vps-menu.sh --quick reality-repair
-bash /root/lazy-vps-menu.sh --quick sni-switch
-bash /root/lazy-vps-menu.sh --quick vless-stable
+bash /root/lazy-vps-menu.sh --quick ipv6-r443
 ```
 
-## SNI 目标切换
-
-v1.2.7 默认：
+填写建议：
 
 ```text
-www.cloudflare.com
+IPv6 地址：直接 Enter 使用自动检测值
+AAAA 域名：填写你自己的域名，例如 v6-r443.example.com
+Reality serverName：默认 www.cloudflare.com
+节点名称：默认即可
 ```
 
-可切换：
+LazyVPS 会在导出的 FLClash 配置中写入：
 
-```text
-www.microsoft.com
-www.apple.com
-www.yahoo.com
-自定义
+```yaml
+hosts:
+  v6-r443.example.com: YOUR_IPV6
 ```
 
-## VLESS Stable Export
+这样即使公共 DNS 暂时查不到 AAAA，FLClash 也可以直接把域名固定到你的 IPv6。
 
-生成：
+---
+
+# 三、V4/V6 独立端口与双栈策略（v1.2.15）
+
+![V4/V6 独立端口逻辑](docs/images/08-v4v6-split-flow.png)
+
+v1.2.15 新增的核心逻辑：
 
 ```text
-01_IMPORT_FLCLASH_VLESS_STABLE.yaml
+IPv6 主力：VLESS Reality 443
+IPv4 备用：VLESS Reality 8443 / 自定义端口
+DualStack Auto：优先 IPv6，失败后切 IPv4
 ```
 
-特点：
+推荐菜单：
 
 ```text
-tcp-concurrent: false
-自动加入代理服务器 IP / 域名 DIRECT,no-resolve
-适合 Reality 偶发 Timeout 时做稳定性对比
+35) Stability Suite
+7) IPv6 Mode
+12) IPv4 Fallback Port / IPv4 备用端口部署
+13) V4/V6 Split Export / V4V6 独立端口导出
+14) DualStack Strategy / 双栈策略组说明
+```
+
+推荐生成文件：
+
+| 文件 | 用途 |
+|---|---|
+| `01_IMPORT_FLCLASH_IPV6_REALITY_PORT443.yaml` | IPv6 主力，VLESS Reality 443 |
+| `01_IMPORT_FLCLASH_IPV4_REALITY_PORT8443.yaml` | IPv4 备用，VLESS Reality 8443 |
+| `01_IMPORT_FLCLASH_V4V6_SPLIT.yaml` | 同时含 V4 / V6 / Auto 策略组 |
+| `01_IMPORT_FLCLASH_DUALSTACK_AUTO.yaml` | DualStack Auto 别名 |
+
+导入后可以手动指定：
+
+```text
+🇹🇼 IPv6 主力   → 强制走 IPv6 Reality 443
+🇹🇼 IPv4 备用   → 强制走 IPv4 Reality 8443
+🌐 Auto         → 优先 V6，失败切 V4
 ```
 
 ---
 
-# 十二、Media DNS / 流媒体 DNS 辅助
+# 四、香港入口 + AI 小鸡服务端分流（v1.2）
 
-<p align="center">
-  <img src="./docs/images/media-dns-routing-flow.png" width="860">
-</p>
+![服务端 AI 分流逻辑](docs/images/05-ai-route-flow.png)
 
-菜单：
+典型用途：香港入口速度很好，但香港出口无法稳定使用 ChatGPT / Claude / Gemini；此时让普通网站仍走香港，AI 域名转发到日本 / 台湾落地。
+
+推荐入口：
+
+```text
+22) Server AI Routing / 服务端 AI 分流
+23) AI Route Show / 查看服务端 AI 分流
+24) AI Route Rollback / 回滚服务端 AI 分流
+```
+
+配置完成后，建议打开检测网站确认 AI 出口是否变成日本 / 台湾：
+
+```text
+https://ip.net.coffee/claude/
+```
+
+---
+
+# 五、媒体 DNS 解锁辅助（v1.2.1 / v1.2.2）
+
+![媒体 DNS 解锁辅助](docs/images/06-media-dns-flow.png)
+
+媒体 DNS 功能用于接入 Zouter Media DNS、自定义 Media DNS 或 Alice DNS Unlock。它可以改善 Netflix / Disney+ / YouTube / TikTok 等平台的 CDN / DNS 解析，但不等于换干净落地 IP。
+
+推荐入口：
 
 ```text
 30) DNS Unlock / 媒体 DNS 解锁与导出同步
 ```
 
-内置模板：
-
-```text
-Zouter Media DNS：151.243.229.229
-```
-
-说明：
-
-```text
-Media DNS 只解决 DNS / CDN 解析问题，不会改变 VPS 出口 IP。
-如果平台主要判断出口 IP 是否干净，仍需要换落地、机场链或服务端分流。
-```
-
 ---
 
-# 十三、Airport Chain / 机场链
+# 六、导出 / 下载 / 导入
 
-<p align="center">
-  <img src="./docs/images/airport-chain-flow.png" width="860">
-</p>
+![导出与导入流程](docs/images/07-export-import-flow.png)
 
-说明：
+推荐顺序：
 
 ```text
-自建 VPS 做普通入口；
-AI / 流媒体域名交给外购机场策略组；
-客户端按规则分流。
+10) Export / 导出配置包
+16) HTTP On / 开启临时 HTTP 下载
 ```
 
-不内置：
+常见下载链接：
 
 ```text
-机场订阅 URL
-Token
-节点 password
-私有域名
+http://YOUR_VPS_IPV4:8088/01_IMPORT_FLCLASH.yaml
+http://YOUR_VPS_IPV4:8088/01_IMPORT_FLCLASH_IPV6_REALITY_PORT443.yaml
+http://YOUR_VPS_IPV4:8088/01_IMPORT_FLCLASH_IPV4_REALITY_PORT8443.yaml
+http://YOUR_VPS_IPV4:8088/01_IMPORT_FLCLASH_V4V6_SPLIT.yaml
+http://YOUR_VPS_IPV4:8088/02_IMPORT_SURGE.conf
+http://YOUR_VPS_IPV4:8088/lazy-vps-output-latest.tar.gz
 ```
 
----
+FLClash 只导入：
 
-# 十四、导出文件说明
-
-| 文件 | 用途 |
-|---|---|
-| `01_IMPORT_FLCLASH.yaml` | 基础 FLClash 导入，优先测试用 |
-| `01_IMPORT_FLCLASH_VLESS_STABLE.yaml` | VLESS 稳定导出，排查 Timeout 用 |
-| `01_IMPORT_FLCLASH_ADVANCED.yaml` | 进阶总配置模板，多策略组使用 |
-| `02_IMPORT_SURGE.conf` | Surge 导入 |
-| `lazy-vps-output-latest.tar.gz` | 整包下载 |
+```text
+01_IMPORT_FLCLASH*.yaml
+```
 
 不要导入：
 
 ```text
-DO_NOT_IMPORT 开头的片段
+DO_NOT_IMPORT_fragments
 server_config_backup
-服务端备份文件
+reports
 ```
 
 ---
 
-# 十五、快速命令
+# 功能面板总览
 
-互动菜单优先，以下给进阶用户：
+![IPv6 Mode 面板](docs/images/02-ipv6-menu.png)
 
-```bash
-bash /root/lazy-vps-menu.sh --quick export
-bash /root/lazy-vps-menu.sh --quick advanced-export
-bash /root/lazy-vps-menu.sh --quick vless-stable
-bash /root/lazy-vps-menu.sh --quick protocol-lint
-bash /root/lazy-vps-menu.sh --quick node-test
-bash /root/lazy-vps-menu.sh --quick media-dns
-bash /root/lazy-vps-menu.sh --quick dns-show
-bash /root/lazy-vps-menu.sh --quick dns-rollback
-bash /root/lazy-vps-menu.sh --quick public-ip
-bash /root/lazy-vps-menu.sh --quick remote-publish
-bash /root/lazy-vps-menu.sh --quick reality-repair
-bash /root/lazy-vps-menu.sh --quick sni-switch
-bash /root/lazy-vps-menu.sh --quick vless-timeout
-```
+| 分区 | 功能 |
+|---|---|
+| BASIC | 系统初始化、BBR、防火墙、Xray Core |
+| PROTOCOL | Trojan / VLESS Reality / Hysteria2 |
+| CHECK | 状态检查、查看输出、导出配置 |
+| BACKUP | 备份、回滚、停止服务 |
+| DOWNLOAD | HTTP 下载、NodeQuality、总配置合并 |
+| RELAY | AI 分流、端口中转、机场链规则模板 |
+| TUNE | DNS Unlock、诊断、稳定增强、IPv6 Mode |
 
 ---
 
-## 分享安全
+# 安全提醒
 
-本项目不内置：
+- 脚本本身不内置个人 IP、私有域名、节点密码或订阅地址。
+- 导出的 `01_IMPORT_FLCLASH*.yaml` 会包含你自己的节点密码 / UUID / Reality public-key，请勿公开发布。
+- `HTTP On` 是临时下载服务，下载完成后建议执行 `17) HTTP Off`。
+- 第三方脚本如 BBRv3、NetSpeed、DNS Unlock 可能修改内核 / DNS / 网络参数，请先看说明再执行。
+- 如果配置改坏，可使用 `11 Backup` 或 `12 Rollback Xray` 回滚。
+
+---
+
+# 开源文件结构
 
 ```text
-VPS IP
-私有域名
-Trojan / Hysteria2 密码
-机场订阅 URL / Token
-Cloudflare Token
-SSH 登录信息
+lazy-vps-menu.sh                  主脚本
+README.md                         GitHub 首页说明
+CHANGELOG.md                      更新记录
+QUICK_START.md                    快速使用
+IPV6_REALITY_443_GUIDE.md         IPv6 Reality 443 说明
+V4V6_SPLIT_GUIDE.md               V4/V6 独立端口与双栈策略说明
+AI_SERVICE_ROUTING.md             服务端 AI 分流说明
+MEDIA_DNS_UNLOCK.md               媒体 DNS 辅助说明
+AIRPORT_CHAIN_UNLOCK.md           机场链规则模板说明
+TROUBLESHOOTING.md                排错说明
+SECURITY_SHARE_CHECK.txt          分享安全检查
+SCAN_REPORT.txt                   扫描报告
+docs/images/                      图文说明图片
 ```
-
-所有 README 示意图均为脱敏示意图，不包含真实 IP、password、pinnedPeerCertSha256 或机场订阅信息。
 
 ---
 
-## License
+# 写在最后
 
-MIT License
+v1.2.15 的重点是把 IPv6 实测结论沉淀成稳定流程：**IPv6 Reality 443 做主力，IPv4 独立备用端口，最后用 V4/V6 Split 配置让用户自由指定或自动切换。**

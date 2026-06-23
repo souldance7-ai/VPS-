@@ -1,25 +1,27 @@
 # CHANGELOG
 
-## 正式 v1.2.7 · VLESS Reality 修复与稳定导出版 — 2026-06-22
+## 正式 v1.2.15 · V4/V6 独立端口与双栈策略版 — 2026-06-23
 
-### README 优化
+### 新增
 
-- README 改为完整图文导航版。
-- 增加快速使用、快速跳页、菜单路径、快捷命令和面板截图。
-- 增加导出文件说明与 VLESS Stable Export 使用说明。
-- 增加实际界面截图与逻辑图引用。
-- 所有截图均已脱敏处理。
+- IPv4 Fallback Port：为 IPv4 单独部署 VLESS Reality 备用端口，默认 8443。
+- V4/V6 Split Export：合并 IPv6 Reality 443 与 IPv4 备用端口，生成可手动指定 V4/V6 的 FLClash 配置。
+- DualStack Strategy：生成双栈策略说明，推荐 Auto 优先 IPv6，失败切 IPv4。
+- 新增图文说明：`docs/images/08-v4v6-split-flow.png` 与 `docs/images/09-v1215-recommended-flow.png`。
 
-### 功能新增
+### 推荐主线
 
-- 默认 Reality serverName 改为 `www.cloudflare.com`。
-- 新增 `VLESS Reality Repair / Reality 修复向导`。
-- 新增 `Reality SNI Switch / Reality 目标切换`。
-- 新增 `VLESS Stable Export / VLESS 稳定导出`。
-- Stable Export 生成 `01_IMPORT_FLCLASH_VLESS_STABLE.yaml`。
-- 导出自动加入代理服务器 IP / 域名 DIRECT,no-resolve 规则。
+```text
+IPv6 主力：VLESS Reality 443
+IPv4 备用：VLESS Reality 8443 / 自定义端口
+Auto：优先 V6，失败后 V4 兜底
+```
 
-### 实测记录
+### 快捷命令
 
-- 日本 Zouter VLESS Reality：`www.microsoft.com` 目标 Timeout。
-- 切换为 `www.cloudflare.com` 后节点恢复正常。
+```bash
+bash /root/lazy-vps-menu.sh --quick ipv6-r443
+bash /root/lazy-vps-menu.sh --quick v4-fallback
+bash /root/lazy-vps-menu.sh --quick v4v6-split
+bash /root/lazy-vps-menu.sh --quick dualstack-auto
+```

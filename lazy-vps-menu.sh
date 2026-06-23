@@ -2,8 +2,8 @@
 #
 # ==============================================================================
 #  LazyVPS Quick Menu Pack / 懒人建 VPS 快速菜单包
-#  Formal Version: v1.2.7
-#  Update Date: 2026-06-22
+#  Formal Version: v1.2.15
+#  Update Date: 2026-06-23
 # ==============================================================================
 #
 #  设计原则：
@@ -43,8 +43,8 @@
 set -o pipefail
 
 APP="懒人建 VPS 快速菜单包"
-VER="正式 v1.2.7 · VLESS Reality 修复与稳定导出版"
-UPDATE_DATE="2026-06-22"
+VER="正式 v1.2.15 · V4/V6 独立端口与双栈策略版"
+UPDATE_DATE="2026-06-23"
 
 ROOT="/opt/lazy-vps-menu"
 OUT="$ROOT/outputs"
@@ -471,7 +471,7 @@ banner(){
   cover_line "${YLW}                   SUN  .  SAND${R}${WHT}  .  ${CYN}CODE${R}${WHT}  .  ${MAG}RELAX${R}"
 
   printf "${CYN}└────────────────────────────────────────────────────────────────────────────┘${R}\n"
-  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2.7${R}  ${DIM}2026-06-22${R}\n"
+  printf "${GRN}${B}   懒人建 VPS 快速菜单包${R}  ${YLW}${B}正式 v1.2.13${R}  ${DIM}2026-06-22${R}\n"
   printf "   ${CYN}少折腾${R}  ·  ${MAG}快部署${R}  ·  ${GRN}可回滚${R}  ·  ${YLW}可分享${R}\n"
   solid_line "$CYN"
 }
@@ -873,7 +873,7 @@ deploy_trojan(){
   if [[ -n "$cur_port" && -n "$cur_pass" ]]; then
     show_current_trojan_detected || true
     port="$(ask 'Trojan 端口：默认沿用当前服务端端口' "$cur_port")"
-    sni="$(ask 'SNI：默认沿用当前服务端 SNI' "${cur_sni:-www.microsoft.com}")"
+    sni="$(ask 'SNI：默认沿用当前服务端 SNI' "${cur_sni:-www.cloudflare.com}")"
     read -rp "$(printf "${YLW}是否轮换 / 重置 Trojan 密码？${R} 默认不换，直接沿用当前密码 [y/N]: ")" rotate
     if [[ "$rotate" =~ ^[Yy]$ ]]; then
       pfx="$(password_prefix)"
@@ -886,7 +886,7 @@ deploy_trojan(){
   else
     warn "未检测到可继承的现有 Trojan 配置，将按新部署生成新密码。"
     port="$(ask 'Trojan 端口' '443')"
-    sni="$(ask 'SNI' 'www.microsoft.com')"
+    sni="$(ask 'SNI' 'www.cloudflare.com')"
     pfx="$(password_prefix)"
     pass="$(ask 'Trojan 密码' "${pfx}_$(rand_pass)")"
   fi
@@ -1065,7 +1065,7 @@ deploy_hy2(){
   name="$(auto_name H)"
   port="$(ask 'Hysteria2 UDP 端口' '8443')"
   valid_port "$port" || { err "端口无效"; return 1; }
-  sni="$(ask 'SNI' 'www.microsoft.com')"
+  sni="$(ask 'SNI' 'www.cloudflare.com')"
   pfx="$(password_prefix)"
   pass="$(ask 'Hysteria2 密码' "hy2_${pfx}_$(rand_pass)")"
 
@@ -1187,6 +1187,15 @@ export_pkg(){
   [[ -f "$OUT/01_IMPORT_FLCLASH.yaml" ]] && cp "$OUT/01_IMPORT_FLCLASH.yaml" "$dir/01_IMPORT_FLCLASH.yaml"
   export_advanced_flclash >/dev/null 2>&1 || true
   [[ -f "$OUT/01_IMPORT_FLCLASH_ADVANCED.yaml" ]] && cp "$OUT/01_IMPORT_FLCLASH_ADVANCED.yaml" "$dir/01_IMPORT_FLCLASH_ADVANCED.yaml"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_IPV4.yaml" ]] && cp "$OUT/01_IMPORT_FLCLASH_IPV4.yaml" "$dir/01_IMPORT_FLCLASH_IPV4.yaml"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_IPV6.yaml" ]] && cp "$OUT/01_IMPORT_FLCLASH_IPV6.yaml" "$dir/01_IMPORT_FLCLASH_IPV6.yaml"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_IPV6_STABLE.yaml" ]] && cp "$OUT/01_IMPORT_FLCLASH_IPV6_STABLE.yaml" "$dir/01_IMPORT_FLCLASH_IPV6_STABLE.yaml"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_DUALSTACK.yaml" ]] && cp "$OUT/01_IMPORT_FLCLASH_DUALSTACK.yaml" "$dir/01_IMPORT_FLCLASH_DUALSTACK.yaml"
+  cp -f "$OUT"/01_IMPORT_FLCLASH_IPV6_PORT*.yaml "$dir/" 2>/dev/null || true
+  cp -f "$OUT"/01_IMPORT_FLCLASH_IPV6_REALITY_PORT*.yaml "$dir/" 2>/dev/null || true
+  cp -f "$OUT"/01_IMPORT_FLCLASH_IPV4_REALITY_PORT*.yaml "$dir/" 2>/dev/null || true
+  [[ -f "$OUT/01_IMPORT_FLCLASH_V4V6_SPLIT.yaml" ]] && cp "$OUT/01_IMPORT_FLCLASH_V4V6_SPLIT.yaml" "$dir/01_IMPORT_FLCLASH_V4V6_SPLIT.yaml"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_DUALSTACK_AUTO.yaml" ]] && cp "$OUT/01_IMPORT_FLCLASH_DUALSTACK_AUTO.yaml" "$dir/01_IMPORT_FLCLASH_DUALSTACK_AUTO.yaml"
   [[ -f "$OUT/02_IMPORT_SURGE.conf" ]] && cp "$OUT/02_IMPORT_SURGE.conf" "$dir/02_IMPORT_SURGE.conf"
   [[ -f "$OUT/latest_flclash_fragment.yaml" ]] && cp "$OUT/latest_flclash_fragment.yaml" "$dir/DO_NOT_IMPORT_fragments/"
   [[ -f "$XCONF" ]] && cp "$XCONF" "$dir/server_config_backup/xray_config_current.json"
@@ -1247,6 +1256,17 @@ http_start(){
   cp -f /root/lazy-vps-output-latest.tar.gz "$HTTP_DIR/" 2>/dev/null || true
   [[ -f "$OUT/01_IMPORT_FLCLASH.yaml" ]] && cp -f "$OUT/01_IMPORT_FLCLASH.yaml" "$HTTP_DIR/"
   [[ -f "$OUT/01_IMPORT_FLCLASH_ADVANCED.yaml" ]] && cp -f "$OUT/01_IMPORT_FLCLASH_ADVANCED.yaml" "$HTTP_DIR/"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_IPV4.yaml" ]] && cp -f "$OUT/01_IMPORT_FLCLASH_IPV4.yaml" "$HTTP_DIR/"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_IPV6.yaml" ]] && cp -f "$OUT/01_IMPORT_FLCLASH_IPV6.yaml" "$HTTP_DIR/"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_IPV6_STABLE.yaml" ]] && cp -f "$OUT/01_IMPORT_FLCLASH_IPV6_STABLE.yaml" "$HTTP_DIR/"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_DUALSTACK.yaml" ]] && cp -f "$OUT/01_IMPORT_FLCLASH_DUALSTACK.yaml" "$HTTP_DIR/"
+  cp -f "$OUT"/01_IMPORT_FLCLASH_IPV6_PORT*.yaml "$HTTP_DIR/" 2>/dev/null || true
+  cp -f "$OUT"/01_IMPORT_FLCLASH_IPV6_ONLY_PORT*.yaml "$HTTP_DIR/" 2>/dev/null || true
+  cp -f "$OUT"/01_IMPORT_FLCLASH_IPV6_REALITY_443.yaml "$HTTP_DIR/" 2>/dev/null || true
+  cp -f "$OUT"/01_IMPORT_FLCLASH_IPV6_REALITY_PORT*.yaml "$HTTP_DIR/" 2>/dev/null || true
+  cp -f "$OUT"/01_IMPORT_FLCLASH_IPV4_REALITY_PORT*.yaml "$HTTP_DIR/" 2>/dev/null || true
+  [[ -f "$OUT/01_IMPORT_FLCLASH_V4V6_SPLIT.yaml" ]] && cp -f "$OUT/01_IMPORT_FLCLASH_V4V6_SPLIT.yaml" "$HTTP_DIR/"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_DUALSTACK_AUTO.yaml" ]] && cp -f "$OUT/01_IMPORT_FLCLASH_DUALSTACK_AUTO.yaml" "$HTTP_DIR/"
   [[ -f "$OUT/02_IMPORT_SURGE.conf" ]] && cp -f "$OUT/02_IMPORT_SURGE.conf" "$HTTP_DIR/"
   [[ -f "$HTTP_PID" ]] && kill "$(cat "$HTTP_PID")" 2>/dev/null || true
   fw_open_port "$HTTP_PORT" "tcp"
@@ -1254,6 +1274,19 @@ http_start(){
   ok "HTTP 下载已开启。"
   echo "FLClash: http://$ip:$HTTP_PORT/01_IMPORT_FLCLASH.yaml"
   [[ -f "$OUT/01_IMPORT_FLCLASH_ADVANCED.yaml" ]] && echo "进阶FLClash: http://$ip:$HTTP_PORT/01_IMPORT_FLCLASH_ADVANCED.yaml"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_IPV4.yaml" ]] && echo "IPv4 FLClash: http://$ip:$HTTP_PORT/01_IMPORT_FLCLASH_IPV4.yaml"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_IPV6.yaml" ]] && echo "IPv6 FLClash: http://$ip:$HTTP_PORT/01_IMPORT_FLCLASH_IPV6.yaml"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_IPV6_STABLE.yaml" ]] && echo "IPv6 Stable FLClash: http://$ip:$HTTP_PORT/01_IMPORT_FLCLASH_IPV6_STABLE.yaml"
+  [[ -f "$OUT/01_IMPORT_FLCLASH_DUALSTACK.yaml" ]] && echo "DualStack FLClash: http://$ip:$HTTP_PORT/01_IMPORT_FLCLASH_DUALSTACK.yaml"
+  for f in "$HTTP_DIR"/01_IMPORT_FLCLASH_IPV6_PORT*.yaml "$HTTP_DIR"/01_IMPORT_FLCLASH_IPV6_ONLY_PORT*.yaml "$HTTP_DIR"/01_IMPORT_FLCLASH_IPV6_REALITY_PORT*.yaml; do
+    [[ -f "$f" ]] && echo "IPv6 独立端口 FLClash: http://$ip:$HTTP_PORT/$(basename "$f")"
+  done
+  for f in "$HTTP_DIR"/01_IMPORT_FLCLASH_IPV4_REALITY_PORT*.yaml; do
+    [[ -f "$f" ]] && echo "IPv4 备用端口 FLClash: http://$ip:$HTTP_PORT/$(basename "$f")"
+  done
+  [[ -f "$HTTP_DIR/01_IMPORT_FLCLASH_V4V6_SPLIT.yaml" ]] && echo "V4/V6 Split FLClash: http://$ip:$HTTP_PORT/01_IMPORT_FLCLASH_V4V6_SPLIT.yaml"
+  [[ -f "$HTTP_DIR/01_IMPORT_FLCLASH_DUALSTACK_AUTO.yaml" ]] && echo "DualStack Auto FLClash: http://$ip:$HTTP_PORT/01_IMPORT_FLCLASH_DUALSTACK_AUTO.yaml"
+  curl -I --connect-timeout 5 "http://127.0.0.1:${HTTP_PORT}/01_IMPORT_FLCLASH_IPV6_STABLE.yaml" >/dev/null 2>&1 && ok "HTTP 本机校验：IPv6 Stable 200 OK" || warn "HTTP 本机校验未通过，请执行 IPv6 Mode → HTTP Sync Verify。"
   echo "Surge:    http://$ip:$HTTP_PORT/02_IMPORT_SURGE.conf"
   echo "整包:     http://$ip:$HTTP_PORT/lazy-vps-output-latest.tar.gz"
 }
@@ -3025,6 +3058,1209 @@ EOF
 
 
 
+
+
+current_xray_sni(){
+  python3 - <<'PY_CUR_SNI' 2>/dev/null
+import json
+path="/usr/local/etc/xray/config.json"
+try:
+    cfg=json.load(open(path))
+except Exception:
+    raise SystemExit
+for ib in cfg.get("inbounds", []):
+    st=ib.get("streamSettings", {})
+    # Trojan TLS
+    tls=st.get("tlsSettings", {})
+    if tls.get("serverName"):
+        print(tls.get("serverName")); raise SystemExit
+    # VLESS Reality
+    rs=st.get("realitySettings", {})
+    names=rs.get("serverNames") or []
+    if names:
+        print(names[0]); raise SystemExit
+PY_CUR_SNI
+}
+
+patch_ipv6_yaml_text(){
+  local file="$1" ip6="$2" sni="$3"
+  [[ -f "$file" ]] || return 0
+  python3 - "$file" "$ip6" "$sni" <<'PY_PATCH_IPV6'
+import sys, re
+path, ip6, sni = sys.argv[1:4]
+text = open(path, encoding="utf-8").read()
+if ip6:
+    text = text.replace(f"server: {ip6}", f"server: \"{ip6}\"")
+    text = text.replace(f"server: '{ip6}'", f"server: \"{ip6}\"")
+if sni:
+    text = re.sub(r'(?m)^(\s*sni:\s*).+$', r'\1' + sni, text)
+    text = re.sub(r'(?m)^(\s*servername:\s*).+$', r'\1' + sni, text)
+open(path, "w", encoding="utf-8").write(text)
+PY_PATCH_IPV6
+}
+
+ipv6_global_addr(){
+  ip -6 addr show scope global 2>/dev/null | awk '/inet6 /{print $2}' | cut -d/ -f1 | grep -v '^fd' | grep -v '^fe80' | head -1
+}
+
+ip6_external(){
+  curl -6 -fsS --connect-timeout 8 https://api64.ipify.org 2>/dev/null || \
+  curl -6 -fsS --connect-timeout 8 https://ifconfig.co 2>/dev/null || true
+}
+
+ipv6_check(){
+  section "IPv6 Check / 检查 VPS IPv6"
+  note "用于确认 VPS 是否具备 IPv6 地址、默认路由和外部 IPv6 出口。"
+  local v4 v6_local v6_ext
+  v4="$(ip4_external || true)"
+  v6_local="$(ipv6_global_addr || true)"
+  v6_ext="$(ip6_external || true)"
+  info "公网 IPv4：${v4:-检测失败}"
+  info "本机全局 IPv6：${v6_local:-未发现}"
+  info "外部检测 IPv6：${v6_ext:-检测失败}"
+  echo
+  info "IPv6 地址："
+  ip -6 addr show scope global || true
+  echo
+  info "IPv6 路由："
+  ip -6 route || true
+  echo
+  info "443 监听："
+  ss -lntp | grep ':443' || true
+  echo
+  if [[ -n "$v6_ext" ]]; then
+    ok "IPv6 外部出口可用。"
+  else
+    warn "IPv6 外部出口不可用。若面板显示有 IPv6，请检查系统路由、防火墙或运营商访问。"
+  fi
+}
+
+ipv6_dns_yaml(){
+  local indent="${1:-    }"
+  printf "%s- 2606:4700:4700::1111\n" "$indent"
+  printf "%s- 2001:4860:4860::8888\n" "$indent"
+  printf "%s- 1.1.1.1\n" "$indent"
+  printf "%s- 8.8.8.8\n" "$indent"
+}
+
+ipv6_make_exports(){
+  section "IPv6 Export / IPv4-IPv6-DualStack 导出"
+  ensure_yaml || return 1
+  [[ -f "$OUT/01_IMPORT_FLCLASH.yaml" ]] || { warn "未发现基础导出，尝试执行 10) Export。"; export_pkg || true; }
+  [[ -f "$OUT/01_IMPORT_FLCLASH.yaml" ]] || { err "仍未找到基础配置，请先部署节点并执行 10) Export。"; return 1; }
+
+  local v4 v6 input4 input6
+  v4="$(ip4_external || true)"
+  v6="$(ip6_external || true)"
+  [[ -n "$v6" ]] || v6="$(ipv6_global_addr || true)"
+  read -rp "IPv4 地址 [${v4:-空}]: " input4
+  read -rp "IPv6 地址 [${v6:-空}]: " input6
+  v4="${input4:-$v4}"
+  v6="${input6:-$v6}"
+  [[ -n "$v4" ]] || warn "未检测到 IPv4，将无法生成完整 IPv4 配置。"
+  [[ -n "$v6" ]] || { err "未检测到 IPv6，无法生成 IPv6 / DualStack 配置。"; return 1; }
+
+  python3 - "$OUT/01_IMPORT_FLCLASH.yaml" "$OUT" "$v4" "$v6" <<'PY_IPV6_EXPORT'
+import sys, yaml, copy, re
+src, outdir, v4, v6 = sys.argv[1:5]
+cfg = yaml.safe_load(open(src, encoding="utf-8")) or {}
+proxies = cfg.get("proxies") or []
+if not proxies:
+    raise SystemExit("no proxies found")
+base = copy.deepcopy(proxies[0])
+base_name = base.get("name", "LazyVPS-Node")
+
+def direct_rule(server):
+    if not server:
+        return None
+    if re.match(r"^(\d{1,3}\.){3}\d{1,3}$", server):
+        return f"IP-CIDR,{server}/32,DIRECT,no-resolve"
+    if ":" in server:
+        return f"IP-CIDR6,{server}/128,DIRECT,no-resolve"
+    return f"DOMAIN,{server},DIRECT"
+
+def normalize_dns(c, ipv6=False):
+    c["ipv6"] = bool(ipv6)
+    d = c.setdefault("dns", {})
+    d["enable"] = True
+    d["listen"] = "127.0.0.1:1053"
+    d["enhanced-mode"] = d.get("enhanced-mode", "fake-ip")
+    d["fake-ip-range"] = d.get("fake-ip-range", "198.18.0.1/16")
+    if ipv6:
+        d["nameserver"] = ["2606:4700:4700::1111", "2001:4860:4860::8888", "1.1.1.1", "8.8.8.8"]
+    else:
+        d["nameserver"] = ["223.5.5.5", "119.29.29.29", "1.1.1.1", "8.8.8.8"]
+
+def make_single(ip, label, ipv6):
+    c = copy.deepcopy(cfg)
+    normalize_dns(c, ipv6=ipv6)
+    p = copy.deepcopy(base)
+    p["name"] = f"{base_name}-{label}"
+    p["server"] = ip
+    c["proxies"] = [p]
+    for g in c.get("proxy-groups", []) or []:
+        if isinstance(g, dict) and "proxies" in g:
+            g["proxies"] = [p["name"], "DIRECT"]
+    rules = c.get("rules") or []
+    dr = direct_rule(ip)
+    if dr and dr not in rules:
+        rules = [dr] + [r for r in rules if not (isinstance(r, str) and r.startswith("MATCH,"))]
+    if "MATCH,PROXY" not in rules:
+        rules.append("MATCH,PROXY")
+    c["rules"] = rules
+    return c
+
+def make_dual(v4, v6):
+    c = copy.deepcopy(cfg)
+    normalize_dns(c, ipv6=True)
+    p4 = copy.deepcopy(base); p4["name"] = f"{base_name}-IPv4"; p4["server"] = v4
+    p6 = copy.deepcopy(base); p6["name"] = f"{base_name}-IPv6"; p6["server"] = v6
+    c["proxies"] = [p4, p6]
+    for g in c.get("proxy-groups", []) or []:
+        if isinstance(g, dict) and "proxies" in g:
+            g["proxies"] = [p4["name"], p6["name"], "DIRECT"]
+    rules = c.get("rules") or []
+    new_rules = []
+    for ip in [v4, v6]:
+        dr = direct_rule(ip)
+        if dr and dr not in rules and dr not in new_rules:
+            new_rules.append(dr)
+    rules = new_rules + [r for r in rules if not (isinstance(r, str) and r.startswith("MATCH,"))]
+    rules.append("MATCH,PROXY")
+    c["rules"] = rules
+    return c
+
+def dump(name, obj):
+    with open(f"{outdir}/{name}", "w", encoding="utf-8") as fp:
+        fp.write(f"# LazyVPS IPv6 Mode Export / {name}\n")
+        yaml.safe_dump(obj, fp, allow_unicode=True, sort_keys=False)
+
+if v4:
+    dump("01_IMPORT_FLCLASH_IPV4.yaml", make_single(v4, "IPv4", False))
+dump("01_IMPORT_FLCLASH_IPV6.yaml", make_single(v6, "IPv6", True))
+if v4:
+    dump("01_IMPORT_FLCLASH_DUALSTACK.yaml", make_dual(v4, v6))
+print("OK")
+PY_IPV6_EXPORT
+
+  local cur_sni
+  cur_sni="$(current_xray_sni || true)"
+
+  # IPv6 YAML 稳定修正：IPv6 server 加引号、同步当前服务端 SNI / servername
+  patch_ipv6_yaml_text "$OUT/01_IMPORT_FLCLASH_IPV6.yaml" "$v6" "$cur_sni"
+  patch_ipv6_yaml_text "$OUT/01_IMPORT_FLCLASH_DUALSTACK.yaml" "$v6" "$cur_sni"
+  [[ -n "$v4" ]] && patch_ipv6_yaml_text "$OUT/01_IMPORT_FLCLASH_IPV4.yaml" "$v6" "$cur_sni"
+
+  # 生成 IPv6 稳定版：tcp-concurrent:false，适合 FLClash/Mihomo 导入异常或延迟测试不稳时使用
+  if [[ -f "$OUT/01_IMPORT_FLCLASH_IPV6.yaml" ]]; then
+    cp "$OUT/01_IMPORT_FLCLASH_IPV6.yaml" "$OUT/01_IMPORT_FLCLASH_IPV6_STABLE.yaml"
+    sed -i 's/tcp-concurrent: true/tcp-concurrent: false/g' "$OUT/01_IMPORT_FLCLASH_IPV6_STABLE.yaml"
+    patch_ipv6_yaml_text "$OUT/01_IMPORT_FLCLASH_IPV6_STABLE.yaml" "$v6" "$cur_sni"
+    inject_direct_rule_into_yaml "$OUT/01_IMPORT_FLCLASH_IPV6_STABLE.yaml" "$v6"
+  fi
+
+  for f in "$OUT"/01_IMPORT_FLCLASH_IPV*.yaml "$OUT"/01_IMPORT_FLCLASH_DUALSTACK.yaml; do
+    [[ -f "$f" ]] || continue
+    yaml_firstline_sanitize "$f"
+    yaml_validate_file "$f" >/dev/null 2>&1 || warn "YAML 校验异常：$f"
+  done
+
+  ok "已生成 IPv4 / IPv6 / DualStack / IPv6 Stable 配置："
+  ls -lh "$OUT"/01_IMPORT_FLCLASH_IPV*.yaml "$OUT"/01_IMPORT_FLCLASH_DUALSTACK.yaml "$OUT"/01_IMPORT_FLCLASH_IPV6_STABLE.yaml 2>/dev/null || true
+  note "IPv6 Stable 配置会将 IPv6 server 加引号、tcp-concurrent:false，并同步当前服务端 SNI。"
+  note "若 IPv6 Stable 仍 Timeout，可直接使用 IPv6 Only Clean 独立端口排查。"
+}
+
+ipv6_guard(){
+  section "IPv6 Guard / IPv6 泄漏检查"
+  note "用于判断 VPS 和导出配置是否可能走 IPv6，避免 AI/媒体检测结果混乱。"
+  local v6
+  v6="$(ip6_external || true)"
+  if [[ -n "$v6" ]]; then
+    ok "VPS IPv6 出口可用：$v6"
+  else
+    warn "VPS IPv6 外部出口不可用或被阻断。"
+  fi
+  echo
+  info "检查 outputs 中 IPv6 设置："
+  grep -R --line-number -E '^ipv6:|IP-CIDR6|server: "?[0-9a-fA-F:]+|2606:4700|2001:4860' "$OUT" 2>/dev/null || true
+  echo
+  note "如果想严格 IPv4 工作，导入 01_IMPORT_FLCLASH_IPV4.yaml。"
+  note "如果想测试原生 IPv6，导入 01_IMPORT_FLCLASH_IPV6.yaml。"
+  note "如果想双栈对比，导入 01_IMPORT_FLCLASH_DUALSTACK.yaml。"
+}
+
+
+ipv6_yaml_validate(){
+  local file="$1"
+  [[ -f "$file" ]] || { err "文件不存在：$file"; return 1; }
+  python3 - "$file" <<'PY_YAML_VALIDATE'
+import sys, yaml
+path=sys.argv[1]
+try:
+    cfg=yaml.safe_load(open(path, encoding="utf-8"))
+    if not isinstance(cfg, dict):
+        raise ValueError("YAML root is not map")
+    if not cfg.get("proxies"):
+        raise ValueError("missing proxies")
+    print("OK:", path)
+except Exception as e:
+    print("YAML ERROR:", path, e)
+    sys.exit(1)
+PY_YAML_VALIDATE
+}
+
+ipv6_http_sync_verify(){
+  section "HTTP Sync Verify / HTTP 下载同步检查"
+  mkdir -p "$HTTP_DIR"
+  cp -f "$OUT"/01_IMPORT_FLCLASH*.yaml "$HTTP_DIR/" 2>/dev/null || true
+  cp -f "$OUT"/02_IMPORT_SURGE.conf "$HTTP_DIR/" 2>/dev/null || true
+  cp -f /root/lazy-vps-output-latest.tar.gz "$HTTP_DIR/" 2>/dev/null || true
+  info "HTTP 目录文件："
+  ls -lh "$HTTP_DIR" | grep -E 'FLCLASH|SURGE|tar.gz' || true
+  echo
+  info "本机 HTTP 测试："
+  for f in 01_IMPORT_FLCLASH_IPV6_STABLE.yaml 01_IMPORT_FLCLASH_IPV6.yaml 01_IMPORT_FLCLASH_IPV4.yaml; do
+    [[ -f "$HTTP_DIR/$f" ]] && curl -I --connect-timeout 5 "http://127.0.0.1:${HTTP_PORT}/${f}" | head -3 || true
+  done
+  echo
+  info "8088 监听："
+  ss -lntp | grep ":${HTTP_PORT}" || true
+  note "如果 127.0.0.1 是 200 OK，但公网 IPv4 访问失败，多数是云商访问控制或 NAT hairpin；请以 Windows curl 结果为准。"
+}
+
+ipv6_dedicated_port_export(){
+  section "IPv6 Dedicated Port / IPv6 独立端口导出"
+  note "同一个 443 双栈服务并不会冲突；此功能用于单独开一个 IPv6 测试端口，便于排查客户端兼容。"
+  local port v6 cur_sni
+  read -rp "IPv6 独立测试端口 [2443]: " port
+  port="${port:-2443}"
+  valid_port "$port" || { err "端口无效"; return 1; }
+  v6="$(ip6_external || true)"
+  [[ -n "$v6" ]] || v6="$(ipv6_global_addr || true)"
+  read -rp "IPv6 地址 [${v6:-空}]: " input6
+  v6="${input6:-$v6}"
+  [[ -n "$v6" ]] || { err "没有 IPv6 地址。"; return 1; }
+  cur_sni="$(current_xray_sni || true)"
+
+  cp "$XCONF" "$XCONF.bak.ipv6_port_${port}.$(ts)" 2>/dev/null || true
+  python3 - "$port" <<'PY_ADD_IPV6_PORT'
+import sys, json, copy
+port=int(sys.argv[1])
+path="/usr/local/etc/xray/config.json"
+cfg=json.load(open(path))
+inbs=cfg.setdefault("inbounds", [])
+src=None
+for ib in inbs:
+    if ib.get("protocol") in ("trojan","vless"):
+        src=ib; break
+if not src:
+    raise SystemExit("未找到 trojan/vless inbound，无法复制 IPv6 独立端口。")
+new=copy.deepcopy(src)
+new["port"]=port
+new["listen"]="::"
+new["tag"]=f"{src.get('protocol','proxy')}-ipv6-{port}-in"
+# 去重同端口
+inbs[:] = [ib for ib in inbs if not (ib.get("port")==port and str(ib.get("tag","")).endswith(f"ipv6-{port}-in"))]
+inbs.append(new)
+open(path,"w").write(json.dumps(cfg, indent=2, ensure_ascii=False))
+print("OK: added inbound", new["tag"], port)
+PY_ADD_IPV6_PORT
+
+  "$XRAY" run -test -config "$XCONF" || { err "Xray 配置测试失败，未重启。"; return 1; }
+  fw_open_port "$port" "tcp"
+  systemctl restart xray
+  ok "已新增 IPv6 独立测试端口：$port"
+
+  # 基于 IPv6 stable 生成独立端口文件
+  [[ -f "$OUT/01_IMPORT_FLCLASH_IPV6_STABLE.yaml" ]] || ipv6_make_exports || true
+  local src="$OUT/01_IMPORT_FLCLASH_IPV6_STABLE.yaml"
+  local dst="$OUT/01_IMPORT_FLCLASH_IPV6_PORT${port}.yaml"
+  [[ -f "$src" ]] || { err "未找到 IPv6 Stable 配置，无法生成端口配置。"; return 1; }
+  cp "$src" "$dst"
+  python3 - "$dst" "$v6" "$port" "$cur_sni" <<'PY_PORT_YAML'
+import sys, re
+path, ip6, port, sni = sys.argv[1:5]
+text=open(path, encoding="utf-8").read()
+text=re.sub(r'(?m)^(\s*server:\s*).+$', r'\1"' + ip6 + '"', text, count=1)
+text=re.sub(r'(?m)^(\s*port:\s*)\d+', r'\1' + port, text, count=1)
+if sni:
+    text=re.sub(r'(?m)^(\s*sni:\s*).+$', r'\1' + sni, text)
+    text=re.sub(r'(?m)^(\s*servername:\s*).+$', r'\1' + sni, text)
+text=text.replace("tcp-concurrent: true", "tcp-concurrent: false")
+rule=f"  - IP-CIDR6,{ip6}/128,DIRECT,no-resolve"
+if rule not in text and "rules:\n" in text:
+    text=text.replace("rules:\n", "rules:\n"+rule+"\n", 1)
+open(path,"w",encoding="utf-8").write(text)
+PY_PORT_YAML
+
+  ipv6_yaml_validate "$dst" || true
+  mkdir -p "$HTTP_DIR"
+  cp -f "$dst" "$HTTP_DIR/" 2>/dev/null || true
+  ok "已生成 IPv6 独立端口配置：$dst"
+  note "下载链接：http://$(public_ip_for_links):${HTTP_PORT}/01_IMPORT_FLCLASH_IPV6_PORT${port}.yaml"
+  ss -lntp | grep ":${port}" || true
+}
+
+
+yaml_firstline_sanitize(){
+  local file="$1"
+  [[ -f "$file" ]] || return 0
+  python3 - "$file" <<'PY_YAML_FIRSTLINE'
+import sys
+p=sys.argv[1]
+s=open(p,encoding="utf-8").read()
+s=s.replace("\\nmixed-port:", "\nmixed-port:")
+open(p,"w",encoding="utf-8").write(s)
+PY_YAML_FIRSTLINE
+}
+
+yaml_validate_file(){
+  local file="$1"
+  [[ -f "$file" ]] || { err "文件不存在：$file"; return 1; }
+  python3 - "$file" <<'PY_YAML_VALIDATE2'
+import sys, yaml
+p=sys.argv[1]
+try:
+    cfg=yaml.safe_load(open(p,encoding="utf-8"))
+    if not isinstance(cfg, dict): raise ValueError("YAML root 不是 map")
+    if not cfg.get("proxies"): raise ValueError("缺少 proxies")
+    print("OK:", p)
+except Exception as e:
+    print("YAML ERROR:", p, e)
+    sys.exit(1)
+PY_YAML_VALIDATE2
+}
+
+ipv6_only_clean_trojan(){
+  section "IPv6 Only Clean / 纯 IPv6 独立端口重作"
+  note "用于彻底排除 443 双栈、旧配置、YAML 导出等干扰。"
+  note "会新增一个只用于 IPv6 测试的 Trojan inbound，默认端口 2443，不影响原 443。"
+
+  local port v6 node pass sni input6
+  read -rp "IPv6 独立端口 [2443]: " port
+  port="${port:-2443}"
+  valid_port "$port" || { err "端口无效"; return 1; }
+
+  v6="$(ip6_external || true)"
+  [[ -n "$v6" ]] || v6="$(ipv6_global_addr || true)"
+  read -rp "IPv6 地址 [${v6:-空}]: " input6
+  v6="${input6:-$v6}"
+  [[ -n "$v6" ]] || { err "未检测到 IPv6。"; return 1; }
+
+  node="$(ask '节点名称' 'TW 台湾-自建VPS-T协议-IPv6Only')"
+  sni="$(ask 'SNI' 'www.cloudflare.com')"
+  pass="node_$(tr -dc A-Za-z0-9 </dev/urandom | head -c 22)"
+
+  backup_all
+  cp "$XCONF" "$XCONF.bak.ipv6only_${port}.$(ts)" 2>/dev/null || true
+
+  mkdir -p "$(dirname "$XCONF")"
+  openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes \
+    -keyout "/usr/local/etc/xray/trojan-ipv6only-${port}.key" \
+    -out "/usr/local/etc/xray/trojan-ipv6only-${port}.crt" \
+    -subj "/CN=${sni}" \
+    -addext "subjectAltName=DNS:${sni}" >/dev/null 2>&1
+  chmod 644 "/usr/local/etc/xray/trojan-ipv6only-${port}.key" "/usr/local/etc/xray/trojan-ipv6only-${port}.crt" 2>/dev/null || true
+  chown root:root "/usr/local/etc/xray/trojan-ipv6only-${port}.key" "/usr/local/etc/xray/trojan-ipv6only-${port}.crt" 2>/dev/null || true
+
+  python3 - "$port" "$pass" "$sni" <<'PY_IPV6_ONLY_INBOUND'
+import sys, json
+port=int(sys.argv[1]); password=sys.argv[2]; sni=sys.argv[3]
+path="/usr/local/etc/xray/config.json"
+cfg=json.load(open(path))
+cfg.setdefault("inbounds", [])
+tag=f"trojan-ipv6only-{port}-in"
+cfg["inbounds"]=[ib for ib in cfg["inbounds"] if ib.get("tag") != tag and ib.get("port") != port]
+cfg["inbounds"].append({
+  "listen": "::",
+  "port": port,
+  "protocol": "trojan",
+  "tag": tag,
+  "settings": {"clients": [{"password": password}]},
+  "streamSettings": {
+    "network": "tcp",
+    "security": "tls",
+    "tlsSettings": {
+      "serverName": sni,
+      "alpn": ["http/1.1"],
+      "certificates": [{
+        "certificateFile": f"/usr/local/etc/xray/trojan-ipv6only-{port}.crt",
+        "keyFile": f"/usr/local/etc/xray/trojan-ipv6only-{port}.key"
+      }]
+    }
+  },
+  "sniffing": {"enabled": True, "destOverride": ["http","tls"]}
+})
+open(path,"w").write(json.dumps(cfg, indent=2, ensure_ascii=False))
+PY_IPV6_ONLY_INBOUND
+
+  "$XRAY" run -test -config "$XCONF" || { err "Xray 配置测试失败，未重启。"; return 1; }
+  fw_open_port "$port" "tcp"
+  systemctl restart xray
+  ok "已新增 IPv6 Only Trojan 端口：$port"
+
+  mkdir -p "$OUT" "$HTTP_DIR"
+  local out_file="$OUT/01_IMPORT_FLCLASH_IPV6_ONLY_PORT${port}.yaml"
+  cat > "$out_file" <<EOF
+# LazyVPS IPv6 Only Clean Export / 独立 IPv6 Trojan 端口
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: true
+unified-delay: true
+tcp-concurrent: false
+
+dns:
+  enable: true
+  listen: 127.0.0.1:1053
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  nameserver:
+    - 2606:4700:4700::1111
+    - 2001:4860:4860::8888
+    - 1.1.1.1
+    - 8.8.8.8
+
+proxies:
+  - name: "$node"
+    type: trojan
+    server: "$v6"
+    port: $port
+    password: "$pass"
+    sni: $sni
+    skip-cert-verify: true
+    udp: true
+    network: tcp
+    alpn:
+      - http/1.1
+    client-fingerprint: chrome
+
+proxy-groups:
+  - name: GLOBAL
+    type: select
+    proxies:
+      - "$node"
+      - DIRECT
+  - name: PROXY
+    type: select
+    proxies:
+      - "$node"
+      - DIRECT
+
+rules:
+  - IP-CIDR6,${v6}/128,DIRECT,no-resolve
+  - MATCH,PROXY
+EOF
+  yaml_firstline_sanitize "$out_file"
+  yaml_validate_file "$out_file" || { err "IPv6 Only YAML 校验失败。"; return 1; }
+  cp -f "$out_file" "$HTTP_DIR/" 2>/dev/null || true
+  ok "已生成纯 IPv6 独立端口配置：$out_file"
+  note "下载链接：http://$(public_ip_for_links):${HTTP_PORT}/$(basename "$out_file")"
+  note "Windows 测试：powershell -NoProfile -Command \"Test-NetConnection -ComputerName '$v6' -Port $port\""
+  ss -lntp | grep ":${port}" || true
+}
+
+ipv6_reality_only(){
+  section "IPv6 Reality Only / 纯 IPv6 VLESS Reality 独立端口"
+  note "用于替代 Trojan over IPv6；适合 Trojan IPv6 在 FLClash/Mihomo 下持续 Timeout 的情况。"
+  note "默认端口 2444，不影响原 443 / 2443。默认 Reality 目标：www.cloudflare.com。"
+
+  local port v6 server_host domain sni uuid keys private public short node
+  read -rp "IPv6 Reality 独立端口 [2444]: " port
+  port="${port:-2444}"
+  valid_port "$port" || { err "端口无效"; return 1; }
+
+  v6="$(ip6_external || true)"
+  [[ -n "$v6" ]] || v6="$(ipv6_global_addr || true)"
+  read -rp "IPv6 地址 [${v6:-空}]: " input6
+  v6="${input6:-$v6}"
+  [[ -n "$v6" ]] || { err "未检测到 IPv6。"; return 1; }
+
+  read -rp "AAAA 域名，可留空；例如 v6-r443.example.com: " domain
+  if [[ -n "$domain" ]]; then
+    server_host="$domain"
+  else
+    server_host="$v6"
+  fi
+
+  sni="$(ask 'Reality serverName' 'www.cloudflare.com')"
+  node="$(ask '节点名称' 'TW 台湾-自建VPS-VLESS-R-IPv6Only')"
+
+  uuid="$($XRAY uuid 2>/dev/null || cat /proc/sys/kernel/random/uuid)"
+  keys="$($XRAY x25519 2>/dev/null || true)"
+  private="$(echo "$keys" | awk -F': ' '/Private/{print $2; exit}')"
+  public="$(echo "$keys" | awk -F': ' '/Public/{print $2; exit}')"
+  if [[ -z "$private" || -z "$public" ]]; then
+    err "xray x25519 生成密钥失败。"
+    echo "$keys"
+    return 1
+  fi
+  short="$(openssl rand -hex 8)"
+
+  backup_all
+  cp "$XCONF" "$XCONF.bak.ipv6_reality_${port}.$(ts)" 2>/dev/null || true
+
+  export port uuid private short sni
+  python3 - <<'PY_IPV6_REALITY_INBOUND'
+import os, json
+path="/usr/local/etc/xray/config.json"
+cfg=json.load(open(path))
+port=int(os.environ["port"])
+uuid=os.environ["uuid"]
+private=os.environ["private"]
+short=os.environ["short"]
+sni=os.environ["sni"]
+tag=f"vless-ipv6-reality|ipv6-r443-{port}-in"
+cfg.setdefault("inbounds", [])
+cfg["inbounds"]=[ib for ib in cfg["inbounds"] if ib.get("tag") != tag and ib.get("port") != port]
+cfg["inbounds"].append({
+  "listen": "::",
+  "port": port,
+  "protocol": "vless",
+  "tag": tag,
+  "settings": {
+    "decryption": "none",
+    "clients": [{"id": uuid, "flow": "xtls-rprx-vision"}]
+  },
+  "streamSettings": {
+    "network": "tcp",
+    "security": "reality",
+    "realitySettings": {
+      "dest": f"{sni}:443",
+      "serverNames": [sni],
+      "privateKey": private,
+      "shortIds": [short]
+    }
+  },
+  "sniffing": {"enabled": True, "destOverride": ["http", "tls", "quic"]}
+})
+open(path,"w").write(json.dumps(cfg, indent=2, ensure_ascii=False))
+print("OK: added", tag, port)
+PY_IPV6_REALITY_INBOUND
+
+  "$XRAY" run -test -config "$XCONF" || { err "Xray 配置测试失败，未重启。"; return 1; }
+  fw_open_port "$port" "tcp"
+  systemctl restart xray
+  ok "已新增 IPv6 VLESS Reality 端口：$port"
+
+  mkdir -p "$OUT" "$HTTP_DIR"
+  local out_file="$OUT/01_IMPORT_FLCLASH_IPV6_REALITY_PORT${port}.yaml"
+  cat > "$out_file" <<EOF
+# LazyVPS IPv6 Reality Only Export / 独立 IPv6 VLESS Reality 端口
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: true
+unified-delay: true
+tcp-concurrent: false
+
+dns:
+  enable: true
+  listen: 127.0.0.1:1053
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  nameserver:
+    - 2606:4700:4700::1111
+    - 2001:4860:4860::8888
+    - 1.1.1.1
+    - 8.8.8.8
+
+proxies:
+  - name: "$node"
+    type: vless
+    server: "$server_host"
+    port: $port
+    uuid: $uuid
+    udp: true
+    network: tcp
+    tls: true
+    flow: xtls-rprx-vision
+    servername: $sni
+    reality-opts:
+      public-key: $public
+      short-id: $short
+    client-fingerprint: chrome
+
+proxy-groups:
+  - name: GLOBAL
+    type: select
+    proxies:
+      - "$node"
+      - DIRECT
+  - name: PROXY
+    type: select
+    proxies:
+      - "$node"
+      - DIRECT
+
+rules:
+EOF
+  if [[ "$server_host" == *":"* ]]; then
+    echo "  - IP-CIDR6,${v6}/128,DIRECT,no-resolve" >> "$out_file"
+  else
+    echo "  - DOMAIN,${server_host},DIRECT" >> "$out_file"
+  fi
+  cat >> "$out_file" <<EOF
+  - MATCH,PROXY
+EOF
+
+  yaml_firstline_sanitize "$out_file" 2>/dev/null || true
+  yaml_validate_file "$out_file" || { err "IPv6 Reality YAML 校验失败。"; return 1; }
+  cp -f "$out_file" "$HTTP_DIR/" 2>/dev/null || true
+  ok "已生成 IPv6 Reality 配置：$out_file"
+  note "下载链接：http://$(public_ip_for_links):${HTTP_PORT}/$(basename "$out_file")"
+  note "Windows 测试：powershell -NoProfile -Command \"Test-NetConnection -ComputerName '$v6' -Port $port\""
+  ss -lntp -6 | grep ":${port}" || true
+}
+
+
+ipv6_reality_443_clean(){
+  section "IPv6 Reality 443 Clean / 纯 IPv6 VLESS Reality 443 清洁重建"
+  warn "这个功能会把当前 443 入站切换为 VLESS Reality。原 443 Trojan 会先备份，但会暂时不可用。"
+  note "适合：IPv6 很重要，2443/2444 非 443 Reality 在 FLClash/Mihomo 下持续 Timeout 的情况。"
+  note "默认使用标准 443 + Reality serverName www.cloudflare.com；填写域名时会自动写入 hosts 固定解析，避免公共 DNS 未生效导致 Timeout。"
+  echo
+  read -rp "确认切换 443 为 VLESS Reality？[y/N]: " sure
+  [[ "$sure" =~ ^[Yy]$ ]] || return 0
+
+  local v6 domain server_host sni uuid keys private public short node port
+  port="443"
+  v6="$(ip6_external || true)"
+  [[ -n "$v6" ]] || v6="$(ipv6_global_addr || true)"
+  read -rp "IPv6 地址 [${v6:-空}]: " input6
+  v6="${input6:-$v6}"
+  [[ -n "$v6" ]] || { err "未检测到 IPv6。"; return 1; }
+
+  read -rp "AAAA 域名，建议填写，例如 v6-r443.example.com: " domain
+  if [[ -n "$domain" ]]; then
+    server_host="$domain"
+  else
+    server_host="$v6"
+  fi
+
+  sni="$(ask 'Reality serverName' 'www.cloudflare.com')"
+  node="$(ask '节点名称' 'TW 台湾-自建VPS-VLESS-R-IPv6-443')"
+  uuid="$($XRAY uuid 2>/dev/null || cat /proc/sys/kernel/random/uuid)"
+  keys="$($XRAY x25519 2>/dev/null || true)"
+  private="$(echo "$keys" | awk -F': ' '/Private/{print $2; exit}')"
+  public="$(echo "$keys" | awk -F': ' '/Public/{print $2; exit}')"
+  if [[ -z "$private" || -z "$public" ]]; then
+    err "xray x25519 生成密钥失败。"
+    echo "$keys"
+    return 1
+  fi
+  short="$(openssl rand -hex 8)"
+
+  backup_all
+  cp "$XCONF" "$BAK/xray_config_before_ipv6_reality_443_$(ts).json" 2>/dev/null || true
+  cp "$XCONF" "$XCONF.bak.before_ipv6_reality_443.$(ts)" 2>/dev/null || true
+
+  export port uuid private short sni
+  python3 - <<'PY_IPV6_REALITY443'
+import os, json
+path="/usr/local/etc/xray/config.json"
+cfg=json.load(open(path))
+port=int(os.environ["port"])
+uuid=os.environ["uuid"]
+private=os.environ["private"]
+short=os.environ["short"]
+sni=os.environ["sni"]
+tag="vless-ipv6-reality-443-in"
+cfg.setdefault("inbounds", [])
+# 443 只能有一个入站：清掉所有 port=443 的入站，避免 Trojan/VLESS 端口冲突
+cfg["inbounds"]=[ib for ib in cfg["inbounds"] if ib.get("port") != port and ib.get("tag") != tag]
+cfg["inbounds"].append({
+  "listen": "::",
+  "port": port,
+  "protocol": "vless",
+  "tag": tag,
+  "settings": {
+    "decryption": "none",
+    "clients": [{"id": uuid, "flow": "xtls-rprx-vision"}]
+  },
+  "streamSettings": {
+    "network": "tcp",
+    "security": "reality",
+    "realitySettings": {
+      "dest": f"{sni}:443",
+      "serverNames": [sni],
+      "privateKey": private,
+      "shortIds": [short]
+    }
+  },
+  "sniffing": {"enabled": True, "destOverride": ["http", "tls", "quic"]}
+})
+open(path,"w").write(json.dumps(cfg, indent=2, ensure_ascii=False))
+print("OK: added", tag, port)
+PY_IPV6_REALITY443
+
+  "$XRAY" run -test -config "$XCONF" || { err "Xray 配置测试失败，未重启。可用 12) Rollback Xray 回滚。"; return 1; }
+  fw_open_port 443 "tcp"
+  systemctl restart xray
+  ok "已将 443 切换为 IPv6 VLESS Reality。"
+
+  mkdir -p "$OUT" "$HTTP_DIR"
+  local out_file="$OUT/01_IMPORT_FLCLASH_IPV6_REALITY_PORT443.yaml"
+  local out_alias="$OUT/01_IMPORT_FLCLASH_IPV6_REALITY_443.yaml"
+  cat > "$out_file" <<EOF
+# LazyVPS IPv6 Reality 443 Clean Export / 纯 IPv6 VLESS Reality 标准 443
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: true
+unified-delay: true
+tcp-concurrent: false
+
+hosts:
+  "$server_host": "$v6"
+
+dns:
+  enable: true
+  listen: 127.0.0.1:1053
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - "$server_host"
+  nameserver:
+    - 2606:4700:4700::1111
+    - 2001:4860:4860::8888
+    - 1.1.1.1
+    - 8.8.8.8
+
+proxies:
+  - name: "$node"
+    type: vless
+    server: "$server_host"
+    port: 443
+    uuid: $uuid
+    udp: true
+    network: tcp
+    tls: true
+    flow: xtls-rprx-vision
+    servername: $sni
+    reality-opts:
+      public-key: $public
+      short-id: $short
+    client-fingerprint: chrome
+
+proxy-groups:
+  - name: GLOBAL
+    type: select
+    proxies:
+      - "$node"
+      - DIRECT
+  - name: PROXY
+    type: select
+    proxies:
+      - "$node"
+      - DIRECT
+
+rules:
+  - IP-CIDR6,${v6}/128,DIRECT,no-resolve
+EOF
+  if [[ "$server_host" != *":"* ]]; then
+    echo "  - DOMAIN,${server_host},DIRECT" >> "$out_file"
+  fi
+  cat >> "$out_file" <<EOF
+  - MATCH,PROXY
+EOF
+
+  yaml_firstline_sanitize "$out_file" 2>/dev/null || true
+  yaml_validate_file "$out_file" || { err "IPv6 Reality 443 YAML 校验失败。"; return 1; }
+  cp -f "$out_file" "$out_alias" 2>/dev/null || true
+  cp -f "$out_file" "$HTTP_DIR/" 2>/dev/null || true
+  ok "已生成 IPv6 Reality 443 配置：$out_file"
+  note "兼容别名：$out_alias"
+  note "下载链接：http://$(public_ip_for_links):${HTTP_PORT}/$(basename "$out_file")"
+  note "Windows 测试：powershell -NoProfile -Command \"Test-NetConnection -ComputerName '$v6' -Port 443\""
+  ss -lntp -6 | grep ':443' || true
+}
+
+ipv6_reality_443_rollback_hint(){
+  section "IPv6 Reality 443 Rollback / 回滚提示"
+  note "若 443 Reality 不合适，请执行主菜单 12) Rollback Xray，选择切换前的备份。"
+  note "备份目录：/opt/lazy-vps-menu/backups"
+  ls -lt "$BAK"/*xray* 2>/dev/null | head -10 || true
+}
+
+ipv6_disable(){
+  section "IPv6 Disable / 临时关闭系统 IPv6"
+  warn "此操作会在系统层关闭 IPv6，适合排查 IPv6 泄漏，不适合你当前想测试 IPv6 的场景。"
+  read -rp "确认关闭系统 IPv6？[y/N]: " ans
+  [[ "$ans" =~ ^[Yy]$ ]] || return 0
+  cp /etc/sysctl.conf "$BAK/sysctl.conf.before_disable_ipv6_$(ts)" 2>/dev/null || true
+  cat > /etc/sysctl.d/99-lazyvps-disable-ipv6.conf <<'EOF'
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+EOF
+  sysctl --system >/dev/null 2>&1 || true
+  ok "已写入 /etc/sysctl.d/99-lazyvps-disable-ipv6.conf"
+}
+
+ipv6_rollback(){
+  section "IPv6 Rollback / 恢复系统 IPv6"
+  rm -f /etc/sysctl.d/99-lazyvps-disable-ipv6.conf
+  cat > /etc/sysctl.d/99-lazyvps-enable-ipv6.conf <<'EOF'
+net.ipv6.conf.all.disable_ipv6 = 0
+net.ipv6.conf.default.disable_ipv6 = 0
+net.ipv6.conf.lo.disable_ipv6 = 0
+EOF
+  sysctl --system >/dev/null 2>&1 || true
+  ok "已尝试恢复系统 IPv6。"
+  ipv6_check
+}
+
+
+# ------------------------------------------------------------------------------
+# v1.2.15: IPv4/IPv6 独立端口与双栈策略
+# ------------------------------------------------------------------------------
+
+ipv4_reality_fallback_port(){
+  section "IPv4 Fallback Port / IPv4 备用端口部署"
+  note "用于双栈 VPS：IPv6 443 做主力，IPv4 单独开备用端口，方便手动指定 V4 / V6。"
+  note "默认新增 IPv4 VLESS Reality 8443，不影响已跑通的 IPv6 Reality 443。"
+  warn "Reality 非 443 端口在部分网络环境可能有额外识别风险；此处作为 IPv4 备用和排查用途。"
+  echo
+
+  local port v4 domain server_host sni uuid keys private public short node out_file
+  port="$(ask 'IPv4 备用 Reality 端口' '8443')"
+  valid_port "$port" || { err "端口无效。"; return 1; }
+
+  v4="$(ip4_external || true)"
+  read -rp "IPv4 地址 [${v4:-空}]: " input4
+  v4="${input4:-$v4}"
+  [[ -n "$v4" ]] || { err "未检测到 IPv4。若是 NAT VPS，请手动输入公网 IPv4。"; return 1; }
+
+  read -rp "A 域名，可留空；例如 v4-backup.example.com: " domain
+  if [[ -n "$domain" ]]; then server_host="$domain"; else server_host="$v4"; fi
+
+  sni="$(ask 'Reality serverName' 'www.cloudflare.com')"
+  node="$(ask '节点名称' 'TW 台湾-自建VPS-VLESS-R-IPv4-8443')"
+  uuid="$($XRAY uuid 2>/dev/null || cat /proc/sys/kernel/random/uuid)"
+  keys="$($XRAY x25519 2>/dev/null || true)"
+  private="$(echo "$keys" | awk -F': ' '/Private/{print $2; exit}')"
+  public="$(echo "$keys" | awk -F': ' '/Public/{print $2; exit}')"
+  if [[ -z "$private" || -z "$public" ]]; then err "xray x25519 生成密钥失败。"; echo "$keys"; return 1; fi
+  short="$(openssl rand -hex 8)"
+
+  backup_all
+  cp "$XCONF" "$XCONF.bak.ipv4_reality_${port}.$(ts)" 2>/dev/null || true
+
+  export port uuid private short sni
+  python3 - <<'PY_IPV4_REALITY_INBOUND'
+import os, json
+path='/usr/local/etc/xray/config.json'
+cfg=json.load(open(path))
+port=int(os.environ['port'])
+uuid=os.environ['uuid']
+private=os.environ['private']
+short=os.environ['short']
+sni=os.environ['sni']
+tag=f'vless-ipv4-reality-{port}-in'
+cfg.setdefault('inbounds', [])
+# 同端口只保留一个备用入站，避免重复监听
+cfg['inbounds']=[ib for ib in cfg['inbounds'] if ib.get('port') != port and ib.get('tag') != tag]
+cfg['inbounds'].append({
+  'listen':'0.0.0.0',
+  'port':port,
+  'protocol':'vless',
+  'tag':tag,
+  'settings':{'decryption':'none','clients':[{'id':uuid,'flow':'xtls-rprx-vision'}]},
+  'streamSettings':{
+    'network':'tcp',
+    'security':'reality',
+    'realitySettings':{
+      'show':False,
+      'dest':f'{sni}:443',
+      'xver':0,
+      'serverNames':[sni],
+      'privateKey':private,
+      'shortIds':[short]
+    }
+  },
+  'sniffing':{'enabled':True,'destOverride':['http','tls','quic']}
+})
+open(path,'w').write(json.dumps(cfg, indent=2, ensure_ascii=False))
+print('OK: added', tag, port)
+PY_IPV4_REALITY_INBOUND
+
+  "$XRAY" run -test -config "$XCONF" || { err "Xray 配置测试失败，未重启。"; return 1; }
+  fw_open_port "$port" "tcp"
+  systemctl restart xray
+  ok "已新增 IPv4 VLESS Reality 备用端口：$port"
+
+  mkdir -p "$OUT" "$HTTP_DIR"
+  out_file="$OUT/01_IMPORT_FLCLASH_IPV4_REALITY_PORT${port}.yaml"
+  cat > "$out_file" <<EOF
+# LazyVPS IPv4 Fallback Reality Export / IPv4 备用端口
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: false
+unified-delay: true
+tcp-concurrent: true
+EOF
+  if [[ -n "$domain" ]]; then
+    cat >> "$out_file" <<EOF
+hosts:
+  "$server_host": "$v4"
+EOF
+  fi
+  cat >> "$out_file" <<EOF
+
+dns:
+  enable: true
+  listen: 127.0.0.1:1053
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+EOF
+  if [[ -n "$domain" ]]; then
+    cat >> "$out_file" <<EOF
+  fake-ip-filter:
+    - "$server_host"
+EOF
+  fi
+  cat >> "$out_file" <<EOF
+  nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+    - 1.1.1.1
+    - 8.8.8.8
+
+proxies:
+  - name: "$node"
+    type: vless
+    server: "$server_host"
+    port: $port
+    uuid: $uuid
+    udp: true
+    network: tcp
+    tls: true
+    flow: xtls-rprx-vision
+    servername: $sni
+    reality-opts:
+      public-key: $public
+      short-id: $short
+    client-fingerprint: chrome
+
+proxy-groups:
+  - name: GLOBAL
+    type: select
+    proxies:
+      - "$node"
+      - DIRECT
+  - name: PROXY
+    type: select
+    proxies:
+      - "$node"
+      - DIRECT
+
+rules:
+EOF
+  if [[ -n "$domain" ]]; then
+    echo "  - DOMAIN,${server_host},DIRECT" >> "$out_file"
+  else
+    echo "  - IP-CIDR,${v4}/32,DIRECT,no-resolve" >> "$out_file"
+  fi
+  cat >> "$out_file" <<EOF
+  - MATCH,PROXY
+EOF
+
+  yaml_firstline_sanitize "$out_file" 2>/dev/null || true
+  yaml_validate_file "$out_file" || { err "IPv4 Reality YAML 校验失败。"; return 1; }
+  cp -f "$out_file" "$HTTP_DIR/" 2>/dev/null || true
+  ok "已生成 IPv4 备用配置：$out_file"
+  note "下载链接：http://$(public_ip_for_links):${HTTP_PORT}/$(basename "$out_file")"
+  note "Windows 测试：powershell -NoProfile -Command \"Test-NetConnection -ComputerName '$v4' -Port $port\""
+  ss -lntp | grep ":${port}" || true
+}
+
+v4v6_split_export(){
+  section "V4/V6 Split Export / V4V6 独立端口导出"
+  note "将 IPv6 Reality 443 与 IPv4 备用端口合并成一个 FLClash 配置，便于手动指定 V4 / V6。"
+  local v6file v4file out_file alias_file
+  v6file="$OUT/01_IMPORT_FLCLASH_IPV6_REALITY_PORT443.yaml"
+  [[ -f "$v6file" ]] || v6file="$OUT/01_IMPORT_FLCLASH_IPV6_REALITY_443.yaml"
+  v4file="$(ls -t "$OUT"/01_IMPORT_FLCLASH_IPV4_REALITY_PORT*.yaml 2>/dev/null | head -1 || true)"
+
+  [[ -f "$v6file" ]] || { err "找不到 IPv6 Reality 443 配置。请先执行 IPv6 Mode → IPv6 Reality 443。"; return 1; }
+  [[ -f "$v4file" ]] || { err "找不到 IPv4 备用端口配置。请先执行 IPv6 Mode → IPv4 Fallback Port。"; return 1; }
+
+  out_file="$OUT/01_IMPORT_FLCLASH_V4V6_SPLIT.yaml"
+  alias_file="$OUT/01_IMPORT_FLCLASH_DUALSTACK_AUTO.yaml"
+
+  python3 - "$v6file" "$v4file" "$out_file" <<'PY_V4V6_SPLIT'
+import sys, yaml, re
+v6file, v4file, outfile = sys.argv[1:4]
+def load(p): return yaml.safe_load(open(p, encoding='utf-8'))
+def first_proxy(c):
+    ps=c.get('proxies') or []
+    if not ps: raise SystemExit(f'no proxies in {c}')
+    return dict(ps[0])
+def server_rule(s):
+    if not s: return None
+    if re.match(r'^(\d{1,3}\.){3}\d{1,3}$', str(s)):
+        return f'IP-CIDR,{s}/32,DIRECT,no-resolve'
+    if ':' in str(s):
+        return f'IP-CIDR6,{s}/128,DIRECT,no-resolve'
+    return f'DOMAIN,{s},DIRECT'
+def merge_hosts(*cfgs):
+    h={}
+    for c in cfgs:
+        h.update(c.get('hosts') or {})
+    return h
+c6=load(v6file); c4=load(v4file)
+p6=first_proxy(c6); p4=first_proxy(c4)
+# 保留用户命名，但加清晰后缀避免同名
+if 'IPv6' not in p6.get('name','') and 'V6' not in p6.get('name',''):
+    p6['name']=p6.get('name','IPv6 Reality')+'-V6-443'
+if 'IPv4' not in p4.get('name','') and 'V4' not in p4.get('name',''):
+    p4['name']=p4.get('name','IPv4 Reality')+'-V4'
+node6=p6['name']; node4=p4['name']
+hosts=merge_hosts(c6,c4)
+fake=[]
+for c in [c6,c4]:
+    fake += ((c.get('dns') or {}).get('fake-ip-filter') or [])
+for s in [p6.get('server'), p4.get('server')]:
+    if s and ':' not in str(s) and not re.match(r'^(\d{1,3}\.){3}\d{1,3}$', str(s)):
+        fake.insert(0, s)
+# 去重保持顺序
+seen=set(); fake=[x for x in fake if not (x in seen or seen.add(x))]
+rules=[]
+for p in [p6,p4]:
+    r=server_rule(p.get('server'))
+    if r and r not in rules: rules.append(r)
+for c in [c6,c4]:
+    for r in c.get('rules') or []:
+        if isinstance(r,str) and (r.startswith('IP-CIDR') or r.startswith('DOMAIN,')) and r not in rules:
+            rules.append(r)
+rules.append('MATCH,PROXY')
+out={
+  'mixed-port':7890,
+  'allow-lan':False,
+  'mode':'rule',
+  'log-level':'info',
+  'ipv6':True,
+  'unified-delay':True,
+  'tcp-concurrent':False,
+  'hosts':hosts,
+  'dns':{
+    'enable':True,
+    'listen':'127.0.0.1:1053',
+    'enhanced-mode':'fake-ip',
+    'fake-ip-range':'198.18.0.1/16',
+    'fake-ip-filter':fake,
+    'nameserver':['2606:4700:4700::1111','2001:4860:4860::8888','223.5.5.5','119.29.29.29','1.1.1.1','8.8.8.8']
+  },
+  'proxies':[p6,p4],
+  'proxy-groups':[
+    {'name':'🌐 Auto','type':'fallback','proxies':[node6,node4],'url':'https://www.gstatic.com/generate_204','interval':300},
+    {'name':'🚀 Proxy','type':'select','proxies':['🌐 Auto',node6,node4,'DIRECT']},
+    {'name':'🇹🇼 IPv6 主力','type':'select','proxies':[node6,'DIRECT']},
+    {'name':'🇹🇼 IPv4 备用','type':'select','proxies':[node4,'DIRECT']},
+    {'name':'GLOBAL','type':'select','proxies':['🚀 Proxy','🌐 Auto',node6,node4,'DIRECT']},
+    {'name':'PROXY','type':'select','proxies':['🚀 Proxy','🌐 Auto',node6,node4,'DIRECT']},
+  ],
+  'rules':rules
+}
+with open(outfile,'w',encoding='utf-8') as f:
+    f.write('# LazyVPS V4/V6 Split Export / IPv6主力 + IPv4备用\n')
+    yaml.safe_dump(out, f, allow_unicode=True, sort_keys=False)
+yaml.safe_load(open(outfile, encoding='utf-8'))
+print('OK:', outfile)
+PY_V4V6_SPLIT
+
+  yaml_validate_file "$out_file" || { err "V4/V6 Split YAML 校验失败。"; return 1; }
+  cp -f "$out_file" "$alias_file" 2>/dev/null || true
+  cp -f "$out_file" "$HTTP_DIR/" 2>/dev/null || true
+  cp -f "$alias_file" "$HTTP_DIR/" 2>/dev/null || true
+  ok "已生成 V4/V6 独立端口配置：$out_file"
+  ok "已生成 DualStack Auto 别名：$alias_file"
+  note "下载链接：http://$(public_ip_for_links):${HTTP_PORT}/$(basename "$out_file")"
+}
+
+dualstack_strategy_template(){
+  section "DualStack Strategy / 双栈策略组生成说明"
+  local md="$OUT/v4v6_dualstack_strategy.md"
+  cat > "$md" <<'EOF'
+# LazyVPS V4/V6 独立端口与双栈策略
+
+推荐结构：
+
+```text
+IPv6 主力：VLESS Reality 443
+IPv4 备用：VLESS Reality 8443 或自定义端口
+Auto 策略：优先 IPv6，失败后切 IPv4
+```
+
+推荐执行顺序：
+
+```text
+1. IPv6 Mode → IPv6 Reality 443
+2. IPv6 Mode → IPv4 Fallback Port
+3. IPv6 Mode → V4/V6 Split Export
+4. HTTP On
+5. FLClash 导入 01_IMPORT_FLCLASH_V4V6_SPLIT.yaml
+```
+
+导入后可手动指定：
+
+- `🇹🇼 IPv6 主力`：强制走 IPv6 Reality 443
+- `🇹🇼 IPv4 备用`：强制走 IPv4 Reality 备用端口
+- `🌐 Auto`：自动优先可用节点
+EOF
+  ok "已生成双栈策略说明：$md"
+  sed -n '1,120p' "$md"
+}
+
+ipv6_mode_menu(){
+  while true; do
+    section "IPv6 Mode / IPv6 模式管理"
+    note "适合原生 IPv6 / 双栈 VPS，用于生成 IPv4、IPv6、DualStack 三套客户端配置。"
+    echo
+    printf "  1) IPv6 Check / 检查 VPS IPv6\\n"
+    printf "  2) IPv4/IPv6/DualStack Export / 生成三套导出配置\\n"
+    printf "  3) IPv6 Guard / IPv6 泄漏检查\\n"
+    printf "  4) IPv6 Disable / 临时关闭系统 IPv6\\n"
+    printf "  5) IPv6 Rollback / 恢复系统 IPv6\\n"
+    printf "  6) IPv6 Dedicated Port / IPv6 独立端口导出\\n"
+    printf "  7) HTTP Sync Verify / HTTP 下载同步检查\\n"
+    printf "  8) IPv6 Only Clean / 纯 IPv6 Trojan 独立端口重作〔兼容排查〕\\n"
+    printf "  9) IPv6 Reality Port / 纯 IPv6 VLESS Reality 独立端口\\n"
+    printf " 10) IPv6 Reality 443 Clean / 推荐：纯 IPv6 VLESS Reality 443\\n"
+    printf " 11) IPv6 Reality 443 Rollback / 查看回滚提示\\n"
+    printf " 12) IPv4 Fallback Port / IPv4 备用端口部署\\n"
+    printf " 13) V4/V6 Split Export / V4V6 独立端口导出\\n"
+    printf " 14) DualStack Strategy / 双栈策略组说明\\n"
+    printf "  0) 返回\\n"
+    read -rp "序号: " ans
+    case "$ans" in
+      1) ipv6_check; pause ;;
+      2) ipv6_make_exports; pause ;;
+      3) ipv6_guard; pause ;;
+      4) ipv6_disable; pause ;;
+      5) ipv6_rollback; pause ;;
+      6) ipv6_dedicated_port_export; pause ;;
+      7) ipv6_http_sync_verify; pause ;;
+      8) ipv6_only_clean_trojan; pause ;;
+      9) ipv6_reality_only; pause ;;
+      10) ipv6_reality_443_clean; pause ;;
+      11) ipv6_reality_443_rollback_hint; pause ;;
+      12) ipv4_reality_fallback_port; pause ;;
+      13) v4v6_split_export; pause ;;
+      14) dualstack_strategy_template; pause ;;
+      0|"") return ;;
+      *) warn "输入无效。" ;;
+    esac
+  done
+}
+
 guided_workflows(){
   while true; do
     section "Guided Workflows / 快速流程向导"
@@ -3086,7 +4322,7 @@ guided_workflows(){
 stability_suite(){
   while true; do
     section "Stability Suite / 稳定增强工具箱"
-    note "把 v1.2.3 的长功能项收纳为子菜单，主界面保持简洁。"
+    note "把 v1.2.15 的长功能项收纳为子菜单，主界面保持简洁。"
     echo
     printf "  1) Guided Workflows / 快速流程向导\n"
     printf "  2) Public IP Guard / NAT 公网 IP 识别保护\n"
@@ -3094,6 +4330,7 @@ stability_suite(){
     printf "  4) Remote Publish / 远程订阅发布\n"
     printf "  5) Node Test Pack / 节点体检包\n"
     printf "  6) NodeQuality Archive / 酒神测试归档\n"
+    printf "  7) IPv6 Mode / IPv6 模式管理\n"
     printf "  0) 返回\n"
     read -rp "序号: " ans
     case "$ans" in
@@ -3103,6 +4340,7 @@ stability_suite(){
       4) remote_publish; pause ;;
       5) node_test_pack; pause ;;
       6) nodequality_archive; pause ;;
+      7) ipv6_mode_menu; pause ;;
       0|"") return ;;
       *) warn "输入无效。" ;;
     esac
@@ -3676,7 +4914,22 @@ quick(){
     node-classify|rename-nodes) node_classify_rename ;;
     protocol-lint|proto-lint|vision-lint) protocol_export_lint ;;
     vless-guide|vision-guide) vless_vision_guide ;;
-    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|media-dns|zouter-dns|dns-show|dns-rollback|dns-test|tcpx|tcp-window|diagnose|current|public-ip|export-check|remote-publish|node-test|nq-archive|airport-chain|advanced-export|strategy-template|node-classify|protocol-lint|vless-guide|vless-timeout|reality-repair|sni-switch|vless-stable" ;;
+    ipv6-mode) ipv6_mode_menu ;;
+    ipv6-check) ipv6_check ;;
+    ipv6-export|dualstack-export|ipv6-stable) ipv6_make_exports ;;
+    ipv6-guard) ipv6_guard ;;
+    ipv6-disable) ipv6_disable ;;
+    ipv6-rollback) ipv6_rollback ;;
+    ipv6-port|ipv6-dedicated) ipv6_dedicated_port_export ;;
+    ipv6-http|http-verify) ipv6_http_sync_verify ;;
+    ipv6-only|ipv6-clean) ipv6_only_clean_trojan ;;
+    ipv6-reality|ipv6-vless) ipv6_reality_only ;;
+    ipv6-r443|ipv6-reality443|ipv6-443) ipv6_reality_443_clean ;;
+    v4-fallback|ipv4-fallback|ipv4-reality) ipv4_reality_fallback_port ;;
+    v4v6-split|split-export) v4v6_split_export ;;
+    dualstack-auto|dualstack-strategy) dualstack_strategy_template ;;
+    ipv6-r443-rollback) ipv6_reality_443_rollback_hint ;;
+    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|media-dns|zouter-dns|dns-show|dns-rollback|dns-test|tcpx|tcp-window|diagnose|current|public-ip|export-check|remote-publish|node-test|nq-archive|airport-chain|advanced-export|strategy-template|node-classify|protocol-lint|vless-guide|vless-timeout|reality-repair|sni-switch|vless-stable|ipv6-mode|ipv6-check|ipv6-export|dualstack-export|ipv6-stable|ipv6-guard|ipv6-disable|ipv6-rollback|ipv6-port|ipv6-http|ipv6-only|ipv6-reality|ipv6-r443|ipv6-443|v4-fallback|v4v6-split|dualstack-auto" ;;
   esac
 }
 
