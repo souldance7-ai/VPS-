@@ -1,53 +1,63 @@
-# LazyVPS v1.3.3 快速命令
+# LazyVPS QUICK START / 一键复制命令
 
-## 原主菜单一键运行
+## 一行命令进入互动菜单
+
+**VPS / Linux 执行：**
+
+```bash
+bash <(curl -Ls https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh)
+```
+
+## 下载后审查再运行
 
 **VPS / Linux 执行：**
 
 ```bash
 apt update && apt install -y curl wget
-rm -f lazy-vps-menu.sh
+wget -O lazy-vps-menu.sh https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh
+chmod +x lazy-vps-menu.sh
+bash lazy-vps-menu.sh
+```
+
+## 强制刷新新版，避免跑到 VPS 本地旧版
+
+**VPS / Linux 执行：**
+
+```bash
+rm -f lazy-vps-menu.sh /root/lazy-vps-menu.sh
 curl -L -H "Cache-Control: no-cache" "https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh?v=$(date +%s)" -o lazy-vps-menu.sh
 chmod +x lazy-vps-menu.sh
 bash lazy-vps-menu.sh
 ```
 
-## 协议套件入口
+## AnyTLS / TUIC 快捷入口
 
 **VPS / Linux 执行：**
 
 ```bash
 bash lazy-vps-menu.sh --quick protocol-suite
-```
-
-## AnyTLS
-
-**VPS / Linux 执行：**
-
-```bash
 bash lazy-vps-menu.sh --quick anytls
-```
-
-## TUIC
-
-**VPS / Linux 执行：**
-
-```bash
 bash lazy-vps-menu.sh --quick tuic
-```
-
-## AnyTLS + TUIC 双协议
-
-**VPS / Linux 执行：**
-
-```bash
 bash lazy-vps-menu.sh --quick anytls-tuic
 ```
 
-## 验证主脚本是否已更新
+## IPv6 / 双栈快捷入口
 
 **VPS / Linux 执行：**
 
 ```bash
-grep -nE 'v1.3.3|AnyTLS|TUIC|protocol_suite' lazy-vps-menu.sh | head -40
+bash /root/lazy-vps-menu.sh --quick ipv6-r443
+bash /root/lazy-vps-menu.sh --quick v4-fallback
+bash /root/lazy-vps-menu.sh --quick v4v6-split
+bash /root/lazy-vps-menu.sh --quick http
+```
+
+## GitHub 上传 README 修复
+
+**Windows CMD 执行：**
+
+```bat
+git add README.md QUICK_START.md CHANGELOG.md FIX_README_NOW.md README_FULL_v1.3.4.md
+git commit -m "docs: restore full LazyVPS README with quick commands and protocol guide"
+git push
 ```

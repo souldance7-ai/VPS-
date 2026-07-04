@@ -1,18 +1,13 @@
 # CHANGELOG
 
-## v1.3.3 - 2026-07-04
+## v1.3.4
 
-### Fixed
+- 修复 v1.3.3 README 只剩主菜单修补说明的问题。
+- 恢复 LazyVPS 原首页说明结构：一键快速运行、你想做什么先看这里、推荐执行顺序、新 VPS 快速建站流程、IPv6 Reality 443、V4/V6 Split、AI 分流、媒体 DNS、导出下载、互动面板总览、安全提醒。
+- 新增 AnyTLS / TUIC / Protocol Suite 的开源说明与快捷命令。
+- 保留 `lazy-vps-menu.sh` 主脚本，不在本包内修改主脚本，避免再次误伤主功能。
 
-- 修正 v1.3.2 只上传 addon/docs，但 GitHub 根目录 `lazy-vps-menu.sh` 未真正接入 AnyTLS/TUIC 的问题。
-- 新增 `lazy-vps-mainmenu-hotfix-v1.3.3.sh`，在最终 dispatch 前覆盖 `run_choice` 与 `quick`，不破坏原 Trojan/VLESS/Hysteria2 等功能。
-- 主菜单第 7 项升级为 `Protocol Suite / Hysteria2 + AnyTLS + TUIC`。
-- 新增快捷命令：
-  - `--quick protocol-suite`
-  - `--quick anytls`
-  - `--quick tuic`
-  - `--quick anytls-tuic`
+## v1.3.3
 
-### Preserved
-
-- 原 LazyVPS 主菜单、原 1–37 功能、原 Hysteria2、Trojan、VLESS Reality、导出、HTTP 下载、AI 分流、DNS Unlock、诊断等功能保留。
+- 修正 AnyTLS / TUIC addon 上传但主菜单未真正接入的问题。
+- 将第 7 项 Hysteria2 升级为 Protocol Suite。
