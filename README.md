@@ -2,7 +2,9 @@
 
 懒人建 VPS 快速菜单包，用于 VPS 初装、代理协议部署、节点导出、下载链接生成、AI 分流、DNS 解锁、中转与基础检查。
 
-> v1.3.6 修正重点：这次不是只放 addon，也不是只改 README，而是让 GitHub 根目录的 `lazy-vps-menu.sh` 主入口直接升级。第 7 项会显示 `Protocol Suite / Hysteria2 + AnyTLS + TUIC`。
+> v1.3.8 重点：这版是 **GitHub 网页上传直用版**。根目录已经直接放好 `lazy-vps-menu.sh`，不用再执行 patch，也不用进 `DIRECT_REPLACE`。你在 GitHub `Add file → Upload files` 页面，直接把本包「里面的内容」拖进去并 Commit，即可覆盖主入口。
+
+> v1.3.8 修复重点：选择 `08 AnyTLS`、`09 TUIC`、`10 AnyTLS + TUIC` 时，若本地没有 `lazy-vps-protocol-addon.sh`，主脚本会自动从 GitHub 下载并做 `bash -n` 检查；同时已修复 v1.3.6 出现的「警告文字被当作文件路径执行」问题。
 
 ---
 
@@ -35,7 +37,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-v
 rm -f lazy-vps-menu.sh /root/lazy-vps-menu.sh
 curl -L -H "Cache-Control: no-cache" "https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh?v=$(date +%s)" -o lazy-vps-menu.sh
 chmod +x lazy-vps-menu.sh
-grep -nE 'v1.3.6|AnyTLS|TUIC|Protocol Suite' lazy-vps-menu.sh | head -40
+grep -nE 'v1.3.8|AnyTLS|TUIC|Protocol Suite' lazy-vps-menu.sh | head -40
 bash lazy-vps-menu.sh
 ```
 
@@ -129,70 +131,56 @@ bash lazy-vps-menu.sh --quick anytls-tuic
 
 ---
 
-## GitHub 开源升级方式
+## GitHub 网页上传方式
 
-这次一定要让根目录 `lazy-vps-menu.sh` 本身变成 v1.3.6，不能只上传 README 或 addon。
+这版可以直接用 GitHub 网页上传，不需要 Git 命令，也不需要 patch。
 
-**Windows CMD / Git Bash 执行：**
-
-```bash
-cd /d 你的\VPS-\仓库目录
-bash patch-replace-main-v1.3.6.sh
-```
-
-确认：
-
-**Windows CMD / Git Bash 执行：**
-
-```bash
-grep -nE 'v1.3.6|AnyTLS|TUIC|Protocol Suite' lazy-vps-menu.sh | head -40
-git status --short
-```
-
-必须看到：
+1. 解压 `LazyVPS-WebUpload-v1.3.8.zip`。
+2. 打开里面那层 `LazyVPS-WebUpload-v1.3.8` 文件夹。
+3. 重点：不要拖外层压缩包文件夹，要拖「里面的内容」。
+4. 在 GitHub 仓库页面点击 `Add file → Upload files`。
+5. 把下面这些内容拖进去：
 
 ```text
-M lazy-vps-menu.sh
+lazy-vps-menu.sh                  # 必须上传：主入口，会覆盖旧版 v1.2.x
+lazy-vps-menu-v1.3.8.sh           # 新版主入口备份副本
+lazy-vps-protocol-addon.sh        # 必须上传：AnyTLS / TUIC 部署器
+protocols/                        # 必须上传：协议快捷脚本
+README.md                         # 开源首页说明
+QUICK_START.md                    # 一键复制命令
+CHANGELOG.md                      # 更新纪录
+GITHUB_WEB_UPLOAD_STEPS.md        # 网页上传步骤
+FIX_ADDON_NOT_FOUND_v1.3.8.md     # 本次报错修复说明
+SECURITY_SHARE_CHECK.txt          # 开源安全提醒
 ```
 
-然后提交：
+6. Commit message 建议写：
 
-**Windows CMD / Git Bash 执行：**
-
-```bash
-git add lazy-vps-menu.sh lazy-vps-menu-legacy-v1.2.15.sh legacy/lazy-vps-menu-legacy-v1.2.15.sh lazy-vps-protocol-addon.sh protocols templates docs README.md QUICK_START.md CHANGELOG.md FIX_NOW.md GITHUB_UPLOAD_LIST.md SECURITY_SHARE_CHECK.txt
-git commit -m "fix: replace LazyVPS main entry with v1.3.6 protocol suite"
-git push
+```text
+fix: replace LazyVPS main entry with v1.3.8 protocol suite
 ```
 
----
+7. Commit 后，点开 GitHub 根目录的 `lazy-vps-menu.sh`，确认第一屏有：
 
-## 为什么要保留 legacy 旧主脚本？
-
-原本 `lazy-vps-menu.sh` 已经包含很多已验证功能。v1.3.6 采用「新主入口 + legacy 保留旧功能」方式：
-
-- 新主入口负责显示新版菜单、AnyTLS、TUIC、Protocol Suite。
-- 原 v1.2.x 主脚本备份为 `lazy-vps-menu-legacy-v1.2.15.sh`。
-- 旧功能不会删除，新菜单需要时会转入 legacy 执行。
-
-这样不会破坏原来的 Trojan、VLESS、导出、HTTP 下载、AI 分流、DNS Unlock 等已验证功能。
+```text
+Formal Version: v1.3.8
+Protocol Suite / AnyTLS + TUIC
+```
 
 ---
 
 ## 文件结构
 
 ```text
-lazy-vps-menu.sh                    # GitHub raw 一键运行主入口，必须是 v1.3.6
-lazy-vps-menu-v1.3.6.sh             # 新主入口原始副本
-lazy-vps-menu-legacy-v1.2.15.sh     # patch 时自动备份出来的旧主脚本
-legacy/                             # 旧主脚本备份目录
-lazy-vps-protocol-addon.sh          # AnyTLS / TUIC / Hysteria2 扩展部署器
-protocols/                          # 协议快捷入口
-DIRECT_REPLACE/lazy-vps-menu.sh     # 手动直接替换用主脚本
-README.md                           # 开源首页说明
-QUICK_START.md                      # 一键复制命令
-FIX_NOW.md                          # 修复步骤
-GITHUB_UPLOAD_LIST.md               # 上传清单
+lazy-vps-menu.sh                  # GitHub raw 一键运行主入口，必须是 v1.3.8
+lazy-vps-menu-v1.3.8.sh           # 新主入口备份副本
+lazy-vps-protocol-addon.sh        # AnyTLS / TUIC / Hysteria2 扩展部署器
+protocols/                        # 协议快捷入口
+README.md                         # 开源首页说明
+QUICK_START.md                    # 一键复制命令
+GITHUB_WEB_UPLOAD_STEPS.md        # 网页上传步骤
+FIX_ADDON_NOT_FOUND_v1.3.8.md     # addon not found 修复说明
+CHANGELOG.md                      # 更新纪录
 ```
 
 ---

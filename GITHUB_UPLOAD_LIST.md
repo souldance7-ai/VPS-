@@ -1,30 +1,24 @@
-# GitHub 上传清单
+# GitHub 上传清单 v1.3.8
 
-必须上传/提交：
+必须上传：
 
 ```text
 lazy-vps-menu.sh
-lazy-vps-menu-v1.3.6.sh
-lazy-vps-menu-legacy-v1.2.15.sh
-legacy/lazy-vps-menu-legacy-v1.2.15.sh
+lazy-vps-menu-v1.3.8.sh
 lazy-vps-protocol-addon.sh
 protocols/
-templates/
-docs/
 README.md
 QUICK_START.md
 CHANGELOG.md
-FIX_NOW.md
-GITHUB_UPLOAD_LIST.md
+GITHUB_WEB_UPLOAD_STEPS.md
 SECURITY_SHARE_CHECK.txt
-patch-replace-main-v1.3.6.sh
-一键替换主入口_v1.3.6到GitHub.cmd
 ```
 
-不要上传 VPS 运行后生成的：
+可选上传：
 
 ```text
-/opt/lazy-vps-menu/outputs/
-/opt/lazy-vps-menu/backups/
-真实 IP、密码、订阅链接、SSH Key
+docs/
+templates/
 ```
+
+不要只上传 patch / README。主入口必须是根目录 `lazy-vps-menu.sh`。
