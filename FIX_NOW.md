@@ -1,13 +1,19 @@
-# v1.3.5 修复方式
+# LazyVPS v1.3.6 修复重点
 
-问题原因：前一版 `lazy-vps-mainmenu-hotfix-v1.3.3.sh` 在仓库里变成单行，第一字符是 `#`，所以 `bash` 会把整行当注释，执行后不会修改 `lazy-vps-menu.sh`。
+如果 VPS 仍显示 `正式 v1.2.13` 或 GitHub raw 查不到 AnyTLS/TUIC，说明根目录 `lazy-vps-menu.sh` 没有被替换。
 
-正确做法：在 GitHub 仓库根目录执行本包的 v1.3.5 热修复脚本。
+## 正确修复
+
+在 GitHub 仓库根目录执行：
 
 ```bash
-bash lazy-vps-mainmenu-hotfix-v1.3.5.sh
-bash -n lazy-vps-menu.sh
-grep -nE 'v1.3.5|AnyTLS|TUIC|protocol_suite' lazy-vps-menu.sh | head -40
+bash patch-replace-main-v1.3.6.sh
+```
+
+确认：
+
+```bash
+grep -nE 'v1.3.6|AnyTLS|TUIC|Protocol Suite' lazy-vps-menu.sh | head -40
 git status --short
 ```
 
@@ -17,10 +23,4 @@ git status --short
 M lazy-vps-menu.sh
 ```
 
-然后再提交：
-
-```bash
-git add lazy-vps-menu.sh lazy-vps-protocol-addon.sh lazy-vps-mainmenu-hotfix-v1.3.5.sh README.md QUICK_START.md CHANGELOG.md FIX_NOW.md protocols templates
-git commit -m "fix: integrate AnyTLS and TUIC into LazyVPS main menu v1.3.5"
-git push
-```
+再 push。
