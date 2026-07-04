@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # LazyVPS Quick Menu Pack - Protocol Addon
-# Version: v1.3.1 · TUIC + AnyTLS Builder
+# Version: v1.3.2 · TUIC + AnyTLS Builder · Main Menu Integrated
 # Update Date: 2026-07-04
 # ==============================================================================
 # Design principles:
@@ -13,7 +13,7 @@
 set -Eeuo pipefail
 
 APP="懒人建 VPS 快速菜单包"
-VER="v1.3.1 · TUIC + AnyTLS 协议扩展版 · 保留原 README 功能说明"
+VER="v1.3.2 · TUIC + AnyTLS 协议扩展版 · 主菜单集成版"
 UPDATE_DATE="2026-07-04"
 ROOT="/opt/lazy-vps-menu"
 OUT="$ROOT/outputs"
@@ -166,6 +166,20 @@ backup_singbox(){
   fi
 }
 
+backup_outputs(){
+  mkdir -p "$BAK"
+  local d="$BAK/outputs.$(ts)"
+  local files=("$OUT"/*.yaml "$OUT"/*.json "$OUT"/*.conf "$OUT"/*.txt)
+  local found=0
+  for f in "${files[@]}"; do
+    [[ -e "$f" ]] || continue
+    mkdir -p "$d"
+    cp -a "$f" "$d"/ 2>/dev/null || true
+    found=1
+  done
+  [[ "$found" == "1" ]] && ok "旧输出已备份：$d" || true
+}
+
 fix_cert_perm(){
   chmod 755 "$CERT_DIR" 2>/dev/null || true
   chmod 644 "$CERT_DIR"/*.crt 2>/dev/null || true
@@ -308,7 +322,7 @@ deploy_anytls(){
   section_anytls
   ensure_sing_box || return 1
   backup_singbox
-  rm -f "$OUT"/*.yaml "$OUT"/*.json "$OUT"/*.conf "$OUT"/*.txt 2>/dev/null || true
+  backup_outputs
 
   local ip server node port sni pass cert_pair crt key
   ip="$(ip4)"
@@ -435,7 +449,7 @@ deploy_tuic(){
   section_tuic
   ensure_sing_box || return 1
   backup_singbox
-  rm -f "$OUT"/*.yaml "$OUT"/*.json "$OUT"/*.conf "$OUT"/*.txt 2>/dev/null || true
+  backup_outputs
 
   local ip server node port sni uuid pass cc cert_pair crt key
   ip="$(ip4)"
@@ -559,6 +573,225 @@ EOF2
   ok "TUIC v5 已部署完成。配置输出目录：$OUT"
 }
 
+deploy_anytls_tuic(){
+  need_root
+  section "部署 AnyTLS + TUIC v5 / 双协议同机部署"
+  note "同一台 VPS 同时开启 AnyTLS TCP/TLS 与 TUIC UDP/QUIC。"
+  note "会重写 sing-box 配置，但不会动 Xray/Trojan/VLESS/Hysteria2 配置。"
+  ensure_sing_box || return 1
+  backup_singbox
+  backup_outputs
+
+  local ip server prefix any_node tuic_node any_port tuic_port sni any_pass tuic_uuid tuic_pass cc cert_pair crt key
+  ip="$(ip4)"
+  server="$(ask '客户端连接地址：建议填公网 IP 或域名' "${ip:-your.domain.com}")"
+  prefix="$(ask '节点前缀' '🇹🇼 LazyVPS')"
+  any_node="${prefix}-AnyTLS"
+  tuic_node="${prefix}-TUIC"
+  any_port="$(ask 'AnyTLS TCP 端口' '8443')"
+  tuic_port="$(ask 'TUIC UDP 端口' '10443')"
+  sni="$(ask 'TLS SNI / 证书 CN' 'www.cloudflare.com')"
+  any_pass="$(ask 'AnyTLS 密码' "AT_$(rand_pass)")"
+  tuic_uuid="$(ask 'TUIC UUID' "$(uuid_gen)")"
+  tuic_pass="$(ask 'TUIC 密码' "TUIC_$(rand_pass)")"
+  cc="$(ask 'TUIC 拥塞控制 cubic/new_reno/bbr' 'bbr')"
+  case "$cc" in cubic|new_reno|bbr) ;; *) warn "拥塞控制无效，改为 bbr"; cc="bbr" ;; esac
+  valid_port "$any_port" || { err "AnyTLS 端口无效：$any_port"; return 1; }
+  valid_port "$tuic_port" || { err "TUIC 端口无效：$tuic_port"; return 1; }
+
+  cert_pair="$(make_cert lazyvps_multi "$sni")"
+  crt="${cert_pair%%|*}"; key="${cert_pair##*|}"
+
+  step "写入 sing-box AnyTLS + TUIC 服务端配置"
+  cat > "$SBOX_CONF" <<EOF2
+{
+  "log": {
+    "level": "info",
+    "timestamp": true
+  },
+  "inbounds": [
+    {
+      "type": "anytls",
+      "tag": "anytls-in",
+      "listen": "0.0.0.0",
+      "listen_port": $any_port,
+      "users": [
+        {
+          "name": "lazyvps-anytls",
+          "password": "$any_pass"
+        }
+      ],
+      "padding_scheme": [
+        "stop=8",
+        "0=30-30",
+        "1=100-400",
+        "2=400-500,c,500-1000,c,500-1000,c,500-1000,c,500-1000",
+        "3=9-9,500-1000",
+        "4=500-1000",
+        "5=500-1000",
+        "6=500-1000",
+        "7=500-1000"
+      ],
+      "tls": {
+        "enabled": true,
+        "server_name": "$sni",
+        "alpn": ["h2", "http/1.1"],
+        "certificate_path": "$crt",
+        "key_path": "$key"
+      }
+    },
+    {
+      "type": "tuic",
+      "tag": "tuic-in",
+      "listen": "0.0.0.0",
+      "listen_port": $tuic_port,
+      "users": [
+        {
+          "name": "lazyvps-tuic",
+          "uuid": "$tuic_uuid",
+          "password": "$tuic_pass"
+        }
+      ],
+      "congestion_control": "$cc",
+      "auth_timeout": "3s",
+      "zero_rtt_handshake": false,
+      "heartbeat": "10s",
+      "tls": {
+        "enabled": true,
+        "server_name": "$sni",
+        "alpn": ["h3"],
+        "certificate_path": "$crt",
+        "key_path": "$key"
+      }
+    }
+  ],
+  "outbounds": [
+    { "type": "direct", "tag": "direct" },
+    { "type": "block", "tag": "block" }
+  ]
+}
+EOF2
+
+  restart_singbox
+  fw_open_port "$any_port" tcp
+  fw_open_port "$tuic_port" udp
+
+  step "导出双协议 FLClash / mihomo 配置"
+  local mf="$OUT/01_IMPORT_FLCLASH.yaml"
+  write_common_mihomo_header "$mf"
+  cat >> "$mf" <<EOF2
+  - name: "$any_node"
+    type: anytls
+    server: $server
+    port: $any_port
+    password: "$any_pass"
+    client-fingerprint: chrome
+    udp: true
+    idle-session-check-interval: 30
+    idle-session-timeout: 30
+    min-idle-session: 0
+    sni: "$sni"
+    alpn:
+      - h2
+      - http/1.1
+    skip-cert-verify: true
+  - name: "$tuic_node"
+    type: tuic
+    server: $server
+    port: $tuic_port
+    uuid: $tuic_uuid
+    password: "$tuic_pass"
+    alpn:
+      - h3
+    sni: "$sni"
+    skip-cert-verify: true
+    disable-sni: false
+    reduce-rtt: false
+    request-timeout: 8000
+    udp-relay-mode: native
+    congestion-controller: $cc
+
+proxy-groups:
+  - name: GLOBAL
+    type: select
+    proxies:
+      - "$any_node"
+      - "$tuic_node"
+      - DIRECT
+  - name: PROXY
+    type: select
+    proxies:
+      - "$any_node"
+      - "$tuic_node"
+      - DIRECT
+
+rules:
+  - MATCH,PROXY
+EOF2
+  cp -a "$mf" "$OUT/latest_anytls_tuic_mihomo.yaml"
+
+  cat > "$OUT/02_IMPORT_SINGBOX_CLIENT.json" <<EOF2
+{
+  "log": { "level": "info", "timestamp": true },
+  "inbounds": [
+    {
+      "type": "mixed",
+      "tag": "mixed-in",
+      "listen": "127.0.0.1",
+      "listen_port": 2080
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "selector",
+      "tag": "proxy",
+      "outbounds": ["anytls", "tuic", "direct"],
+      "default": "anytls"
+    },
+    {
+      "type": "anytls",
+      "tag": "anytls",
+      "server": "$server",
+      "server_port": $any_port,
+      "password": "$any_pass",
+      "tls": {
+        "enabled": true,
+        "server_name": "$sni",
+        "insecure": true,
+        "alpn": ["h2", "http/1.1"],
+        "utls": { "enabled": true, "fingerprint": "chrome" }
+      }
+    },
+    {
+      "type": "tuic",
+      "tag": "tuic",
+      "server": "$server",
+      "server_port": $tuic_port,
+      "uuid": "$tuic_uuid",
+      "password": "$tuic_pass",
+      "congestion_control": "$cc",
+      "udp_relay_mode": "native",
+      "zero_rtt_handshake": false,
+      "heartbeat": "10s",
+      "tls": {
+        "enabled": true,
+        "server_name": "$sni",
+        "insecure": true,
+        "alpn": ["h3"],
+        "utls": { "enabled": true, "fingerprint": "chrome" }
+      }
+    },
+    { "type": "direct", "tag": "direct" }
+  ],
+  "route": { "final": "proxy" }
+}
+EOF2
+  cp -a "$OUT/02_IMPORT_SINGBOX_CLIENT.json" "$OUT/latest_anytls_tuic_singbox_client.json"
+
+  write_readme_latest "AnyTLS + TUIC v5" "$prefix" "$server" "$any_port / $tuic_port" "SNI：$sni\nAnyTLS：${any_port}/tcp\nTUIC：${tuic_port}/udp\nTUIC UUID：$tuic_uuid\n拥塞控制：$cc"
+  ok "AnyTLS + TUIC 双协议已部署完成。配置输出目录：$OUT"
+}
+
 start_http(){
   need_root
   mkdir -p "$HTTP_DIR"
@@ -628,18 +861,20 @@ menu(){
     banner
     printf " ${GRN}1${R}) 部署 AnyTLS TCP/TLS 节点\n"
     printf " ${GRN}2${R}) 部署 TUIC v5 UDP/QUIC 节点\n"
-    printf " ${GRN}3${R}) 启动 HTTP 下载导入文件\n"
-    printf " ${GRN}4${R}) 查看 sing-box / 当前配置状态\n"
-    printf " ${GRN}5${R}) 打开输出目录提示\n"
+    printf " ${GRN}3${R}) 同机部署 AnyTLS + TUIC 双协议\n"
+    printf " ${GRN}4${R}) 启动 HTTP 下载导入文件\n"
+    printf " ${GRN}5${R}) 查看 sing-box / 当前配置状态\n"
+    printf " ${GRN}6${R}) 打开输出目录提示\n"
     printf " ${GRN}Q${R}) 退出\n"
     echo
-    read -rp "请选择 [1-5/Q]: " ans || true
+    read -rp "请选择 [1-6/Q]: " ans || true
     case "${ans:-}" in
       1) deploy_anytls; pause ;;
       2) deploy_tuic; pause ;;
-      3) start_http; pause ;;
-      4) export_status; pause ;;
-      5) echo "输出目录：$OUT"; ls -lah "$OUT" 2>/dev/null || true; pause ;;
+      3) deploy_anytls_tuic; pause ;;
+      4) start_http; pause ;;
+      5) export_status; pause ;;
+      6) echo "输出目录：$OUT"; ls -lah "$OUT" 2>/dev/null || true; pause ;;
       q|Q) exit 0 ;;
       *) warn "输入无效。"; sleep 1 ;;
     esac
@@ -654,6 +889,7 @@ $APP - Protocol Addon $VER
   bash lazy-vps-protocol-addon.sh
   bash lazy-vps-protocol-addon.sh --quick anytls
   bash lazy-vps-protocol-addon.sh --quick tuic
+  bash lazy-vps-protocol-addon.sh --quick anytls-tuic
   bash lazy-vps-protocol-addon.sh --quick http
   bash lazy-vps-protocol-addon.sh --quick status
 
@@ -670,6 +906,7 @@ main(){
       case "${2:-}" in
         anytls) deploy_anytls ;;
         tuic) deploy_tuic ;;
+        anytls-tuic|tuic-anytls|multi) deploy_anytls_tuic ;;
         http) start_http ;;
         status) export_status ;;
         *) usage; exit 1 ;;

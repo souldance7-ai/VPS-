@@ -1,12 +1,27 @@
-# LazyVPS Quick Start / 一键复制命令
+# LazyVPS v1.3.2 QUICK START
 
-本文件用于 GitHub 首页之外的快速复制。原 `lazy-vps-menu.sh` 主菜单命令保留，v1.3.1 仅新增 `lazy-vps-protocol-addon.sh` 协议扩展入口。
+## 1. 更新仓库主菜单
 
----
+**VPS / Linux 或 Git Bash 执行：**
 
-## 1. 原 LazyVPS 主菜单
+```bash
+bash patch-main-menu-v1.3.2.sh
+bash -n lazy-vps-menu.sh
+bash -n lazy-vps-protocol-addon.sh
+grep -nE "v1.3.2|AnyTLS|TUIC|protocol_suite" lazy-vps-menu.sh | head -30
+```
 
-### 一行命令直接运行
+## 2. 推送 GitHub
+
+**Windows CMD 执行：**
+
+```bat
+git add lazy-vps-menu.sh lazy-vps-protocol-addon.sh patch-main-menu-v1.3.2.sh README.md QUICK_START.md CHANGELOG.md docs protocols templates
+git commit -m "feat: integrate AnyTLS and TUIC into LazyVPS main menu"
+git push
+```
+
+## 3. VPS 一键运行
 
 **VPS / Linux 执行：**
 
@@ -14,91 +29,23 @@
 bash <(curl -Ls https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh)
 ```
 
-### 下载审查后运行
+## 4. AnyTLS / TUIC 快捷命令
+
+**VPS / Linux 执行：**
+
+```bash
+bash <(curl -Ls https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh) --quick anytls
+bash <(curl -Ls https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh) --quick tuic
+bash <(curl -Ls https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh) --quick anytls-tuic
+```
+
+## 5. 本地下载后运行
 
 **VPS / Linux 执行：**
 
 ```bash
 apt update && apt install -y curl wget
-wget -O /root/lazy-vps-menu.sh https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh
-chmod +x /root/lazy-vps-menu.sh
-bash /root/lazy-vps-menu.sh
+wget -O lazy-vps-menu.sh https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh
+chmod +x lazy-vps-menu.sh
+bash lazy-vps-menu.sh
 ```
-
-### 预览界面
-
-**VPS / Linux 执行：**
-
-```bash
-bash /root/lazy-vps-menu.sh --preview
-```
-
----
-
-## 2. 原主菜单常用 Quick 命令
-
-**VPS / Linux 执行：**
-
-```bash
-bash /root/lazy-vps-menu.sh --quick ipv6-r443
-bash /root/lazy-vps-menu.sh --quick v4-fallback
-bash /root/lazy-vps-menu.sh --quick v4v6-split
-bash /root/lazy-vps-menu.sh --quick http
-```
-
----
-
-## 3. v1.3.1 新增 AnyTLS / TUIC 协议扩展
-
-### 一行命令直接运行扩展菜单
-
-**VPS / Linux 执行：**
-
-```bash
-bash <(curl -Ls https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-protocol-addon.sh)
-```
-
-### 下载审查后运行扩展菜单
-
-**VPS / Linux 执行：**
-
-```bash
-apt update && apt install -y curl wget
-wget -O /root/lazy-vps-protocol-addon.sh https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-protocol-addon.sh
-chmod +x /root/lazy-vps-protocol-addon.sh
-bash /root/lazy-vps-protocol-addon.sh
-```
-
-### AnyTLS / TUIC 快捷命令
-
-**VPS / Linux 执行：**
-
-```bash
-bash /root/lazy-vps-protocol-addon.sh --quick anytls
-bash /root/lazy-vps-protocol-addon.sh --quick tuic
-bash /root/lazy-vps-protocol-addon.sh --quick http
-bash /root/lazy-vps-protocol-addon.sh --quick status
-```
-
----
-
-## 4. 推荐流程
-
-### 常规新机
-
-```text
-1) System Init → 2) Stable BBR → 3) Firewall Backend → 4) Xray Core → 5/6/7 部署协议 → 10 Export → 16 HTTP On
-```
-
-### IPv6 主力 + IPv4 备用
-
-```text
-35) Stability Suite → 7) IPv6 Mode → 10) IPv6 Reality 443 Clean → 12) IPv4 Fallback Port → 13) V4/V6 Split Export → 16) HTTP On
-```
-
-### AnyTLS / TUIC 扩展
-
-```text
-先用原主菜单完成系统初始化与防火墙，再运行 lazy-vps-protocol-addon.sh 部署 AnyTLS 或 TUIC。
-```
-
