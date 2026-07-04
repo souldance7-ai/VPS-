@@ -1,0 +1,18 @@
+# LazyVPS AnyTLS mihomo / FLClash template
+# Replace SERVER / PORT / PASSWORD / SNI before importing.
+proxies:
+  - name: "LazyVPS-AnyTLS"
+    type: anytls
+    server: SERVER
+    port: PORT
+    password: "PASSWORD"
+    client-fingerprint: chrome
+    udp: true
+    idle-session-check-interval: 30
+    idle-session-timeout: 30
+    min-idle-session: 0
+    sni: "SNI"
+    alpn:
+      - h2
+      - http/1.1
+    skip-cert-verify: true

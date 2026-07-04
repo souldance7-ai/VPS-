@@ -1,0 +1,24 @@
+{
+  "log": { "level": "info", "timestamp": true },
+  "inbounds": [
+    { "type": "mixed", "tag": "mixed-in", "listen": "127.0.0.1", "listen_port": 2080 }
+  ],
+  "outbounds": [
+    {
+      "type": "anytls",
+      "tag": "proxy",
+      "server": "SERVER",
+      "server_port": 8443,
+      "password": "PASSWORD",
+      "tls": {
+        "enabled": true,
+        "server_name": "SNI",
+        "insecure": true,
+        "alpn": ["h2", "http/1.1"],
+        "utls": { "enabled": true, "fingerprint": "chrome" }
+      }
+    },
+    { "type": "direct", "tag": "direct" }
+  ],
+  "route": { "final": "proxy" }
+}

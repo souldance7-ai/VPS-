@@ -1,8 +1,19 @@
-LazyVPS v1.2.15 分享安全检查
+LazyVPS v1.3.0 分享安全检查
 
-- 不内置个人 VPS IP
-- 不内置个人 IPv6
-- 不内置私有域名
-- 不内置节点密码 / UUID / Reality 私钥
-- 示例域名使用 example.com
-- 导出配置文件会包含用户自己的真实参数，请勿公开发布 outputs 目录中的个人导出结果。
+结论：可公开分享。
+
+检查项目：
+[OK] 未内置个人 VPS IP。
+[OK] 未内置私有域名。
+[OK] 未内置节点密码。
+[OK] 未内置订阅地址。
+[OK] 未内置 SSH Key。
+[OK] 未内置 Telegram Bot Token。
+[OK] 未内置任何机场订阅或个人配置。
+[OK] 节点 UUID、密码、证书均由使用者在自己的 VPS 上本地生成。
+[OK] 输出目录固定为 /opt/lazy-vps-menu/outputs/，不会上传到第三方。
+
+注意：
+1. 使用者执行后生成的 01_IMPORT_FLCLASH.yaml / 02_IMPORT_SINGBOX_CLIENT.json 含真实节点信息，不应上传公开仓库。
+2. GitHub 开源只上传脚本与模板，不上传 /opt/lazy-vps-menu/outputs/ 内的实际配置。
+3. 若用户把脚本执行后的输出文件复制到仓库，需要先脱敏。

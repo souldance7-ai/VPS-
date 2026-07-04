@@ -1,27 +1,29 @@
 # CHANGELOG
 
-## 正式 v1.2.15 · V4/V6 独立端口与双栈策略版 — 2026-06-23
+## v1.3.0 · 2026-07-04
 
-### 新增
+### Added
 
-- IPv4 Fallback Port：为 IPv4 单独部署 VLESS Reality 备用端口，默认 8443。
-- V4/V6 Split Export：合并 IPv6 Reality 443 与 IPv4 备用端口，生成可手动指定 V4/V6 的 FLClash 配置。
-- DualStack Strategy：生成双栈策略说明，推荐 Auto 优先 IPv6，失败切 IPv4。
-- 新增图文说明：`docs/images/08-v4v6-split-flow.png` 与 `docs/images/09-v1215-recommended-flow.png`。
+- 新增 `lazy-vps-protocol-addon.sh` 协议扩展菜单。
+- 新增 AnyTLS 一键建立：基于 sing-box inbound `anytls`。
+- 新增 TUIC v5 一键建立：基于 sing-box inbound `tuic`。
+- 新增 FLClash / mihomo 完整单节点配置导出：`01_IMPORT_FLCLASH.yaml`。
+- 新增 sing-box 客户端测试配置导出：`02_IMPORT_SINGBOX_CLIENT.json`。
+- 新增 HTTP 临时下载功能，方便手机/电脑直接导入输出文件。
+- 新增 `protocols/install-anytls.sh` 与 `protocols/install-tuic.sh` 快捷入口。
+- 新增分享安全检查文件 `SECURITY_SHARE_CHECK.txt`。
+- 新增外部脚本审计文件 `EXTERNAL_SCRIPT_AUDIT.md`。
+- 新增主菜单合并说明 `docs/PATCH_FOR_MAIN_MENU.md`。
 
-### 推荐主线
+### Changed
 
-```text
-IPv6 主力：VLESS Reality 443
-IPv4 备用：VLESS Reality 8443 / 自定义端口
-Auto：优先 V6，失败后 V4 兜底
-```
+- 不覆盖原 `lazy-vps-menu.sh v1.2.15`，采用外挂扩展方式升级，降低破坏现有功能风险。
+- 协议命名建议更新：`T` 继续保留给 Trojan，TUIC 不简写为 `T`，直接使用 `TUIC`。
 
-### 快捷命令
+### Notes
 
-```bash
-bash /root/lazy-vps-menu.sh --quick ipv6-r443
-bash /root/lazy-vps-menu.sh --quick v4-fallback
-bash /root/lazy-vps-menu.sh --quick v4v6-split
-bash /root/lazy-vps-menu.sh --quick dualstack-auto
-```
+- AnyTLS 默认 TCP 端口：`8443`。
+- TUIC 默认 UDP 端口：`10443`。
+- 自签证书导出配置默认开启 `skip-cert-verify` / `insecure`。
+- 云厂商安全组仍需手动确认放行对应端口。
+

@@ -1,0 +1,18 @@
+# LazyVPS TUIC v5 mihomo / FLClash template
+# Replace SERVER / PORT / UUID / PASSWORD / SNI before importing.
+proxies:
+  - name: "LazyVPS-TUIC"
+    type: tuic
+    server: SERVER
+    port: PORT
+    uuid: UUID
+    password: "PASSWORD"
+    alpn:
+      - h3
+    sni: "SNI"
+    skip-cert-verify: true
+    disable-sni: false
+    reduce-rtt: false
+    request-timeout: 8000
+    udp-relay-mode: native
+    congestion-controller: bbr

@@ -1,20 +1,74 @@
-# EXTERNAL SCRIPT AUDIT
+# 外部脚本与网络访问审计
 
-检查日期：2026-06-19
+本文件用于说明 `lazy-vps-protocol-addon.sh` 会访问哪些外部地址，方便开源分享时让用户判断风险。
 
-本工具会按使用者确认后调用下列第三方或官方脚本：
+## 1. sing-box 官方安装脚本
 
-- Xray 官方安装脚本：`github.com/XTLS/Xray-install`
-- Hysteria2 官方安装入口：`get.hy2.sh`
-- NodeQuality 测试：`run.NodeQuality.com`
-- BBR v3：`github.com/byJoey/Actions-bbr-v3`
-- DNS Alice Unlock：`github.com/Jimmyzxk/DNS-Alice-Unlock`
-- Linux-NetSpeed：`github.com/ylx2016/Linux-NetSpeed`
-- TCP 窗口调优：`sh.nekoneko.cloud/tools.sh`
+```bash
+curl -fsSL https://sing-box.app/install.sh | sh
+```
 
-安全设计：
+用途：安装或更新 sing-box。
 
-- 第三方脚本功能执行前均显示中文警告并要求确认。
-- 本包不内置第三方脚本内容，运行时才下载。
-- 第三方脚本可能修改内核、DNS、网络参数或要求重启；生产环境应先备份。
-- 分享前仍建议使用者自行审阅第三方脚本来源。
+说明：
+
+- 仅在 VPS 未检测到 `sing-box` 时执行。
+- 使用 sing-box 官方安装入口。
+- 若用户不希望自动安装，可先自行安装 sing-box，再执行本脚本。
+
+## 2. 公网 IP 检测
+
+脚本会依序尝试：
+
+```text
+https://api.ipify.org
+https://ifconfig.me
+https://icanhazip.com
+```
+
+用途：自动填写客户端连接地址的默认值。
+
+说明：
+
+- 仅用于显示/默认填值。
+- 用户可在交互中手动改成自己的域名或公网 IP。
+
+## 3. 本地生成内容
+
+以下内容均在本机生成，不上传第三方：
+
+```text
+UUID
+AnyTLS 密码
+TUIC 密码
+TLS 自签证书
+FLClash / mihomo 配置
+sing-box 客户端配置
+```
+
+## 4. 防火墙操作
+
+脚本会尝试放行：
+
+```text
+AnyTLS: tcp/8443 或用户自定义 TCP 端口
+TUIC: udp/10443 或用户自定义 UDP 端口
+HTTP 下载: tcp/8088
+```
+
+支持顺序：
+
+```text
+ufw -> firewalld -> iptables -> 手动提示
+```
+
+## 5. 不做的事情
+
+本脚本不会：
+
+- 上传配置到第三方；
+- 写入个人机场订阅；
+- 保存 SSH 密钥；
+- 读取浏览器 Cookie；
+- 修改原 `lazy-vps-menu.sh` 主菜单文件。
+
