@@ -1,19 +1,22 @@
-# GitHub 上传清单 v1.3.3
+# GitHub 上传清单 v1.3.5
 
 必须上传/提交：
 
 ```text
-lazy-vps-menu.sh                         # 必须是 patch 后的新主脚本
+lazy-vps-menu.sh
 lazy-vps-protocol-addon.sh
-lazy-vps-mainmenu-hotfix-v1.3.3.sh
-protocols/
-templates/
-docs/
+lazy-vps-mainmenu-hotfix-v1.3.5.sh
 README.md
 QUICK_START.md
 CHANGELOG.md
-GITHUB_UPLOAD_LIST.md
-SECURITY_SHARE_CHECK.txt
+FIX_NOW.md
+protocols/
+templates/
 ```
 
-最重要：`lazy-vps-menu.sh` 必须出现在 `git status --short` 里，显示为 `M lazy-vps-menu.sh`。没有这个，VPS 一键命令仍然会进入旧版。
+确认 `lazy-vps-menu.sh` 已变更后再 push：
+
+```bash
+grep -nE 'v1.3.5|AnyTLS|TUIC|protocol_suite' lazy-vps-menu.sh | head -40
+git status --short
+```
