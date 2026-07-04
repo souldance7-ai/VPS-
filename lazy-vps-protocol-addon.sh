@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # LazyVPS Quick Menu Pack - Protocol Addon
-# Version: v1.3.2 · TUIC + AnyTLS Builder · Main Menu Integrated
+# Version: v1.3.3 · TUIC + AnyTLS Builder · Main Menu Integrated
 # Update Date: 2026-07-04
 # ==============================================================================
 # Design principles:
@@ -13,7 +13,7 @@
 set -Eeuo pipefail
 
 APP="懒人建 VPS 快速菜单包"
-VER="v1.3.2 · TUIC + AnyTLS 协议扩展版 · 主菜单集成版"
+VER="v1.3.3 · TUIC + AnyTLS 协议扩展版 · 主菜单修正版"
 UPDATE_DATE="2026-07-04"
 ROOT="/opt/lazy-vps-menu"
 OUT="$ROOT/outputs"

@@ -1,46 +1,17 @@
-# 主菜单接入说明
+# Main Menu Patch Guide v1.3.3
 
-v1.3.2 不再只是外置 addon，而是通过 `patch-main-menu-v1.3.2.sh` 把 AnyTLS/TUIC 接入原 `lazy-vps-menu.sh`。
+v1.3.3 不是只上传 addon，而是必须修正 GitHub 根目录的 `lazy-vps-menu.sh`。
 
-## 为什么要 patch 主菜单
-
-用户一键命令下载的是：
-
-```text
-https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh
-```
-
-如果这个文件还是 v1.2.x，菜单里就不会出现 AnyTLS/TUIC。
-
-## patch 后主菜单变化
-
-原本：
-
-```text
-7) Hysteria2 8443 / 部署 H 协议
-```
-
-改为：
-
-```text
-7) Protocol Suite / Hysteria2 + AnyTLS + TUIC
-```
-
-进入后：
-
-```text
-1) Hysteria2 8443 / 原 H 协议部署
-2) AnyTLS TCP/TLS / 新增稳定线
-3) TUIC v5 UDP/QUIC / 新增高速测试线
-4) AnyTLS + TUIC 双协议同机部署
-0) 返回
-```
-
-## 快捷命令
+执行：
 
 ```bash
-bash lazy-vps-menu.sh --quick anytls
-bash lazy-vps-menu.sh --quick tuic
-bash lazy-vps-menu.sh --quick anytls-tuic
-bash lazy-vps-menu.sh --quick protocol-suite
+bash lazy-vps-mainmenu-hotfix-v1.3.3.sh
 ```
+
+这会在原主脚本最终 dispatch 前插入 runtime bridge：
+
+- `run_choice 7` 改进为 `protocol_suite`。
+- `quick anytls / tuic / anytls-tuic / protocol-suite` 接入 addon。
+- 原功能通过 `orig_lazyvps_run_choice` 和 `orig_lazyvps_quick` 转发。
+
+完成后必须提交 `lazy-vps-menu.sh`，否则一键命令仍会下载旧版。

@@ -1,18 +1,8 @@
-LazyVPS v1.3.2 开源安全检查
+LazyVPS v1.3.3 Open Source Safety Check
 
-本包不包含：
-- 私人 VPS IP
-- 私人域名
-- 真实密码
-- SSH Key
-- 真实订阅地址
-- 机场节点
-
-运行脚本后生成的下列目录不要上传公开仓库：
-- /opt/lazy-vps-menu/outputs/
-- /opt/lazy-vps-menu/backups/
-- /etc/sing-box/certs/
-
-上传前建议检查：
-
-grep -R "password\|uuid\|privateKey\|server:" . --exclude-dir=.git
+- No built-in VPS IP.
+- No built-in private domain.
+- No built-in real password.
+- No SSH key.
+- No subscription URL.
+- Runtime generated outputs under /opt/lazy-vps-menu/outputs must NOT be uploaded to public GitHub.
