@@ -1,24 +1,23 @@
-# GitHub 上传清单 v1.3.8
+# GitHub Web Upload List
 
-必须上传：
+网页上传时，解压后进入 `LazyVPS-Interactive-v1.4.0` 文件夹，Ctrl+A 全选里面内容上传。
+
+必须覆盖：
 
 ```text
 lazy-vps-menu.sh
-lazy-vps-menu-v1.3.8.sh
 lazy-vps-protocol-addon.sh
 protocols/
 README.md
 QUICK_START.md
 CHANGELOG.md
 GITHUB_WEB_UPLOAD_STEPS.md
+GITHUB_UPLOAD_LIST.md
 SECURITY_SHARE_CHECK.txt
 ```
 
-可选上传：
+如果要完整保留 v1.2.6 旧功能，请额外上传：
 
 ```text
-docs/
-templates/
+legacy/lazy-vps-menu-legacy-v1.2.6.sh
 ```
-
-不要只上传 patch / README。主入口必须是根目录 `lazy-vps-menu.sh`。

@@ -1,55 +1,40 @@
-# LazyVPS Quick Start / 一键复制指令
+# QUICK_START / 一键复制指令
 
-## 一行进入主菜单
+## 进入互动菜单
 
-**VPS / Linux 执行：**
-
-```bash
-bash <(curl -Ls https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh)
-```
-
-## 强制刷新旧版 / 修复 AnyTLS TUIC addon not found
-
-**VPS / Linux 执行：**
+**VPS/Linux 执行：**
 
 ```bash
-rm -f lazy-vps-menu.sh /root/lazy-vps-menu.sh /opt/lazy-vps-menu/lazy-vps-protocol-addon.sh
-curl -L -H "Cache-Control: no-cache" "https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh?v=$(date +%s)" -o lazy-vps-menu.sh
+apt update && apt install -y curl wget ca-certificates
+wget -O lazy-vps-menu.sh https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh
 chmod +x lazy-vps-menu.sh
-bash -n lazy-vps-menu.sh
-grep -nE 'v1.3.8|AnyTLS|TUIC|Protocol Suite' lazy-vps-menu.sh | head -40
 bash lazy-vps-menu.sh
 ```
 
-## 直接部署 AnyTLS
+## 直接部署 AnyTLS + TUIC
 
-**VPS / Linux 执行：**
+**VPS/Linux 执行：**
 
 ```bash
-rm -f lazy-vps-menu.sh /root/lazy-vps-menu.sh /opt/lazy-vps-menu/lazy-vps-protocol-addon.sh
-curl -L -H "Cache-Control: no-cache" "https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh?v=$(date +%s)" -o lazy-vps-menu.sh
-chmod +x lazy-vps-menu.sh
+bash <(curl -Ls https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh) --quick anytls-tuic
+```
+
+## 快捷命令
+
+**VPS/Linux 执行：**
+
+```bash
 bash lazy-vps-menu.sh --quick anytls
-```
-
-## 直接部署 TUIC
-
-**VPS / Linux 执行：**
-
-```bash
-rm -f lazy-vps-menu.sh /root/lazy-vps-menu.sh /opt/lazy-vps-menu/lazy-vps-protocol-addon.sh
-curl -L -H "Cache-Control: no-cache" "https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh?v=$(date +%s)" -o lazy-vps-menu.sh
-chmod +x lazy-vps-menu.sh
 bash lazy-vps-menu.sh --quick tuic
+bash lazy-vps-menu.sh --quick anytls-tuic
+bash lazy-vps-menu.sh --quick status
+bash lazy-vps-menu.sh --quick download
 ```
 
-## 同机部署 AnyTLS + TUIC
+## Windows 下载配置
 
-**VPS / Linux 执行：**
+**Windows CMD 执行：**
 
-```bash
-rm -f lazy-vps-menu.sh /root/lazy-vps-menu.sh /opt/lazy-vps-menu/lazy-vps-protocol-addon.sh
-curl -L -H "Cache-Control: no-cache" "https://raw.githubusercontent.com/souldance7-ai/VPS-/main/lazy-vps-menu.sh?v=$(date +%s)" -o lazy-vps-menu.sh
-chmod +x lazy-vps-menu.sh
-bash lazy-vps-menu.sh --quick anytls-tuic
+```bat
+scp root@你的VPS-IP:/root/lazyvps-config.tar.gz "%USERPROFILE%\Downloads\lazyvps-config.tar.gz"
 ```

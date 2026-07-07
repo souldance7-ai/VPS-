@@ -1,5 +1,12 @@
-LazyVPS 开源安全检查：
-1. 不上传真实 VPS IP、域名、密码、UUID、私钥、订阅链接。
-2. 不上传 /opt/lazy-vps-menu/outputs/ 运行产物。
-3. 不上传 SSH Key、证书私钥、个人配置。
-4. README 只保留示例命令与说明，不写个人节点。
+# SECURITY SHARE CHECK
+
+本开源包不应包含：
+
+- 真实 VPS IP
+- 真实域名
+- 真实节点密码
+- SSH Key
+- 订阅链接
+- 运行后生成的 outputs 配置
+
+注意：`/opt/lazy-vps-menu/outputs` 是运行后在 VPS 上生成的私密配置，不要上传公开仓库。

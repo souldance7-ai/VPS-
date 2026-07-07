@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # LazyVPS Quick Menu Pack - Protocol Addon
-# Version: v1.3.8 · TUIC + AnyTLS Builder · Main Menu Direct
-# Update Date: 2026-07-05
+# Version: v1.4.0 · TUIC + AnyTLS Builder · Interactive TUI
+# Update Date: 2026-07-07
 # ==============================================================================
 # Design principles:
 # - No built-in personal IP / private domain / password / subscription URL.
@@ -13,8 +13,8 @@
 set -Eeuo pipefail
 
 APP="懒人建 VPS 快速菜单包"
-VER="v1.3.8 · TUIC + AnyTLS 协议扩展版 · 主入口直连版"
-UPDATE_DATE="2026-07-05"
+VER="v1.4.0 · TUIC + AnyTLS 协议扩展版 · Interactive TUI"
+UPDATE_DATE="2026-07-07"
 ROOT="/opt/lazy-vps-menu"
 OUT="$ROOT/outputs"
 BAK="$ROOT/backups"
@@ -129,8 +129,16 @@ ensure_sing_box(){
   if sbox_bin >/dev/null 2>&1; then
     info "当前 sing-box：$($(sbox_bin) version | head -1)"
   else
-    note "未检测到 sing-box，使用官方安装脚本安装最新版。"
-    curl -fsSL https://sing-box.app/install.sh | sh
+    local local_deb="${SING_BOX_DEB:-}"
+    [[ -n "$local_deb" && -s "$local_deb" ]] || local_deb="/tmp/sing-box.deb"
+    if [[ -s "$local_deb" ]]; then
+      note "检测到本地 sing-box deb，优先本地安装，避免 VPS 直连 GitHub 消耗流量：$local_deb"
+      dpkg -i "$local_deb" || apt-get -f install -y
+    else
+      note "未检测到 sing-box，使用官方安装脚本安装最新版。"
+      note "若 GitHub Release 下载很慢，可先在 Windows 下载 deb 后 scp 到 /tmp/sing-box.deb，再重跑本脚本。"
+      curl -fsSL https://sing-box.app/install.sh | sh
+    fi
   fi
   local bin
   bin="$(sbox_bin || true)"
@@ -192,7 +200,12 @@ fix_cert_perm(){
 }
 
 make_cert(){
-  local name="$1" sni="$2" crt="$CERT_DIR/${name}.crt" key="$CERT_DIR/${name}.key"
+  local cert_name="${1:-}"
+  local sni="${2:-}"
+  [[ -n "$cert_name" ]] || { err "make_cert 缺少证书名称参数"; return 1; }
+  [[ -n "$sni" ]] || { err "make_cert 缺少 SNI 参数"; return 1; }
+  local crt="$CERT_DIR/${cert_name}.crt"
+  local key="$CERT_DIR/${cert_name}.key"
   step "生成 TLS 自签证书 / Self-signed TLS Cert" >&2
   if [[ -s "$crt" && -s "$key" ]]; then
     info "证书已存在：$crt" >&2
