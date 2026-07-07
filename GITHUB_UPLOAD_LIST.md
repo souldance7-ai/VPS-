@@ -1,23 +1,29 @@
-# GitHub Web Upload List
+# GitHub 上传清单
 
-网页上传时，解压后进入 `LazyVPS-Interactive-v1.4.0` 文件夹，Ctrl+A 全选里面内容上传。
+## 必须上传 / 覆盖
 
-必须覆盖：
+- lazy-vps-menu.sh
+- README.md
+- CHANGELOG.md
+- AI_SERVICE_ROUTING.md
+- MEDIA_DNS_UNLOCK.md
+- AIRPORT_CHAIN_UNLOCK.md
+- TROUBLESHOOTING.md
+- SECURITY_SHARE_CHECK.txt
+- SCAN_REPORT.txt
+- docs/images/
 
-```text
-lazy-vps-menu.sh
-lazy-vps-protocol-addon.sh
-protocols/
-README.md
-QUICK_START.md
-CHANGELOG.md
-GITHUB_WEB_UPLOAD_STEPS.md
-GITHUB_UPLOAD_LIST.md
-SECURITY_SHARE_CHECK.txt
-```
+## 可选上传
 
-如果要完整保留 v1.2.6 旧功能，请额外上传：
+- FINAL_RELEASE_NOTES.md
+- FINAL_SCAN_REPORT.txt
+- GITHUB_UPLOAD_LIST.md
 
-```text
-legacy/lazy-vps-menu-legacy-v1.2.6.sh
-```
+## 不要上传
+
+- sub.yaml
+- surge.conf
+- 节点导出包
+- 含真实 VPS IP / password / pinnedPeerCertSha256 的截图或配置
+- 机场订阅 URL / Token
+- 含个人书签、账号痕迹的 Netflix / Disney+ 实测图

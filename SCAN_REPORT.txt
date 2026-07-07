@@ -2,26 +2,12 @@ bash -n syntax ok: True
 syntax stderr:
 
 
-Feature grep:
-5:#  Formal Version: v1.2.15
-46:VER="正式 v1.2.15 · V4/V6 独立端口与双栈策略版"
-1287:  [[ -f "$HTTP_DIR/01_IMPORT_FLCLASH_V4V6_SPLIT.yaml" ]] && echo "V4/V6 Split FLClash: http://$ip:$HTTP_PORT/01_IMPORT_FLCLASH_V4V6_SPLIT.yaml"
-3924:  section "IPv4 Fallback Port / IPv4 备用端口部署"
-4000:# LazyVPS IPv4 Fallback Reality Export / IPv4 备用端口
-4085:  section "V4/V6 Split Export / V4V6 独立端口导出"
-4093:  [[ -f "$v4file" ]] || { err "找不到 IPv4 备用端口配置。请先执行 IPv6 Mode → IPv4 Fallback Port。"; return 1; }
-4173:    f.write('# LazyVPS V4/V6 Split Export / IPv6主力 + IPv4备用\n')
-4179:  yaml_validate_file "$out_file" || { err "V4/V6 Split YAML 校验失败。"; return 1; }
-4189:  section "DualStack Strategy / 双栈策略组生成说明"
-4206:2. IPv6 Mode → IPv4 Fallback Port
-4207:3. IPv6 Mode → V4/V6 Split Export
-4238:    printf " 12) IPv4 Fallback Port / IPv4 备用端口部署\\n"
-4239:    printf " 13) V4/V6 Split Export / V4V6 独立端口导出\\n"
-4240:    printf " 14) DualStack Strategy / 双栈策略组说明\\n"
-4928:    v4-fallback|ipv4-fallback|ipv4-reality) ipv4_reality_fallback_port ;;
-4929:    v4v6-split|split-export) v4v6_split_export ;;
-4930:    dualstack-auto|dualstack-strategy) dualstack_strategy_template ;;
-4932:    *) echo "quick: init|bbr|trojan|reality|hysteria2|export|http|nodequality|merge|remote-merge|ai|ai-route|ai-route-show|ai-route-rollback|forward|relay-client|bbrv3|dns-unlock|media-dns|zouter-dns|dns-show|dns-rollback|dns-test|tcpx|tcp-window|diagnose|current|public-ip|export-check|remote-publish|node-test|nq-archive|airport-chain|advanced-export|strategy-template|node-classify|protocol-lint|vless-guide|vless-timeout|reality-repair|sni-switch|vless-stable|ipv6-mode|ipv6-check|ipv6-export|dualstack-export|ipv6-stable|ipv6-guard|ipv6-disable|ipv6-rollback|ipv6-port|ipv6-http|ipv6-only|ipv6-reality|ipv6-r443|ipv6-443|v4-fallback|v4v6-split|dualstack-auto" ;;
-
-
 Sensitive literal hits: []
+IPv4 constants found: ['0.0.0.0', '1.1.1.1', '119.29.29.29', '127.0.0.1', '151.243.229.229', '198.18.0.1', '223.5.5.5', '8.8.8.8']
+Unexpected IPv4 constants: []
+
+README style:
+- Uses v1.2 layout style.
+- Adds v1.2.2 Media DNS logic.
+- Adds Airport Chain / external proxy chain logic.
+- Images are synthetic and privacy-safe.
