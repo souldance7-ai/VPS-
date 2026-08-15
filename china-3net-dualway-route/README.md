@@ -14,7 +14,7 @@
 bash <(curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/china-3net-dualway-route/3net-dualway.sh)
 ```
 
-检测完成后，自动读取最新结果、脱敏并上传公开报告：
+检测完成后，自动读取最新结果、脱敏并上传到 NT ROUTE LAB 卡片式公开报告：
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/china-3net-dualway-route/publish-latest.sh)
@@ -48,9 +48,11 @@ bash <(curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/chin
 
 脚本不会修改代理、端口、防火墙、内核或网络优化参数。仅在未安装 NextTrace 时使用官方安装入口安装完整版。
 
-公开上传器只上传解析后的统计、骨干标签与脱敏地址，不上传原始逐跳日志。IPv4 统一保留前两段并将后两段替换为 `*.*`；若香港等节点自动上传收到 HTTP 403，会保留脱敏 JSON 并显示手动上传网址。
+公开上传器只上传解析后的路线卡与逐跳记录，不上传 SSH 密码、私钥或代理配置。公开 JSON 中的 IPv4 统一遮罩后两段，完整 IPv6 也会遮罩；ASN、城市、骨干标签、延迟和跳数仍保留用于判读。
 
-公开网站沿用北上广三地区数据结构。本通用脚本的去程属于全国同运营商参考，因此三个兼容栏位均明确标记 `NATIONAL_REFERENCE`，不冒充地区实测；回程仅上海为真实检测，北京与广东明确标记 `NOT-TESTED`。
+公开网站使用与「奶爸台湾」定版一致的 NT ROUTE LAB 布局。每一次上传都会产生独立 `/report/报告编号`，不会覆盖奶爸台湾、光锥云、Lazco 或其他既有报告。
+
+页面功能包括：电信／联通／移动筛选、IPv4／IPv6 筛选、去程／回程筛选、逐跳展开、MapTrace、NodeSeek 一键复制与长图输出。网站不再要求旧 China 3Net 的北上广矩阵、质量评分或测速栏位。
 
 ## License
 
