@@ -50,6 +50,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/chin
 
 公开上传器只上传解析后的统计、骨干标签与脱敏地址，不上传原始逐跳日志。IPv4 统一保留前两段并将后两段替换为 `*.*`；若香港等节点自动上传收到 HTTP 403，会保留脱敏 JSON 并显示手动上传网址。
 
+公开网站沿用北上广三地区数据结构。本通用脚本的去程属于全国同运营商参考，因此三个兼容栏位均明确标记 `NATIONAL_REFERENCE`，不冒充地区实测；回程仅上海为真实检测，北京与广东明确标记 `NOT-TESTED`。
+
 ## License
 
 MIT
