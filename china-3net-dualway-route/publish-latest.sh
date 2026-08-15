@@ -64,7 +64,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-for CMD in find sort head python3; do
+for CMD in find sort head sed python3; do
     if ! command -v "$CMD" >/dev/null 2>&1; then
         echo "🔴 缺少必要命令：$CMD"
         exit 10
@@ -435,7 +435,7 @@ payload = {
     "version": f"3net-dualway-publisher v{VERSION}",
     "generated": generated,
     "target": masked_v4,
-    "targetPort": 0,
+    "targetPort": 443,
     "returnSshHost": masked_v4,
     "selfTest": False,
     "mode": "NEXTTRACE-DUALWAY-PARSED",
