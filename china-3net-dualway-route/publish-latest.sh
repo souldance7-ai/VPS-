@@ -20,7 +20,7 @@ usage() {
       '  bash publish-latest.sh --dir /root/3NET_DUALWAY_xxx' \
       '  bash publish-latest.sh --dry-run' \
       '' '每次上传都会生成独立 /report/编号，不覆盖既有报告。' \
-      '仅遮蔽被测 VPS 本身的 IPv4／IPv6；探针与中间逐跳 IP 保留。'
+      '公开逐跳中的 IPv4 后两段与完整 IPv6 均会遮罩；ASN、城市、延迟与跳数保留。'
 }
 
 while [[ $# -gt 0 ]]; do
