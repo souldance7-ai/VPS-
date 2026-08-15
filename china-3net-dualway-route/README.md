@@ -14,6 +14,18 @@
 bash <(curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/china-3net-dualway-route/3net-dualway.sh)
 ```
 
+检测完成后，自动读取最新结果、脱敏并上传公开报告：
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/china-3net-dualway-route/publish-latest.sh)
+```
+
+检测与公开上传连续执行：
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/china-3net-dualway-route/3net-dualway.sh) --name "VPS名称" && bash <(curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/china-3net-dualway-route/publish-latest.sh)
+```
+
 自定义报告名称：
 
 ```bash
@@ -35,6 +47,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/chin
 ## 安全说明
 
 脚本不会修改代理、端口、防火墙、内核或网络优化参数。仅在未安装 NextTrace 时使用官方安装入口安装完整版。
+
+公开上传器只上传解析后的统计、骨干标签与脱敏地址，不上传原始逐跳日志。IPv4 统一保留前两段并将后两段替换为 `*.*`；若香港等节点自动上传收到 HTTP 403，会保留脱敏 JSON 并显示手动上传网址。
 
 ## License
 
