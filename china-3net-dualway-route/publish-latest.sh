@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Publish the latest generic China 3-network dual-way route report
-# Version: 1.0.0
+# Version: 1.0.1
 
 set -u
 
@@ -8,7 +8,7 @@ export LANG=C.UTF-8
 export LC_ALL=C.UTF-8
 export NO_COLOR=1
 
-SCRIPT_VERSION="1.0.0"
+SCRIPT_VERSION="1.0.1"
 SITE="${REPORT_SITE:-https://china-3net-route-report.souldance4.chatgpt.site}"
 REPORT_DIR=""
 REPORT_NAME=""
@@ -119,7 +119,7 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 REPORT_DIR = Path(os.environ["PUBLISH_REPORT_DIR"])
 NAME_OVERRIDE = os.environ.get("PUBLISH_REPORT_NAME", "").strip()
 SITE = os.environ.get(
@@ -325,54 +325,84 @@ for carrier in ("CT", "CU", "CM"):
     reached_count = sum(1 for x in all_selected if x["reached"])
     coverage = reached_count / len(all_selected) if all_selected else 0.0
 
+    # The public site uses its established three-region schema. This generic
+    # detector has one nationwide carrier reference per family rather than
+    # three region-specific forward probes. Keep all three compatibility rows
+    # explicitly marked NATIONAL_REFERENCE so they cannot be mistaken for
+    # Beijing/Shanghai/Guangdong measurements.
+    forward_tags = sorted({tag for x in forward_selected for tag in x["tags"]}) or ["未识别"]
+    forward_route = route_class(forward_tags)
+    forward_avg = (
+        round(statistics.mean(x["avg"] for x in forward_selected if x["avg"] is not None), 2)
+        if any(x["avg"] is not None for x in forward_selected) else None
+    )
+    forward_hops = max((x["reachedHop"] or x["lastHop"] for x in forward_selected), default=0)
+    forward_detail = "；".join(
+        f"{x['family']}｜{x['protocol']}｜{x['routeNote']}" for x in forward_selected
+    ) or "没有可用全国探针结果"
     forward_probes = []
-    for item in forward_selected:
+    for region, capital in (("北京", "北京市"), ("上海", "上海市"), ("广东", "广州市")):
         forward_probes.append({
-            "region": "中国",
-            "label": f"{CARRIER_NAMES[carrier]}远端探针 → VPS｜{item['family']}",
+            "region": region,
+            "label": f"{region}兼容栏位｜全国同运营商参考 → VPS",
             "access": CARRIER_NAMES[carrier],
             "publicIp": "",
-            "verified": item["reached"],
-            "route": item["route"],
-            "evidence": item["routeNote"],
-            "score": item["score"],
-            "stars": stars(item["score"]),
-            "avg": item["avg"], "min": None, "max": None,
+            "verified": False,
+            "route": forward_route,
+            "evidence": "NATIONAL_CARRIER_REFERENCE｜非指定地区实测",
+            "score": 0,
+            "stars": "☆☆☆☆☆",
+            "avg": forward_avg, "min": None, "max": None,
             "p95": None, "jitter": None, "stddev": None, "loss": None,
-            "success": "1/1" if item["reached"] else "0/1",
-            "routeHops": item["reachedHop"] or item["lastHop"],
+            "success": "0/0",
+            "routeHops": forward_hops,
             "timeoutHops": 0,
-            "backboneTags": item["tags"],
-            "routeNote": f"{item['family']}｜{item['protocol']}｜{item['routeNote']}",
-            "probeCapital": "中国远端探针",
-            "probeHealth": "PASS" if item["reached"] else "INCONCLUSIVE",
-            "reachability": "PASS" if item["reached"] else "INCONCLUSIVE",
+            "backboneTags": forward_tags,
+            "routeNote": f"{forward_detail}｜全国参考复制到网站兼容栏位，不冒充{region}实测。",
+            "probeCapital": capital,
+            "probeHealth": "NATIONAL_REFERENCE",
+            "reachability": "INCONCLUSIVE",
         })
 
+    # The generic return test genuinely targets Shanghai only. Keep Shanghai's
+    # combined IPv4/IPv6 result and emit NOT-TESTED placeholders for Beijing
+    # and Guangdong to satisfy the site's legacy shape without fabricating data.
+    return_tags = sorted({tag for x in return_selected for tag in x["tags"]}) or ["未识别"]
+    return_route = route_class(return_tags)
+    return_avg = (
+        round(statistics.mean(x["avg"] for x in return_selected if x["avg"] is not None), 2)
+        if any(x["avg"] is not None for x in return_selected) else None
+    )
+    return_hops = max((x["reachedHop"] or x["lastHop"] for x in return_selected), default=0)
+    return_reached = sum(1 for x in return_selected if x["reached"])
+    return_detail = "；".join(
+        f"{x['family']}｜{x['protocol']}｜{x['routeNote']}" for x in return_selected
+    ) or "没有可用上海回程结果"
     return_probes = []
-    for item in return_selected:
+    for city in ("北京", "上海", "广东"):
+        tested = city == "上海" and bool(return_selected)
         return_probes.append({
-            "city": "上海",
-            "host": f"上海{CARRIER_NAMES[carrier][2:]}｜{item['family']}",
-            "ip": "已脱敏",
-            "targetPort": 443 if item["protocol"] == "TCP/443" else 0,
-            "nodeSource": "NextTrace 上海三网测试目标",
-            "fallbackUsed": item["protocol"] == "TCP/443",
-            "route": item["route"],
-            "evidence": item["routeNote"],
-            "observedClasses": item["tags"],
-            "score": item["score"],
-            "stars": stars(item["score"]),
-            "avg": item["avg"], "min": None, "max": None,
+            "city": city,
+            "host": f"{city}{CARRIER_NAMES[carrier][2:]}｜{'IPv4＋IPv6' if tested else '未检测'}",
+            "ip": "已脱敏" if tested else "N/A",
+            "targetPort": 443 if tested else 0,
+            "nodeSource": "NextTrace 上海三网测试目标" if tested else "NOT-TESTED",
+            "fallbackUsed": bool(tested and any(x["protocol"] == "TCP/443" for x in return_selected)),
+            "route": return_route if tested else "NOT-TESTED",
+            "evidence": return_detail if tested else "本次通用脚本仅检测上海回程",
+            "observedClasses": return_tags if tested else [],
+            "score": return_score if tested else 0,
+            "stars": stars(return_score) if tested else "☆☆☆☆☆",
+            "avg": return_avg if tested else None, "min": None, "max": None,
             "p95": None, "jitter": None, "stddev": None, "loss": None,
-            "success": "1/1" if item["reached"] else "0/1",
-            "routeHops": item["reachedHop"] or item["lastHop"],
+            "success": f"{return_reached}/{len(return_selected)}" if tested else "0/0",
+            "routeHops": return_hops if tested else 0,
             "timeoutHops": 0,
-            "backboneTags": item["tags"],
-            "routeNote": f"{item['family']}｜{item['protocol']}｜{item['routeNote']}",
-            "probeCapital": "上海",
-            "probeHealth": "PASS" if item["reached"] else "INCONCLUSIVE",
-            "reachability": "PASS" if item["reached"] else "INCONCLUSIVE",
+            "backboneTags": return_tags if tested else [],
+            "routeNote": return_detail if tested else "NOT-TESTED｜没有伪造地区数据",
+            "probeCapital": f"{city}市" if city != "广东" else "广州市",
+            "probeHealth": ("PASS" if return_reached else "INCONCLUSIVE") if tested else "NOT-TESTED",
+            "reachability": ("PASS" if return_reached else "INCONCLUSIVE") if tested else "NOT-TESTED",
         })
 
     forward_aggregate = {
@@ -381,19 +411,18 @@ for carrier in ("CT", "CU", "CM"):
         "access": CARRIER_NAMES[carrier],
         "publicIp": "",
         "verified": bool(forward_selected) and all(x["reached"] for x in forward_selected),
-        "route": route_class(sorted({tag for x in forward_selected for tag in x["tags"]})),
+        "route": forward_route,
         "evidence": f"去程有效 {sum(1 for x in forward_selected if x['reached'])}/{len(forward_selected)}",
         "score": forward_score,
         "stars": stars(forward_score),
-        "avg": round(statistics.mean(x["avg"] for x in forward_selected if x["avg"] is not None), 2)
-            if any(x["avg"] is not None for x in forward_selected) else None,
+        "avg": forward_avg,
         "min": None, "max": None, "p95": None, "jitter": None, "stddev": None,
         "loss": None,
         "success": f"{sum(1 for x in forward_selected if x['reached'])}/{len(forward_selected)}",
         "routeHops": max((x["reachedHop"] or x["lastHop"] for x in forward_selected), default=0),
         "timeoutHops": 0,
-        "backboneTags": sorted({tag for x in forward_selected for tag in x["tags"]}),
-        "routeNote": "IPv4／IPv6 分项展示；未响应不等于目标不可达。",
+        "backboneTags": forward_tags,
+        "routeNote": "全国同运营商参考；不是北上广指定地区实测。IPv4／IPv6 合并展示。",
         "reachability": "PASS" if forward_selected and all(x["reached"] for x in forward_selected) else "INCONCLUSIVE",
     }
 
@@ -410,9 +439,9 @@ for carrier in ("CT", "CU", "CM"):
         "forwardProbes": forward_probes,
         "forwardScore": forward_score,
         "returnScore": return_score,
-        "scoreBasis": "NextTrace ICMP；目标未确认时采用 TCP/443 补测",
+        "scoreBasis": "全国运营商去程参考＋上海回程实测；ICMP 未确认时采用 TCP/443 补测",
         "evidenceCoverage": round(coverage, 3),
-        "forwardRegional": sum(1 for x in forward_selected if x["reached"]),
+        "forwardRegional": 0,
         "forwardReference": len(forward_selected),
         "bidirectional": bool(forward_selected and return_selected)
             and any(x["reached"] for x in forward_selected)
@@ -439,9 +468,10 @@ payload = {
     "returnSshHost": masked_v4,
     "selfTest": False,
     "mode": "NEXTTRACE-DUALWAY-PARSED",
-    "matrix": "中国电信／联通／移动 × IPv4／IPv6 去程＋回程",
+    "matrix": "北上广网站兼容格式｜去程为全国同运营商参考；回程仅上海实测",
     "methodology": (
-        "去程由中国三网远端探针发起，回程由 VPS 发往上海三网目标；"
+        "去程由中国三网全国同运营商远端探针发起，不能冒充北上广指定地区实测；"
+        "回程由 VPS 发往上海三网目标，北京与广东栏位明确标记 NOT-TESTED；"
         "ICMP 未确认目标时追加 TCP/443。目标真正回应才标记到达跳数，"
         "否则只标记最后响应跳数；30 跳仅为探测上限。"
     ),
