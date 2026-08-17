@@ -12,17 +12,29 @@ DEFAULT_DATA_DIR="/opt/posteio/data"
 DEFAULT_BACKUP_DIR="/opt/posteio/backups"
 LOG_FILE="/var/log/posteio-wizard.log"
 
+# 配置变量默认值；部署后由 root:root 0600 配置文件覆盖。
+CONTAINER_NAME="poste-mailserver"
+MAIL_HOSTNAME=""
+MAIL_DOMAIN=""
+PUBLIC_IPV4=""
+TIMEZONE="UTC"
+DATA_DIR="$DEFAULT_DATA_DIR"
+BACKUP_DIR="$DEFAULT_BACKUP_DIR"
+HTTP_PORT=80
+HTTPS_PORT=443
+DISABLE_CLAMAV=TRUE
+DISABLE_RSPAMD=FALSE
+
 if [[ -t 1 && -z "${NO_COLOR:-}" ]]; then
   C_RESET=$'\033[0m'
   C_BOLD=$'\033[1m'
-  C_DIM=$'\033[2m'
   C_RED=$'\033[31m'
   C_GREEN=$'\033[32m'
   C_YELLOW=$'\033[33m'
   C_BLUE=$'\033[34m'
   C_CYAN=$'\033[36m'
 else
-  C_RESET="" C_BOLD="" C_DIM="" C_RED="" C_GREEN="" C_YELLOW="" C_BLUE="" C_CYAN=""
+  C_RESET="" C_BOLD="" C_RED="" C_GREEN="" C_YELLOW="" C_BLUE="" C_CYAN=""
 fi
 
 log() {
@@ -157,7 +169,6 @@ detect_os() {
   # shellcheck disable=SC1091
   source /etc/os-release
   OS_ID=${ID:-unknown}
-  OS_LIKE=${ID_LIKE:-}
   OS_VERSION=${VERSION_ID:-unknown}
 }
 
@@ -404,8 +415,8 @@ run_container() {
 
 wait_for_service() {
   info "等待 Poste.io 初始化……"
-  local i
-  for i in $(seq 1 60); do
+  local _
+  for _ in {1..60}; do
     if docker inspect -f '{{.State.Running}}' "$CONTAINER_NAME" 2>/dev/null | grep -qx true && \
        ss -lntH 2>/dev/null | awk -v p=":${HTTPS_PORT}" '$4 ~ (p "$") {found=1} END {exit !found}'; then
       ok "Poste.io 已启动并监听 HTTPS/${HTTPS_PORT}。"
@@ -435,7 +446,8 @@ webmail_url() {
 }
 
 write_report() {
-  local report="/root/posteio-deploy-report-$(date '+%Y%m%d_%H%M%S').txt"
+  local report
+  report="/root/posteio-deploy-report-$(date '+%Y%m%d_%H%M%S').txt"
   {
     echo "Poste.io 部署报告"
     echo "生成时间：$(date '+%F %T %Z')"
@@ -464,12 +476,16 @@ write_report() {
 show_dns_guide() {
   load_config || { warn "尚未保存部署配置，请先安装。"; return 1; }
   header
+  local dns_host=$MAIL_HOSTNAME
+  if [[ "$MAIL_HOSTNAME" == *."$MAIL_DOMAIN" ]]; then
+    dns_host=${MAIL_HOSTNAME:0:${#MAIL_HOSTNAME}-${#MAIL_DOMAIN}-1}
+  fi
   printf '%s%sDNS 配置清单%s\n\n' "$C_BOLD" "$C_BLUE" "$C_RESET"
   cat <<EOF
 请在域名 DNS 服务商添加：
 
 1. 邮件主机 A 记录
-   主机：${MAIL_HOSTNAME%%.$MAIL_DOMAIN}
+   主机：$dns_host
    类型：A
    内容：$PUBLIC_IPV4
    代理：必须关闭，仅 DNS 解析
@@ -501,7 +517,7 @@ show_dns_guide() {
    登录 Poste.io → Virtual domains → $MAIL_DOMAIN → DKIM，
    生成密钥后把后台显示的 TXT 记录原样添加到 DNS。
 
-注意：Cloudflare 等 DNS 平台上的邮件主机必须设为“仅 DNS”，不能开启代理云朵。
+注意：Cloudflare 等 DNS 平台上的邮件主机必须设为【仅 DNS】，不能开启代理云朵。
 EOF
 }
 
