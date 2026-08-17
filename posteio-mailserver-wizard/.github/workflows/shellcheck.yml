@@ -1,0 +1,34 @@
+name: ShellCheck
+
+on:
+  push:
+    paths:
+      - "posteio-mailserver-wizard/**/*.sh"
+      - ".github/workflows/shellcheck.yml"
+  pull_request:
+    paths:
+      - "posteio-mailserver-wizard/**/*.sh"
+      - ".github/workflows/shellcheck.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bash syntax
+        run: |
+          bash -n posteio-mailserver-wizard/posteio-wizard.sh
+          bash -n posteio-mailserver-wizard/install.sh
+      - name: ShellCheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+          shellcheck \
+            posteio-mailserver-wizard/posteio-wizard.sh \
+            posteio-mailserver-wizard/install.sh \
+            posteio-mailserver-wizard/tests/static-test.sh
+      - name: Static tests
+        run: bash posteio-mailserver-wizard/tests/static-test.sh
