@@ -4,11 +4,11 @@ on:
   push:
     paths:
       - "posteio-mailserver-wizard/**/*.sh"
-      - ".github/workflows/shellcheck.yml"
+      - ".github/workflows/posteio-mailserver-wizard-shellcheck.yml"
   pull_request:
     paths:
       - "posteio-mailserver-wizard/**/*.sh"
-      - ".github/workflows/shellcheck.yml"
+      - ".github/workflows/posteio-mailserver-wizard-shellcheck.yml"
 
 permissions:
   contents: read
