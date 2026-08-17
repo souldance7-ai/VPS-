@@ -18,11 +18,11 @@ version=$(bash "$ROOT_DIR/posteio-wizard.sh" --version)
 source "$ROOT_DIR/posteio-wizard.sh"
 
 is_ipv4 "203.0.113.10"
-! is_ipv4 "999.0.0.1"
+if is_ipv4 "999.0.0.1"; then exit 1; fi
 is_domain "mail.example.com"
-! is_domain "not_a_domain"
+if is_domain "not_a_domain"; then exit 1; fi
 is_port "443"
-! is_port "70000"
+if is_port "70000"; then exit 1; fi
 [[ "$(default_mail_domain mail.example.com)" == "example.com" ]]
 
 if command -v shellcheck >/dev/null 2>&1; then
