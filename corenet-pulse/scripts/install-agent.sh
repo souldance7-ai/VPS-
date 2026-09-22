@@ -20,15 +20,48 @@ case "$PULSE_ARCH" in
   *) echo "不支援架構: $PULSE_ARCH" >&2; exit 1 ;;
 esac
 
+export DEBIAN_FRONTEND=noninteractive
+if ! command -v curl >/dev/null 2>&1; then
+  apt-get update
+  apt-get install -y --no-install-recommends ca-certificates curl
+fi
+
 if [[ "$PULSE_VERSION" == latest ]]; then
   PULSE_DOWNLOAD="https://github.com/${PULSE_REPO}/releases/latest/download/corenet-pulse-agent-linux-${PULSE_ARCH}"
 else
   PULSE_DOWNLOAD="https://github.com/${PULSE_REPO}/releases/download/${PULSE_VERSION}/corenet-pulse-agent-linux-${PULSE_ARCH}"
 fi
 
+install_agent_binary() {
+  local temp_dir temp_binary source_url
+  temp_dir="$(mktemp -d)"
+  temp_binary="${temp_dir}/corenet-pulse-agent"
+  trap 'rm -rf -- "$temp_dir"' RETURN
+
+  if curl -fL --retry 3 "$PULSE_DOWNLOAD" -o "$temp_binary"; then
+    install -m 0755 "$temp_binary" /usr/local/bin/corenet-pulse-agent
+    return
+  fi
+
+  echo "Release 尚未提供，改由 GitHub 原始碼安全建置…"
+  if ! command -v go >/dev/null 2>&1; then
+    apt-get update
+    apt-get install -y --no-install-recommends golang-go
+  fi
+  source_url="https://codeload.github.com/${PULSE_REPO}/tar.gz/refs/heads/main"
+  curl -fL --retry 3 "$source_url" -o "${temp_dir}/source.tar.gz"
+  mkdir -p "${temp_dir}/source"
+  tar -xzf "${temp_dir}/source.tar.gz" --strip-components=1 -C "${temp_dir}/source"
+  (
+    cd "${temp_dir}/source/${PULSE_PROJECT_PATH}"
+    CGO_ENABLED=0 GOOS=linux GOARCH="$PULSE_ARCH" \
+      go build -trimpath -ldflags='-s -w' -o "$temp_binary" ./cmd/agent
+  )
+  install -m 0755 "$temp_binary" /usr/local/bin/corenet-pulse-agent
+}
+
 install -d -m 0750 /etc/corenet-pulse
-curl -fL --retry 3 "$PULSE_DOWNLOAD" -o /usr/local/bin/corenet-pulse-agent
-chmod 0755 /usr/local/bin/corenet-pulse-agent
+install_agent_binary
 cat >/etc/corenet-pulse/agent.env <<EOF
 PULSE_HUB_URL=${PULSE_HUB_URL}
 PULSE_NODE_ID=${PULSE_NODE_ID}
