@@ -1,0 +1,27 @@
+name: CI
+on:
+  push:
+    branches: [main]
+    paths:
+      - "corenet-pulse/**"
+      - ".github/workflows/corenet-pulse-ci.yml"
+  pull_request:
+    paths:
+      - "corenet-pulse/**"
+      - ".github/workflows/corenet-pulse-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: corenet-pulse/go.mod
+      - run: go test ./...
+        working-directory: corenet-pulse
+      - run: go vet ./...
+        working-directory: corenet-pulse

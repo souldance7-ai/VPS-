@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#071011" />
+    <title>CORENET PULSE</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="CORENET PULSE 首頁">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span><b id="site-name">CORENET PULSE</b><small>INFRASTRUCTURE SIGNAL</small></span>
+      </a>
+      <div class="top-status">
+        <span class="signal"><i></i>LIVE TELEMETRY</span>
+        <time id="clock">--:--:-- UTC</time>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">NETWORK OPERATIONS / 01</p>
+          <h1>看見每條路由，<br><em>掌握每個節點。</em></h1>
+          <p id="site-subtitle" class="hero-copy">PRIVATE INFRASTRUCTURE TELEMETRY</p>
+        </div>
+        <div class="orbit" aria-hidden="true">
+          <span class="orbit-ring ring-a"></span><span class="orbit-ring ring-b"></span>
+          <span class="orbit-core"></span><span class="orbit-node node-a"></span><span class="orbit-node node-b"></span>
+        </div>
+      </section>
+
+      <section class="summary" aria-label="總覽">
+        <article><span>FLEET STATUS</span><strong id="fleet-status">等待資料</strong><small id="fleet-ratio">0 / 2 ONLINE</small></article>
+        <article><span>LIVE DOWNLOAD</span><strong id="fleet-rx">0 B/s</strong><small>AGGREGATED RX</small></article>
+        <article><span>LIVE UPLOAD</span><strong id="fleet-tx">0 B/s</strong><small>AGGREGATED TX</small></article>
+        <article><span>LAST SYNC</span><strong id="last-sync">--:--:--</strong><small>UTC+8 DISPLAY</small></article>
+      </section>
+
+      <section class="fleet-section">
+        <div class="section-heading">
+          <div><p class="eyebrow">ACTIVE FLEET / 02</p><h2>節點矩陣</h2></div>
+          <p>每 3 秒接收一次遙測。公開資料不包含 IP、主機名或 Agent Token。</p>
+        </div>
+        <div id="node-grid" class="node-grid" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <footer>
+      <span>CORENET PULSE / OPEN SOURCE</span>
+      <span>ZERO-IP PUBLIC SURFACE</span>
+      <span id="connection-state">CONNECTING</span>
+    </footer>
+
+    <template id="node-template">
+      <article class="node-card">
+        <div class="node-head">
+          <div class="node-identity"><span class="flag"></span><div><h3></h3><p class="region"></p></div></div>
+          <span class="status-pill"><i></i><b></b></span>
+        </div>
+        <div class="provider-row"><span class="provider"></span><span class="network"></span><span class="plan"></span></div>
+        <div class="metric-grid">
+          <div class="metric cpu"><span>CPU</span><strong>—</strong><div class="bar"><i></i></div></div>
+          <div class="metric memory"><span>MEMORY</span><strong>—</strong><div class="bar"><i></i></div></div>
+          <div class="metric disk"><span>DISK</span><strong>—</strong><div class="bar"><i></i></div></div>
+        </div>
+        <div class="throughput">
+          <div><span>↓ DOWNLOAD</span><strong class="rx">—</strong></div>
+          <div><span>↑ UPLOAD</span><strong class="tx">—</strong></div>
+          <svg class="spark" viewBox="0 0 240 54" role="img" aria-label="近期流量趨勢"><path class="spark-fill"></path><path class="spark-line"></path></svg>
+        </div>
+        <div class="node-foot">
+          <span class="os">等待 Agent 接入</span><span class="uptime">UP —</span><button type="button">展開詳情 <b>↗</b></button>
+        </div>
+        <div class="details" hidden>
+          <div><span>LOAD AVG</span><strong class="load">—</strong></div>
+          <div><span>CONNECTIONS</span><strong class="connections">—</strong></div>
+          <div><span>PROCESSES</span><strong class="processes">—</strong></div>
+          <div><span>TOTAL TRAFFIC</span><strong class="traffic">—</strong></div>
+        </div>
+      </article>
+    </template>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
+

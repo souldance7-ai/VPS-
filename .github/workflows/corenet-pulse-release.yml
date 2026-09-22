@@ -1,0 +1,31 @@
+name: Release
+on:
+  push:
+    tags: ["pulse-v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  binaries:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        component: [hub, agent]
+        arch: [amd64, arm64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: corenet-pulse/go.mod
+      - name: Build
+        env:
+          GOOS: linux
+          GOARCH: ${{ matrix.arch }}
+          CGO_ENABLED: "0"
+        run: go build -trimpath -ldflags="-s -w -X main.version=${GITHUB_REF_NAME}" -o "$GITHUB_WORKSPACE/corenet-pulse-${{ matrix.component }}-linux-${{ matrix.arch }}" "./cmd/${{ matrix.component }}"
+        working-directory: corenet-pulse
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: corenet-pulse-*
+          generate_release_notes: true

@@ -1,0 +1,23 @@
+[Unit]
+Description=CORENET Pulse Hub
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=corenet-pulse
+Group=corenet-pulse
+EnvironmentFile=-/etc/corenet-pulse/hub.env
+ExecStart=/usr/local/bin/corenet-pulse-hub
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/etc/corenet-pulse
+WorkingDirectory=/var/lib/corenet-pulse
+
+[Install]
+WantedBy=multi-user.target
+

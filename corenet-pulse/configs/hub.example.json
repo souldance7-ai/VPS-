@@ -1,0 +1,34 @@
+{
+  "listen": "127.0.0.1:9800",
+  "stale_after_seconds": 15,
+  "history_points": 120,
+  "site": {
+    "name": "CORENET PULSE",
+    "subtitle": "PRIVATE INFRASTRUCTURE TELEMETRY"
+  },
+  "nodes": [
+    {
+      "id": "aws-jp-01",
+      "name": "AWS 日本",
+      "region": "Tokyo · JP",
+      "country": "JP",
+      "provider": "AWS",
+      "network": "AWS Tokyo",
+      "plan": "VPS / Cloud",
+      "sort": 10,
+      "token": "${AWS_JP_TOKEN}"
+    },
+    {
+      "id": "cht-changhua-01",
+      "name": "彰化中華電信",
+      "region": "Changhua · TW",
+      "country": "TW",
+      "provider": "CHT",
+      "network": "HiNet",
+      "plan": "VPS / Direct",
+      "sort": 20,
+      "token": "${CHT_CHANGHUA_TOKEN}"
+    }
+  ]
+}
+
