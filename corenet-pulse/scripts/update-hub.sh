@@ -66,12 +66,30 @@ install -m 0755 "$PULSE_TMP/hub" "$PULSE_STAGED"
 PULSE_SWAPPED=1
 mv -f -- "$PULSE_STAGED" /usr/local/bin/corenet-pulse-hub
 systemctl restart corenet-pulse-hub
+# A systemd process may be active before its HTTP listener is ready.
+# Parse only successful responses and treat incomplete JSON as a retry.
+pulse_hub_ready() {
+  local health page
+  systemctl is-active --quiet corenet-pulse-hub || return 1
+  health="$(curl -fsS --max-time 2 "$PULSE_CHECK_URL/healthz" 2>/dev/null)" || return 1
+  python3 -c '
+import json, sys
+try:
+    state = json.load(sys.stdin)
+except (ValueError, OSError):
+    sys.exit(1)
+sys.exit(0 if isinstance(state, dict) and state.get("status") == "ok" else 1)
+' <<< "$health" || return 1
+  page="$(curl -fsS --max-time 2 "$PULSE_CHECK_URL/" 2>/dev/null)" || return 1
+  [[ "$page" == *coast-1* ]]
+}
 for PULSE_ATTEMPT in {1..15}; do
-  if systemctl is-active --quiet corenet-pulse-hub && \
-    curl -fsS --max-time 2 "$PULSE_CHECK_URL/healthz" | python3 -c 'import json,sys; sys.exit(0 if json.load(sys.stdin).get("status") == "ok" else 1)' && \
-    curl -fsS --max-time 2 "$PULSE_CHECK_URL/" | python3 -c 'import sys; sys.exit(0 if "coast-1" in sys.stdin.read() else 1)'; then
+  if pulse_hub_ready; then
     PULSE_SUCCESS=1
     break
+  fi
+  if [[ "$PULSE_ATTEMPT" == 1 ]]; then
+    echo 'Hub 正在啟動，等待健康檢查…'
   fi
   sleep 1
 done
