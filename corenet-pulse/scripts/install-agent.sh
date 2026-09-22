@@ -111,7 +111,12 @@ for release in releases:
 raise SystemExit('找不到適合本機架構的 Go 官方工具鏈')
 PY
     read -r go_filename go_sha <"$temp_dir/go-download.txt"
-    curl -fsSL --retry 3 "https://go.dev/dl/${go_filename}" -o "$temp_dir/go.tar.gz"
+    # Some transit/CDN paths reset long HTTP/2 downloads. Keep the partial
+    # archive during curl's retries and use HTTP/1.1 for a more stable transfer.
+    curl --http1.1 -fL \
+      --retry 8 --retry-delay 3 --retry-all-errors \
+      --connect-timeout 15 --continue-at - \
+      "https://go.dev/dl/${go_filename}" -o "$temp_dir/go.tar.gz"
     printf '%s  %s\n' "$go_sha" "$temp_dir/go.tar.gz" | sha256sum -c -
     tar -xzf "$temp_dir/go.tar.gz" -C "$temp_dir"
     go_binary="$temp_dir/go/bin/go"
