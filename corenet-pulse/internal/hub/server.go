@@ -10,6 +10,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -23,10 +24,14 @@ type Server struct {
 	store  *Store
 	logger *log.Logger
 	mux    *http.ServeMux
+	admin  *adminManager
 }
 
 func NewServer(cfg Config, logger *log.Logger) *Server {
 	s := &Server{store: NewStore(cfg), logger: logger, mux: http.NewServeMux()}
+	s.admin = newAdminManager(cfg.Admin)
+	s.registerAdminRoutes()
+	s.registerProbeRoutes()
 	s.mux.HandleFunc("GET /healthz", s.health)
 	s.mux.HandleFunc("GET /api/public/state", s.publicState)
 	s.mux.HandleFunc("GET /api/public/events", s.events)
@@ -47,10 +52,19 @@ func (s *Server) health(w http.ResponseWriter, _ *http.Request) {
 	_, _ = io.WriteString(w, `{"status":"ok"}`)
 }
 
-func (s *Server) publicState(w http.ResponseWriter, _ *http.Request) {
+func (s *Server) publicState(w http.ResponseWriter, r *http.Request) {
+	historyLimit := -1
+	if raw := r.URL.Query().Get("history"); raw != "" {
+		limit, err := strconv.Atoi(raw)
+		if err != nil || limit < 0 || limit > 120 {
+			http.Error(w, "history must be between 0 and 120", http.StatusBadRequest)
+			return
+		}
+		historyLimit = limit
+	}
 	w.Header().Set("content-type", "application/json; charset=utf-8")
 	w.Header().Set("cache-control", "no-store")
-	_ = json.NewEncoder(w).Encode(s.store.State(time.Now()))
+	_ = json.NewEncoder(w).Encode(s.store.StateWithHistory(time.Now(), historyLimit))
 }
 
 func (s *Server) report(w http.ResponseWriter, r *http.Request) {
@@ -80,6 +94,10 @@ func (s *Server) report(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	report.Metrics.CPU = clamp(report.Metrics.CPU)
+	if !validProbeReport(report.Probes, time.Now()) {
+		http.Error(w, "invalid probe report", http.StatusBadRequest)
+		return
+	}
 	s.store.Update(report)
 	w.WriteHeader(http.StatusNoContent)
 }

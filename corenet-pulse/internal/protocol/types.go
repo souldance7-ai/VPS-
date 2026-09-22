@@ -26,9 +26,10 @@ type Metrics struct {
 }
 
 type Report struct {
-	NodeID       string  `json:"node_id"`
-	AgentVersion string  `json:"agent_version"`
-	Timestamp    int64   `json:"timestamp"`
-	System       System  `json:"system"`
-	Metrics      Metrics `json:"metrics"`
+	NodeID       string       `json:"node_id"`
+	AgentVersion string       `json:"agent_version"`
+	Timestamp    int64        `json:"timestamp"`
+	System       System       `json:"system"`
+	Metrics      Metrics      `json:"metrics"`
+	Probes       *ProbeReport `json:"probes,omitempty"`
 }

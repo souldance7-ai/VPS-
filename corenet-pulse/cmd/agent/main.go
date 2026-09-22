@@ -39,6 +39,8 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	client := &http.Client{Timeout: 10 * time.Second}
+	prober := agent.NewProber()
+	go prober.Run(ctx, client, hubURL, nodeID, token)
 	logger.Printf("started node=%s interval=%s", nodeID, interval)
 	// Establish CPU/network deltas before the first report.
 	select {
@@ -52,7 +54,7 @@ func main() {
 			logger.Printf("collect failed: %v", err)
 		} else if err := send(ctx, client, hubURL, token, protocol.Report{
 			NodeID: nodeID, AgentVersion: version, Timestamp: time.Now().Unix(),
-			System: system, Metrics: metrics,
+			System: system, Metrics: metrics, Probes: prober.Snapshot(),
 		}); err != nil {
 			logger.Printf("report failed: %v", err)
 		}

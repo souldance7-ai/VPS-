@@ -30,7 +30,7 @@ func testConfig() Config {
 func TestPublicStateNeverLeaksSecretsOrPeerIP(t *testing.T) {
 	server := NewServer(testConfig(), log.New(io.Discard, "", 0))
 	report := protocol.Report{
-		NodeID: "aws-jp-01", AgentVersion: "test", Timestamp: time.Now().Unix(),
+		NodeID: "aws-jp-01", AgentVersion: "test 192.0.2.55", Timestamp: time.Now().Unix(),
 		System:  protocol.System{OS: "Debian 13 via 2001:db8::7", CPUCores: 4, MemTotal: 8 << 30, DiskTotal: 80 << 30},
 		Metrics: protocol.Metrics{CPU: 12.5, MemUsed: 2 << 30, DiskUsed: 20 << 30, NetRX: 1000, NetTX: 500},
 	}
@@ -49,13 +49,62 @@ func TestPublicStateNeverLeaksSecretsOrPeerIP(t *testing.T) {
 	stateW := httptest.NewRecorder()
 	server.Handler().ServeHTTP(stateW, stateReq)
 	payload := stateW.Body.String()
-	for _, forbidden := range []string{testToken, "198.51.100.42", "203.0.113.8", "2001:db8::7", `"ip"`, `"hostname"`, `"token"`} {
+	for _, forbidden := range []string{testToken, "198.51.100.42", "203.0.113.8", "192.0.2.55", "2001:db8::7", `"ip"`, `"hostname"`, `"token"`} {
 		if strings.Contains(strings.ToLower(payload), strings.ToLower(forbidden)) {
 			t.Fatalf("public payload leaked %q: %s", forbidden, payload)
 		}
 	}
 	if !strings.Contains(payload, "AWS 日本") {
 		t.Fatalf("public payload missing node: %s", payload)
+	}
+}
+
+func TestPublicHistoryBudget(t *testing.T) {
+	server := NewServer(testConfig(), log.New(io.Discard, "", 0))
+	for i := 0; i < 35; i++ {
+		server.Store().Update(protocol.Report{
+			NodeID: "aws-jp-01", AgentVersion: "test", Timestamp: time.Now().Unix(),
+			System:  protocol.System{CPUCores: 4, MemTotal: 8 << 30},
+			Metrics: protocol.Metrics{CPU: float64(i), NetRX: 1234},
+		})
+	}
+	for _, tc := range []struct {
+		query string
+		count int
+	}{
+		{"", 30}, {"?history=0", 0}, {"?history=3", 3}, {"?history=120", 30},
+	} {
+		t.Run(tc.query, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			server.Handler().ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/api/public/state"+tc.query, nil))
+			var state publicState
+			if err := json.Unmarshal(w.Body.Bytes(), &state); err != nil {
+				t.Fatal(err)
+			}
+			if w.Code != http.StatusOK || len(state.Nodes) != 1 {
+				t.Fatalf("unexpected snapshot: %d %s", w.Code, w.Body.String())
+			}
+			node := state.Nodes[0]
+			if len(node.History) != tc.count || node.History == nil {
+				t.Fatalf("history count=%d want=%d (must be an array)", len(node.History), tc.count)
+			}
+			if tc.count > 0 && node.History[tc.count-1].CPU != 34 {
+				t.Fatal("limited history must retain newest samples")
+			}
+			if !node.Online || node.Metrics.NetRX != 1234 || node.System.CPUCores != 4 {
+				t.Fatal("history budget changed current metrics or state")
+			}
+			if strings.Contains(w.Body.String(), testToken) || strings.Contains(w.Body.String(), "203.0.113.8") {
+				t.Fatal("history-limited snapshot leaked private fields")
+			}
+		})
+	}
+	for _, invalid := range []string{"-1", "121", "abc"} {
+		w := httptest.NewRecorder()
+		server.Handler().ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/api/public/state?history="+invalid, nil))
+		if w.Code != http.StatusBadRequest {
+			t.Fatalf("history=%s status=%d", invalid, w.Code)
+		}
 	}
 }
 
