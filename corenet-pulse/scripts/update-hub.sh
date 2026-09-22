@@ -49,7 +49,7 @@ cleanup() {
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
-echo '下載並建置海洋沙灘版 Hub…'
+echo '下載並建置海岸管理與三網探測版 Hub…'
 curl -fsSL --retry 3 "https://codeload.github.com/souldance7-ai/VPS-/tar.gz/${PULSE_REF}" -o "$PULSE_TMP/source.tar.gz"
 mkdir "$PULSE_TMP/source"
 tar -xzf "$PULSE_TMP/source.tar.gz" --strip-components=1 -C "$PULSE_TMP/source"
@@ -81,7 +81,7 @@ except (ValueError, OSError):
 sys.exit(0 if isinstance(state, dict) and state.get("status") == "ok" else 1)
 ' <<< "$health" || return 1
   page="$(curl -fsS --max-time 2 "$PULSE_CHECK_URL/" 2>/dev/null)" || return 1
-  [[ "$page" == *coast-1* ]]
+  [[ "$page" == *network-1* ]]
 }
 for PULSE_ATTEMPT in {1..15}; do
   if pulse_hub_ready; then
@@ -94,6 +94,6 @@ for PULSE_ATTEMPT in {1..15}; do
   sleep 1
 done
 [[ "$PULSE_SUCCESS" == 1 ]] || exit 1
-echo 'Hub 已更新為海洋沙灘版，健康檢查通過。'
+echo 'Hub 已更新，海岸介面與三網欄位健康檢查通過。'
 echo '請以 Ctrl+F5 重新整理探針頁面。各節點會在數秒內重新回報。'
 echo "上一版程式備份：$PULSE_BACKUP"

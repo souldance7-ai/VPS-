@@ -8,7 +8,7 @@
   <meta name="description" content="CORENET PULSE 節點監控：即時掌握 VPS 與 VDS 的運行、資源與流量。" />
   <title>CORENET PULSE</title>
   <link rel="icon" href="/favicon.svg?v=coast-1" type="image/svg+xml" />
-  <link rel="stylesheet" href="/styles.css?v=coast-1" />
+  <link rel="stylesheet" href="/styles.css?v=network-1" />
 </head>
 <body>
   <a class="skip-link" href="#fleet">跳到節點列表</a>
@@ -76,11 +76,12 @@
         <div class="results-copy"><span id="result-count" aria-live="polite">正在載入節點…</span><button id="clear-filters" class="text-button" type="button" hidden>清除篩選</button></div>
         <div class="view-switch" role="group" aria-label="顯示方式"><button id="view-cards" type="button" aria-pressed="true"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="3" width="5" height="5"/><rect x="12" y="3" width="5" height="5"/><rect x="3" y="12" width="5" height="5"/><rect x="12" y="12" width="5" height="5"/></svg>卡片</button><button id="view-list" type="button" aria-pressed="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14"/></svg>列表</button></div>
       </div>
+      <p class="probe-explainer">三網延遲：上海為主，安徽於詳情查看。每約 30 秒測試 3 次，丟包統計最近 10 分鐘內的樣本；反映節點到區域參考目標的 ICMP 往返，無回應不代表主機離線。</p>
       <div id="loading" class="empty-state">正在接收節點資料…</div>
       <div id="empty" class="empty-state" hidden><strong>沒有符合條件的節點</strong><p>試試其他關鍵字，或清除篩選查看全部。</p></div>
       <div id="node-grid" class="node-grid"></div>
       <div id="node-table-wrap" class="table-wrap" hidden tabindex="0" role="region" aria-label="節點列表，可左右捲動">
-        <table class="node-table"><caption class="sr-only">節點資源與流量列表</caption><thead><tr><th scope="col">節點／地區</th><th scope="col">狀態</th><th scope="col">CPU</th><th scope="col">記憶體</th><th scope="col">磁碟</th><th scope="col">即時流量</th><th scope="col">累計流量</th><th scope="col">運行／最後回報</th><th scope="col"><span class="sr-only">詳細資料</span></th></tr></thead><tbody id="node-rows"></tbody></table>
+        <table class="node-table"><caption class="sr-only">節點資源、流量與上海三網延遲列表</caption><thead><tr><th scope="col">節點／地區</th><th scope="col">狀態</th><th scope="col">上海三網 · Ping／丟包</th><th scope="col">CPU</th><th scope="col">記憶體</th><th scope="col">磁碟</th><th scope="col">即時流量</th><th scope="col">累計流量</th><th scope="col">運行／最後回報</th><th scope="col"><span class="sr-only">詳細資料</span></th></tr></thead><tbody id="node-rows"></tbody></table>
       </div>
       <div class="pagination">
         <label>每頁 <select id="page-size" aria-label="每頁節點數"><option value="12">12</option><option value="24">24</option><option value="50">50</option><option value="100">100</option></select> 個節點</label>
@@ -88,7 +89,7 @@
       </div>
     </section>
   </main>
-  <footer><div><b>CORENET PULSE</b><span>讓連線如海風般自在。</span></div><p>公開資料不包含 IP、主機名稱或 Token · <a href="https://github.com/souldance7-ai/VPS-/tree/main/corenet-pulse" target="_blank" rel="noopener noreferrer">開源專案 ↗</a></p></footer>
+  <footer><div><b>CORENET PULSE</b><span>讓連線如海風般自在。</span></div><p>公開資料不包含 IP、主機名稱或 Token · <a href="/admin">節點管理</a> · <a href="https://github.com/souldance7-ai/VPS-/tree/main/corenet-pulse" target="_blank" rel="noopener noreferrer">開源專案 ↗</a></p></footer>
 
   <template id="node-template">
     <article class="node-card">
@@ -102,11 +103,12 @@
       </div>
       <div class="throughput"><div><span class="down">↓ 下載</span><strong class="rx">—</strong></div><div><span class="up">↑ 上傳</span><strong class="tx">—</strong></div><svg class="spark" viewBox="0 0 240 58" role="img" aria-label="近期下載與上傳速率趨勢"><path class="spark-rx"></path><path class="spark-tx"></path></svg></div>
       <div class="traffic-line"><span>累計流量</span><strong class="total-traffic">—</strong><small>自系統啟動</small></div>
+      <section class="card-probes" aria-label="上海三網延遲"><h4>上海三網 <span>Ping／丟包</span></h4><div class="probe-summary"></div></section>
       <div class="node-foot"><div><span class="uptime">運行 —</span><small class="last-seen">尚未回報</small></div><button class="details-button" type="button" aria-expanded="false">詳細資料 ↗</button></div>
       <div class="details" hidden><dl><div><dt>CPU 型號</dt><dd class="cpu-model">—</dd></div><div><dt>作業系統／架構</dt><dd class="system-detail">—</dd></div><div><dt>負載（1／5／15 分鐘）</dt><dd class="load">—</dd></div><div><dt>TCP／UDP 連線</dt><dd class="connections">—</dd></div><div><dt>處理程序</dt><dd class="processes">—</dd></div><div><dt>下載／上傳累計</dt><dd class="traffic">—</dd></div></dl></div>
     </article>
   </template>
   <template id="row-template"><tr class="node-row"><td><div class="row-identity"><span class="country-mark"></span><div><strong class="node-name"></strong><small class="row-location"></small></div></div></td><td><span class="status-pill"><i></i><b></b></span></td><td><strong class="row-cpu">—</strong><div class="bar cpu-bar"><i></i></div><small class="row-cores">—</small></td><td><strong class="row-memory">—</strong><div class="bar memory-bar"><i></i></div><small class="memory-size">—</small></td><td><strong class="row-disk">—</strong><div class="bar disk-bar"><i></i></div><small class="disk-size">—</small></td><td><strong class="down row-rx">—</strong><small class="up row-tx">—</small></td><td><strong class="row-total-rx">—</strong><small class="row-total-tx">—</small></td><td><strong class="row-uptime">—</strong><small class="last-seen">—</small></td><td><button class="details-button" type="button" aria-expanded="false">詳情</button></td></tr></template>
-  <script src="/app.js?v=coast-1" defer></script>
+  <script src="/app.js?v=network-1" defer></script>
 </body>
 </html>

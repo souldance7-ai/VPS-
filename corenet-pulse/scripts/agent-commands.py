@@ -3,13 +3,14 @@
 import argparse
 import ipaddress
 import json
+import os
 from pathlib import Path
 import re
 import shlex
 import sys
 from urllib.parse import urlsplit
 
-INSTALLER = 'https://raw.githubusercontent.com/souldance7-ai/VPS-/main/corenet-pulse/scripts/install-agent.sh'
+INSTALLER = 'https://raw.githubusercontent.com/souldance7-ai/VPS-/{ref}/corenet-pulse/scripts/install-agent.sh'
 
 
 def read_env(path):
@@ -31,11 +32,14 @@ def read_env(path):
 def main():
     p = argparse.ArgumentParser(description='在 Hub 上產生各節點的 Agent 安裝指令')
     p.add_argument('--hub-url', required=True)
+    p.add_argument('--ref', default=os.environ.get('PULSE_REF', 'main'), help='main 或完整 commit SHA')
     p.add_argument('--config', type=Path, default=Path('/etc/corenet-pulse/hub.json'))
     p.add_argument('--env-file', type=Path, default=Path('/etc/corenet-pulse/hub.env'))
     p.add_argument('--node-id', action='append', help='只輸出指定節點，可重複使用')
     p.add_argument('--manifest', type=Path, help='只輸出清單中的節點')
     args = p.parse_args()
+    if not re.fullmatch(r'main|[0-9a-f]{40}', args.ref):
+        p.error('ref 須為 main 或完整 commit SHA')
     hub_url = args.hub_url.rstrip('/')
     if not re.fullmatch(r'https://[A-Za-z0-9.-]+(?::[0-9]+)?', hub_url):
         p.error('Hub 網址須為 HTTPS 域名，不含路徑、查詢或帳密')
@@ -77,12 +81,13 @@ def main():
             commands.append(f'''# 在對應的 {label} 主機以 root 執行（節點 {node_id}）
 bash <<'CORENET_AGENT_INSTALL'
 set -Eeuo pipefail
+export PULSE_REF={shlex.quote(args.ref)}
 export PULSE_HUB_URL={shlex.quote(hub_url)}
 export PULSE_NODE_ID={shlex.quote(node_id)}
 export PULSE_NODE_TOKEN={shlex.quote(token)}
 PULSE_INSTALLER="$(mktemp)"
 trap 'rm -f -- "$PULSE_INSTALLER"' EXIT
-curl -fsSL --retry 3 {shlex.quote(INSTALLER)} -o "$PULSE_INSTALLER"
+curl -fsSL --retry 3 {shlex.quote(INSTALLER.format(ref=args.ref))} -o "$PULSE_INSTALLER"
 bash "$PULSE_INSTALLER"
 CORENET_AGENT_INSTALL''')
         if not commands:

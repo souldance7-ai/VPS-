@@ -15,8 +15,14 @@ PULSE_BASE="https://raw.githubusercontent.com/souldance7-ai/VPS-/${PULSE_REF}/co
 for PULSE_SCRIPT in update-hub.sh import-nodes.py agent-commands.py; do
   curl -fsSL --retry 3 "$PULSE_BASE/scripts/$PULSE_SCRIPT" -o "$PULSE_WORK/$PULSE_SCRIPT"
 done
+if [[ "${PULSE_ENABLE_ADMIN:-0}" == 1 ]]; then
+  curl -fsSL --retry 3 "$PULSE_BASE/scripts/setup-admin.sh" -o "$PULSE_WORK/setup-admin.sh"
+fi
 export PULSE_REF
 bash "$PULSE_WORK/update-hub.sh"
 python3 "$PULSE_WORK/import-nodes.py" --manifest "$PULSE_WORK/fleet.json" --restart
 printf '\n請把以下各段指令貼到對應的實際主機執行。中轉路線請選擇要監控的出口主機。\n\n'
 python3 "$PULSE_WORK/agent-commands.py" --manifest "$PULSE_WORK/fleet.json" --hub-url "$PULSE_HUB_URL"
+if [[ "${PULSE_ENABLE_ADMIN:-0}" == 1 ]]; then
+  bash "$PULSE_WORK/setup-admin.sh"
+fi

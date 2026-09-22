@@ -54,6 +54,7 @@ type publicNode struct {
 	System       *protocol.System  `json:"system,omitempty"`
 	Metrics      *protocol.Metrics `json:"metrics,omitempty"`
 	History      []historyPoint    `json:"history"`
+	Probes       []publicProbe     `json:"probes"`
 }
 
 type publicState struct {
@@ -68,6 +69,8 @@ type Store struct {
 	cfg         Config
 	runtime     map[string]*nodeRuntime
 	subscribers map[chan struct{}]struct{}
+	labels      map[string]string
+	probes      probeConfig
 }
 
 var (
@@ -76,10 +79,19 @@ var (
 )
 
 func NewStore(cfg Config) *Store {
+	if cfg.Probes.Revision == "" {
+		cfg.Probes = defaultProbeConfig()
+	}
+	labels := make(map[string]string, len(cfg.NameOverrides))
+	for id, name := range cfg.NameOverrides {
+		labels[id] = name
+	}
 	return &Store{
 		cfg:         cfg,
 		runtime:     make(map[string]*nodeRuntime),
 		subscribers: make(map[chan struct{}]struct{}),
+		labels:      labels,
+		probes:      cfg.Probes,
 	}
 }
 
@@ -143,7 +155,7 @@ func (s *Store) StateWithHistory(now time.Time, historyLimit int) publicState {
 	}
 	for _, n := range s.cfg.Nodes {
 		pn := publicNode{
-			ID: redactNetworkIdentifiers(n.ID), Name: redactNetworkIdentifiers(n.Name), Region: redactNetworkIdentifiers(n.Region), Country: redactNetworkIdentifiers(n.Country),
+			ID: redactNetworkIdentifiers(n.ID), Name: s.displayName(n), Region: redactNetworkIdentifiers(n.Region), Country: redactNetworkIdentifiers(n.Country),
 			Provider: redactNetworkIdentifiers(n.Provider), Network: redactNetworkIdentifiers(n.Network), Plan: redactNetworkIdentifiers(n.Plan),
 			History: []historyPoint{},
 		}
@@ -170,6 +182,7 @@ func (s *Store) StateWithHistory(now time.Time, historyLimit int) publicState {
 				state.Summary.NetTX += metricsCopy.NetTX
 			}
 		}
+		pn.Probes = s.publicProbes(s.runtime[n.ID], pn.Online, now)
 		state.Nodes = append(state.Nodes, pn)
 	}
 	sort.SliceStable(state.Nodes, func(i, j int) bool {

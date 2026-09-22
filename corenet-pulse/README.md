@@ -16,7 +16,9 @@ CORENET 自用、可持續擴充的 VPS／VDS 即時探針。第一版預設建�
 - 單一靜態 Go Hub 與單一靜態 Go Agent，無資料庫、無前端建置鏈；
 - SSE 更新通知合併為每 3 秒至多一次快照請求；連線中斷時每 15 秒自動重試；
 - CPU、記憶體、磁碟、上下行速率、累計流量、負載與連線數；
+- 上海電信／聯通／移動 Ping 與丟包直接顯示，安徽三網放在詳情；管理頁可調整六條參考線路的目標；
 - 明確的公開資料 allow-list，從結構上排除 IP、hostname 與 token；
+- 獨立登入的 `/admin` 管理頁，自訂節點名稱、搜尋與恢復初始名稱，儲存後即時同步且重啟保留；
 - Hub 預設只監聽 `127.0.0.1:9800`，適合搭配 Cloudflare Tunnel 隱藏源站。
 
 ## 架構
@@ -126,7 +128,39 @@ curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/corenet-pul
   bash /tmp/pulse-update-hub.sh
 ```
 
-腳本從原始碼建置最新版、備份目前程式、原子替換 Hub 並重啟；若健康檢查失敗會恢復上一版。沿用原有節點設定、Token 與 Cloudflare Tunnel；兩台 Agent 不需重裝。Hub 重啟會清空記憶體中的短期圖表，各 Agent 會在下一次回報時重新顯示在線。完成後以 `Ctrl+F5` 重新整理網頁。
+腳本從原始碼建置最新版、備份目前程式、原子替換 Hub 並重啟；若健康檢查失敗會恢復上一版。沿用原有節點設定、Token 與 Cloudflare Tunnel。原 Agent 的資源回報可繼續使用；要新增三網 Ping，須依下方指令更新 Agent。Hub 重啟會清空記憶體中的短期圖表，各 Agent 會在下一次回報時重新顯示在線。完成後以 `Ctrl+F5` 重新整理網頁。
+
+### 更新既有 Agent，啟用三網 Ping
+
+**先更新 Hub，再到每台已安裝 Agent 的主機**以 root 執行：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/corenet-pulse/scripts/update-agent.sh -o /tmp/pulse-update-agent.sh && \
+  bash /tmp/pulse-update-agent.sh
+```
+
+更新器保留完整的 `/etc/corenet-pulse/agent.env`，不用重新輸入節點 ID 或 Token；下載並建置 Agent、安裝 `iputils-ping`／`iputils`、原子替換程式並檢查服務啟動，失敗會嘗試恢復先前程式與設定。部署指定版本時，請將下載網址中的 `main` 改為完整 commit SHA，同時設定 `PULSE_REF` 為該 SHA。`agent-commands.py --ref SHA` 會為新節點產生同版本的安裝指令。
+
+### 上海主線、安徽輔線
+
+- 列表及卡片顯示上海電信、聯通、移動的 RTT；展開詳情查看安徽三網。RTT 為最近一輪成功回應的平均值，提示文字列出最低／最高值及最後測試時間。
+- 每台 Agent 的獨立工作每約 30 秒、每條啟用線路發送最多 3 個 16-byte payload 的 ICMP 封包。六條線路同時測試，單輪各有 7 秒上限；資源回報不等待 Ping，啟動與週期有隨機錯開。
+- 丟包用最近 10 分鐘內、最多 20 輪／60 個封包計算，提示文字顯示實際送出與收到的數量。初次啟動／變更目標時由新樣本開始；不虛構尚未量測的歷史。
+- `待更新 Agent`、`待測試`、`無回應`、`無法測試`、`資料過期`、`已停用` 分開顯示。缺少 ping 或沒有執行權限屬於無法測試；ICMP 被丟棄會無回應，不能據此宣稱 VPS 離線。超過 90 秒或節點離線的測試標為過期。
+- 管理頁「三網探測」可調整／停用六個目標。設定存於 `/var/lib/corenet-pulse/probes.json`（0600）；同步到 Agent 約需 30 秒，設定版本不同的舊測量不會套用到新目標。
+- 目標只接受公網 IP literal，排除 private、loopback、link-local、共享位址及特殊保留／過渡網段，避免 DNS 重綁定；Agent 也重新驗證。命令不使用 shell，不能自訂命令或增加任意探測數量。
+- 預設為下表的區域參考目標，地域依 APNIC 網段登記核對，並非實體位置或 ICMP 可用性的保證。這些 RTT 是 **VPS → 參考目標 → VPS**，不等於上海／安徽任一使用者的接入體驗、頻寬或代理協議測速。若長期無回應，可換成同地區、同電信商且允許 ICMP 的自有測試目標。
+
+| 地區 | 電信商 | 預設參考目標 | APNIC 登記 |
+| --- | --- | --- | --- |
+| 上海 | 電信 | `202.96.209.5` | [CHINANET-SH](https://rdap.apnic.net/ip/202.96.209.5) |
+| 上海 | 聯通 | `210.22.70.3` | [CNCNET-SH](https://rdap.apnic.net/ip/210.22.70.3) |
+| 上海 | 移動 | `211.136.112.50` | [CMNET-shanghai](https://rdap.apnic.net/ip/211.136.112.50) |
+| 安徽 | 電信 | `61.132.163.68` | [CHINANET-AH](https://rdap.apnic.net/ip/61.132.163.68) |
+| 安徽 | 聯通 | `218.104.78.2` | [合肥分配](https://rdap.apnic.net/ip/218.104.78.2)／[UNICOM-CN 上層網段](https://rdap.apnic.net/ip/218.104.0.0/14) |
+| 安徽 | 移動 | `211.138.180.2` | [CMNET-anhui](https://rdap.apnic.net/ip/211.138.180.2) |
+
+地址僅出現在私有設定、登入後的管理 API，以及帶節點專用 Bearer Token 的 `GET /api/v1/probes?node_id=...`。公開 API、HTML／JS 不含私有目標地址、來源 IP 或 Token；以上預設參考地址本身是公開資料。
 
 ### 50–100 個節點的瀏覽方式
 
@@ -138,6 +172,25 @@ curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/corenet-pul
 - 資料取得失敗或超過 30 秒未更新時，頁面明確標記為最後收到的狀態。
 
 ## 後續新增 VPS
+
+### 啟用節點名稱管理
+
+先更新 Hub 到包含管理頁的版本，再於 Hub 主機以 root 執行：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/corenet-pulse/scripts/setup-admin.sh -o /tmp/pulse-setup-admin.sh && \
+  PULSE_HUB_URL=https://status.example.com bash /tmp/pulse-setup-admin.sh
+```
+
+腳本會產生專用管理密碼，顯示管理網址及密碼；再次執行沿用原密碼。前往 `https://status.example.com/admin` 登入，搜尋節點、輸入新的公開名稱，點選「儲存」。可隨時恢復初始名稱。節點 ID、Token、即時回報及歷史資料不因改名而改變，不用重裝 Agent。
+
+- 管理密碼為隨機產生的 256-bit 金鑰；Hub 只載入它的 SHA-256 雜湊。明文密碼另存 `/etc/corenet-pulse/admin-login.txt`，權限 `0600`，只有 root 可讀。
+- 登入使用 Secure、HttpOnly、SameSite=Strict 的 Cookie，8 小時到期；登出或 Hub 重啟後登入狀態失效。管理請求需來自所設定的 HTTPS 網址，登入嘗試有速率限制。
+- 名稱覆寫獨立存於 `/var/lib/corenet-pulse/node-labels.json`，權限 `0600`；Hub 用 systemd `StateDirectory` 取得該資料目錄的寫入權限，`/etc/corenet-pulse` 繼續保持唯讀。
+- 同一節點在其他視窗已被改名時會提示衝突，保留尚未儲存的輸入；名稱不可含 IP，管理 API 不回傳 Agent Token。
+- 忘記管理密碼可由 root 讀取上述密碼檔。需要重新產生時，使用 `PULSE_RESET_ADMIN=1 PULSE_HUB_URL=https://status.example.com bash /tmp/pulse-setup-admin.sh`；自訂名稱與 Agent Token 保留。
+
+批次更新並新增節點時，可一併加上 `PULSE_ENABLE_ADMIN=1`；更新工具會在最後啟用管理頁並顯示登入方式。自己的節點清單保存在 Hub，不必放入公開倉庫。
 
 ### 批次新增節點
 
@@ -182,6 +235,7 @@ sudo systemctl restart corenet-pulse-hub
 - OS、核心數、容量與即時利用率；
 - 即時／累計流量與短期圖表資料；
 - 在線狀態與最後回報時間。
+- 六條三網參考線路的固定地區／電信商名稱、測試狀態、RTT、丟包樣本數與最後測試時間。
 
 它不包含 `ip`、`hostname`、`token`、HTTP peer address。測試 `TestPublicStateNeverLeaksSecretsOrPeerIP` 會在每次 CI 阻止這些欄位意外回歸。
 

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="color-scheme" content="light" />
+  <title>節點管理 · CORENET PULSE</title>
+  <link rel="icon" href="/favicon.svg?v=coast-1" type="image/svg+xml" />
+  <link rel="stylesheet" href="/styles.css?v=network-1" />
+  <link rel="stylesheet" href="/admin.css?v=admin-2" />
+</head>
+<body class="admin-body">
+  <header class="topbar"><div class="topbar-inner">
+    <a class="brand" href="/"><img class="brand-mark" src="/favicon.svg" width="48" height="48" alt="" /><span><b>CORENET PULSE</b><small>每個節點，都在視線之內</small></span></a>
+    <nav class="admin-nav" aria-label="管理導覽"><a href="/">返回探針 ↗</a><button id="logout" type="button" hidden>登出</button></nav>
+  </div></header>
+  <main class="admin-main">
+    <section class="admin-heading"><div><p class="eyebrow">CORENET / CONTROL ROOM</p><h1>節點管理</h1><p>為每個節點，取一個一眼就懂的名字。</p></div><span class="admin-access" id="access-status">確認登入狀態…</span></section>
+    <div id="notice" class="admin-notice" role="status" aria-live="polite" hidden></div>
+    <section class="login-panel" id="login-panel" hidden aria-labelledby="login-title">
+      <div class="login-intro"><div class="login-sun" aria-hidden="true"></div><p class="eyebrow">YOUR FLEET, YOUR NAMES</p><h2>熟悉的名字，<br />清楚的連線。</h2><p>改名即時同步到公開頁面。<br />重啟後保留，也不用重新安裝探針。</p><div class="login-waves" aria-hidden="true"></div></div>
+      <form id="login-form" class="login-form"><h2 id="login-title">登入管理頁</h2><p>輸入啟用管理頁時產生的管理密碼。</p><label for="password">管理密碼</label><div class="password-field"><input id="password" type="password" autocomplete="current-password" required maxlength="256" /><button id="show-password" type="button" aria-label="顯示管理密碼" aria-pressed="false">顯示</button></div><button id="login-button" class="primary-button" type="submit">登入管理頁 →</button><small>登入後可編輯名稱、搜尋節點及恢復初始名稱。</small></form>
+    </section>
+    <section id="manager" hidden aria-labelledby="manager-title">
+      <div class="admin-summary"><div><strong id="admin-total">—</strong><span>個節點</span></div><div><strong id="admin-custom">—</strong><span>個自訂名稱</span></div><p>名稱會公開顯示，請勿填入 IP。<br /><span>節點 ID 固定，探針持續回報。</span></p></div>
+      <nav class="admin-tabs" aria-label="管理項目"><button id="tab-names" type="button" aria-pressed="true">節點名稱</button><button id="tab-probes" type="button" aria-pressed="false">三網探測</button></nav>
+      <section id="names-panel">
+      <div class="admin-section-title"><div><h2 id="manager-title">我的節點</h2><p>每列獨立儲存，修改後立即生效。</p></div><button id="refresh-nodes" type="button">重新整理</button></div>
+      <label class="admin-search"><span>搜尋節點</span><input id="admin-search" type="search" placeholder="搜尋名稱、節點 ID、地區或服務商…" autocomplete="off" /></label>
+      <div class="admin-list-heading" aria-hidden="true"><span>節點與目前名稱</span><span>公開顯示名稱</span><span>操作</span></div>
+      <div id="admin-nodes" class="admin-nodes"></div>
+      <p id="admin-empty" class="empty-state" hidden>沒有符合條件的節點。</p>
+      <p class="admin-count" id="admin-count" aria-live="polite"></p>
+      </section>
+      <section id="probes-panel" hidden aria-labelledby="probes-title">
+        <div class="admin-section-title"><div><h2 id="probes-title">三網探測目標</h2><p>上海為主要觀察區域，安徽作為輔助參考。</p></div><button id="reload-probes" type="button">重新載入設定</button></div>
+        <p class="probe-admin-note">目標 IP 只提供給已登入的管理員和已驗證的 Agent，公開頁面僅顯示地區、電信商與測試結果。若更換目標，請選擇同地區、同電信商且允許 ICMP 的固定公網 IP。</p>
+        <form id="probes-form"><div id="probe-targets" class="probe-targets"></div><div class="probe-save"><button id="save-probes" class="primary-button" type="submit" disabled>儲存探測設定</button><p id="probe-save-status" role="status">正在載入…</p></div></form>
+        <p class="probe-admin-note">每條線路約每 30 秒發送 3 個小型 ICMP 封包；丟包統計最多 60 個、最近 10 分鐘內的樣本。變更後約 30 秒由 Agent 取用新目標並重新累計。這是區域參考測量，不能代表全省所有線路或實際下載速度。</p>
+      </section>
+    </section>
+  </main>
+  <footer><div><b>CORENET PULSE</b><span>讓連線如海風般自在。</span></div><p>管理畫面 · 登入有效時間 8 小時</p></footer>
+  <template id="admin-node-template"><form class="admin-node"><div class="admin-node-info"><div class="admin-node-top"><strong class="current-name"></strong><span class="admin-node-status"></span></div><small class="node-location"></small><code class="node-id"></code></div><div class="name-editor"><label class="sr-only">公開顯示名稱</label><input class="name-input" type="text" maxlength="80" required autocomplete="off" /><small class="original-name"></small><span class="row-message" role="status"></span></div><div class="name-actions"><button type="submit" class="primary-button save-name" disabled>儲存</button><button type="button" class="reset-name">恢復初始</button></div></form></template>
+  <script src="/admin.js?v=admin-2" defer></script>
+</body>
+</html>

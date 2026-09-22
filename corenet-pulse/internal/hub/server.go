@@ -24,10 +24,14 @@ type Server struct {
 	store  *Store
 	logger *log.Logger
 	mux    *http.ServeMux
+	admin  *adminManager
 }
 
 func NewServer(cfg Config, logger *log.Logger) *Server {
 	s := &Server{store: NewStore(cfg), logger: logger, mux: http.NewServeMux()}
+	s.admin = newAdminManager(cfg.Admin)
+	s.registerAdminRoutes()
+	s.registerProbeRoutes()
 	s.mux.HandleFunc("GET /healthz", s.health)
 	s.mux.HandleFunc("GET /api/public/state", s.publicState)
 	s.mux.HandleFunc("GET /api/public/events", s.events)
@@ -90,6 +94,10 @@ func (s *Server) report(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	report.Metrics.CPU = clamp(report.Metrics.CPU)
+	if !validProbeReport(report.Probes, time.Now()) {
+		http.Error(w, "invalid probe report", http.StatusBadRequest)
+		return
+	}
 	s.store.Update(report)
 	w.WriteHeader(http.StatusNoContent)
 }

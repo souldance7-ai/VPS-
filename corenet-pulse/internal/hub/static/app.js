@@ -55,6 +55,7 @@ function common(root, node) {
   $(".country-mark", root).title = countryName(node.country)
   put(root, ".status-pill b", statusText(node))
   put(root, ".last-seen", lastSeen(node))
+  paintProbes($(".probe-summary", root), node, "sh")
   const button = $(".details-button", root)
   button.setAttribute("aria-expanded", String(expanded.has(node.id)))
   button.setAttribute("aria-label", `${expanded.has(node.id) ? "收起" : "查看"} ${node.name} 的詳細資料`)
@@ -67,6 +68,43 @@ function detail(root, node) {
   put(root, ".connections", m ? `${number(m.tcp)} TCP / ${number(m.udp)} UDP` : "—")
   put(root, ".processes", m ? number(m.procs).toLocaleString() : "—")
   put(root, ".traffic", m ? `↓ ${bytes(m.total_rx)} / ↑ ${bytes(m.total_tx)}` : "—")
+  let probes = $(".aux-probes", root)
+  if (!probes) {
+    const section = document.createElement("section"), title = document.createElement("h4")
+    section.className = "detail-probes"; title.textContent = "安徽三網 · 輔助參考"
+    probes = document.createElement("div"); probes.className = "aux-probes"
+    section.append(title, probes); (root.matches(".details") ? root : $(".details", root)).append(section)
+  }
+  paintProbes(probes, node, "ah", true)
+}
+function paintProbes(root, node, region, detailed = false) {
+  if (!root) return
+  const labels = [["ct", "電信"], ["cu", "聯通"], ["cm", "移動"]]
+  if (!root.children.length) {
+    for (const [id, label] of labels) {
+      const el = document.createElement("div"); el.className = "probe-line"; el.dataset.probe = `${region}-${id}`
+      const carrier = document.createElement("span"), value = document.createElement("b"), loss = document.createElement("small"), checked = document.createElement("em")
+      carrier.className = "probe-carrier"; carrier.textContent = label
+      value.className = "probe-value"; loss.className = "probe-loss"; checked.className = "probe-checked"; checked.hidden = !detailed
+      el.append(carrier, value, loss, checked); root.append(el)
+    }
+  }
+  const statuses = {pending:"待測試",awaiting_agent:"待更新 Agent",disabled:"已停用",timeout:"無回應",unavailable:"無法測試",stale:"資料過期"}
+  for (const el of root.children) {
+    const p = (node.probes || []).find(x => x.id === el.dataset.probe)
+    let status = p?.status || (node.last_seen ? "awaiting_agent" : "pending")
+    if (stale && status === "ok") status = "stale"
+    const valid = status === "ok" && Number.isFinite(p?.avg_ms)
+    put(el, ".probe-value", valid ? `${p.avg_ms.toFixed(1)} ms` : statuses[status] || "待測試")
+    const hasLoss = ["ok", "timeout"].includes(status) && Number.isFinite(p?.loss_percent)
+    put(el, ".probe-loss", hasLoss ? `${p.loss_percent.toFixed(1)}%` : "—")
+    el.classList.toggle("probe-good", valid && p.loss_percent === 0)
+    el.classList.toggle("probe-warn", status === "timeout" || valid && p.loss_percent > 0)
+    el.classList.toggle("probe-muted", !valid && status !== "timeout")
+    const recent = p?.checked_at ? `最後測試 ${time(p.checked_at)}` : status === "awaiting_agent" ? "請更新此節點的 Agent" : "等待探測結果"
+    put(el, ".probe-checked", recent)
+    el.title = [recent, Number.isFinite(p?.min_ms) ? `最近一輪：最低 ${p.min_ms.toFixed(1)} / 平均 ${p.avg_ms.toFixed(1)} / 最高 ${p.max_ms.toFixed(1)} ms` : "", p?.window_sent ? `最近 10 分鐘內收到 ${p.window_received} / 送出 ${p.window_sent}，丟包 ${p.loss_percent.toFixed(1)}%` : "尚無丟包樣本"].filter(Boolean).join("\n")
+  }
 }
 function spark(card, points) {
   const values = (points || []).slice(-120)
@@ -115,7 +153,10 @@ function updateRow(node) {
   if (!pair) {
     const row = $("#row-template").content.firstElementChild.cloneNode(true)
     const extra = document.createElement("tr"), cell = document.createElement("td")
-    extra.className = "row-detail"; cell.colSpan = 9
+    extra.className = "row-detail"; cell.colSpan = 10
+    const probesCell = document.createElement("td"), probes = document.createElement("div")
+    probesCell.className = "row-probes"; probes.className = "probe-summary"; probesCell.append(probes)
+    row.insertBefore(probesCell, row.children[2])
     const details = $(".details", $("#node-template").content).cloneNode(true)
     details.hidden = false; cell.append(details); extra.append(cell)
     extra.id = `row-detail-${++detailSequence}`
