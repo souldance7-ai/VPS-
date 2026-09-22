@@ -215,6 +215,15 @@ curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/corenet-pul
 
 替換成自己的公開域名與本機清單路徑。這個組合指令更新 Hub、為尚未登錄的 ID 產生獨立 Token，並輸出清單中各節點的 Agent 安裝指令。重複執行不重複新增，也不更換既有 Token。新增節點在 Agent 回報前顯示「待接入」，不產生示範數據。原本已接入的 Agent 不需重裝；本機清單不會上傳至 GitHub。
 
+Hub 已更新時，可直接登錄節點，不必重新編譯 Hub：
+
+```bash
+curl --http1.1 -fsSL --retry 3 https://raw.githubusercontent.com/souldance7-ai/VPS-/main/corenet-pulse/scripts/register-nodes.sh -o /tmp/pulse-register-nodes.sh && \
+  PULSE_HUB_URL=https://status.example.com bash /tmp/pulse-register-nodes.sh /root/pulse-nodes.json
+```
+
+也可省略檔案路徑，從標準輸入傳入相同格式的 JSON。登錄入口會先下載所需腳本，再變更設定；首次新增後重啟 Hub，接著在本機終端列出各台專用的 Agent 指令。輸出包含 Token，請只貼到對應主機。
+
 代理設定中的 `server` 可能是中轉入口，不能直接用來判定實際出口主機。請把對應 Agent 安裝在要監控的實際主機；協議的延遲測試不能取代主機資源回報。
 
 自訂清單可用 `scripts/import-nodes.py --manifest my-nodes.json --restart` 匯入。JSON 的 `nodes` 陣列每筆接受 `id/name/region/country/provider/network/plan`；Token 一律由 Hub 產生。新增或批次匯入會保存設定原有的擁有者與讀取權限。
