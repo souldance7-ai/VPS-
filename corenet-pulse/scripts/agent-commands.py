@@ -34,6 +34,7 @@ def main():
     p.add_argument('--config', type=Path, default=Path('/etc/corenet-pulse/hub.json'))
     p.add_argument('--env-file', type=Path, default=Path('/etc/corenet-pulse/hub.env'))
     p.add_argument('--node-id', action='append', help='只輸出指定節點，可重複使用')
+    p.add_argument('--manifest', type=Path, help='只輸出清單中的節點')
     args = p.parse_args()
     hub_url = args.hub_url.rstrip('/')
     if not re.fullmatch(r'https://[A-Za-z0-9.-]+(?::[0-9]+)?', hub_url):
@@ -49,11 +50,16 @@ def main():
         config = json.loads(args.config.read_text(encoding='utf-8'))
         env = read_env(args.env_file)
         nodes = config.get('nodes', [])
-        if args.node_id:
-            unknown = set(args.node_id) - {node.get('id') for node in nodes}
+        selected = args.node_id
+        if args.manifest:
+            selected = list(selected or []) + [node['id'] for node in json.loads(args.manifest.read_text(encoding='utf-8'))['nodes']]
+            if not selected:
+                raise ValueError('節點清單不可為空')
+        if selected:
+            unknown = set(selected) - {node.get('id') for node in nodes}
             if unknown:
                 raise ValueError('找不到指定節點')
-            nodes = [node for node in nodes if node.get('id') in args.node_id]
+            nodes = [node for node in nodes if node.get('id') in selected]
         commands = []
         for node in nodes:
             node_id = node['id']

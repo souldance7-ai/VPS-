@@ -1,0 +1,22 @@
+{
+  "nodes": [
+    {
+      "id": "example-jp-01",
+      "name": "東京示範節點",
+      "region": "Tokyo · JP",
+      "country": "JP",
+      "provider": "Example Cloud",
+      "network": "Tokyo",
+      "plan": "VPS / VDS"
+    },
+    {
+      "id": "example-tw-01",
+      "name": "台北示範節點",
+      "region": "Taipei · TW",
+      "country": "TW",
+      "provider": "Example VDS",
+      "network": "Taipei",
+      "plan": "VPS / VDS"
+    }
+  ]
+}

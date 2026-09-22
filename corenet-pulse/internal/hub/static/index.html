@@ -1,91 +1,112 @@
 <!doctype html>
 <html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="dark" />
-    <meta name="theme-color" content="#071011" />
-    <title>CORENET PULSE</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
-  <body>
-    <div class="noise" aria-hidden="true"></div>
-    <header class="topbar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#edf8fa" />
+  <meta name="description" content="CORENET PULSE 節點監控：即時掌握 VPS 與 VDS 的運行、資源與流量。" />
+  <title>CORENET PULSE</title>
+  <link rel="icon" href="/favicon.svg?v=coast-1" type="image/svg+xml" />
+  <link rel="stylesheet" href="/styles.css?v=coast-1" />
+</head>
+<body>
+  <a class="skip-link" href="#fleet">跳到節點列表</a>
+  <header class="topbar">
+    <div class="topbar-inner">
       <a class="brand" href="/" aria-label="CORENET PULSE 首頁">
-        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span><b id="site-name">CORENET PULSE</b><small>INFRASTRUCTURE SIGNAL</small></span>
+        <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="15" fill="#067e98"/><circle cx="33" cy="14" r="5" fill="#f7d998"/><path d="M8 26q8-9 16 0t16 0M8 34q8-9 16 0t16 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+        <span><b id="site-name">CORENET PULSE</b><small>每個節點，都在視線之內</small></span>
       </a>
       <div class="top-status">
-        <span class="signal"><i></i>LIVE TELEMETRY</span>
-        <time id="clock">--:--:-- UTC</time>
+        <span class="connection-pill" id="connection-state" role="status">正在連線</span>
+        <div class="clock-wrap"><time id="clock">--:--:--</time><span>UTC+8</span></div>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <main>
-      <section class="hero">
-        <div>
-          <p class="eyebrow">NETWORK OPERATIONS / 01</p>
-          <h1>看見每條路由，<br><em>掌握每個節點。</em></h1>
-          <p id="site-subtitle" class="hero-copy">PRIVATE INFRASTRUCTURE TELEMETRY</p>
-        </div>
-        <div class="orbit" aria-hidden="true">
-          <span class="orbit-ring ring-a"></span><span class="orbit-ring ring-b"></span>
-          <span class="orbit-core"></span><span class="orbit-node node-a"></span><span class="orbit-node node-b"></span>
-        </div>
-      </section>
+  <main>
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow">CORENET / COASTLINE</p>
+        <h1 id="page-title">海闊天青，<span>節點一目瞭然。</span></h1>
+        <p id="site-subtitle">從東京到彰化，讓每一段連線，都清楚可見。</p>
+        <div class="fleet-facts"><span id="region-count">— 個地區</span><span id="core-count">— vCPU</span><span id="memory-total">— 記憶體</span></div>
+      </div>
+      <svg class="coast-art" viewBox="0 0 650 230" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#60c3d0"/><stop offset="1" stop-color="#148eab"/></linearGradient></defs>
+        <circle cx="488" cy="52" r="28" fill="#f6ce80"/>
+        <path d="M0 118Q130 63 263 113T650 76V230H0Z" fill="#b9e5e6"/>
+        <path d="M0 163Q153 83 324 137T650 109V230H0Z" fill="url(#sea)"/>
+        <path d="M0 192Q137 142 282 173T650 143" fill="none" stroke="#e5fbf6" stroke-width="4" opacity=".8"/>
+        <path d="M131 230Q257 182 415 193T650 174V230Z" fill="#fffaf0"/>
+        <path d="M157 230Q302 198 441 209T650 189V230Z" fill="#eddbb4"/>
+        <path d="M419 85v49m-3-45-26 36h26m9-33 21 33h-21" stroke="#17697c" stroke-width="2" fill="#fffaf0" stroke-linejoin="round"/>
+        <path d="M384 137h67l-12 10h-42Z" fill="#17697c"/>
+        <path d="m551 62 7-5 7 5m19 15 6-4 6 4" fill="none" stroke="#498c99" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </section>
 
-      <section class="summary" aria-label="總覽">
-        <article><span>FLEET STATUS</span><strong id="fleet-status">等待資料</strong><small id="fleet-ratio">0 / 2 ONLINE</small></article>
-        <article><span>LIVE DOWNLOAD</span><strong id="fleet-rx">0 B/s</strong><small>AGGREGATED RX</small></article>
-        <article><span>LIVE UPLOAD</span><strong id="fleet-tx">0 B/s</strong><small>AGGREGATED TX</small></article>
-        <article><span>LAST SYNC</span><strong id="last-sync">--:--:--</strong><small>UTC+8 DISPLAY</small></article>
-      </section>
+    <section class="summary" aria-label="所有節點總覽">
+      <article class="summary-online"><span>在線節點</span><strong id="fleet-ratio">— / —</strong><small id="fleet-status">等待第一筆資料</small></article>
+      <article><span>離線／待接入</span><strong id="fleet-offline">—</strong><small id="offline-breakdown">—</small></article>
+      <article><span><b class="down">↓</b> 總下載速率</span><strong id="fleet-rx">—</strong><small>所有在線節點合計</small></article>
+      <article><span><b class="up">↑</b> 總上傳速率</span><strong id="fleet-tx">—</strong><small>所有在線節點合計</small></article>
+      <article><span>平均 CPU</span><strong id="fleet-cpu">—</strong><small>在線節點平均使用率</small></article>
+      <article><span>平均記憶體</span><strong id="fleet-memory">—</strong><small>在線節點平均使用率</small></article>
+    </section>
 
-      <section class="fleet-section">
-        <div class="section-heading">
-          <div><p class="eyebrow">ACTIVE FLEET / 02</p><h2>節點矩陣</h2></div>
-          <p>每 3 秒接收一次遙測。公開資料不包含 IP、主機名或 Agent Token。</p>
-        </div>
-        <div id="node-grid" class="node-grid" aria-live="polite"></div>
-      </section>
-    </main>
+    <div id="data-warning" class="data-warning" role="status" hidden><span id="warning-copy"></span><button id="retry" type="button">重新整理</button></div>
 
-    <footer>
-      <span>CORENET PULSE / OPEN SOURCE</span>
-      <span>ZERO-IP PUBLIC SURFACE</span>
-      <span id="connection-state">CONNECTING</span>
-    </footer>
+    <section class="fleet-section" id="fleet" aria-labelledby="fleet-title">
+      <div class="section-heading">
+        <div><h2 id="fleet-title">節點總覽 <span id="node-count" class="count-badge">—</span></h2><p>即時狀態、資源與流量，盡在眼前。</p></div>
+        <div class="sync-note"><span class="sync-dot"></span>資料更新 <time id="last-sync">—</time></div>
+      </div>
+      <div class="fleet-toolbar">
+        <label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><span class="sr-only">搜尋節點</span><input id="search" type="search" placeholder="搜尋名稱、地區、服務商、線路…" autocomplete="off" /></label>
+        <div class="filter-fields">
+          <label><span>狀態</span><select id="status-filter"><option value="all">全部狀態</option><option value="online">在線</option><option value="offline">離線</option><option value="pending">待接入</option><option value="busy">高使用率 ≥ 90%</option></select></label>
+          <label><span>地區</span><select id="country-filter"><option value="all">全部地區</option></select></label>
+          <label><span>服務商</span><select id="provider-filter"><option value="all">全部服務商</option></select></label>
+          <label><span>排序</span><select id="sort"><option value="default">預設順序</option><option value="attention">離線優先</option><option value="name">節點名稱</option><option value="cpu">CPU 由高到低</option><option value="memory">記憶體由高到低</option><option value="traffic">即時流量由高到低</option></select></label>
+        </div>
+      </div>
+      <div class="results-toolbar">
+        <div class="results-copy"><span id="result-count" aria-live="polite">正在載入節點…</span><button id="clear-filters" class="text-button" type="button" hidden>清除篩選</button></div>
+        <div class="view-switch" role="group" aria-label="顯示方式"><button id="view-cards" type="button" aria-pressed="true"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="3" width="5" height="5"/><rect x="12" y="3" width="5" height="5"/><rect x="3" y="12" width="5" height="5"/><rect x="12" y="12" width="5" height="5"/></svg>卡片</button><button id="view-list" type="button" aria-pressed="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14"/></svg>列表</button></div>
+      </div>
+      <div id="loading" class="empty-state">正在接收節點資料…</div>
+      <div id="empty" class="empty-state" hidden><strong>沒有符合條件的節點</strong><p>試試其他關鍵字，或清除篩選查看全部。</p></div>
+      <div id="node-grid" class="node-grid"></div>
+      <div id="node-table-wrap" class="table-wrap" hidden tabindex="0" role="region" aria-label="節點列表，可左右捲動">
+        <table class="node-table"><caption class="sr-only">節點資源與流量列表</caption><thead><tr><th scope="col">節點／地區</th><th scope="col">狀態</th><th scope="col">CPU</th><th scope="col">記憶體</th><th scope="col">磁碟</th><th scope="col">即時流量</th><th scope="col">累計流量</th><th scope="col">運行／最後回報</th><th scope="col"><span class="sr-only">詳細資料</span></th></tr></thead><tbody id="node-rows"></tbody></table>
+      </div>
+      <div class="pagination">
+        <label>每頁 <select id="page-size" aria-label="每頁節點數"><option value="12">12</option><option value="24">24</option><option value="50">50</option><option value="100">100</option></select> 個節點</label>
+        <div><button id="prev-page" type="button" aria-label="上一頁">← 上一頁</button><span id="page-info">第 1 / 1 頁</span><button id="next-page" type="button" aria-label="下一頁">下一頁 →</button></div>
+      </div>
+    </section>
+  </main>
+  <footer><div><b>CORENET PULSE</b><span>讓連線如海風般自在。</span></div><p>公開資料不包含 IP、主機名稱或 Token · <a href="https://github.com/souldance7-ai/VPS-/tree/main/corenet-pulse" target="_blank" rel="noopener noreferrer">開源專案 ↗</a></p></footer>
 
-    <template id="node-template">
-      <article class="node-card">
-        <div class="node-head">
-          <div class="node-identity"><span class="flag"></span><div><h3></h3><p class="region"></p></div></div>
-          <span class="status-pill"><i></i><b></b></span>
-        </div>
-        <div class="provider-row"><span class="provider"></span><span class="network"></span><span class="plan"></span></div>
-        <div class="metric-grid">
-          <div class="metric cpu"><span>CPU</span><strong>—</strong><div class="bar"><i></i></div></div>
-          <div class="metric memory"><span>MEMORY</span><strong>—</strong><div class="bar"><i></i></div></div>
-          <div class="metric disk"><span>DISK</span><strong>—</strong><div class="bar"><i></i></div></div>
-        </div>
-        <div class="throughput">
-          <div><span>↓ DOWNLOAD</span><strong class="rx">—</strong></div>
-          <div><span>↑ UPLOAD</span><strong class="tx">—</strong></div>
-          <svg class="spark" viewBox="0 0 240 54" role="img" aria-label="近期流量趨勢"><path class="spark-fill"></path><path class="spark-line"></path></svg>
-        </div>
-        <div class="node-foot">
-          <span class="os">等待 Agent 接入</span><span class="uptime">UP —</span><button type="button">展開詳情 <b>↗</b></button>
-        </div>
-        <div class="details" hidden>
-          <div><span>LOAD AVG</span><strong class="load">—</strong></div>
-          <div><span>CONNECTIONS</span><strong class="connections">—</strong></div>
-          <div><span>PROCESSES</span><strong class="processes">—</strong></div>
-          <div><span>TOTAL TRAFFIC</span><strong class="traffic">—</strong></div>
-        </div>
-      </article>
-    </template>
-    <script src="/app.js" defer></script>
-  </body>
+  <template id="node-template">
+    <article class="node-card">
+      <div class="node-head"><div class="node-identity"><span class="country-mark"></span><div><h3></h3><p class="region"></p></div></div><span class="status-pill"><i></i><b></b></span></div>
+      <div class="provider-row"><span class="provider"></span><span class="network"></span><span class="plan"></span></div>
+      <div class="hardware-strip"><span class="cores">— vCPU</span><span class="os">等待 Agent 接入</span></div>
+      <div class="metric-grid">
+        <div class="metric cpu"><span>CPU</span><strong>—</strong><div class="bar"><i></i></div><small class="cpu-hint">使用率</small></div>
+        <div class="metric memory"><span>記憶體</span><strong>—</strong><div class="bar"><i></i></div><small class="memory-size">— / —</small></div>
+        <div class="metric disk"><span>磁碟</span><strong>—</strong><div class="bar"><i></i></div><small class="disk-size">— / —</small></div>
+      </div>
+      <div class="throughput"><div><span class="down">↓ 下載</span><strong class="rx">—</strong></div><div><span class="up">↑ 上傳</span><strong class="tx">—</strong></div><svg class="spark" viewBox="0 0 240 58" role="img" aria-label="近期下載與上傳速率趨勢"><path class="spark-rx"></path><path class="spark-tx"></path></svg></div>
+      <div class="traffic-line"><span>累計流量</span><strong class="total-traffic">—</strong><small>自系統啟動</small></div>
+      <div class="node-foot"><div><span class="uptime">運行 —</span><small class="last-seen">尚未回報</small></div><button class="details-button" type="button" aria-expanded="false">詳細資料 ↗</button></div>
+      <div class="details" hidden><dl><div><dt>CPU 型號</dt><dd class="cpu-model">—</dd></div><div><dt>作業系統／架構</dt><dd class="system-detail">—</dd></div><div><dt>負載（1／5／15 分鐘）</dt><dd class="load">—</dd></div><div><dt>TCP／UDP 連線</dt><dd class="connections">—</dd></div><div><dt>處理程序</dt><dd class="processes">—</dd></div><div><dt>下載／上傳累計</dt><dd class="traffic">—</dd></div></dl></div>
+    </article>
+  </template>
+  <template id="row-template"><tr class="node-row"><td><div class="row-identity"><span class="country-mark"></span><div><strong class="node-name"></strong><small class="row-location"></small></div></div></td><td><span class="status-pill"><i></i><b></b></span></td><td><strong class="row-cpu">—</strong><div class="bar cpu-bar"><i></i></div><small class="row-cores">—</small></td><td><strong class="row-memory">—</strong><div class="bar memory-bar"><i></i></div><small class="memory-size">—</small></td><td><strong class="row-disk">—</strong><div class="bar disk-bar"><i></i></div><small class="disk-size">—</small></td><td><strong class="down row-rx">—</strong><small class="up row-tx">—</small></td><td><strong class="row-total-rx">—</strong><small class="row-total-tx">—</small></td><td><strong class="row-uptime">—</strong><small class="last-seen">—</small></td><td><button class="details-button" type="button" aria-expanded="false">詳情</button></td></tr></template>
+  <script src="/app.js?v=coast-1" defer></script>
+</body>
 </html>
-

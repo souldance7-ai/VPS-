@@ -10,9 +10,11 @@ CORENET 自用、可持續擴充的 VPS／VDS 即時探針。第一版預設建�
 
 本專案參考了 [monitor-theme-serverstatus](https://github.com/monitor-probe/monitor-theme-serverstatus) 的「快速掌握多節點狀態」方向，但程式、資料模型與介面均為獨立實作：
 
-- 深墨綠＋電光綠的 CORENET NOC 介面，不沿用 ServerStatus 表格；
+- 海洋藍、淺沙色與白色的海岸介面，放大繁體中文與即時數值；
+- 卡片／列表切換、搜尋、狀態／地區／服務商篩選、排序與 12／24／50／100 筆分頁；
+- 超過 12 個節點預設採用列表，可切回卡片並保存瀏覽偏好；
 - 單一靜態 Go Hub 與單一靜態 Go Agent，無資料庫、無前端建置鏈；
-- SSE 即時更新，WebSocket 被代理阻擋時也能穩定工作；
+- SSE 更新通知合併為每 3 秒至多一次快照請求；連線中斷時每 15 秒自動重試；
 - CPU、記憶體、磁碟、上下行速率、累計流量、負載與連線數；
 - 明確的公開資料 allow-list，從結構上排除 IP、hostname 與 token；
 - Hub 預設只監聽 `127.0.0.1:9800`，適合搭配 Cloudflare Tunnel 隱藏源站。
@@ -115,7 +117,46 @@ sudo env \
 
 > 指令裡的 Hub URL 應是經 Tunnel／CDN 代理的域名，不能填源站 IP。
 
+## 更新既有 Hub
+
+在原本的 **Hub 主機** 以 root 執行（需要既有 Go 1.22+）：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/corenet-pulse/scripts/update-hub.sh -o /tmp/pulse-update-hub.sh && \
+  bash /tmp/pulse-update-hub.sh
+```
+
+腳本從原始碼建置最新版、備份目前程式、原子替換 Hub 並重啟；若健康檢查失敗會恢復上一版。沿用原有節點設定、Token 與 Cloudflare Tunnel；兩台 Agent 不需重裝。Hub 重啟會清空記憶體中的短期圖表，各 Agent 會在下一次回報時重新顯示在線。完成後以 `Ctrl+F5` 重新整理網頁。
+
+### 50–100 個節點的瀏覽方式
+
+- 列表直接顯示在線狀態、CPU、已用／總記憶體及磁碟、上下行速率、累計流量與運行時間。
+- 累計流量是自系統啟動以來的網卡計數，不是月流量額度或帳單用量。
+- CPU 型號、作業系統／核心、1／5／15 分鐘負載、連線數與處理程序可展開查看。
+- 刷新保留搜尋、篩選、當前頁與已展開資料；只更新目前顯示的節點。
+- 列表請求 `?history=0` 省略歷史點，卡片請求 `?history=30`；不因節點同時回報而重複下載快照。
+- 資料取得失敗或超過 30 秒未更新時，頁面明確標記為最後收到的狀態。
+
 ## 後續新增 VPS
+
+### 批次新增節點
+
+以 `configs/fleet.example.json` 為格式範例，在 Hub 本機建立自己的 `/root/pulse-nodes.json`。清單只填網站上要顯示的名稱與地區標籤，不放入 IP、Token 或協議密碼。
+
+在既有 Hub 更新介面並批次登錄這份清單：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/corenet-pulse/scripts/update-fleet.sh -o /tmp/pulse-update-fleet.sh && \
+  PULSE_HUB_URL=https://status.example.com PULSE_FLEET_FILE=/root/pulse-nodes.json bash /tmp/pulse-update-fleet.sh
+```
+
+替換成自己的公開域名與本機清單路徑。這個組合指令更新 Hub、為尚未登錄的 ID 產生獨立 Token，並輸出清單中各節點的 Agent 安裝指令。重複執行不重複新增，也不更換既有 Token。新增節點在 Agent 回報前顯示「待接入」，不產生示範數據。原本已接入的 Agent 不需重裝；本機清單不會上傳至 GitHub。
+
+代理設定中的 `server` 可能是中轉入口，不能直接用來判定實際出口主機。請把對應 Agent 安裝在要監控的實際主機；協議的延遲測試不能取代主機資源回報。
+
+自訂清單可用 `scripts/import-nodes.py --manifest my-nodes.json --restart` 匯入。JSON 的 `nodes` 陣列每筆接受 `id/name/region/country/provider/network/plan`；Token 一律由 Hub 產生。新增或批次匯入會保存設定原有的擁有者與讀取權限。
+
+### 單獨新增節點
 
 在 Hub 上新增一個節點：
 
