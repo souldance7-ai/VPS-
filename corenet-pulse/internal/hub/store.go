@@ -54,6 +54,7 @@ type publicNode struct {
 	System       *protocol.System  `json:"system,omitempty"`
 	Metrics      *protocol.Metrics `json:"metrics,omitempty"`
 	History      []historyPoint    `json:"history"`
+	Probes       []publicProbe     `json:"probes"`
 }
 
 type publicState struct {
@@ -68,6 +69,8 @@ type Store struct {
 	cfg         Config
 	runtime     map[string]*nodeRuntime
 	subscribers map[chan struct{}]struct{}
+	labels      map[string]string
+	probes      probeConfig
 }
 
 var (
@@ -76,10 +79,19 @@ var (
 )
 
 func NewStore(cfg Config) *Store {
+	if cfg.Probes.Revision == "" {
+		cfg.Probes = defaultProbeConfig()
+	}
+	labels := make(map[string]string, len(cfg.NameOverrides))
+	for id, name := range cfg.NameOverrides {
+		labels[id] = name
+	}
 	return &Store{
 		cfg:         cfg,
 		runtime:     make(map[string]*nodeRuntime),
 		subscribers: make(map[chan struct{}]struct{}),
+		labels:      labels,
+		probes:      cfg.Probes,
 	}
 }
 
@@ -127,6 +139,12 @@ func (s *Store) Update(report protocol.Report) {
 }
 
 func (s *Store) State(now time.Time) publicState {
+	return s.StateWithHistory(now, -1)
+}
+
+// StateWithHistory can omit graphs for large list views without copying each
+// node's full history. A negative limit preserves the original API behavior.
+func (s *Store) StateWithHistory(now time.Time, historyLimit int) publicState {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	state := publicState{
@@ -137,14 +155,14 @@ func (s *Store) State(now time.Time) publicState {
 	}
 	for _, n := range s.cfg.Nodes {
 		pn := publicNode{
-			ID: redactNetworkIdentifiers(n.ID), Name: redactNetworkIdentifiers(n.Name), Region: redactNetworkIdentifiers(n.Region), Country: redactNetworkIdentifiers(n.Country),
+			ID: redactNetworkIdentifiers(n.ID), Name: s.displayName(n), Region: redactNetworkIdentifiers(n.Region), Country: redactNetworkIdentifiers(n.Country),
 			Provider: redactNetworkIdentifiers(n.Provider), Network: redactNetworkIdentifiers(n.Network), Plan: redactNetworkIdentifiers(n.Plan),
 			History: []historyPoint{},
 		}
 		if rt := s.runtime[n.ID]; rt != nil {
 			pn.LastSeen = rt.LastSeen
 			pn.Online = now.Unix()-rt.LastSeen <= int64(s.cfg.StaleAfterSeconds)
-			pn.AgentVersion = rt.Report.AgentVersion
+			pn.AgentVersion = redactNetworkIdentifiers(rt.Report.AgentVersion)
 			systemCopy := rt.Report.System
 			systemCopy.OS = redactNetworkIdentifiers(systemCopy.OS)
 			systemCopy.Kernel = redactNetworkIdentifiers(systemCopy.Kernel)
@@ -153,13 +171,18 @@ func (s *Store) State(now time.Time) publicState {
 			metricsCopy := rt.Report.Metrics
 			pn.System = &systemCopy
 			pn.Metrics = &metricsCopy
-			pn.History = append([]historyPoint(nil), rt.History...)
+			history := rt.History
+			if historyLimit >= 0 && len(history) > historyLimit {
+				history = history[len(history)-historyLimit:]
+			}
+			pn.History = append(pn.History, history...)
 			if pn.Online {
 				state.Summary.Online++
 				state.Summary.NetRX += metricsCopy.NetRX
 				state.Summary.NetTX += metricsCopy.NetTX
 			}
 		}
+		pn.Probes = s.publicProbes(s.runtime[n.ID], pn.Online, now)
 		state.Nodes = append(state.Nodes, pn)
 	}
 	sort.SliceStable(state.Nodes, func(i, j int) bool {

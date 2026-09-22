@@ -27,11 +27,16 @@ type NodeConfig struct {
 }
 
 type Config struct {
-	Listen            string       `json:"listen"`
-	StaleAfterSeconds int          `json:"stale_after_seconds"`
-	HistoryPoints     int          `json:"history_points"`
-	Site              SiteConfig   `json:"site"`
-	Nodes             []NodeConfig `json:"nodes"`
+	Listen            string            `json:"listen"`
+	StaleAfterSeconds int               `json:"stale_after_seconds"`
+	HistoryPoints     int               `json:"history_points"`
+	Site              SiteConfig        `json:"site"`
+	Nodes             []NodeConfig      `json:"nodes"`
+	Admin             AdminSettings     `json:"-"`
+	LabelsPath        string            `json:"-"`
+	NameOverrides     map[string]string `json:"-"`
+	ProbesPath        string            `json:"-"`
+	Probes            probeConfig       `json:"-"`
 }
 
 func LoadConfig(path string) (Config, error) {
@@ -72,5 +77,11 @@ func LoadConfig(path string) (Config, error) {
 		}
 	}
 	sort.SliceStable(cfg.Nodes, func(i, j int) bool { return cfg.Nodes[i].Sort < cfg.Nodes[j].Sort })
+	if err := loadManagementSettings(&cfg); err != nil {
+		return Config{}, err
+	}
+	if err := loadProbeSettings(&cfg); err != nil {
+		return Config{}, err
+	}
 	return cfg, nil
 }
