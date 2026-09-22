@@ -82,6 +82,19 @@ curl -fsS https://status.example.com/api/public/state
 
 ### 3. 安裝 AWS 日本 Agent
 
+建議先在 **Hub 主機** 一次產生兩個節點的完整安裝指令；將網址替換成自己的公開探針域名：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/corenet-pulse/scripts/agent-commands.py -o /tmp/pulse-agent-commands.py && \
+  python3 /tmp/pulse-agent-commands.py --hub-url https://status.example.com --node-id aws-jp-01 --node-id cht-changhua-01
+```
+
+它只讀取本機設定與 Token，不新增節點、不更換 Token，也不發送資料。輸出的兩段命令分別貼到對應的 AWS 日本、彰化中華電信主機以 root 執行。**輸出包含節點專用 Token，請勿貼到 GitHub 或公開頁面。**
+
+Agent 安裝器支援 systemd 主機；需要時會從 Go 官方下載臨時建置工具並驗證 SHA-256，因此不依賴 Debian／Ubuntu 套件庫中的 Go 版本。服務啟動後，檢查公開頁面對應節點是否變成 ONLINE。
+
+也可手動填入對應 Token 執行：
+
 ```bash
 sudo env \
   PULSE_HUB_URL='https://status.example.com' \
