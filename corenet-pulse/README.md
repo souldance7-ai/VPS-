@@ -62,9 +62,25 @@ curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/corenet-pul
 
 安裝程式會優先下載 Release；若 Release 尚未建立，會自動安裝 Go 並從公開原始碼建置。重複執行會沿用既有 Token，不會讓已部署的 Agent 失效。
 
-Hub 僅監聽本機。依 `deploy/cloudflared/config.example.yml` 建立 Cloudflare Tunnel，再把自訂域名導向 `http://127.0.0.1:9800`。
+### 2. 建立公開 HTTPS 網址（Cloudflare Tunnel）
 
-### 2. 安裝 AWS 日本 Agent
+網域須已由您的 Cloudflare 帳號管理。把下方 `status.example.com` 換成自己的探針域名，在 Hub 主機以 root 執行：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/corenet-pulse/scripts/install-tunnel.sh -o /tmp/corenet-pulse-tunnel.sh && \
+  PULSE_HOSTNAME='status.example.com' bash /tmp/corenet-pulse-tunnel.sh
+```
+
+首次執行會顯示 Cloudflare 登入連結；在電腦瀏覽器開啟、選擇該網域並授權，終端便會自動繼續。腳本安裝官方套件、建立具名 Tunnel 與 CNAME、設定開機啟動，再檢查公開 HTTPS API。這一步需您登入自己的 Cloudflare 帳號，GitHub 授權不包含 Cloudflare。
+
+Hub 保持監聽 `127.0.0.1:9800`。設定與 Tunnel 憑證存於 `/etc/corenet-pulse/tunnel/`；服務名稱是 `corenet-pulse-tunnel`，使用獨立設定，不覆寫其他 Tunnel 的服務或設定。遇到已有的衝突 DNS 記錄會停止，不強制覆蓋。請勿另外建立指向源站 IP 的探針 A／AAAA 記錄。
+
+```bash
+systemctl is-active corenet-pulse-tunnel
+curl -fsS https://status.example.com/api/public/state
+```
+
+### 3. 安裝 AWS 日本 Agent
 
 ```bash
 sudo env \
@@ -74,7 +90,7 @@ sudo env \
   bash scripts/install-agent.sh
 ```
 
-### 3. 安裝彰化中華電信 Agent
+### 4. 安裝彰化中華電信 Agent
 
 ```bash
 sudo env \
