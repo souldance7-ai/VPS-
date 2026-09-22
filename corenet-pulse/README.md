@@ -52,27 +52,19 @@ go run ./cmd/agent
 
 ## 正式部署
 
-### 1. 建立兩組 Token
+### 1. 安裝 Hub
+
+在 Hub 主機以 root 執行（一行完成；Token 會自動產生並只保存在主機）：
 
 ```bash
-AWS_JP_TOKEN="$(openssl rand -hex 32)"
-CHT_CHANGHUA_TOKEN="$(openssl rand -hex 32)"
+curl -fsSL https://raw.githubusercontent.com/souldance7-ai/VPS-/main/corenet-pulse/scripts/install-hub.sh | bash
 ```
 
-### 2. 安裝 Hub
-
-Release 建立後，在 Hub 主機執行：
-
-```bash
-sudo env \
-  AWS_JP_TOKEN="$AWS_JP_TOKEN" \
-  CHT_CHANGHUA_TOKEN="$CHT_CHANGHUA_TOKEN" \
-  bash scripts/install-hub.sh
-```
+安裝程式會優先下載 Release；若 Release 尚未建立，會自動安裝 Go 並從公開原始碼建置。重複執行會沿用既有 Token，不會讓已部署的 Agent 失效。
 
 Hub 僅監聽本機。依 `deploy/cloudflared/config.example.yml` 建立 Cloudflare Tunnel，再把自訂域名導向 `http://127.0.0.1:9800`。
 
-### 3. 安裝 AWS 日本 Agent
+### 2. 安裝 AWS 日本 Agent
 
 ```bash
 sudo env \
@@ -82,7 +74,7 @@ sudo env \
   bash scripts/install-agent.sh
 ```
 
-### 4. 安裝彰化中華電信 Agent
+### 3. 安裝彰化中華電信 Agent
 
 ```bash
 sudo env \
