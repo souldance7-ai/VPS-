@@ -14,15 +14,18 @@ function refreshFormatters() {
 refreshFormatters()
 let preferences = {}
 try { preferences = JSON.parse(localStorage.getItem("pulse-coast-preferences") || "{}") || {} } catch { /* Storage is optional. */ }
+if (typeof preferences !== "object" || Array.isArray(preferences)) preferences = {}
 let state = null, receivedAt = 0, stale = false, page = 1, detailSequence = 0
 let pageSize = [12, 24, 50, 100].includes(preferences.pageSize) ? preferences.pageSize : 24
-let chosenView = ["cards", "list"].includes(preferences.view) ? preferences.view : null
+let chosenView = ["cards", "list"].includes(preferences.view) ? preferences.view : "cards"
 const expanded = new Set(), cards = new Map(), rows = new Map()
-let refreshTimer = null, inFlight = false, lastAttempt = 0, stream = null, streamReady = false
+const favorites = new Set((Array.isArray(preferences.favorites) ? preferences.favorites : []).filter(id => typeof id === "string").slice(0, 1000))
+let favoritesOnly = preferences.favoritesOnly === true
+let refreshTimer = null, inFlight = false, refreshQueued = false, lastAttempt = 0, stream = null, streamReady = false
 const REFRESH_MS = 3000, STALE_MS = 30000
 
 function savePreferences() {
-  try { localStorage.setItem("pulse-coast-preferences", JSON.stringify({ ...preferences, view: chosenView, pageSize, sort: $("#sort").value, language: UI.language, theme: UI.theme })) } catch { /* Private browsing can disable storage. */ }
+  try { localStorage.setItem("pulse-coast-preferences", JSON.stringify({ ...preferences, view: chosenView, pageSize, sort: $("#sort").value, favorites: [...favorites], favoritesOnly, language: UI.language, theme: UI.theme, motionPaused: UI.motionPreference })) } catch { /* Private browsing can disable storage. */ }
 }
 function countryName(code) {
   const known = UI.country(code)
@@ -56,6 +59,16 @@ function common(root, node) {
   root.dataset.id = node.id
   root.classList.toggle("offline", !node.online && !!node.last_seen)
   root.classList.toggle("pending", !node.online && !node.last_seen)
+  root.classList.toggle("is-favorite", favorites.has(node.id))
+  let favorite = $(".favorite-button", root)
+  if (!favorite) {
+    favorite = document.createElement("button"); favorite.type = "button"; favorite.className = "favorite-button";
+    ($(".node-head", root) || $(".row-identity", root)).append(favorite)
+  }
+  favorite.textContent = favorites.has(node.id) ? "★" : "☆"
+  favorite.setAttribute("aria-pressed", String(favorites.has(node.id)))
+  favorite.title = t(favorites.has(node.id) ? "removeFavorite" : "addFavorite", { name: node.name })
+  favorite.setAttribute("aria-label", favorite.title)
   put(root, ".country-mark", node.country || "—")
   $(".country-mark", root).title = countryName(node.country)
   put(root, ".status-pill b", statusText(node))
@@ -109,7 +122,7 @@ function paintProbes(root, node, region, detailed = false) {
     el.classList.toggle("probe-muted", !valid && status !== "timeout")
     const recent = p?.checked_at ? t("lastTest", { time: time(p.checked_at) }) : status === "awaiting_agent" ? t("updateAgent") : t("waitingProbe")
     put(el, ".probe-checked", recent)
-    el.title = [recent, Number.isFinite(p?.min_ms) ? t("latestRound", { min: p.min_ms.toFixed(1), avg: p.avg_ms.toFixed(1), max: p.max_ms.toFixed(1) }) : "", p?.window_sent ? t("lossWindow", { received: p.window_received, sent: p.window_sent, loss: p.loss_percent.toFixed(1) }) : t("noLossSample")].filter(Boolean).join("\n")
+    el.title = [recent, [p?.min_ms, p?.avg_ms, p?.max_ms].every(Number.isFinite) ? t("latestRound", { min: p.min_ms.toFixed(1), avg: p.avg_ms.toFixed(1), max: p.max_ms.toFixed(1) }) : "", p?.window_sent && Number.isFinite(p.loss_percent) ? t("lossWindow", { received: p.window_received, sent: p.window_sent, loss: p.loss_percent.toFixed(1) }) : t("noLossSample")].filter(Boolean).join("\n")
   }
 }
 function spark(card, points) {
@@ -144,8 +157,8 @@ function updateCard(node) {
   put(card, ".cpu-hint", s?.arch || t("usage"))
   put(card, ".memory-size", hasMetrics ? `${bytes(m.mem_used)} / ${bytes(s.mem_total)}` : "— / —")
   put(card, ".disk-size", hasMetrics ? `${bytes(m.disk_used)} / ${bytes(s.disk_total)}` : "— / —")
-  put(card, ".rx", m && node.online ? bytes(m.net_rx, true) : "—")
-  put(card, ".tx", m && node.online ? bytes(m.net_tx, true) : "—")
+  put(card, ".rx", m && node.online && !stale ? bytes(m.net_rx, true) : "—")
+  put(card, ".tx", m && node.online && !stale ? bytes(m.net_tx, true) : "—")
   put(card, ".total-traffic", m ? bytes(number(m.total_rx) + number(m.total_tx)) : "—")
   put(card, ".uptime", m ? `${t("runtime").replace("—", "").trim()} ${duration(m.uptime)}` : t("waitingAgent"))
   put(card, ".details-button", expanded.has(node.id) ? t("collapseData") : t("showDetails"))
@@ -184,8 +197,8 @@ function updateRow(node) {
   put(row, ".row-cores", s ? `${s.cpu_cores} vCPU` : "—")
   put(row, ".memory-size", hasMetrics ? `${bytes(m.mem_used)} / ${bytes(s.mem_total)}` : "—")
   put(row, ".disk-size", hasMetrics ? `${bytes(m.disk_used)} / ${bytes(s.disk_total)}` : "—")
-  put(row, ".row-rx", m && node.online ? `↓ ${bytes(m.net_rx, true)}` : "—")
-  put(row, ".row-tx", m && node.online ? `↑ ${bytes(m.net_tx, true)}` : "—")
+  put(row, ".row-rx", m && node.online && !stale ? `↓ ${bytes(m.net_rx, true)}` : "—")
+  put(row, ".row-tx", m && node.online && !stale ? `↑ ${bytes(m.net_tx, true)}` : "—")
   put(row, ".row-total-rx", m ? `↓ ${bytes(m.total_rx)}` : "—")
   put(row, ".row-total-tx", m ? `↑ ${bytes(m.total_tx)}` : "—")
   put(row, ".row-uptime", m ? duration(m.uptime) : "—")
@@ -221,8 +234,8 @@ function renderSummary() {
   put(document, "#fleet-offline", offline + pending)
   $("#fleet-offline").parentElement.classList.toggle("attention", offline > 0)
   put(document, "#offline-breakdown", t("breakdown", { offline, pending }))
-  put(document, "#fleet-rx", bytes(online.reduce((sum, n) => sum + number(n.metrics?.net_rx), 0), true))
-  put(document, "#fleet-tx", bytes(online.reduce((sum, n) => sum + number(n.metrics?.net_tx), 0), true))
+  put(document, "#fleet-rx", stale ? "—" : bytes(online.reduce((sum, n) => sum + number(n.metrics?.net_rx), 0), true))
+  put(document, "#fleet-tx", stale ? "—" : bytes(online.reduce((sum, n) => sum + number(n.metrics?.net_tx), 0), true))
   const avg = f => sampled.length ? `${(sampled.reduce((sum, n) => sum + f(n), 0) / sampled.length).toFixed(1)}%` : "—"
   put(document, "#fleet-cpu", avg(n => number(n.metrics.cpu)))
   put(document, "#fleet-memory", avg(n => percent(n.metrics.mem_used, n.system.mem_total)))
@@ -240,6 +253,7 @@ function renderVisible() {
   if (!state) return
   const query = $("#search").value.trim().toLocaleLowerCase(), status = $("#status-filter").value, country = $("#country-filter").value, provider = $("#provider-filter").value
   let filtered = state.nodes.filter(n => {
+    if (favoritesOnly && !favorites.has(n.id)) return false
     if (query && ![n.id, n.name, n.region, countryName(n.country), n.provider, n.network, n.plan].join(" ").toLocaleLowerCase().includes(query)) return false
     if (country !== "all" && n.country !== country || provider !== "all" && n.provider !== provider) return false
     if (status === "online" && !n.online || status === "offline" && (n.online || !n.last_seen) || status === "pending" && (n.online || n.last_seen)) return false
@@ -254,18 +268,32 @@ function renderVisible() {
   if (sort === "cpu") filtered.sort(descending(n => n.online ? number(n.metrics?.cpu) : -1))
   if (sort === "memory") filtered.sort(descending(n => n.online ? percent(n.metrics?.mem_used, n.system?.mem_total) : -1))
   if (sort === "traffic") filtered.sort(descending(n => n.online ? number(n.metrics?.net_rx) + number(n.metrics?.net_tx) : -1))
+  if (["sh-ct", "sh-cu", "sh-cm"].includes(sort)) {
+    // Unavailable, offline, or expired measurements never rank as zero latency.
+    const latency = n => {
+      const probe = n.probes?.find(p => p.id === sort)
+      return !stale && n.online && probe?.status === "ok" && Number.isFinite(probe.avg_ms) ? probe.avg_ms : Infinity
+    }
+    filtered.sort((a, b) => {
+      const left = latency(a), right = latency(b)
+      return left === right ? collator.compare(a.name, b.name) : left < right ? -1 : 1
+    })
+  }
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize))
   page = Math.min(page, pages)
   const start = (page - 1) * pageSize, visible = filtered.slice(start, start + pageSize)
-  const view = chosenView || (state.nodes.length > 12 ? "list" : "cards")
+  const view = chosenView
   $("#view-cards").setAttribute("aria-pressed", String(view === "cards")); $("#view-list").setAttribute("aria-pressed", String(view === "list"))
   $("#node-grid").hidden = view !== "cards" || !filtered.length
   $("#node-table-wrap").hidden = view !== "list" || !filtered.length
   $("#empty").hidden = filtered.length > 0
   if (!state.nodes.length) { put(document, "#empty strong", t("noNodesYet")); put(document, "#empty p", t("addNodeHint")) }
+  else if (favoritesOnly && !state.nodes.some(n => favorites.has(n.id))) { put(document, "#empty strong", t("noFavorites")); put(document, "#empty p", t("favoriteHint")) }
   else { put(document, "#empty strong", t("noMatches")); put(document, "#empty p", t("tryFilters")) }
   $("#loading").hidden = true
-  $("#clear-filters").hidden = !query && status === "all" && country === "all" && provider === "all"
+  $("#clear-filters").hidden = !query && status === "all" && country === "all" && provider === "all" && !favoritesOnly
+  $("#favorites-only")?.setAttribute("aria-pressed", String(favoritesOnly))
+  if ($("#favorites-only")) $("#favorites-only").title = t("favoriteCount", { count: state.nodes.filter(n => favorites.has(n.id)).length })
   put(document, "#result-count", filtered.length ? t("showing", { from: start + 1, to: start + visible.length, matched: filtered.length, total: state.nodes.length }) : t("matchedZero", { total: state.nodes.length }))
   put(document, "#page-info", t("pageInfo", { page, pages }))
   $("#prev-page").disabled = page <= 1; $("#next-page").disabled = page >= pages
@@ -279,61 +307,84 @@ function renderVisible() {
 function connection() {
   const el = $("#connection-state")
   el.className = `connection-pill${stale ? " error" : state ? " live" : ""}`
-  el.textContent = stale ? t("dataNeedsUpdate") : state ? (streamReady ? t("liveUpdate") : t("timedUpdate")) : t("connecting")
+  el.textContent = navigator.onLine === false ? t("browserOffline") : stale ? t("dataNeedsUpdate") : state ? (streamReady ? t("liveUpdate") : t("timedUpdate")) : t("connecting")
   document.body.dataset.stale = String(stale)
   $("#data-warning").hidden = !stale
-  if (stale) put(document, "#warning-copy", state ? t("staleWarning", { time: time(state.generated_at) }) : t("unavailableWarning"))
+  if (stale) put(document, "#warning-copy", navigator.onLine === false ? t("offlineWarning") : state ? t("staleWarning", { time: time(state.generated_at) }) : t("unavailableWarning"))
 }
 function markStale() {
-  if (stale) return
+  if (stale) { connection(); return }
   stale = true; connection()
   if (state) { renderSummary(); renderVisible() }
   else put(document, "#loading", t("noData"))
 }
 async function refresh() {
   if (inFlight || document.hidden) return
+  if (navigator.onLine === false) { markStale(); return }
   inFlight = true; lastAttempt = Date.now()
+  for (const id of ["retry", "refresh-now"]) if ($(`#${id}`)) $(`#${id}`).disabled = true
   const controller = new AbortController(), timeout = setTimeout(() => controller.abort(), 8000)
   try {
-    const listView = chosenView === "list" || (!chosenView && (state?.nodes.length || 0) > 12)
+    const listView = chosenView === "list"
     const response = await fetch(`/api/public/state?history=${listView ? 0 : 30}`, { cache: "no-store", signal: controller.signal })
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     const incoming = await response.json()
-    if (!Array.isArray(incoming.nodes) || !Number.isFinite(incoming.generated_at)) throw new Error("Invalid state")
+    if (!Array.isArray(incoming.nodes) || !Number.isFinite(incoming.generated_at) || incoming.generated_at <= 0 || !incoming.nodes.every(n => n && typeof n.id === "string" && typeof n.name === "string" && (!n.probes || Array.isArray(n.probes)))) throw new Error("Invalid state")
+    if (new Set(incoming.nodes.map(n => n.id)).size !== incoming.nodes.length) throw new Error("Duplicate node identifiers")
     state = incoming; receivedAt = Date.now(); stale = false
-    connection(); renderSummary(); renderVisible()
-  } catch { markStale() } finally { clearTimeout(timeout); inFlight = false }
+    connection(); renderSummary(); renderVisible(); tick()
+  } catch { markStale() } finally {
+    clearTimeout(timeout); inFlight = false
+    for (const id of ["retry", "refresh-now"]) if ($(`#${id}`)) $(`#${id}`).disabled = false
+    if (refreshQueued) { refreshQueued = false; requestRefresh() }
+  }
 }
 // A 100-node fleet can emit dozens of SSE events each second. Merge them into
 // one non-overlapping snapshot request per 3 seconds; only repaint this page.
 function requestRefresh() {
-  if (document.hidden || inFlight || refreshTimer !== null) return
+  if (document.hidden || navigator.onLine === false || refreshTimer !== null) return
+  if (inFlight) { refreshQueued = true; return }
   refreshTimer = setTimeout(() => { refreshTimer = null; refresh() }, Math.max(0, REFRESH_MS - (Date.now() - lastAttempt)))
 }
 function connect() {
-  if (stream || document.hidden || !("EventSource" in window)) return
+  if (stream || document.hidden || navigator.onLine === false || !("EventSource" in window)) return
   stream = new EventSource("/api/public/events")
   stream.addEventListener("ready", () => { streamReady = true; connection(); requestRefresh() })
   stream.addEventListener("update", requestRefresh)
-  stream.onerror = () => { streamReady = false; connection() }
+  stream.onerror = () => { streamReady = false; connection(); requestRefresh() }
 }
-function stopStream() { stream?.close(); stream = null; streamReady = false }
+function stopStream() {
+  stream?.close(); stream = null; streamReady = false; refreshQueued = false
+  if (refreshTimer !== null) { clearTimeout(refreshTimer); refreshTimer = null }
+}
+function refreshNow() {
+  if (refreshTimer !== null) { clearTimeout(refreshTimer); refreshTimer = null }
+  connect(); refresh()
+}
 $("#page-size").value = String(pageSize)
-if (["default", "attention", "name", "cpu", "memory", "traffic"].includes(preferences.sort)) $("#sort").value = preferences.sort
+if (["default", "attention", "name", "cpu", "memory", "traffic", "sh-ct", "sh-cu", "sh-cm"].includes(preferences.sort)) $("#sort").value = preferences.sort
 $("#search").addEventListener("input", () => { page = 1; renderVisible() })
 for (const id of ["status-filter", "country-filter", "provider-filter", "sort"]) $(`#${id}`).addEventListener("change", () => { page = 1; renderVisible(); savePreferences() })
-$("#clear-filters").addEventListener("click", () => { $("#search").value = ""; for (const id of ["status-filter", "country-filter", "provider-filter"]) $(`#${id}`).value = "all"; page = 1; renderVisible(); $("#search").focus() })
+$("#clear-filters").addEventListener("click", () => { $("#search").value = ""; for (const id of ["status-filter", "country-filter", "provider-filter"]) $(`#${id}`).value = "all"; favoritesOnly = false; page = 1; renderVisible(); savePreferences(); $("#search").focus() })
+$("#favorites-only")?.addEventListener("click", () => { favoritesOnly = !favoritesOnly; page = 1; renderVisible(); savePreferences() })
 for (const view of ["cards", "list"]) $(`#view-${view}`).addEventListener("click", () => { chosenView = view; renderVisible(); savePreferences(); requestRefresh() })
 $("#page-size").addEventListener("change", () => { pageSize = Number($("#page-size").value); page = 1; renderVisible(); savePreferences() })
 for (const [id, delta] of [["prev-page", -1], ["next-page", 1]]) $(`#${id}`).addEventListener("click", () => { page = Math.max(1, page + delta); renderVisible(); $("#fleet").scrollIntoView({ block: "start" }) })
 for (const id of ["node-grid", "node-rows"]) $(`#${id}`).addEventListener("click", event => {
-  const button = event.target.closest(".details-button")
+  const button = event.target.closest(".details-button, .favorite-button")
   if (!button) return
   const nodeID = button.closest("[data-id]").dataset.id
+  if (button.matches(".favorite-button")) {
+    if (favorites.has(nodeID)) favorites.delete(nodeID); else favorites.add(nodeID)
+    renderVisible(); savePreferences()
+    if (!button.isConnected) $("#favorites-only")?.focus()
+    return
+  }
   if (expanded.has(nodeID)) expanded.delete(nodeID); else expanded.add(nodeID)
   renderVisible()
 })
-$("#retry").addEventListener("click", requestRefresh)
+$("#retry").addEventListener("click", refreshNow)
+$("#refresh-now")?.addEventListener("click", refreshNow)
 document.addEventListener("pulse:language", () => {
   refreshFormatters(); UI.translate()
   // Filters and pagination can detach cached elements from the document.
@@ -346,6 +397,21 @@ document.addEventListener("pulse:language", () => {
 })
 document.addEventListener("visibilitychange", () => { if (document.hidden) stopStream(); else { if (state && Date.now() - receivedAt > STALE_MS) markStale(); connect(); requestRefresh() } })
 window.addEventListener("pagehide", stopStream)
-function tick() { $("#clock").textContent = dateFormat.format(new Date()); if (state && Date.now() - receivedAt > STALE_MS) markStale() }
+window.addEventListener("pageshow", () => { connect(); requestRefresh() })
+window.addEventListener("offline", () => { stopStream(); markStale() })
+window.addEventListener("online", () => { connection(); refreshNow() })
+function tick() {
+  $("#clock").textContent = dateFormat.format(new Date())
+  if (navigator.onLine === false && !stale) markStale()
+  if (!state) return
+  const age = Math.max(0, Math.floor((Date.now() - receivedAt) / 1000))
+  put(document, "#sync-age", t("syncAge", { seconds: age }))
+  if (Date.now() - receivedAt > STALE_MS) markStale()
+  for (const node of state.nodes) {
+    const card = cards.get(node.id), pair = rows.get(node.id)
+    if (card?.isConnected) put(card, ".last-seen", lastSeen(node))
+    if (pair?.row.isConnected) put(pair.row, ".last-seen", lastSeen(node))
+  }
+}
 tick(); setInterval(tick, 1000); setInterval(requestRefresh, 15000)
 connect(); requestRefresh()

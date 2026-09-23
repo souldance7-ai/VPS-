@@ -202,7 +202,11 @@ func runPing(ctx context.Context, address string) protocol.PingResult {
 		return protocol.PingResult{Status: "unavailable"}
 	}
 	// No shell, DNS lookup, arbitrary options, or packet payload supplied by users.
-	cmd := exec.CommandContext(ctx, "ping", "-n", "-c", "3", "-i", "0.3", "-W", "2", "-w", "5", "-s", "16", "--", address)
+	// Do not combine -c with -w: iputils then treats the count as a reply
+	// target and keeps transmitting until the deadline. This exceeds our
+	// three-packet budget on lossy/silent paths and invalidates the loss sample.
+	// -W bounds the no-reply wait; sample() supplies the overall seven-second limit.
+	cmd := exec.CommandContext(ctx, "ping", "-n", "-c", "3", "-i", "0.3", "-W", "2", "-s", "16", "--", address)
 	cmd.Env = []string{"LC_ALL=C", "PATH=/usr/sbin:/usr/bin:/sbin:/bin"}
 	output, err := cmd.CombinedOutput()
 	if ctx.Err() != nil || (err != nil && (cmd.ProcessState == nil || cmd.ProcessState.ExitCode() != 1)) {

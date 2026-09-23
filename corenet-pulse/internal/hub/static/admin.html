@@ -1,14 +1,15 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" data-theme="mecha">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
   <meta name="color-scheme" content="light" />
   <title>節點管理 · CORENET PULSE</title>
-  <link rel="icon" href="/favicon.svg?v=coast-1" type="image/svg+xml" />
-  <link rel="stylesheet" href="/styles.css?v=network-1" />
+  <link rel="icon" href="/favicon.svg?v=mecha-1" type="image/svg+xml" />
+  <link rel="stylesheet" href="/styles.css?v=mecha-1" />
   <link rel="stylesheet" href="/admin.css?v=admin-2" />
+  <link rel="stylesheet" href="/mecha.css?v=mecha-1" />
 </head>
 <body class="admin-body">
   <header class="topbar"><div class="topbar-inner">
@@ -41,7 +42,7 @@
       </section>
     </section>
   </main>
-  <footer><div><b>CORENET PULSE</b><span>讓連線如海風般自在。</span></div><p>管理畫面 · 登入有效時間 8 小時</p></footer>
+  <footer><div><b>CORENET PULSE</b><span>每一個節點，隨時掌握。</span></div><p>管理畫面 · 登入有效時間 8 小時</p></footer>
   <template id="admin-node-template"><form class="admin-node"><div class="admin-node-info"><div class="admin-node-top"><strong class="current-name"></strong><span class="admin-node-status"></span></div><small class="node-location"></small><code class="node-id"></code></div><div class="name-editor"><label class="sr-only">公開顯示名稱</label><input class="name-input" type="text" maxlength="80" required autocomplete="off" /><small class="original-name"></small><span class="row-message" role="status"></span></div><div class="name-actions"><button type="submit" class="primary-button save-name" disabled>儲存</button><button type="button" class="reset-name">恢復初始</button></div></form></template>
   <script src="/admin.js?v=admin-2" defer></script>
 </body>

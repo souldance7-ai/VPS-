@@ -1,0 +1,179 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="600" viewBox="0 0 640 600" role="img" aria-labelledby="title desc">
+  <title id="title">CORENET PULSE orbital sentinel</title>
+  <desc id="desc">An original illustrated white and navy space mecha with amber crest, teal eyes, crimson armour and gently pulsing thrusters.</desc>
+  <defs>
+    <linearGradient id="white" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#fffef5"/><stop offset=".55" stop-color="#e6eff4"/><stop offset="1" stop-color="#95a9bd"/></linearGradient>
+    <linearGradient id="whiteLight" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffff"/><stop offset="1" stop-color="#cedde7"/></linearGradient>
+    <linearGradient id="navy" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#244769"/><stop offset=".6" stop-color="#162d48"/><stop offset="1" stop-color="#0b192c"/></linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#ff7067"/><stop offset=".35" stop-color="#eb3d4d"/><stop offset="1" stop-color="#8b253e"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff1a4"/><stop offset=".45" stop-color="#ffd25a"/><stop offset="1" stop-color="#d78a29"/></linearGradient>
+    <linearGradient id="exhaust" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ecffff"/><stop offset=".3" stop-color="#59ffe4" stop-opacity=".85"/><stop offset="1" stop-color="#59ffe4" stop-opacity="0"/></linearGradient>
+    <linearGradient id="scan" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#62ffe8" stop-opacity="0"/><stop offset=".5" stop-color="#a7fff3" stop-opacity=".75"/><stop offset="1" stop-color="#62ffe8" stop-opacity="0"/></linearGradient>
+    <pattern id="carbon" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M0 7 7 0" stroke="#6c8196" stroke-opacity=".2" stroke-width="2"/></pattern>
+    <clipPath id="headClip"><path d="M242 130 306 82 361 93 412 147 413 228 383 279 290 287 239 252 225 204Z"/></clipPath>
+    <filter id="glow" x="-100%" y="-150%" width="300%" height="400%"><feGaussianBlur stdDeviation="5"/></filter>
+  </defs>
+  <style>
+    .float{animation:float 3.2s ease-in-out infinite}.eye-light{animation:eyes 1.6s ease-in-out infinite}.thruster{animation:thrust .8s ease-in-out infinite;transform-origin:50% 0%}.scanner{animation:scan 3.2s linear infinite}.signal{animation:signal 3.2s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+    @keyframes eyes{0%,100%{opacity:.58}50%{opacity:1}}
+    @keyframes thrust{0%,100%{opacity:.4}50%{opacity:.85}}
+    @keyframes scan{0%,100%{transform:translateY(-110px);opacity:0}18%{opacity:0}25%{opacity:.7}65%{opacity:.7}75%{transform:translateY(110px);opacity:0}99%{transform:translateY(110px);opacity:0}}
+    @keyframes signal{0%,100%{opacity:.45}50%{opacity:.95}}
+    @media(prefers-reduced-motion:reduce){.float,.eye-light,.thruster,.scanner,.signal{animation:none}.scanner{display:none}}
+  </style>
+  <!-- Deliberately asymmetric armour, inked panel work and hand-drawn silhouette. -->
+  <g fill="none" stroke="#5cf3dc" stroke-width="1" opacity=".32">
+    <path d="M126 200 126 122 190 122M469 116 524 116 524 185M82 385 82 442 131 442M510 485 558 485 558 420"/>
+    <path d="M134 160V136H159M516 146V124H494M90 418V434H113M550 455V477H530" stroke-width="3"/>
+    <path d="M95 281H144M496 257H547M472 520H513" stroke-dasharray="3 5"/>
+  </g>
+  <g class="signal" id="signal" fill="#67ffe3">
+    <path d="m117 239 5 5-5 5-5-5ZM500 192l4 4-4 4-4-4Z"/>
+    <circle cx="567" cy="347" r="2"/><circle cx="163" cy="480" r="2"/>
+  </g>
+  <g id="mecha-float" class="float" stroke="#091523" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Rear equipment and thrust are behind the armour. -->
+    <g stroke-width="4">
+      <path d="m210 202-43 14-26 85 17 108 49-20 22-105Z" fill="#172a3b"/>
+      <path d="m185 222-15 47 30 9 12-48Z" fill="#516576"/>
+      <path d="m189 236-8 23 9 3 8-23Z" fill="#d5e6ec" stroke-width="2"/>
+      <path d="m414 196 47 24 28 145-39 25-46-109Z" fill="#19293a"/>
+      <path d="m437 213 27 123 13-7-27-110Z" fill="#53647a" stroke-width="2"/>
+      <path d="m178 356 34 5-10 29-30-6Z" fill="#344d62"/>
+      <path d="m449 343 29-8 10 31-29 9Z" fill="#344d62"/>
+    </g>
+    <g id="thruster" class="thruster" fill="url(#exhaust)" stroke="none">
+      <path d="m175 383 25 7-13 96-8-24-11 37-1-76Z"/>
+      <path d="m462 375 22-8 25 102-17-23 2 41-20-49Z"/>
+      <path d="m181 386 11 4-7 68Z" fill="#e4ffff" opacity=".6"/>
+      <path d="m468 374 11-4 14 59Z" fill="#e4ffff" opacity=".6"/>
+    </g>
+    <!-- Shoulder rail, neck mechanics, and torso framing. -->
+    <path d="m229 269 40-31 92 2 68 36 9 78-46 54-149-20-32-57Z" fill="#0c1d2c"/>
+    <path d="m278 245-7 53 87 18 33-30-27-50Z" fill="#486074"/>
+    <path d="m284 258-2 12 77 15 13-11M283 280l76 15" fill="none" stroke="#8597a4" stroke-width="4"/>
+    <path d="m263 276-12 47 45 27 22-34Z" fill="#c1d2df"/>
+    <path d="m367 277 31 17-1 42-66 18-13-38Z" fill="#e5edf2"/>
+    <path d="m230 316-36 53 20 89 70 62 91 2 66-70 6-102-54-42-82 26Z" fill="url(#navy)"/>
+    <path d="m238 341-25 32 24 83 46 35 35-20-8-115Z" fill="#254563" stroke-width="2"/>
+    <path d="m386 333 39 26-6 84-43 48-38-20 14-118Z" fill="#10283e" stroke-width="2"/>
+    <path d="m271 391-4 71 22 23 35-13 34 10 29-26-13-62Z" fill="#0a1828"/>
+    <path d="m267 441 17 10 40-9 34 8 23-13M278 465l47-8 41 7" fill="none" stroke="#35516b" stroke-width="3"/>
+    <!-- Left pauldron: broad, chamfered silhouette with a red identification stripe. -->
+    <path d="m209 263-56-3-57 29-24 61 33 54 91-14 42-48-4-51Z" fill="url(#white)"/>
+    <path d="m153 260 56 3 25 28-97 11-41-13Z" fill="#fffdf4"/>
+    <path d="m96 289 41 13-15 53-50-5Z" fill="#b8cbd8"/>
+    <path d="m137 302 97-11 4 51-42 48-74-35Z" fill="#ecf2f5"/>
+    <path d="m72 350 50 5 74 35-91 14Z" fill="#8199ae"/>
+    <path d="m120 281 60-15 16 2-64 26Z" fill="#f3535c" stroke-width="2.5"/>
+    <path d="m149 317 59-8 6 24-29 28-48-15Z" fill="#273f53" stroke-width="3"/>
+    <path d="m159 323 38-5 2 10-39 5Z" fill="#91aabc" stroke-width="1.5"/>
+    <path d="m166 337 28-4-14 15-18-6Z" fill="#101e2b" stroke-width="1.5"/>
+    <path d="m136 368 17 9M165 377l17 8M86 342l14-36" stroke="#4d687c" stroke-width="2" fill="none"/>
+    <path d="m105 398-12 24 19 54 51 24 41-50-8-60Z" fill="#1b2d3f"/>
+    <path d="m99 425 38 11 44-22 19 28-37 58-49-24Z" fill="url(#white)"/>
+    <path d="m99 425 38 11 10 45-33-5Z" fill="#a1b6c7"/>
+    <path d="m142 448 34-17-22 43Z" fill="#eef4f5" stroke-width="2"/>
+    <path d="m112 492 43 13 8 35-27 22-41-25Z" fill="#1b2d3f"/>
+    <path d="m111 493 33 12-13 13-26-7Z" fill="#5a7185" stroke-width="2"/>
+    <!-- Right pauldron is rotated towards the viewer with layered wing plates. -->
+    <path d="m416 269 66-8 62 36 25 69-37 38-85-17-45-49Z" fill="url(#white)"/>
+    <path d="m416 269 66-8 62 36-90 11-43-16Z" fill="#fffdf6"/>
+    <path d="m454 308 90-11 25 69-51-7Z" fill="#cbdce6"/>
+    <path d="m411 292 43 16 64 51-71 28-45-49Z" fill="#e8f1f5"/>
+    <path d="m518 359 51 7-37 38-85-17Z" fill="#7992a9"/>
+    <path d="m460 268 22-7 62 36-18 2Z" fill="#f25760" stroke-width="2.5"/>
+    <path d="m433 314 21 8 29 26-29 12-22-21Z" fill="#243c52" stroke-width="3"/>
+    <path d="m443 326 10 4 15 14-11 4-14-13Z" fill="#9fb7c8" stroke-width="1.5"/>
+    <path d="m536 309 12 31M485 380l20 4M516 386l14 3" fill="none" stroke="#516b80" stroke-width="2"/>
+    <path d="m454 393 54 11 15 54-41 51-44-17-16-54Z" fill="#15283c"/>
+    <circle cx="478" cy="433" r="22" fill="#435e75"/>
+    <circle cx="478" cy="433" r="11" fill="#0c202d" stroke-width="3"/>
+    <path d="m454 400 53 14 6 37-20 18-48-31Z" fill="url(#white)"/>
+    <path d="m456 410 40 13 2 16-35-14Z" fill="#f7fbfb" stroke-width="2"/>
+    <path d="m431 454 36-2 52 36 10 44-36 32-70-37-5-38Z" fill="url(#white)"/>
+    <path d="m467 452 52 36-24 17-47-28-17-23Z" fill="#fcfff9"/>
+    <path d="m495 505 34 27-36 32-70-37 25-50Z" fill="#9db2c4"/>
+    <path d="m451 481 36 22-14 27-39-21Z" fill="#dfeaf0" stroke-width="2.5"/>
+    <path d="m490 546 23-23 12 8-30 30Z" fill="#233d51" stroke-width="2.5"/>
+    <!-- Breastplate has separate vents and a projecting crimson centre. -->
+    <path d="m246 301 60 29-6 61-73-17-16-28Z" fill="#264966"/>
+    <path d="m246 301 60 29-4 18-67-30Z" fill="#476f8d" stroke-width="2"/>
+    <path d="m354 332 54-26 23 43-14 36-68 6Z" fill="#1d3e5c"/>
+    <path d="m354 332 54-26 7 17-63 27Z" fill="#4a6b87" stroke-width="2"/>
+    <path d="m237 334 51 19-4 27-51-15Z" fill="#e9b545" stroke-width="3"/>
+    <path d="m241 345 40 14M238 354l41 14" stroke="#4b392c" stroke-width="4"/>
+    <path d="m364 352 38-16 10 26-48 17Z" fill="url(#gold)" stroke-width="3"/>
+    <path d="m370 358 29-11M368 368l35-13" stroke="#4b392c" stroke-width="4"/>
+    <path d="m306 330 24-11 24 13-5 49-24 40-26-31Z" fill="url(#red)"/>
+    <path d="m306 330 24-11 24 13-28 12Z" fill="#ff8171" stroke-width="2.5"/>
+    <path d="m326 344 28-12-5 49-24 40Z" fill="#a42942" stroke-width="2.5"/>
+    <path d="m312 353 13 6-2 39-13-15Z" fill="#f66763" stroke-width="1.5"/>
+    <path d="m305 318 21-11 22 12-19 13Z" fill="#e6f2f5" stroke-width="3"/>
+    <path d="m316 319 10-5 10 5-10 5Z" fill="#5bffdf" stroke="none"/>
+    <!-- Hip armour visually closes the half-body composition. -->
+    <path d="m256 469 32 15 38-11 40 9 36-17 20 42-31 49-62 20-77-19-24-40Z" fill="#111e2e"/>
+    <path d="m256 469 32 15-18 32-30-8Z" fill="#d9e5eb"/>
+    <path d="m366 482 36-17 13 33-25 17Z" fill="#c4d4df"/>
+    <path d="m288 484 38-11 40 9-14 44-49 1Z" fill="url(#red)"/>
+    <path d="m302 491 24-7 22 6-7 13-33 1Z" fill="url(#gold)" stroke-width="2.5"/>
+    <path d="m244 519 27 4 29 17-9 30-39-13-20-30Z" fill="url(#white)"/>
+    <path d="m354 538 38-20 21-6-22 44-39 13Z" fill="url(#white)"/>
+    <path d="m299 533 52 0 1 36-23 7-35-6Z" fill="#20374c"/>
+    <path d="m258 535 25 11M367 546l20-12M313 552h21" fill="none" stroke="#728da1" stroke-width="2.5"/>
+    <!-- Helmet: sculpted swept-back shell, dark mask recess and separate cheek guards. -->
+    <path d="m244 135 49-44 50-7 40 28 29 37 0 78-31 49-83 6-57-35-14-47Z" fill="url(#white)"/>
+    <path d="m244 135 49-44 50-7-20 42-46 26Z" fill="#ffffff"/>
+    <path d="m343 84 40 28 29 37-47-8-42-15Z" fill="#c9dbe5"/>
+    <path d="m244 135 33 17-10 68-26 27-14-47Z" fill="#93aec2"/>
+    <path d="m365 141 47 8 0 78-31 49-26-34Z" fill="#7e98af"/>
+    <path d="m260 158 22-18 42-10 46 17 14 28-14 46-35 24-56-21-24-37Z" fill="#13263b"/>
+    <path d="m282 140 42-10 46 17 14 28-30-13-31-14-40 10-23 0Z" fill="#2b4760" stroke-width="2"/>
+    <path d="m257 160 14 4-9 46-12-7Z" fill="#dfeaf0" stroke-width="2.5"/>
+    <path d="m373 165 11 10-10 43-14 4Z" fill="#d9e7ed" stroke-width="2.5"/>
+    <!-- V crest is deliberately long and tapered, separate from the head shell. -->
+    <path d="m316 140-44-14-90-94 27 10 90 65 30 7Z" fill="url(#gold)"/>
+    <path d="m329 142 41-24 65-93-26 13-72 70-20 9Z" fill="url(#gold)"/>
+    <path d="m192 39 82 87 25 7-5-16Z" fill="#f9e095" stroke="none"/>
+    <path d="m428 33-59 85-30 17 8-24Z" fill="#d79130" stroke="none"/>
+    <path d="m309 105 23-4 18 19-15 37-22-5-11-25Z" fill="url(#red)" stroke-width="4"/>
+    <path d="m312 109 17-3 10 11-11 12-21-3Z" fill="#ff8270" stroke-width="2"/>
+    <path d="m313 132 17 0 4 15-17-2Z" fill="#162637" stroke-width="2"/>
+    <!-- Ears, antenna blades and inset mechanical screw details. -->
+    <path d="m230 162-17 7 1 56 24 20 11-25-8-54Z" fill="#c1d2dd"/>
+    <path d="m218 177 13-4 4 41-14 7Z" fill="#496378" stroke-width="2"/>
+    <path d="m226 157-5-55 9-9 10 68Z" fill="#f0f5f3" stroke-width="3"/>
+    <path d="m398 162 20 5 5 49-19 28-16-21 1-40Z" fill="#dae7ee"/>
+    <path d="m405 179 7 2 3 27-10 12-4-15Z" fill="#455f74" stroke-width="2"/>
+    <circle cx="233" cy="217" r="5" fill="#607b91" stroke-width="2"/>
+    <circle cx="407" cy="224" r="4" fill="#576f86" stroke-width="2"/>
+    <!-- Angular brow shadows protect luminous narrow eyes. -->
+    <path d="m272 169 41 7-6 17-28-7Z" fill="#020f19" stroke-width="3"/>
+    <path d="m329 177 39-9-8 20-26 8Z" fill="#020f19" stroke-width="3"/>
+    <g id="eye-glow" class="eye-light" fill="#52ffe3" stroke="none" filter="url(#glow)" opacity=".8">
+      <path d="m276 177 32 5-5 8-22-5Z"/><path d="m334 182 29-7-5 11-21 6Z"/>
+    </g>
+    <g fill="#75ffe0" stroke="none"><path d="m277 177 31 5-5 7-22-5Z"/><path d="m334 182 29-7-5 10-21 6Z"/></g>
+    <path d="m282 178 19 4M339 182l17-5" fill="none" stroke="#eaffef" stroke-width="2"/>
+    <path d="m313 171 13 1 13 32-14 12-20-14Z" fill="#f0f3ed" stroke-width="3"/>
+    <path d="m326 172 13 32-14 12-1-29Z" fill="#a9bfce" stroke-width="2"/>
+    <!-- The face plate's bevels and inked vents distinguish the illustration. -->
+    <path d="m280 196 25 6 20 14 14-12 23-11 4 45-31 34-47-12-18-31Z" fill="url(#whiteLight)"/>
+    <path d="m280 196 25 6 20 14-9 44-28 0-18-31Z" fill="#eef5f6" stroke-width="2.5"/>
+    <path d="m339 204 23-11 4 45-31 34-19-12 9-44Z" fill="#b7cddc" stroke-width="2.5"/>
+    <path d="m289 218 14 8M287 229l14 8M340 227l10-9M340 240l12-11" fill="none" stroke="#234158" stroke-width="4"/>
+    <path d="m310 250 15-9 17 7-5 22-12 10-16-11Z" fill="url(#red)" stroke-width="3"/>
+    <path d="m312 252 13-7 11 4-12 8-13 0Z" fill="#ff8978" stroke-width="1.5"/>
+    <path d="m250 209 20 20 18 31-9 20-29-19-10-28Z" fill="#d0dfe8"/>
+    <path d="m250 209-10 24 10 28 11-11Z" fill="#90adc3" stroke-width="2"/>
+    <path d="m365 214 19-17 6 36-9 34-32 17-12-14 29-32Z" fill="#edf3f5"/>
+    <path d="m381 267-32 17-12-14 14-15Z" fill="#8aa6ba" stroke-width="2.5"/>
+    <path d="m259 244 11 18M370 246l-11 13M290 107l-18 18M364 108l21 28" fill="none" stroke="#6e8a9e" stroke-width="2"/>
+    <path d="m275 145 20-7M370 149l12 9M151 308l15-2M465 313l17 13" fill="none" stroke="#ffffff" stroke-width="2.5" opacity=".8"/>
+    <g clip-path="url(#headClip)" stroke="none"><rect id="scanner" class="scanner" x="213" y="193" width="215" height="4" fill="url(#scan)" opacity="0"/></g>
+    <!-- Tiny physical indicators, not text, keep the asset language-independent. -->
+    <g stroke="none" fill="#60ffe0"><path d="m218 349 9 3-1 7-8-2Z"/><path d="m414 345 8-3 2 7-8 3Z"/></g>
+    <g fill="none" stroke="#b3c9d8" stroke-width="1.5" opacity=".55"><path d="m221 375 18 56 16 15M403 394l-4 41-18 24M152 291l28-5M479 285l20 11"/></g>
+  </g>
+</svg>

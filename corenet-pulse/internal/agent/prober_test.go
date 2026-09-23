@@ -6,12 +6,39 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/souldance7-ai/VPS-/corenet-pulse/internal/protocol"
 )
+
+func TestRunPingNoReplyRetainsPacketLoss(t *testing.T) {
+	// Model iputils' documented deadline behavior: with -w, -c is a reply
+	// target and transmissions continue until the deadline. A silent target
+	// can therefore exceed our three-packet budget and get rejected by parsing.
+	dir := t.TempDir()
+	ping := `#!/bin/sh
+sent=3
+for option do
+  if [ "$option" = "-w" ]; then sent=17; fi
+done
+printf '%s packets transmitted, 0 received, 100%% packet loss\n' "$sent"
+exit 1
+`
+	if err := os.WriteFile(filepath.Join(dir, "ping"), []byte(ping), 0755); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", dir)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r := runPing(ctx, "202.96.209.5")
+	if r.Status != "timeout" || r.Sent != 3 || r.Received != 0 {
+		t.Fatalf("silent target must count as three lost packets, not an unavailable probe: %+v", r)
+	}
+}
 
 func TestPingParsingAndLossWindow(t *testing.T) {
 	partial := "3 packets transmitted, 2 received, 33.3333% packet loss, time 603ms\nrtt min/avg/max/mdev = 62.500/64.200/65.900/1.700 ms\n"
