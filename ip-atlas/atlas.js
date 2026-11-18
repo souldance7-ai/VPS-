@@ -1,6 +1,6 @@
 'use strict';
 const $ = id => document.getElementById(id);
-const groups = {asia:['JP','TW','HK','KR','VN','PH'],america:['CA','LAX','SJC','SEA'],europe:['DE','NL']};
+const groups = {asia:['JP','TW','HK','KR','VN','PH','SG'],america:['CA','LAX','SJC','SEA'],europe:['DE','NL','GB','FR']};
 const tags = {sc:'zh-CN',tc:'zh-TW',en:'en',ja:'ja'};
 const carrierNames = {CT:['中国电信','中國電信','China Telecom','中国電信'],CU:['中国联通','中國聯通','China Unicom','中国聯通'],CM:['中国移动','中國移動','China Mobile','中国移動']};
 const deals = {
@@ -12,7 +12,7 @@ function saved(key){try{return localStorage.getItem('atlas.'+key)}catch{return n
 function save(key,v){try{localStorage.setItem('atlas.'+key,v)}catch{}}
 let lang = Object.hasOwn(tags,saved('lang')) ? saved('lang') : 'sc';
 let zone='all', chosen=[], modal=null, toastTimer, lookupId=0, ipState={};
-let paused=saved('motion')==='paused';
+let paused=saved('motion')==='paused'||(saved('motion')===null&&matchMedia('(prefers-reduced-motion: reduce)').matches);
 const tr = key => WORDS[lang][key] || key;
 const val = value => typeof value==='object' && value!==null ? (value[lang]||value.en||'') : (value||'');
 const carrier = id => carrierNames[id]?.[Object.keys(tags).indexOf(lang)] || id;
@@ -25,13 +25,14 @@ function toast(msg){clearTimeout(toastTimer);$('toast').textContent=msg;$('toast
 async function copy(value){try{await navigator.clipboard.writeText(value);toast(tr('copied'))}catch{window.prompt(tr('ask'),value)}}
 function stateOf(d,now=Date.now()){return now<Date.parse(d.start)?'upcoming':now>Date.parse(d.end)?'expired':'active'}
 const cityNames={'Taiwan':['台湾','台灣','台湾'],'Japan':['日本','日本','日本'],'Changhua':['彰化','彰化','彰化'],'Tokyo':['东京','東京','東京'],'Hong Kong':['香港','香港','香港'],'Los Angeles':['洛杉矶','洛杉磯','ロサンゼルス'],'Seoul':['首尔','首爾','ソウル'],'Hanoi':['河内','河內','ハノイ'],'Ho Chi Minh City':['胡志明市','胡志明市','ホーチミン市'],'Manila':['马尼拉','馬尼拉','マニラ'],'San Jose':['圣何塞','聖荷西','サンノゼ'],'Seattle':['西雅图','西雅圖','シアトル'],'Beauharnois':['博阿努瓦','博阿努瓦','ボアルノワ'],'Falkenstein':['法尔肯施泰因','法爾肯施泰因','ファルケンシュタイン'],'Frankfurt':['法兰克福','法蘭克福','フランクフルト'],'Amsterdam':['阿姆斯特丹','阿姆斯特丹','アムステルダム'],'Vancouver':['温哥华','溫哥華','バンクーバー']};
+Object.assign(cityNames,{"Taipei":["台北","台北","台北"],"Taichung":["台中","台中","台中"],"Osaka":["大阪","大阪","大阪"],"Singapore":["新加坡","新加坡","シンガポール"],"London":["伦敦","倫敦","ロンドン"],"Manchester":["曼彻斯特","曼徹斯特","マンチェスター"],"Paris":["巴黎","巴黎","パリ"],"Nuremberg":["纽伦堡","紐倫堡","ニュルンベルク"],"Roubaix":["鲁贝","魯貝","ルーベ"],"Montreal":["蒙特利尔","蒙特婁","モントリオール"],"Toronto":["多伦多","多倫多","トロント"],"France":["法国","法國","フランス"],"Germany":["德国","德國","ドイツ"],"Canada":["加拿大","加拿大","カナダ"],"Netherlands":["荷兰","荷蘭","オランダ"],"United Kingdom":["英国","英國","英国"],"Ontario":["安大略省","安大略省","オンタリオ州"]});
 function city(p){return cityNames[p.city]?.[{sc:0,tc:1,ja:2}[lang]]||p.city}
 const localChoice = ()=>({sc:'原生 IP 候选（含 ISP 与住宅）',tc:'原生 IP 候選（含 ISP 與住宅）',en:'Native IP candidates (local, ISP, residential)',ja:'現地 IP 候補（ISP・住宅回線を含む）'}[lang]);
 function nativeLead(p){return ['isp','local','residential'].includes(p.ip)}
 function renderControls(){
  const ids=groups[zone]||Object.keys(MARKETS);
  const zones=$('zones');zones.replaceChildren();
- for(const key of ['all',...Object.keys(groups)]){const b=btn(tr(key),()=>{zone=key;renderControls();list()});b.setAttribute('aria-pressed',key===zone);zones.append(b)}
+ for(const key of ['all',...Object.keys(groups)]){const b=btn(tr(key),()=>{applyZone(key)});b.setAttribute('aria-pressed',key===zone);zones.append(b)}
  opt('market',[['',tr('allMarkets')],...ids.map(v=>[v,market(v)])],$('market').value);
  for(const [id,values] of Object.entries({kind:['vps','bare'],ip:['local','isp','residential','unknown'],route:['claimed','measured','unknown'],carrier:Object.keys(carrierNames)})){
   opt(id,[['',tr(id==='carrier'?'anyCarrier':'all')],...(id==='ip'?[['native',localChoice()]]:[]),...values.map(v=>[v,id==='carrier'?carrier(v):tr(v)])],$(id).value)
@@ -61,11 +62,11 @@ function toggle(p){
  list();const focusButton=Array.from($('listing').querySelectorAll('.pick')).find(b=>b.dataset.id===p.id);focusButton?.focus({preventScroll:true});
 }
 function list(){
- const rows=PLANS.filter(matches);$('total').textContent=rows.length+' '+tr('results');
+ const rows=PLANS.filter(matches);const visible=currentPageRows(rows);$('total').textContent=vendorCount(rows)+' '+tr('merchants')+' · '+rows.length+' '+tr('results');
  $('compare').textContent=tr('compare')+' ('+chosen.length+'/3)';$('compare').disabled=chosen.length<2;$('compare').title=tr('chooseTwo');
  const head=el('div',null,'colheads');for(const s of ['market','product','ip','route','links',''])head.append(el('span',s?tr(s):''));
  const out=$('listing');out.replaceChildren(head);
- for(const p of rows){
+ for(const p of visible){
   const r=el('article',null,'record'),ip=el('div',null,'datum'),route=el('div',null,'datum');
   ip.append(el('span',tr(p.ip),'tag'),el('small',tr(p.kind),'sub'));
   route.append(el('span',val(p.routeName)||tr(p.route)),el('small',p.route==='unknown'?'':tr(p.route),'sub'));
@@ -73,7 +74,7 @@ function list(){
   pick.setAttribute('aria-label',(selected?tr('remove'):tr('add'))+' · '+p.provider+' '+val(p.plan));pick.setAttribute('aria-pressed',selected);pick.dataset.id=p.id;
   r.append(pair(market(p.market),city(p),'place'),pair(p.provider,val(p.plan),'prod'),ip,route,btn(tr('details'),()=>openDialog(p),'read'),pick);out.append(r)
  }
- if(!rows.length)out.append(el('p',tr('noResults'),'empty'));
+ paintEdition(rows);if(!rows.length)out.append(el('p',tr('noResults'),'empty'));
 }
 function attributes(p){return [
  ['market',market(p.market)+' · '+city(p)],['kind',tr(p.kind)],['ip',tr(p.ip)],
@@ -98,7 +99,7 @@ function openDialog(p){
    }
    const wrap=el('div',null,'matrix-wrap');wrap.append(carrierTable);out.append(wrap)
   }
-  out.append(actions)
+  out.append(actions);appendEvidence(out,p)
  }else{
   const ps=chosen.map(id=>PLANS.find(p=>p.id===id));const wrap=el('div',null,'matrix-wrap'),table=el('table',null,'matrix');const head=table.createTHead().insertRow();head.append(el('th',tr('product')));ps.forEach(p=>head.append(el('th',p.provider+' · '+val(p.plan))));
   const body=table.createTBody();const fields=attributes(ps[0]);
@@ -123,7 +124,7 @@ function publicIP(s){
 function showIP(){
  const out=$('ipout'),links=$('iplinks');out.replaceChildren();links.replaceChildren();
  const {ip,status,prefix,asns}=ipState;if(!status)return;
- if(ip){const e=encodeURIComponent(ip);links.append(link(tr('registry'),'https://rdap.org/ip/'+e),link(tr('ipinfo'),'https://ipinfo.io/'+e),link('RIPEstat','https://stat.ripe.net/resource/'+e),link('DB-IP','https://db-ip.com/'+e),link(tr('risk'),'https://scamalytics.com/ip/'+e))}
+ if(ip){const e=encodeURIComponent(ip);links.append(link(tr('registry'),'https://rdap.org/ip/'+e),link(tr('ipinfo'),'https://ipinfo.io/'+e),link('RIPEstat','https://stat.ripe.net/resource/'+e),link('DB-IP','https://db-ip.com/'+e),link(tr('risk'),'https://scamalytics.com/ip/'+e),link('Ping0','https://ping0.cc/'))}
  if(status!=='ok'){out.append(el('p',tr(status),status==='waiting'?'loading':'lookup-error'));return}
  const grid=el('div',null,'ipstats');for(const [k,v] of [['prefix',prefix],['asn',asns.map(v=>'AS'+v).join(' / ')||tr('unknown')]]){const d=el('div');d.append(el('span',tr(k),'label'),el('b',v));grid.append(d)}out.append(grid)
 }
@@ -153,12 +154,13 @@ function render(){
  document.querySelectorAll('[data-t]').forEach(n=>n.textContent=tr(n.dataset.t));
  $('search').placeholder=tr('searchHint');$('close').setAttribute('aria-label',tr('back'));$('zones').setAttribute('aria-label',tr('region'));
  const names=new Intl.DisplayNames([tags[lang]],{type:'region'});const options=iso.map(c=>[c,names.of(c)+' · '+c]).sort((a,b)=>a[1].localeCompare(b[1],tags[lang]));
- opt('country',options,$('country').value||'PH');renderControls();list();offers();countryLinks();showIP();motion()
+ opt('country',options,$('country').value||'PH');renderControls();list();offers();countryLinks();showIP();motion();localizeEdition()
 }
 $('language').onchange=e=>{lang=e.target.value;save('lang',lang);render()};
 $('motion').onclick=()=>{paused=!paused;save('motion',paused?'paused':'playing');motion()};
-$('filters').onsubmit=e=>e.preventDefault();$('filters').oninput=list;$('promo').onchange=list;
-$('reset').onclick=()=>{zone='all';for(const k of ['search','kind','market','route','ip','carrier'])$(k).value='';$('promo').checked=false;renderControls();list()};
+$('filters').onsubmit=e=>e.preventDefault();$('filters').oninput=()=>{pageIndex=0;list()};$('promo').onchange=()=>{pageIndex=0;list()};
+$('reset').onclick=()=>{zone='all';pageIndex=0;for(const k of ['search','kind','market','route','ip','carrier'])$(k).value='';$('promo').checked=false;renderControls();list()};
 $('compare').onclick=()=>openDialog(null);$('close').onclick=()=>$('drawer').close();$('drawer').onclose=()=>{modal=null};$('drawer').onclick=e=>{if(e.target===$('drawer')){const r=$('drawer').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)$('drawer').close()}};
 $('country').onchange=countryLinks;$('ipform').onsubmit=lookup;
 render();
+startEdition();

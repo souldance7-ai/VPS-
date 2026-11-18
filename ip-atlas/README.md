@@ -1,6 +1,6 @@
 # PITOPONE 全球主机选购图鉴
 
-简体中文默认，支持繁体中文、英语、日语。纯静态 Cloudflare Pages 项目，无构建依赖。将 index.html、atlas.css、atlas.js、locale.js、catalog.js、_headers 和 art/hero.webp 部署到站点根目录。以本地 HTTP 服务预览。生产域名为 https://ip-guide.pitopone.com/ 。
+简体中文默认，支持繁体中文、英语、日语。纯静态 Cloudflare Pages 项目，无构建依赖。部署包中的 index.html、脚本、样式、art、fonts 和 _headers 均位于站点根目录。保留目录结构并上传整个 ZIP。以本地 HTTP 服务预览。生产域名为 https://ip-guide.pitopone.com/ 。
 
 ## 编辑目录
 
@@ -16,3 +16,6 @@ atlas.js 保存活动原文、起止时间及商家时区，locale.js 保存适�
 - https://youtu.be/du1G5dG1qPQ
 - https://www.nodeseek.com/post-1062104-1
 - 详见各方案的商家与补充证据链接。海底光缆为原创概念插画。
+## 区域版
+
+edition-data.js 收录新增地区记录及其四语采购说明，catalog.js 保留前版方案。每个市场按商家品牌去重，同品牌跨区可分别查询。界面分页并支持三个地区场景、减少动态效果、个人本地采购笔记。图像属于原创场景插画。Instrument Serif 的字体许可见 fonts/OFL.txt。
