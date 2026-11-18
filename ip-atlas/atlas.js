@@ -107,7 +107,7 @@ function openDialog(p){
   for(const k of ['evidence','links']){const r=body.insertRow();r.append(el('th',tr(k)));for(const p of ps){const c=r.insertCell();if(k==='links')c.append(link(tr('source')+' ↗',p.url));else c.textContent=val(p.notes)}}
   wrap.append(table);out.append(wrap)
  }
- if(!$('drawer').open)$('drawer').showModal();
+ if(!$('drawer').open){$('drawer').showModal();animateDialogOpen()}
 }
 function publicIP(s){
  if(s.includes(':')){
@@ -160,7 +160,7 @@ $('language').onchange=e=>{lang=e.target.value;save('lang',lang);render()};
 $('motion').onclick=()=>{paused=!paused;save('motion',paused?'paused':'playing');motion()};
 $('filters').onsubmit=e=>e.preventDefault();$('filters').oninput=()=>{pageIndex=0;list()};$('promo').onchange=()=>{pageIndex=0;list()};
 $('reset').onclick=()=>{zone='all';pageIndex=0;for(const k of ['search','kind','market','route','ip','carrier'])$(k).value='';$('promo').checked=false;renderControls();list()};
-$('compare').onclick=()=>openDialog(null);$('close').onclick=()=>$('drawer').close();$('drawer').onclose=()=>{modal=null};$('drawer').onclick=e=>{if(e.target===$('drawer')){const r=$('drawer').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)$('drawer').close()}};
+$('compare').onclick=()=>openDialog(null);$('close').onclick=()=>closeComicDialog();$('drawer').onclose=()=>{modal=null};$('drawer').onclick=e=>{if(e.target===$('drawer')){const r=$('drawer').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeComicDialog()}};
 $('country').onchange=countryLinks;$('ipform').onsubmit=lookup;
 render();
-startEdition();
+startComic();

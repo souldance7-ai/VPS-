@@ -19,3 +19,7 @@ atlas.js 保存活动原文、起止时间及商家时区，locale.js 保存适�
 ## 区域版
 
 edition-data.js 收录新增地区记录及其四语采购说明，catalog.js 保留前版方案。每个市场按商家品牌去重，同品牌跨区可分别查询。界面分页并支持三个地区场景、减少动态效果、个人本地采购笔记。图像属于原创场景插画。Instrument Serif 的字体许可见 fonts/OFL.txt。
+
+## 长城漫画版
+
+comic.js 与 comic.css 提供封面画格、滑动浏览、整屏叠页、筛选折叠及右侧详情抽屉。原创画面位于 art/wall-1.webp 至 wall-3.webp。Yuki 跳跃动画由 yuki-jump.gif 播放，暂停或减少动态效果时使用 yuki-still.webp。保留 #directory、#verify、#offers 和 #field 深层链接。
