@@ -1,0 +1,656 @@
+// Edition checked 2026-11-18. Plan-specific evidence only.
+const PLANS = [
+  {
+    "id": "tcs-fh1",
+    "market": "TW",
+    "city": "Taiwan",
+    "provider": "TCSCloud",
+    "plan": "FH1-HINET-500M",
+    "kind": "vps",
+    "ip": "isp",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://billing.tcscloud.net/index.php?rp=%2Fstore%2Ftaiwan-vps-fixed",
+    "lg": null,
+    "notes": {
+      "sc": "中华电信 HiNet 固定 IPv4，500 Mbps 为共享端口。需要固定出口时，可先向商家核对交付网段。 核对时无货。",
+      "tc": "中華電信 HiNet 固定 IPv4，500 Mbps 為共享埠。需要固定出口時，可先向商家核對交付網段。 核對時無貨。",
+      "en": "Fixed HiNet IPv4 on a shared 500 Mbps port. Ask which prefix will be assigned if a stable exit address matters. Out of stock at review.",
+      "ja": "HiNet の固定 IPv4 と共有 500 Mbps ポート。固定の出口が必要なら、割り当て予定のプレフィックスを確認してください。 確認時は在庫切れ。"
+    },
+    "price": "USD 49.99 / mo",
+    "proof": null
+  },
+  {
+    "id": "tcs-dh1",
+    "market": "TW",
+    "city": "Taiwan",
+    "provider": "TCSCloud",
+    "plan": "DH1-HINET-500M",
+    "kind": "vps",
+    "ip": "isp",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://billing.tcscloud.net/index.php?rp=%2Fstore%2Ftaiwan-vps-dynamic",
+    "lg": null,
+    "notes": {
+      "sc": "同为 HiNet，这款分配动态 IPv4；共享 500 Mbps。依赖 IP 白名单的应用应先确认换址条件。 核对时无货。",
+      "tc": "同為 HiNet，這款分配動態 IPv4，共享 500 Mbps。依賴 IP 白名單的應用應先確認換址條件。 核對時無貨。",
+      "en": "Dynamic HiNet IPv4 and a shared 500 Mbps port. Check how addresses change before relying on an IP allowlist. Out of stock at review.",
+      "ja": "HiNet の動的 IPv4 と共有 500 Mbps ポート。IP 許可リストを使う場合はアドレスの変更条件を確認してください。 確認時は在庫切れ。"
+    },
+    "price": "USD 21.99 / mo",
+    "proof": null
+  },
+  {
+    "id": "tcs-ds1",
+    "market": "TW",
+    "city": "Taiwan",
+    "provider": "TCSCloud",
+    "plan": "DS1-SEEDNET-300M",
+    "kind": "vps",
+    "ip": "isp",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://billing.tcscloud.net/index.php?rp=%2Fstore%2Ftaiwan-vps-dynamic",
+    "lg": null,
+    "notes": {
+      "sc": "Seednet 动态 IPv4，300 Mbps 共享端口。要比较台湾两家接入商，可与该商家的 HiNet 动态款对照。 核对时无货。",
+      "tc": "Seednet 動態 IPv4，300 Mbps 共享埠。要比較台灣兩家接取商，可與該商家的 HiNet 動態款對照。 核對時無貨。",
+      "en": "Dynamic Seednet IPv4 on a shared 300 Mbps port. Compare with the HiNet dynamic plan when choosing a Taiwanese access network. Out of stock at review.",
+      "ja": "Seednet の動的 IPv4 と共有 300 Mbps ポート。同社の HiNet 動的プランとは台湾側のアクセス回線が異なります。 確認時は在庫切れ。"
+    },
+    "price": "USD 19.99 / mo",
+    "proof": null
+  },
+  {
+    "id": "pqs-hinet",
+    "market": "TW",
+    "city": "Changhua",
+    "provider": "PQS",
+    "plan": "HiNet VDS",
+    "kind": "vps",
+    "ip": "isp",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://www.pqs.pw/",
+    "lg": null,
+    "notes": {
+      "sc": "从商店选择「彰化1号」动态 VDS。机房、拨号与地址分配方式应按该批次核对。",
+      "tc": "從商店選擇「彰化1號」動態 VDS。機房、撥號與位址分配方式應按該批次核對。",
+      "en": "Select the Changhua No. 1 dynamic VDS in the shop. Confirm the access and IP allocation details for the batch on sale.",
+      "ja": "ストアで彰化1号の動的 VDS を選択。接続方式と IP の割り当て条件は販売中のロットで確認してください。"
+    },
+    "price": null,
+    "proof": null
+  },
+  {
+    "id": "akile-hinet",
+    "market": "TW",
+    "city": "Taiwan",
+    "provider": "AkileCloud",
+    "plan": "TWHinet-Mini-NAT",
+    "kind": "vps",
+    "ip": "isp",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://akile.ai/shop/server?areaId=6&nodeId=31&planId=980&type=traffic",
+    "lg": null,
+    "notes": {
+      "sc": "HiNet 动态出口，Mini-NAT 提供端口映射。要部署入站服务，先核对可用端口数及协议。",
+      "tc": "HiNet 動態出口，Mini-NAT 提供連接埠映射。要部署入站服務，先核對可用埠數及協定。",
+      "en": "Dynamic HiNet egress with NAT port mapping. For inbound services, check the number of mapped ports and the protocols allowed.",
+      "ja": "HiNet の動的出口と NAT ポート転送を利用。外部公開には利用可能なポート数・プロトコルの確認が必要です。"
+    },
+    "price": null,
+    "proof": null
+  },
+  {
+    "id": "boil-kddi",
+    "market": "JP",
+    "city": "Tokyo",
+    "provider": "BOILCLOUD",
+    "plan": "KDDI / au · MAP-E",
+    "kind": "vps",
+    "ip": "residential",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://cloud.boil.network/store/japan-shared-bandwidth",
+    "lg": null,
+    "notes": {
+      "sc": "东京练马 KDDI / au 家宽方案，IPv4 通过 MAP-E 分配端口。需要开放特定端口时，应先确认可用范围。 核对时无货。",
+      "tc": "東京練馬 KDDI / au 家寬方案，IPv4 透過 MAP-E 分配連接埠。需要開放特定埠時，應先確認可用範圍。 核對時無貨。",
+      "en": "The Nerima residential plan uses KDDI / au. MAP-E restricts available IPv4 ports. Check the assigned range before hosting services. Out of stock at review.",
+      "ja": "東京・練馬の KDDI／au 家庭向け回線。MAP-E では IPv4 で利用できるポートが限られるため、必要なポートの割り当てを確認してください。 確認時は在庫切れ。"
+    },
+    "price": "USD 138 / mo",
+    "proof": null
+  },
+  {
+    "id": "boil-softbank",
+    "market": "JP",
+    "city": "Tokyo",
+    "provider": "BOILCLOUD",
+    "plan": "SoftBank · 100M",
+    "kind": "vps",
+    "ip": "residential",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://cloud.boil.network/store/japan-shared-bandwidth",
+    "lg": null,
+    "notes": {
+      "sc": "东京练马动态家宽，签约速率 100/40 Mbps，可申请更换 ISP。指定 SoftBank 时应确认交付条件。 核对时无货。",
+      "tc": "東京練馬動態家寬，簽約速率 100/40 Mbps，可申請更換 ISP。指定 SoftBank 時應確認交付條件。 核對時無貨。",
+      "en": "Dynamic residential access in Nerima with a 100/40 Mbps contract. The provider lists changeable ISPs. Check delivery terms if you require SoftBank. Out of stock at review.",
+      "ja": "東京・練馬の動的な家庭向け回線。契約帯域は 100/40 Mbps で ISP の変更に対応。SoftBank 指定なら提供条件を確認してください。 確認時は在庫切れ。"
+    },
+    "price": "USD 99 / mo",
+    "proof": null
+  },
+  {
+    "id": "sakura-tokyo",
+    "market": "JP",
+    "city": "Tokyo",
+    "provider": "SAKURA internet",
+    "plan": "さくらのVPS · 512MB",
+    "kind": "vps",
+    "ip": "unknown",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://vps.sakura.ad.jp/specification/",
+    "lg": null,
+    "notes": {
+      "sc": "东京 512 MB 规格按地区定价，官网另列大阪与石狩。该产品页可核对内存、磁盘及月付和年付价格。",
+      "tc": "東京 512 MB 規格按地區定價，官網另列大阪與石狩。該產品頁可核對記憶體、磁碟及月付和年付價格。",
+      "en": "Tokyo 512 MB tier. The comparison table lists separate regional rates for Osaka and Ishikari, with monthly and annual prices.",
+      "ja": "東京リージョンの 512 MB プラン。公式比較表で大阪・石狩との月額・年額の差やディスク容量を確認できます。"
+    },
+    "price": "JPY 698 / mo",
+    "proof": null
+  },
+  {
+    "id": "conoha-vps",
+    "market": "JP",
+    "city": "Japan",
+    "provider": "ConoHa",
+    "plan": "ConoHa VPS",
+    "kind": "vps",
+    "ip": "unknown",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://vps.conoha.jp/",
+    "lg": null,
+    "notes": {
+      "sc": "日本本地云商。按内存、计费周期选择规格；需要本地服务识别时，先核对分配 IP 的地理库记录。",
+      "tc": "日本本地雲端業者。按記憶體、計費週期選擇規格，需要本地服務識別時，先核對分配 IP 的地理資料庫紀錄。",
+      "en": "Compare memory sizes and billing periods in the Japanese store. Confirm how the assigned IP is classified by your target service.",
+      "ja": "日本の VPS 事業者。メモリと契約期間を比較し、地域判定が重要なら割り当て IP を利用先で確認してください。"
+    },
+    "price": null,
+    "proof": null
+  },
+  {
+    "id": "xserver-vps",
+    "market": "JP",
+    "city": "Japan",
+    "provider": "XServer",
+    "plan": "XServer VPS",
+    "kind": "vps",
+    "ip": "unknown",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://vps.xserver.ne.jp/",
+    "lg": null,
+    "notes": {
+      "sc": "日本 VPS 产品线。长期价需结合合约期限比较；站点按机房和产品列出配置，网络归属须另验。",
+      "tc": "日本 VPS 產品線。長期價需結合合約期限比較；站點按機房和產品列出規格，網路歸屬須另驗。",
+      "en": "Japanese VPS range. Compare the contract term as well as the headline price. Check the allocated network separately.",
+      "ja": "国内向け VPS。長期契約の表示価格は契約期間と合わせて比較し、割り当てネットワークは個別に確認してください。"
+    },
+    "price": null,
+    "proof": null
+  },
+  {
+    "id": "dmit-hkg",
+    "market": "HK",
+    "city": "Hong Kong",
+    "provider": "DMIT",
+    "plan": "HKG Premium Network",
+    "kind": "vps",
+    "ip": "unknown",
+    "route": "claimed",
+    "carriers": [
+      "CT"
+    ],
+    "routeName": "CN2 GIA",
+    "url": "https://www.dmit.io/pages/cloud-instance",
+    "lg": null,
+    "notes": {
+      "sc": "香港 Premium 标注电信 CN2 GIA（AS23764）。只能据此确认套餐线路声明，仍应按自己所在省份核对晚高峰表现。",
+      "tc": "香港 Premium 標示電信 CN2 GIA（AS23764）。只能據此確認方案線路聲明，仍應按自己所在省份核對晚高峰表現。",
+      "en": "Hong Kong Premium advertises China Telecom CN2 GIA (AS23764). Peak-hour loss and latency depend on the mainland access network.",
+      "ja": "香港 Premium は中国電信の CN2 GIA（AS23764）を明記。夜間の遅延や損失は利用地域の回線で確認してください。"
+    },
+    "price": null,
+    "proof": "https://www.dmit.io/pages/cloud-instance"
+  },
+  {
+    "id": "dmit-lax",
+    "market": "LAX",
+    "city": "Los Angeles",
+    "provider": "DMIT",
+    "plan": "LAX.AN5.Pro.MINI",
+    "kind": "vps",
+    "ip": "unknown",
+    "route": "claimed",
+    "carriers": [
+      "CT"
+    ],
+    "routeName": "CN2 GIA",
+    "url": "https://www.dmit.io/pages/cloud-instance",
+    "lg": null,
+    "notes": {
+      "sc": "Premium 配置列出 4 核、4 GB 内存、5 TB 流量和 10 Gbps 端口。CN2 GIA 为套餐线路说明，端口速率与跨境实测速率分别核对。",
+      "tc": "Premium 規格列出 4 核、4 GB 記憶體、5 TB 流量和 10 Gbps 埠。CN2 GIA 為方案線路說明，埠速與跨境實測速率分別核對。",
+      "en": "The Premium MINI lists four vCores, 4 GB RAM, 5 TB transfer and a 10 Gbps port. The CN2 GIA claim and the port speed describe different attributes.",
+      "ja": "Premium MINI は 4 vCore、メモリ 4 GB、転送量 5 TB、10 Gbps ポート。CN2 GIA の経路説明とポート速度は別の指標です。"
+    },
+    "price": "USD 79.90 / mo",
+    "proof": "https://www.dmit.io/pages/cloud-instance"
+  },
+  {
+    "id": "taxi-lax",
+    "market": "LAX",
+    "city": "Los Angeles",
+    "provider": "VPS.Taxi",
+    "plan": "LA Premium",
+    "kind": "vps",
+    "ip": "unknown",
+    "route": "claimed",
+    "carriers": [
+      "CT",
+      "CU",
+      "CM"
+    ],
+    "routeName": "AS9929 / CMIN2",
+    "url": "https://vps.taxi/los-angeles/",
+    "lg": "https://lg.vps.taxi/",
+    "notes": {
+      "sc": "商家公布的方向：洛杉矶回大陆，电信与联通走 9929、移动走 CMIN2；大陆去洛杉矶分别为 163、4837、CMIN2。入站升级仍在计划中。",
+      "tc": "商家公布的方向：洛杉磯回大陸，電信與聯通走 9929、移動走 CMIN2；大陸去洛杉磯分別為 163、4837、CMIN2。入站升級仍在規劃中。",
+      "en": "Provider-reported LA → mainland paths use 9929 for Telecom and Unicom, CMIN2 for Mobile. In the opposite direction they list 163, 4837 and CMIN2 respectively. Inbound upgrades are pending.",
+      "ja": "事業者公表の LA 発は電信・聯通が 9929、移動が CMIN2。中国発は順に 163、4837、CMIN2。中国発の経路改善は計画段階です。"
+    },
+    "price": null,
+    "proof": "https://my.vps.taxi/order/main/packages/vps/?group_id=4"
+  },
+  {
+    "id": "light-seoul",
+    "market": "KR",
+    "city": "Seoul",
+    "provider": "LightNode",
+    "plan": "Korea VPS · Start",
+    "kind": "vps",
+    "ip": "local",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://go.lightnode.com/korea-vps",
+    "lg": "https://go.lightnode.com/locations",
+    "notes": {
+      "sc": "首尔 KVM，商家明示配韩国独享 IP。按小时计费，适合先开短时实例，核对目标服务如何识别所分配的地址。",
+      "tc": "首爾 KVM，商家明示配韓國獨享 IP。按小時計費，適合先開短時實例，核對目標服務如何識別所分配的位址。",
+      "en": "Seoul KVM with a dedicated Korean IP. Hourly billing makes it possible to check how the actual assigned address is classified before a longer stay.",
+      "ja": "ソウルの KVM と韓国の専用 IP。時間課金で短期間利用し、サービス側での割り当てアドレスの地域判定を確認できます。"
+    },
+    "price": "USD 0.012 / h",
+    "proof": null
+  },
+  {
+    "id": "light-hanoi",
+    "market": "VN",
+    "city": "Hanoi",
+    "provider": "LightNode",
+    "plan": "Vietnam VPS · Start",
+    "kind": "vps",
+    "ip": "local",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://go.lightnode.com/hanoi-vps",
+    "lg": "https://go.lightnode.com/locations",
+    "notes": {
+      "sc": "河内节点含独享静态越南 IP。入门款 1 vCPU、2 GB 内存、1 TB 流量；面向越南北部用户时可与胡志明市分别测速。",
+      "tc": "河內節點含獨享靜態越南 IP。入門款 1 vCPU、2 GB 記憶體、1 TB 流量，面向越南北部用戶時可與胡志明市分別測速。",
+      "en": "Hanoi includes a dedicated static Vietnamese IP. The Start tier has one vCPU, 2 GB RAM and 1 TB transfer. Test both cities for northern Vietnamese users.",
+      "ja": "ハノイの専用固定ベトナム IP。Start は 1 vCPU、2 GB メモリ、転送量 1 TB。北部向けならホーチミン拠点との経路差を比較できます。"
+    },
+    "price": "USD 0.012 / h",
+    "proof": "https://go.lightnode.com/vietnam-vps"
+  },
+  {
+    "id": "light-hcm",
+    "market": "VN",
+    "city": "Ho Chi Minh City",
+    "provider": "LightNode",
+    "plan": "Vietnam VPS · Start",
+    "kind": "vps",
+    "ip": "local",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://go.lightnode.com/vietnam-vps",
+    "lg": "https://go.lightnode.com/locations",
+    "notes": {
+      "sc": "面向越南南部用户的 KVM 节点，支持 Linux 或 Windows，提供静态越南 IP。河内与胡志明市须在控制台分别选择。",
+      "tc": "面向越南南部用戶的 KVM 節點，支援 Linux 或 Windows，提供靜態越南 IP。河內與胡志明市須在控制台分別選擇。",
+      "en": "Southern Vietnam KVM with Linux or Windows and a static Vietnamese IP. Hanoi and Ho Chi Minh City are separate deployment choices.",
+      "ja": "ベトナム南部向けの KVM、固定ベトナム IP 付き。Linux と Windows に対応。管理画面ではハノイとホーチミンを個別に選択します。"
+    },
+    "price": "USD 0.012 / h",
+    "proof": null
+  },
+  {
+    "id": "light-manila",
+    "market": "PH",
+    "city": "Manila",
+    "provider": "LightNode",
+    "plan": "Manila VDS",
+    "kind": "vps",
+    "ip": "local",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://go.lightnode.com/manila-vds",
+    "lg": "https://go.lightnode.com/locations",
+    "notes": {
+      "sc": "商家列出马尼拉静态 IP、独享 CPU 和 NVMe。VDS 仍是虚拟机；需要物理整机时应改用物理服务器筛选。",
+      "tc": "商家列出馬尼拉靜態 IP、獨享 CPU 和 NVMe。VDS 仍是虛擬機，需要實體整機時應改用實體伺服器篩選。",
+      "en": "The Manila VDS advertises a static Philippine IP, dedicated CPU and NVMe. It provides a virtual server with dedicated compute resources.",
+      "ja": "マニラ VDS はフィリピンの固定 IP、専用 CPU、NVMe を掲載。CPU リソースを確保する仮想サーバーです。"
+    },
+    "price": null,
+    "proof": null
+  },
+  {
+    "id": "vps-sjc",
+    "market": "SJC",
+    "city": "San Jose",
+    "provider": "V.PS",
+    "plan": "Cloud KVM VPS",
+    "kind": "vps",
+    "ip": "unknown",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://v.ps/locations/san-jose/",
+    "lg": "https://sjc-premium.lg.xtom.com/",
+    "notes": {
+      "sc": "Equinix SV10，AS6233，套餐含 IPv4 与 IPv6。官方 Premium 测试点适用于 Cloud KVM 和 Mini KVM，可用于比较你所在地区的实际路径。",
+      "tc": "Equinix SV10，AS6233，方案含 IPv4 與 IPv6。官方 Premium 測試點適用於 Cloud KVM 和 Mini KVM，可用於比較你所在地區的實際路徑。",
+      "en": "AS6233 at Equinix SV10, with IPv4 and IPv6. The San Jose Premium test node covers both Cloud KVM and Mini KVM and lets you compare local routes.",
+      "ja": "Equinix SV10 の AS6233、IPv4 と IPv6 付き。San Jose Premium のテストノードは Cloud KVM と Mini KVM の両方に対応します。"
+    },
+    "price": "EUR 8.95 / mo",
+    "proof": null
+  },
+  {
+    "id": "alpha-sea",
+    "market": "SEA",
+    "city": "Seattle",
+    "provider": "AlphaVPS",
+    "plan": "Seattle KVM",
+    "kind": "vps",
+    "ip": "unknown",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://alphavps.com/seattle-vps/",
+    "lg": "https://lgsea.alphavps.com/",
+    "notes": {
+      "sc": "西雅图 Digital Fortress 机房，AS203380 接入 SIX。商家提供西雅图测试点；加拿大西岸互联与大陆优化是两项不同指标。",
+      "tc": "西雅圖 Digital Fortress 機房，AS203380 接入 SIX。商家提供西雅圖測試點，加拿大西岸互聯與大陸最佳化是兩項不同指標。",
+      "en": "AS203380 peers at SIX from Digital Fortress in Seattle. The provider offers a local looking glass and describes direct interconnects to western Canadian networks.",
+      "ja": "シアトルの Digital Fortress で AS203380 が SIX に接続。カナダ西部向けの相互接続を公開しており、現地 Looking Glass で経路を確認できます。"
+    },
+    "price": null,
+    "proof": null
+  },
+  {
+    "id": "ramnode-sea",
+    "market": "SEA",
+    "city": "Seattle",
+    "provider": "RamNode",
+    "plan": "512MB SKVM",
+    "kind": "vps",
+    "ip": "unknown",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://clientarea.ramnode.com/store/kvm-ssd-vps-skvm-sea",
+    "lg": null,
+    "notes": {
+      "sc": "旧款 SSD KVM 列有 15 GB 磁盘、1 个 IPv4 与 /64 IPv6。核对时显示零库存；价格保留作补货时的比较依据。",
+      "tc": "舊款 SSD KVM 列有 15 GB 磁碟、1 個 IPv4 與 /64 IPv6。核對時顯示零庫存，價格保留作補貨時的比較依據。",
+      "en": "The 15 GB SSD model lists one IPv4 and an IPv6 /64. It showed zero available at review. Its listed rate is a reference for a future restock.",
+      "ja": "SSD 15 GB、IPv4 が 1 個、IPv6 は /64。確認時は在庫ゼロでした。表示価格は次回入荷時の比較用です。"
+    },
+    "price": "USD 7 / mo",
+    "proof": null
+  },
+  {
+    "id": "ovh-bhs",
+    "market": "CA",
+    "city": "Beauharnois",
+    "provider": "OVHcloud",
+    "plan": "So You Start · SYS-2",
+    "kind": "bare",
+    "ip": "unknown",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://eco.us.ovhcloud.com/soyoustart/sys-2/",
+    "lg": null,
+    "notes": {
+      "sc": "加拿大 BHS 的 24sys02-v3-ca 型号。美国站黑五条款适用于新购基础配置，最长 12 个月；下单时复核机房、安装费及续租金额。",
+      "tc": "加拿大 BHS 的 24sys02-v3-ca 型號。美國站黑五條款適用於新購基礎規格，最長 12 個月；下單時複核機房、安裝費及續租金額。",
+      "en": "The 24sys02-v3-ca variant is tracked at BHS, Canada. US-store Black Friday terms cover new base configurations for up to 12 months. Check site, setup fee and renewal at checkout.",
+      "ja": "カナダ BHS の型番は 24sys02-v3-ca。米国ストアのセールは新規の基本構成が対象で最長 12 か月。注文画面で拠点・初期費用・更新額を確認してください。"
+    },
+    "price": null,
+    "proof": "https://ovheco.com/en/us/plans/24sys02-v3-ca",
+    "deal": "ovh"
+  },
+  {
+    "id": "hetzner-fsn",
+    "market": "DE",
+    "city": "Falkenstein",
+    "provider": "Hetzner",
+    "plan": "Cloud · fsn1",
+    "kind": "vps",
+    "ip": "unknown",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://www.hetzner.com/cloud/",
+    "lg": null,
+    "notes": {
+      "sc": "建机时指定 fsn1（法尔肯施泰因）。官方机房表按城市列出共享或独享 vCPU 产品，适合先确认具体系列在该区域是否提供。",
+      "tc": "建機時指定 fsn1（法爾肯施泰因）。官方機房表按城市列出共享或獨享 vCPU 產品，適合先確認具體系列在該區域是否提供。",
+      "en": "Select fsn1 for Falkenstein. The location matrix lists shared and dedicated-vCPU families by city. Check the family you need before provisioning.",
+      "ja": "ファルケンシュタインでは fsn1 を指定。地域対応表で、利用予定の共有または専用 vCPU シリーズを都市別に確認できます。"
+    },
+    "price": null,
+    "proof": "https://docs.hetzner.com/cloud/general/locations/"
+  },
+  {
+    "id": "lease-fra",
+    "market": "DE",
+    "city": "Frankfurt",
+    "provider": "Leaseweb",
+    "plan": "Dedicated Servers · FRA-01",
+    "kind": "bare",
+    "ip": "unknown",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://www.leaseweb.com/products-services/dedicated-servers/germany",
+    "lg": null,
+    "notes": {
+      "sc": "FRA-01 位于法兰克福，商家列有多家 Tier 1 与 DE-CIX 连接。对比德国独服时，将磁盘配置、带宽承诺和交付时间列入报价。",
+      "tc": "FRA-01 位於法蘭克福，商家列有多家 Tier 1 與 DE-CIX 連線。比較德國獨服時，將磁碟規格、頻寬承諾和交付時間列入報價。",
+      "en": "FRA-01 in Frankfurt lists multiple Tier 1 carriers and access to DE-CIX. Compare disk configuration, bandwidth commitment and delivery time when obtaining quotes.",
+      "ja": "フランクフルト FRA-01 は複数の Tier 1 と DE-CIX への接続を掲載。見積もりではディスク、帯域契約、納期を比較してください。"
+    },
+    "price": null,
+    "proof": null
+  },
+  {
+    "id": "lease-ams",
+    "market": "NL",
+    "city": "Amsterdam",
+    "provider": "Leaseweb",
+    "plan": "Dedicated Servers · Amsterdam",
+    "kind": "bare",
+    "ip": "unknown",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://www.leaseweb.com/products-services/dedicated-servers/netherlands",
+    "lg": null,
+    "notes": {
+      "sc": "荷兰页面列出阿姆斯特丹两座机房。选择单租户物理机时，向销售确认实际机房、带宽计费及硬件更换条款。",
+      "tc": "荷蘭頁面列出阿姆斯特丹兩座機房。選擇單租戶實體機時，向業務確認實際機房、頻寬計費及硬體更換條款。",
+      "en": "The Dutch product page lists two Amsterdam facilities. Ask which site will deliver your dedicated server, how bandwidth is billed and which hardware service applies.",
+      "ja": "オランダの商品ページはアムステルダムの 2 拠点を掲載。納入先の施設、帯域課金、ハードウェア交換条件を見積もりで確認できます。"
+    },
+    "price": null,
+    "proof": null
+  },
+  {
+    "id": "recloud-tfn",
+    "market": "TW",
+    "city": "Taiwan",
+    "provider": "ReCloud",
+    "plan": "TFN · 1c1G 200M",
+    "kind": "vps",
+    "ip": "isp",
+    "route": "claimed",
+    "carriers": [
+      "CT",
+      "CU",
+      "CM"
+    ],
+    "routeName": "TFN",
+    "url": "https://www.oneprovide.net/store/tfn",
+    "lg": null,
+    "notes": {
+      "sc": "TFN 静态企业宽带。商家注明原生 IPv4、三网优化；未给去回程路径。核对时无货，月租另收一次性 CNY 10 设置费。",
+      "tc": "TFN 靜態企業寬頻。商家註明原生 IPv4、三網優化，未列去回程路徑。核對時無貨，月租另收一次性 CNY 10 設定費。",
+      "en": "Static TFN business broadband. The seller calls the IPv4 native and advertises three-carrier optimization without directional details. Out of stock at review, with a CNY 10 setup fee.",
+      "ja": "TFN の固定法人回線。販売元はネイティブ IPv4 と中国 3 社向け最適化を掲げていますが、往復別の経路は未記載です。確認時は在庫切れ、初期費用は CNY 10。"
+    },
+    "price": "CNY 70 / mo",
+    "proof": null
+  },
+  {
+    "id": "oneprovider-tyo",
+    "market": "JP",
+    "city": "Tokyo",
+    "provider": "OneProvider",
+    "plan": "Xeon E-2276G",
+    "kind": "bare",
+    "ip": "unknown",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://oneprovider.com/en/dedicated-servers/tokyo-japan",
+    "lg": null,
+    "notes": {
+      "sc": "东京整机，Xeon E-2276G 6 核 12 线程、16 GB 内存。页面列出 1 Gbps 端口与 5 TB 流量，可选 HDD 或 SSD。",
+      "tc": "東京整機，Xeon E-2276G 6 核 12 執行緒、16 GB 記憶體。頁面列出 1 Gbps 埠與 5 TB 流量，可選 HDD 或 SSD。",
+      "en": "Single-tenant Tokyo hardware with a six-core Xeon E-2276G and 16 GB RAM. The listing pairs a 1 Gbps port with 5 TB transfer and HDD or SSD options.",
+      "ja": "東京の物理専用機。Xeon E-2276G（6 コア 12 スレッド）とメモリ 16 GB。1 Gbps ポート、転送量 5 TB、HDD または SSD を掲載。"
+    },
+    "price": null,
+    "proof": null
+  },
+  {
+    "id": "bwh-sjc",
+    "market": "SJC",
+    "city": "San Jose",
+    "provider": "BandwagonHost",
+    "plan": "E-Commerce · USCA_SJC5",
+    "kind": "vps",
+    "ip": "unknown",
+    "route": "claimed",
+    "carriers": [
+      "CT"
+    ],
+    "routeName": "CN2 GIA",
+    "url": "https://bandwagonhost.com/order/ecommerce/San%20Jose/USCA_SJC5",
+    "lg": null,
+    "notes": {
+      "sc": "Equinix SV10。该机房公告列明电信 CN2 GIA，也列联通和移动互联，未承诺后两者的具体产品；方向需在本地验证。",
+      "tc": "Equinix SV10。該機房公告列明電信 CN2 GIA，也列聯通和移動互聯，未承諾後兩者的具體產品，方向需在本地驗證。",
+      "en": "The SV10 announcement names China Telecom CN2 GIA and interconnects with Unicom and Mobile. It does not specify premium tiers for those two or the direction from your ISP.",
+      "ja": "SV10 の告知は中国電信 CN2 GIA と聯通・移動との相互接続を明記。後者 2 社のサービス種別と利用回線の往復経路は別途確認してください。"
+    },
+    "price": null,
+    "proof": "https://bandwagonhost.com/news?id=233"
+  },
+  {
+    "id": "bwh-yvr",
+    "market": "CA",
+    "city": "Vancouver",
+    "provider": "BandwagonHost",
+    "plan": "E-Commerce · CABC_6",
+    "kind": "vps",
+    "ip": "unknown",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://bandwagonhost.com/order/ecommerce/Vancouver/CABC_6",
+    "lg": null,
+    "notes": {
+      "sc": "加拿大西岸 Cologix VAN3。目录另有同城 CABC_1，迁移或询价时注明 CABC_6，以免把两个机房代码的路由记录混用。",
+      "tc": "加拿大西岸 Cologix VAN3。目錄另有同城 CABC_1，遷移或詢價時註明 CABC_6，以免把兩個機房代碼的路由紀錄混用。",
+      "en": "Cologix VAN3 in western Canada. The catalog also lists CABC_1 in Vancouver. Specify CABC_6 when asking about routing or migration.",
+      "ja": "カナダ西部の Cologix VAN3。カタログにはバンクーバーの CABC_1 もあります。経路や移行の問い合わせでは CABC_6 を指定してください。"
+    },
+    "price": null,
+    "proof": "https://bandwagonhost.com/order/catalog.json"
+  },
+  {
+    "id": "bwh-ams",
+    "market": "NL",
+    "city": "Amsterdam",
+    "provider": "BandwagonHost",
+    "plan": "E-Commerce · EUNL_9",
+    "kind": "vps",
+    "ip": "unknown",
+    "route": "unknown",
+    "carriers": [],
+    "routeName": "",
+    "url": "https://bandwagonhost.com/order/ecommerce/Amsterdam/EUNL_9",
+    "lg": null,
+    "notes": {
+      "sc": "官方目录将 EUNL_9 对应到 Iron Mountain 机房。全球销售方案名包含 CN2 GIA；应向商家索取阿姆斯特丹节点自己的三网方向说明。",
+      "tc": "官方目錄將 EUNL_9 對應到 Iron Mountain 機房。全球銷售方案名含 CN2 GIA，應向商家索取阿姆斯特丹節點本身的三網方向說明。",
+      "en": "The catalog maps EUNL_9 to Iron Mountain. CN2 GIA appears in the global plan name. Ask for Amsterdam-specific carrier and direction details before purchase.",
+      "ja": "EUNL_9 は公式カタログで Iron Mountain 施設に対応。全地域共通の商品名に CN2 GIA が含まれるため、アムステルダム個別の経路は事前確認が必要です。"
+    },
+    "price": null,
+    "proof": "https://bandwagonhost.com/order/catalog.json"
+  }
+];

@@ -1,19 +1,18 @@
-# 原生 IP 图鉴 · PITOPONE
+# PITOPONE 全球主机选购图鉴
 
-简体中文的台湾、日本 VPS 方案目录。可按地区、接入方式和关键词筛选，查看公开证据，复制询价模板，并用 RIPEstat 核对公网 IPv4／IPv6 的 BGP 起源 ASN 与路由前缀。页面提供 RDAP 和地理数据库的交叉核验入口。
+简体中文默认，支持繁体中文、英语、日语。纯静态 Cloudflare Pages 项目，无构建依赖。将 index.html、atlas.css、atlas.js、locale.js、catalog.js、_headers 和 art/hero.webp 部署到站点根目录。以本地 HTTP 服务预览。生产域名为 https://ip-guide.pitopone.com/ 。
 
-## 本地使用
+## 编辑目录
 
-直接在浏览器打开 `index.html`。商家筛选和询价模板可离线使用。在线核验依赖浏览器与 RIPEstat 的连通性。
+catalog.js 的每条记录对应具体市场与产品。city、provider 与 plan 标识方案；notes 提供四种语言的证据范围与购买提示。url 为商家来源，proof 为补充证据，lg 为公开测试页。商家声明按套餐标注，实测线路需要日期、方向、运营商与可复核记录。入口 ASN、IP 登记国及地理位置不能单独证明住宅接入。IP 检查仅在主动提交后向 RIPEstat 查询单个地址，其他数据库由读者自行打开。
 
-## Cloudflare Pages
+## 优惠维护
 
-对已有 Cloudflare 账户，可以创建一个独立的 Pages 项目并上传发布包。压缩包解开后，网站根目录应同时包含 `index.html` 和 `_headers`。使用 Git 集成时选源码分支 `site/ip-atlas`，构建命令留空，输出目录填 `ip-atlas`。
+atlas.js 保存活动原文、起止时间及商家时区，locale.js 保存适用条件。只有证据覆盖的产品才可填写 deal。页面按时间显示活动状态，后续新增活动需要编辑与重新部署。网站内容核对日期为 2026-11-18。
 
-部署成功后，在项目的 **Custom domains** 内添加 `ip-guide.pitopone.com`。先检查该名称有无现有 DNS 记录，再确认该子域的记录和 HTTPS 状态。保留主站以及其他已有服务使用的记录。
+## 来源
 
-## 数据维护
-
-目录数据在 `index.html` 的 `catalog` 中维护。补充产品链接、证据链接和可公开的商家说明。旧测评保留历史标记。收到实际样本后重新核对注册、BGP 和地理定位。
-
-网页只在用户提交核验时向 RIPE NCC 请求用户输入的样本地址。外链各自处理其接收的数据。目录中的住宅线路类别引用公开声明，交付类型以地址核验和合同条件为准。
+- https://bulianglin.com/archives/tiktokvps.html
+- https://youtu.be/du1G5dG1qPQ
+- https://www.nodeseek.com/post-1062104-1
+- 详见各方案的商家与补充证据链接。海底光缆为原创概念插画。

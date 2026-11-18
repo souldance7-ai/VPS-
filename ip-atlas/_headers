@@ -1,5 +1,6 @@
 /*
   X-Content-Type-Options: nosniff
-  Referrer-Policy: no-referrer
-  Content-Security-Policy: default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://stat.ripe.net; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
-  Permissions-Policy: geolocation=(), camera=(), microphone=()
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src https://stat.ripe.net; base-uri 'none'; object-src 'none'; form-action 'none'; frame-ancestors 'none'
+  X-Pitopone-Edition: atlas-2026.11-global
