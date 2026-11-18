@@ -1,0 +1,199 @@
+{
+  "asOf": "2026-11-18",
+  "coverageNote": "Procurement evidence for the next release. A city or product listing alone supplies neither native-IP nor routing evidence. No end-user path measurements in this snapshot.",
+  "methodSources": [
+    {
+      "type": "video",
+      "url": "https://youtu.be/du1G5dG1qPQ"
+    },
+    {
+      "type": "article_and_transcript",
+      "url": "https://bulianglin.com/archives/tiktokvps.html"
+    },
+    {
+      "type": "forum_user_screenshot_partial",
+      "url": "https://www.nodeseek.com/post-1062104-1",
+      "note": "716路非 credits the same method, describes identifying countries and finding candidate providers for rarer markets, with Mexico as an example. Recheck the full post before citing additional claims."
+    }
+  ],
+  "candidates": [
+    {
+      "market": "JP",
+      "country": "JP",
+      "city": "Tokyo",
+      "provider": "BOILCLOUD",
+      "product": "KDDI / au MAP-E",
+      "compute": "vps",
+      "ipEvidence": "residential_provider_claim",
+      "routeEvidence": "unverified",
+      "source": "https://cloud.boil.network/store/japan-shared-bandwidth"
+    },
+    {
+      "market": "TW",
+      "country": "TW",
+      "city": null,
+      "provider": "TCSCloud",
+      "product": "HiNet fixed IP",
+      "compute": "vps",
+      "ipEvidence": "isp_line_provider_claim",
+      "routeEvidence": "unverified",
+      "source": "https://billing.tcscloud.net/index.php?rp=/store/taiwan-vps-fixed"
+    },
+    {
+      "market": "HK",
+      "country": "HK",
+      "city": "Hong Kong",
+      "provider": "DMIT",
+      "product": "Hong Kong network families",
+      "compute": "vps",
+      "ipEvidence": "unverified",
+      "routeEvidence": "facility_announces_cn2_gia_and_cmi__verify_sku",
+      "source": "https://www.dmit.io/pages/location/hong-kong"
+    },
+    {
+      "market": "KR",
+      "country": "KR",
+      "city": "Seoul",
+      "provider": "LightNode",
+      "product": "Seoul cloud VPS",
+      "compute": "vps",
+      "ipEvidence": "unverified",
+      "routeEvidence": "unverified",
+      "source": "https://go.lightnode.com/korea-vps"
+    },
+    {
+      "market": "VN",
+      "country": "VN",
+      "city": "Hanoi",
+      "provider": "LightNode",
+      "product": "Hanoi VPS",
+      "compute": "vps",
+      "ipEvidence": "unverified",
+      "routeEvidence": "unverified",
+      "source": "https://go.lightnode.com/hanoi-vps"
+    },
+    {
+      "market": "VN",
+      "country": "VN",
+      "city": "Ho Chi Minh City",
+      "provider": "LightNode",
+      "product": "Ho Chi Minh City VPS",
+      "compute": "vps",
+      "ipEvidence": "provider_claim_local_ip__verify_sample",
+      "routeEvidence": "unverified",
+      "source": "https://go.lightnode.com/vietnam-vps"
+    },
+    {
+      "market": "PH",
+      "country": "PH",
+      "city": "Manila",
+      "provider": "LightNode",
+      "product": "Manila VPS",
+      "compute": "vps",
+      "ipEvidence": "unverified",
+      "routeEvidence": "unverified",
+      "source": "https://go.lightnode.com/philippines-vps"
+    },
+    {
+      "market": "CA",
+      "country": "CA",
+      "city": "Beauharnois",
+      "provider": "OVHcloud",
+      "product": "Kimsufi KS-LE-1, select BHS",
+      "compute": "bare_metal",
+      "ipEvidence": "unverified",
+      "routeEvidence": "unverified",
+      "source": "https://eco.ovhcloud.com/en-ca/kimsufi/ks-le-1/"
+    },
+    {
+      "market": "US-LAX",
+      "country": "US",
+      "city": "Los Angeles",
+      "provider": "DMIT",
+      "product": "Premium Network",
+      "compute": "vps",
+      "ipEvidence": "unverified",
+      "routeEvidence": "provider_claim_cn2_gia_premium_family",
+      "source": "https://www.dmit.io/pages/location/los-angeles"
+    },
+    {
+      "market": "US-SJC",
+      "country": "US",
+      "city": "San Jose",
+      "provider": "V.PS",
+      "product": "Cloud KVM / Mini KVM Premium",
+      "compute": "vps",
+      "ipEvidence": "unverified",
+      "routeEvidence": "official_lg_available__unmeasured",
+      "source": "https://v.ps/locations/san-jose/",
+      "lookingGlass": "https://sjc-premium.lg.xtom.com/"
+    },
+    {
+      "market": "US-SEA",
+      "country": "US",
+      "city": "Seattle",
+      "provider": "RamNode",
+      "product": "KVM SSD VPS (SKVM) - SEA",
+      "compute": "vps",
+      "ipEvidence": "unverified",
+      "routeEvidence": "unverified",
+      "source": "https://clientarea.ramnode.com/store/kvm-ssd-vps-skvm-sea"
+    },
+    {
+      "market": "DE",
+      "country": "DE",
+      "city": "Falkenstein",
+      "provider": "Hetzner",
+      "product": "Cloud, fsn1",
+      "compute": "vps",
+      "ipEvidence": "unverified",
+      "routeEvidence": "unverified",
+      "source": "https://docs.hetzner.com/cloud/general/locations/"
+    },
+    {
+      "market": "DE",
+      "country": "DE",
+      "city": "Frankfurt",
+      "provider": "Leaseweb",
+      "product": "Dedicated servers in Germany",
+      "compute": "bare_metal",
+      "ipEvidence": "unverified",
+      "routeEvidence": "unverified",
+      "source": "https://www.leaseweb.com/products-services/dedicated-servers/germany"
+    },
+    {
+      "market": "NL",
+      "country": "NL",
+      "city": null,
+      "provider": "Leaseweb",
+      "product": "Dedicated servers in the Netherlands",
+      "compute": "bare_metal",
+      "ipEvidence": "unverified",
+      "routeEvidence": "unverified",
+      "source": "https://www.leaseweb.com/products-services/dedicated-servers/netherlands"
+    }
+  ],
+  "deals": [
+    {
+      "provider": "NVHCloud",
+      "source": "https://www.nvhcloud.com/en/black-friday",
+      "code": "BLACKFRIDAY26",
+      "discountPercent": 20,
+      "scope": "First monthly invoice on newly ordered Linux VPS, Windows VPS or VPN. Regular renewal, excludes dedicated servers, cannot stack.",
+      "startsOn": "2026-11-17",
+      "endsAt": "2026-11-30T23:59:00+01:00",
+      "timezone": "Europe/Paris"
+    },
+    {
+      "provider": "OVHcloud US",
+      "source": "https://us.ovhcloud.com/deals/",
+      "code": null,
+      "product": "SYS-2",
+      "discountPercent": 20,
+      "scope": "New SYS-2 base dedicated server orders via the US storefront. Up to twelve months; options excluded. Verify location at checkout.",
+      "startsAt": "2026-11-17T11:00:00-05:00",
+      "endsAt": "2026-12-01T15:00:00-05:00",
+      "timezone": "America/New_York"
+    }
+  ]
+}
