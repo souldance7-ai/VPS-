@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="筛选台湾、日本 VPS 和 ISP 线路，快速核对样本 IP 的 BGP、注册记录与地理位置。">
+<meta name="theme-color" content="#f5f2ea">
+<title>原生 IP 图鉴 · PITOPONE</title>
+<style>
+:root{color-scheme:light;--paper:#f5f2ea;--card:#fffdf7;--ink:#142d2c;--muted:#506763;--line:#d7ddd1;--green:#0a725e;--mint:#dceee0;--night:#102e2d;--cream:#f9f3d8;--pink:#f4dbe2}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--paper);font:15px/1.6 "PingFang SC","Microsoft YaHei","Noto Sans CJK SC",system-ui,sans-serif}a{color:inherit;text-underline-offset:4px}button,input,select{font:inherit}button,a,input,select,summary{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #288e78;outline-offset:3px}button:disabled{cursor:wait;opacity:.65}[hidden]{display:none!important}h1,h2,h3,p{margin:0}
+.shell{width:min(1160px,calc(100% - 72px));margin:auto}.nav{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 0}.brand{display:flex;align-items:center;gap:10px;font-weight:850;text-decoration:none;letter-spacing:.08em}.logo{display:grid;place-items:center;background:var(--ink);color:#e3f5bd;width:30px;height:30px;border-radius:8px;font-size:20px}.navlinks{display:flex;gap:24px;color:var(--muted);font-weight:650}.navlinks a{text-decoration:none}.navlinks a:hover{color:var(--green)}
+.hero{background:var(--night);color:#fdfbf0;border-radius:28px;display:grid;grid-template-columns:1.07fr .93fr;align-items:center;overflow:hidden;min-height:358px;position:relative}.intro{padding:44px 0 46px 48px;position:relative;z-index:1}.kicker{font-family:ui-monospace,monospace;font-size:12px;font-weight:720;letter-spacing:.18em;color:#b6d9a6;display:flex;align-items:center;gap:9px}.kicker:before{content:"";width:18px;height:1px;background:#b6d9a6}.hero h1{font-size:clamp(38px,5vw,65px);letter-spacing:-.05em;line-height:1.07;margin:15px 0 18px}.hero p{color:#c6dbd0;max-width:400px;line-height:1.75}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.hero .btn{border-color:#63807a;color:#fdfbf0;background:transparent}.hero .btn.primary{background:#d8f299;color:#183228;border-color:#d8f299}.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:10px 15px;display:inline-flex;align-items:center;justify-content:center;gap:9px;text-decoration:none;font-weight:770;line-height:1.4;min-height:43px}.btn:hover{filter:brightness(.95)}.btn.primary{background:var(--green);border-color:var(--green);color:white}
+.map{height:100%;min-height:315px;position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 54% 48%,#24534b 0%,transparent 64%)}.map:before{content:"";position:absolute;inset:8% 0 0;background-image:radial-gradient(#a9d1b657 1px,transparent 1px);background-size:16px 16px;mask-image:radial-gradient(ellipse,#000 25%,transparent 70%)}.globe{position:absolute;width:280px;aspect-ratio:1;left:50%;top:48%;translate:-50% -50%;border:1px solid #9acbab65;border-radius:50%;box-shadow:0 0 0 14px #8cb59b12,0 0 0 30px #8cb59b0a,inset 0 0 35px #a4d9c01c;background:repeating-linear-gradient(0deg,transparent 0 32px,#9acbab2a 33px 34px,transparent 35px 46px);overflow:hidden}.globe:before,.globe:after{content:"";position:absolute;inset:0 24%;border:1px solid #9acbab49;border-radius:50%}.globe:after{inset:0 38%}.orbit{position:absolute;width:324px;height:155px;left:50%;top:49%;border-radius:50%;border:1px dashed #c6e6ae87;transform:translate(-50%,-50%) rotate(-25deg)}.orbit:after{content:"";background:#e2fa95;position:absolute;left:calc(50% - 4px);top:-4px;width:8px;height:8px;border-radius:50%;box-shadow:0 0 16px #d4f88d;transform-origin:4px 81px;animation:signal 9s linear infinite}.spot{position:absolute;z-index:2;display:flex;align-items:center;gap:7px;font:700 12px/1 ui-monospace,monospace;letter-spacing:.025em;background:#102d2be8;border:1px solid #9bc6a784;padding:9px 11px;border-radius:30px;color:#e6f6d4}.spot:before{content:"";width:8px;height:8px;background:#d8f299;border-radius:50%;box-shadow:0 0 0 3px #d8f29926;animation:pulse 2.8s infinite}.spot.tw{top:59%;left:28%}.spot.jp{top:30%;left:60%}.spot.jp:before{background:#f5bac3;animation-delay:1.1s}.map-note{position:absolute;bottom:15px;right:20px;color:#a6c5b7;font:11px/1.5 ui-monospace,monospace}
+@keyframes signal{to{transform:rotate(360deg)}}@keyframes pulse{50%{box-shadow:0 0 0 7px #d8f29902}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important}}
+section{scroll-margin-top:18px;margin-top:42px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:15px}.section-head h2{font-size:clamp(25px,3.2vw,36px);line-height:1.18;letter-spacing:-.035em}.section-head p{margin-top:5px;color:var(--muted)}.count{color:var(--green);font-family:ui-monospace,monospace;font-weight:810;white-space:nowrap}
+.filters{display:grid;grid-template-columns:auto minmax(135px,1fr) minmax(180px,1.35fr);gap:10px;margin-bottom:16px}.regions{display:flex;gap:4px;align-items:center;background:#e8ece0;border:1px solid var(--line);border-radius:11px;padding:4px}.regions button{border:0;border-radius:8px;padding:7px 12px;color:var(--muted);background:transparent;white-space:nowrap;font-weight:700;min-height:38px}.regions button[aria-pressed="true"]{background:var(--ink);color:#eff5e8}input,select{width:100%;min-width:0;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:46px;padding:9px 13px}input::placeholder{color:#5d716b}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 17px;display:flex;flex-direction:column;gap:9px;min-width:0}.card:hover{border-color:#82ab98}.card h3{font-size:19px;line-height:1.28;letter-spacing:-.02em}.card .desc,.card .ask{font-size:13px;color:var(--muted)}.card .ask{margin-bottom:3px}.chips{display:flex;flex-wrap:wrap;gap:5px}.chip{border-radius:30px;padding:3px 8px;font-size:11px;line-height:1.45;font-weight:750;background:var(--mint);color:#205746}.chip.jp{background:var(--pink);color:#6b354a}.chip.kind{background:#efeee3;color:#485e53}.chip.history{background:#f5ead3;color:#664619}.card-links{display:flex;flex-wrap:wrap;gap:12px;margin-top:auto;padding-top:4px;border-top:1px solid #e8eae0}.card a,.card button{font-size:13px;color:var(--green);font-weight:780}.card button{background:none;border:0;padding:0;text-decoration:underline;text-underline-offset:4px}.empty{border:1px dashed #a7bbb0;border-radius:14px;color:var(--muted);padding:22px;text-align:center}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:20px}.lookup-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px}.lookup-form label{grid-column:1/-1;font-weight:760}.hint,.status,.copy-status{font-size:13px;color:var(--muted);margin-top:8px}.status.error{color:#a23d31}.result{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 12px}.result div{background:#eff3e8;padding:10px 12px;border-radius:9px;overflow-wrap:anywhere}.result dt{color:var(--muted);font-size:12px}.result dd{margin:0;font-weight:760;font-family:ui-monospace,monospace}.result-links{display:flex;flex-wrap:wrap;gap:9px 17px;color:var(--green);font-weight:730;margin:10px 0 0}.checkgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:12px}.checkgrid p{color:var(--muted);font-size:14px;margin-top:5px}.checkgrid h3{font-size:17px}.checkgrid .panel{padding:15px}.checkgrid .panel:nth-child(2){background:#e5efe2}.checkgrid .panel:nth-child(3){background:#f7eee6}.details{border-top:1px solid var(--line);padding:12px 0}.details summary{font-weight:780;cursor:pointer}.details p{color:var(--muted);margin-top:6px}.details a{color:var(--green)}.source-list{padding-left:20px;color:var(--muted)}.source-list li+li{margin-top:6px}.source-list a{color:var(--green)}.footer{border-top:1px solid var(--line);display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between;margin-top:38px;padding:20px 0;color:var(--muted);font-size:13px}.footerlinks{display:flex;flex-wrap:wrap;gap:13px}
+@media(max-width:850px){.shell{width:calc(100% - 42px)}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.intro{padding-left:30px}.map{scale:.92}.navlinks{gap:13px}}
+@media(max-width:590px){.shell{width:calc(100% - 28px)}.nav{padding:14px 0;gap:8px}.navlinks{font-size:12px;gap:9px}.brand{font-size:12px}.logo{width:25px;height:25px}.hero{grid-template-columns:1fr;border-radius:18px}.intro{padding:24px 19px 0}.map{height:205px;min-height:0;scale:1}.globe{width:164px}.orbit{width:205px;height:100px}.orbit:after{transform-origin:4px 53px}.map-note{bottom:8px;right:12px}.spot.tw{left:22%}.spot.jp{left:57%;top:27%}.filters{grid-template-columns:1fr 1fr}.regions{grid-column:1/-1}.regions button{flex:1}.cards,.checkgrid{grid-template-columns:1fr}.section-head{gap:8px}.count{font-size:13px}section{margin-top:30px}.panel{padding:14px}.result{gap:6px}}
+</style>
+</head>
+<body id="top">
+<div class="shell">
+<header class="nav">
+<a href="#top" class="brand"><span class="logo" aria-hidden="true">✳</span>PITOPONE</a>
+<nav class="navlinks" aria-label="主导航"><a href="#catalog">商家目录</a><a href="#lookup">IP 核验</a><a href="#methods">核验指南</a></nav>
+</header>
+<main>
+<div class="hero">
+<div class="intro">
+<div class="kicker">台湾 / 日本 · VPS 与 ISP</div>
+<h1>原生 IP 图鉴</h1>
+<p>按地区、运营商和接入方式查找 VPS。拿到样本 IP 后，即可对照路由、登记与地理位置。</p>
+<div class="actions"><a href="#catalog" class="btn primary">查找商家 <span aria-hidden="true">↓</span></a><a href="#lookup" class="btn">核验样本 IP</a></div>
+</div>
+<div class="map" aria-hidden="true"><div class="globe"></div><div class="orbit"></div><div class="spot tw">TW · 台湾</div><div class="spot jp">JP · 日本</div><div class="map-note">地区示意</div></div>
+</div>
+<section id="catalog" aria-labelledby="catalog-title">
+<div class="section-head"><div><h2 id="catalog-title">商家目录</h2><p>按线路和公开证据筛选。交付地址、库存和端口以当期方案为准。</p></div><output class="count" id="count" aria-live="polite"></output></div>
+<div class="filters">
+<div class="regions" aria-label="筛选地区"><button type="button" data-region="all" aria-pressed="true">全部</button><button type="button" data-region="TW" aria-pressed="false">台湾</button><button type="button" data-region="JP" aria-pressed="false">日本</button></div>
+<select id="kind" aria-label="筛选接入方式"><option value="all">全部接入方式</option><option value="isp">ISP 线路</option><option value="residential">住宅线路声明</option><option value="idc">本地机房</option><option value="history">历史测评</option></select>
+<input id="query" type="search" placeholder="搜索 HiNet、SoftBank、NAT…" aria-label="搜索商家、线路或接入方式">
+</div>
+<div id="cards" class="cards"></div>
+<p id="empty" class="empty" hidden>没有符合条件的方案。可以换运营商名称，或放宽接入方式。</p>
+<noscript><p class="empty">请启用 JavaScript 以筛选商家和核验 BGP。下方的核验指南和来源仍可使用。</p></noscript>
+</section>
+<section id="lookup" aria-labelledby="lookup-title">
+<div class="section-head"><div><h2 id="lookup-title">核验样本 IP</h2><p>支持公网 IPv4 和 IPv6，可查看起源 ASN、路由前缀和多个交叉核验入口。</p></div></div>
+<div class="panel">
+<form class="lookup-form" id="lookup-form">
+<label for="sample">商家样本 IP 或已交付的出口 IP</label>
+<input id="sample" type="text" inputmode="text" spellcheck="false" autocomplete="off" placeholder="例如 1.1.1.1 或 2606:4700:4700::1111" required maxlength="45">
+<button class="btn primary" id="lookup-button" type="submit">开始核验 <span aria-hidden="true">↗</span></button>
+</form>
+<p class="hint">提交时将样本地址发给 RIPE NCC。下方外链会把地址带给对应服务。</p>
+<p class="status" id="lookup-status" role="status" hidden></p>
+<dl id="result" class="result" hidden><div><dt>起源 ASN</dt><dd id="result-asn">—</dd></div><div><dt>最匹配路由前缀</dt><dd id="result-prefix">—</dd></div></dl>
+<div id="result-links" class="result-links" hidden></div>
+</div>
+</section>
+<section id="methods" aria-labelledby="methods-title">
+<div class="section-head"><div><h2 id="methods-title">购买前怎么判断</h2><p>用商家提供的可公开测试样本，按下面三步快速验收。</p></div></div>
+<div class="checkgrid">
+<div class="panel"><h3>01　查当地地理</h3><p>对照两家地理库，看国家或地区是否一致。地址分配、实际机房和服务识别结果可以不同。</p></div>
+<div class="panel"><h3>02　查接入性质</h3><p>交叉对照 BGP 起源 ASN、RDAP 登记机构和商家产品页。住宅接入、企业宽带和本地机房要分别确认。</p></div>
+<div class="panel"><h3>03　验收真实出口</h3><p>从交付服务测试实际 IPv4／IPv6，核对独享或共享、NAT／MAP-E、入站端口及换 IP 规则。</p></div>
+</div>
+<div class="panel">
+<button class="btn" id="copy-general" type="button">复制询价模板 <span aria-hidden="true">↗</span></button><p class="copy-status" id="copy-status" role="status" hidden></p>
+<details class="details"><summary>所谓“原生”“双 ISP”“纯净”怎么看？</summary><p>“原生”在商家页面的含义不统一，先问实际出口及地理库，再查登记与路由。看到两个运营商名称时，分别确认注册分配方、BGP 起源与上游是谁。欺诈分数、住宅标签与业务可用性各有不同口径，按自己的业务实测。</p></details>
+<details class="details"><summary>台湾与日本怎样缩小范围？</summary><p>台湾按 HiNet／Seednet／TFN 与固定、动态、NAT 划分。日本按本地 IDC 和 KDDI／SoftBank 等住宅线路声明划分。跨境速度要按实际入口、出口和使用时段另测。</p></details>
+<details class="details"><summary>来源与收录规则</summary>
+<ul class="source-list">
+<li><a href="https://bulianglin.com/archives/tiktokvps.html" target="_blank" rel="noopener noreferrer">不良林图文</a>及<a href="https://bulianglin.com/g/aHR0cHM6Ly95b3V0dS5iZS9kdTFHNWRHMXFQUQ" target="_blank" rel="noopener noreferrer">配套视频</a>。提取地区、运营商、商家产品与 IP 交叉核验的查找思路。</li>
+<li><a href="https://www.nodeseek.com/post-1062104-1" target="_blank" rel="noopener noreferrer">NodeSeek 指定原帖</a>。正文待核，保留原文入口。</li>
+<li><a href="https://stat.ripe.net/docs/data-api/api-endpoints/network-info" target="_blank" rel="noopener noreferrer">RIPEstat</a>、<a href="https://about.rdap.org/" target="_blank" rel="noopener noreferrer">RDAP</a>、<a href="https://ipinfo.io/developers/core-api" target="_blank" rel="noopener noreferrer">IPinfo</a>。分别用于路由、注册及地理／网络属性核对。</li>
+<li>商家证据来自各卡片链接，页面分类按公开描述整理。历史测评仅作线索。资料整理日期 2026-11-18。</li>
+</ul></details>
+</div>
+</section>
+</main>
+<footer class="footer"><span>PITOPONE · 原生 IP 图鉴</span><div class="footerlinks"><a href="https://pitopone.com/" target="_blank" rel="noopener noreferrer">主站</a><a href="https://github.com/souldance7-ai/VPS-/tree/site/ip-atlas/ip-atlas" target="_blank" rel="noopener noreferrer">网页源码</a><a href="https://github.com/souldance7-ai/vps-speedtest" target="_blank" rel="noopener noreferrer">线路测速工具</a></div></footer>
+</div>
+<script>
+"use strict";
+const catalog = [
+  {region:"TW",type:"isp",name:"TCSCloud · HiNet 固定",line:"中華電信 HiNet · 固定 IPv4",note:"商家固定 IP 方案列 HiNet 共享带宽。",ask:"确认公网 IPv4 是否独享及入站政策。",url:"https://billing.tcscloud.net/index.php?rp=%2Fstore%2Ftaiwan-vps-fixed"},
+  {region:"TW",type:"isp",name:"TCSCloud · Seednet 动态",line:"Seednet · 动态方案",note:"商家在台湾动态产品页列有 Seednet 方案。",ask:"确认 IP 变化条件、赠送 IPv6 与端口政策。",url:"https://billing.tcscloud.net/index.php?rp=%2Fstore%2Ftaiwan-vps-dynamic"},
+  {region:"TW",type:"residential",name:"PQS · 彰化 HiNet",line:"中華電信 HiNet · 动态宽带",note:"商家公告把彰化 HiNet 列入住宅线路 VPS。",ask:"索取当前批次样本，确认 PPPoE、入站和 IP 更换。",url:"https://www.pqs.pw/",evidence:"https://t.me/s/pqsnews?q=%23%E4%B8%8D%E9%99%90%E6%B5%81%E9%87%8Fvps"},
+  {region:"TW",type:"isp",name:"AkileCloud · TWHinet",line:"HiNet · 动态 IPv4 · NAT",note:"TWHinet-Mini-NAT 产品页列 HiNet 动态地址和共享端口带宽。",ask:"确认共享出口、映射端口数及 IPv6 配置。",url:"https://akile.ai/shop/server?areaId=6&nodeId=31&planId=980&type=traffic"},
+  {region:"TW",type:"history",name:"ReCloud · TFN",line:"TFN 台灣大寬頻 · 历史线索",note:"第三方历史测评记录了 TFN 静态企业宽带。现售方案待核。",ask:"先确认是否仍售、当前上游以及交付样本。",url:"https://vps.dance/recloud-tfn.html"},
+  {region:"JP",type:"residential",name:"BOILCLOUD · KDDI / au",line:"KDDI · 东京练马 · MAP-E",note:"商家在日本住宅产品页列静态 KDDI/au 与 MAP-E。",ask:"确认公网 IPv4 是否共享、入站端口范围与西向回程。",url:"https://cloud.boil.network/store/japan-shared-bandwidth"},
+  {region:"JP",type:"residential",name:"BOILCLOUD · SoftBank",line:"SoftBank · 东京 / 埼玉",note:"商家在日本住宅产品页列 SoftBank 方案，部分支持更换 NTT 等 ISP。",ask:"确认当前 SKU 的运营商、静态或动态、入口与最终出口。",url:"https://cloud.boil.network/store/japan-shared-bandwidth"},
+  {region:"JP",type:"idc",name:"さくらの VPS",line:"Sakura Internet · 日本 IDC",note:"日本本地 VPS，可作为机房地址对照。",ask:"确认部署区域、IP 样本及跨境晚高峰线路。",url:"https://vps.sakura.ad.jp/specification/"},
+  {region:"JP",type:"idc",name:"ConoHa VPS",line:"GMO · 日本 IDC",note:"日本本地云主机产品，适合对照机房型公网地址。",ask:"确认所选区域、IP 持有方式及所需 IPv6 支持。",url:"https://vps.conoha.jp/"},
+  {region:"JP",type:"idc",name:"XServer VPS",line:"XServer · 日本 IDC",note:"日本 VPS 产品，可向商家索取对应方案的样本。",ask:"确认开户要求、机房区域和可测前缀。",url:"https://vps.xserver.ne.jp/"}
+];
+const regions = {TW:"台湾",JP:"日本"};
+const labels = {isp:"ISP 线路",residential:"住宅线路声明",idc:"本地机房",history:"历史测评"};
+const normalizeSearch = (value) => value.normalize("NFKC").toLowerCase()
+  .replaceAll("臺灣","台湾").replaceAll("台灣","台湾").replaceAll("日本原生","日本 原生")
+  .replaceAll("台湾原生","台湾 原生").replaceAll("中華電信","中华电信").replaceAll("家宽","住宅");
+const byId = (id) => document.getElementById(id);
+const make = (tag, value, className) => {
+  const element = document.createElement(tag);
+  if (value) element.textContent = value;
+  if (className) element.className = className;
+  return element;
+};
+function link(label, url) {
+  const anchor = make("a", label);
+  anchor.href = url;
+  anchor.target = "_blank";
+  anchor.rel = "noopener noreferrer";
+  return anchor;
+}
+const regionButtons = [...document.querySelectorAll("[data-region]")];
+let selectedRegion = "all";
+function render() {
+  const tokens = normalizeSearch(byId("query").value).trim().split(/\s+/).filter(Boolean);
+  const kind = byId("kind").value;
+  const entries = catalog.filter((item) => {
+    const content = normalizeSearch([item.name,item.line,item.note,item.ask,item.region,regions[item.region],
+      labels[item.type],item.type === "history" ? "" : "原生 IP 候选"].join(" "));
+    return (selectedRegion === "all" || selectedRegion === item.region)
+      && (kind === "all" || kind === item.type)
+      && tokens.every((term) => content.includes(term));
+  });
+  byId("count").textContent = entries.length + " 个方案";
+  byId("empty").hidden = entries.length > 0;
+  byId("cards").replaceChildren(...entries.map((item) => {
+    const article = make("article", "", "card");
+    const tags = make("div", "", "chips");
+    tags.append(make("span",regions[item.region],"chip "+item.region.toLowerCase()),make("span",labels[item.type],"chip kind "+item.type));
+    const actions = make("div", "", "card-links");
+    const inquiry = make("button", "复制询价");
+    inquiry.type = "button";
+    inquiry.setAttribute("aria-label","复制 "+item.name+" 的询价");
+    inquiry.addEventListener("click", () => copyInquiry(item, inquiry));
+    actions.append(link(item.type === "history" ? "历史测评 ↗" : "商家页面 ↗",item.url));
+    if (item.evidence) actions.append(link("商家公告 ↗",item.evidence));
+    actions.append(inquiry);
+    article.append(tags, make("h3",item.name),make("p",item.line,"desc"),make("p",item.note),make("p",item.ask,"ask"),actions);
+    return article;
+  }));
+}
+function inquiryText(item) {
+  const subject = item ? item.name+"（"+item.line+"）" : "台湾或日本 VPS";
+  return "你好，我想了解 "+subject+"。请提供同批次可公开测试的 IPv4／IPv6、机房区域、起源 ASN 和实际出口运营商。请说明：\n"
+    +"1. 线路属于住宅宽带、企业宽带还是机房？\n"
+    +"2. IPv4 固定还是动态，独享还是共享？是否使用 NAT／CGNAT／MAP-E，入站端口怎样分配？\n"
+    +"3. IPv6 是独立公网地址还是共享转发？IP 更换、测试及退款条件是什么？";
+}
+async function copyInquiry(item, button) {
+  const text = inquiryText(item);
+  const status = byId("copy-status");
+  const original = button.id === "copy-general" ? "复制询价模板" : "复制询价";
+  let copied = false;
+  try {
+    await navigator.clipboard.writeText(text);
+    copied = true;
+  } catch {
+    const field = make("textarea");
+    field.value = text;
+    field.style.position = "fixed";
+    field.style.opacity = "0";
+    document.body.append(field);
+    field.select();
+    try { copied = document.execCommand("copy"); } catch { copied = false; }
+    field.remove();
+    button.focus();
+  }
+  if (!copied) {
+    window.prompt("请手动复制询价内容",text);
+    return;
+  }
+  button.textContent = "已复制 ✓";
+  status.textContent = "已复制询价模板。";
+  status.hidden = false;
+  window.setTimeout(() => { button.textContent = original; }, 1600);
+}
+function publicIP(input) {
+  if (/^(?:0|[1-9]\d{0,2})(?:\.(?:0|[1-9]\d{0,2})){3}$/.test(input)) {
+    const [a,b,c,d] = input.split(".").map(Number);
+    if ([a,b,c,d].some((part) => part > 255)) return "";
+    if (a === 0 || a === 10 || a === 127 || a >= 224 || (a === 100 && b >= 64 && b <= 127)
+      || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31)
+      || (a === 192 && (b === 168 || (b === 0 && (c === 0 || c === 2))))
+      || (a === 198 && (b === 18 || b === 19 || (b === 51 && c === 100)))
+      || (a === 203 && b === 0 && c === 113)) return "";
+    return input;
+  }
+  if (!/^[\da-f:.]+$/i.test(input) || !input.includes(":")) return "";
+  try {
+    const canonical = new URL("https://["+input+"]").hostname.slice(1,-1);
+    if (!/^[23][\da-f]{3}:/i.test(canonical) || /^2001:db8:|^3fff:/i.test(canonical)) return "";
+    return canonical;
+  } catch { return ""; }
+}
+function showStatus(message, error) {
+  const status = byId("lookup-status");
+  status.textContent = message;
+  status.classList.toggle("error",Boolean(error));
+  status.hidden = false;
+}
+async function lookup(event) {
+  event.preventDefault();
+  const ip = publicIP(byId("sample").value.trim());
+  const results = byId("result");
+  const links = byId("result-links");
+  results.hidden = true;
+  links.hidden = true;
+  if (!ip) {
+    showStatus("请输入有效的公网 IPv4 或 IPv6。",true);
+    byId("sample").focus();
+    return;
+  }
+  const resource = encodeURIComponent(ip);
+  links.replaceChildren(
+    link("RIPEstat 路由 ↗","https://stat.ripe.net/data/network-info/data.json?resource="+resource),
+    link("RDAP 登记 ↗","https://rdap.org/ip/"+resource),
+    link("IPinfo 地理与 ASN ↗","https://ipinfo.io/"+resource),
+    link("MaxMind 地理对照 ↗","https://www.maxmind.com/en/geoip-demo"),
+    link("Scamalytics 风险参考 ↗","https://scamalytics.com/ip/"+resource)
+  );
+  links.hidden = false;
+  const button = byId("lookup-button");
+  button.disabled = true;
+  showStatus("正在查询 "+ip+" 的路由记录…");
+  const timeout = new AbortController();
+  const timer = window.setTimeout(() => timeout.abort(),7000);
+  try {
+    const response = await fetch("https://stat.ripe.net/data/network-info/data.json?resource="+resource,
+      {signal:timeout.signal,referrerPolicy:"no-referrer"});
+    if (!response.ok) throw new Error("HTTP "+response.status);
+    const payload = await response.json();
+    if (payload.status !== "ok" || !payload.data) throw new Error("Missing routing data");
+    const {asns,prefix} = payload.data;
+    if (!prefix && !asns?.length) {
+      showStatus("公开路由采集暂未返回此 IP 的前缀或 ASN。可继续查看登记与地理记录。");
+      return;
+    }
+    byId("result-asn").textContent = asns?.length ? asns.map((asn) => "AS"+asn).join(" / ") : "未返回";
+    byId("result-prefix").textContent = prefix || "未返回";
+    results.hidden = false;
+    showStatus("已返回 "+ip+" 的 BGP 路由记录。可继续核对登记和地理位置。");
+  } catch {
+    showStatus("在线查询暂不可用。可使用下方链接继续核验。",true);
+  } finally {
+    window.clearTimeout(timer);
+    button.disabled = false;
+  }
+}
+regionButtons.forEach((button) => {
+  button.addEventListener("click",() => {
+    selectedRegion = button.dataset.region;
+    regionButtons.forEach((option) => option.setAttribute("aria-pressed",String(option === button)));
+    render();
+  });
+});
+byId("kind").addEventListener("change",render);
+byId("query").addEventListener("input",render);
+byId("lookup-form").addEventListener("submit",lookup);
+byId("copy-general").addEventListener("click",(event) => copyInquiry(null,event.currentTarget));
+render();
+</script>
+</body>
+</html>

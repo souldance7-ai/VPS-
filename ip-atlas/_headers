@@ -1,0 +1,5 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Content-Security-Policy: default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://stat.ripe.net; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
+  Permissions-Policy: geolocation=(), camera=(), microphone=()
