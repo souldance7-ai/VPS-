@@ -14,10 +14,10 @@ const PLANS = [
     "url": "https://billing.tcscloud.net/index.php?rp=%2Fstore%2Ftaiwan-vps-fixed",
     "lg": null,
     "notes": {
-      "sc": "中华电信 HiNet 固定 IPv4，500 Mbps 为共享端口。需要固定出口时，可先向商家核对交付网段。 核对时无货。",
-      "tc": "中華電信 HiNet 固定 IPv4，500 Mbps 為共享埠。需要固定出口時，可先向商家核對交付網段。 核對時無貨。",
-      "en": "Fixed HiNet IPv4 on a shared 500 Mbps port. Ask which prefix will be assigned if a stable exit address matters. Out of stock at review.",
-      "ja": "HiNet の固定 IPv4 と共有 500 Mbps ポート。固定の出口が必要なら、割り当て予定のプレフィックスを確認してください。 確認時は在庫切れ。"
+      "sc": "中华电信 HiNet 固定 IPv4，500 Mbps 为共享端口。需要固定出口时，可先向商家核对交付网段。",
+      "tc": "中華電信 HiNet 固定 IPv4，500 Mbps 為共享埠。需要固定出口時，可先向商家核對交付網段。",
+      "en": "Fixed HiNet IPv4 on a shared 500 Mbps port. Ask which prefix will be assigned if a stable exit address matters.",
+      "ja": "HiNet の固定 IPv4 と共有 500 Mbps ポート。固定の出口が必要なら、割り当て予定のプレフィックスを確認してください。"
     },
     "price": "USD 49.99 / mo",
     "proof": null
@@ -36,10 +36,10 @@ const PLANS = [
     "url": "https://billing.tcscloud.net/index.php?rp=%2Fstore%2Ftaiwan-vps-dynamic",
     "lg": null,
     "notes": {
-      "sc": "同为 HiNet，这款分配动态 IPv4；共享 500 Mbps。依赖 IP 白名单的应用应先确认换址条件。 核对时无货。",
-      "tc": "同為 HiNet，這款分配動態 IPv4，共享 500 Mbps。依賴 IP 白名單的應用應先確認換址條件。 核對時無貨。",
-      "en": "Dynamic HiNet IPv4 and a shared 500 Mbps port. Check how addresses change before relying on an IP allowlist. Out of stock at review.",
-      "ja": "HiNet の動的 IPv4 と共有 500 Mbps ポート。IP 許可リストを使う場合はアドレスの変更条件を確認してください。 確認時は在庫切れ。"
+      "sc": "同为 HiNet，这款分配动态 IPv4；共享 500 Mbps。依赖 IP 白名单的应用应先确认换址条件。",
+      "tc": "同為 HiNet，這款分配動態 IPv4，共享 500 Mbps。依賴 IP 白名單的應用應先確認換址條件。",
+      "en": "Dynamic HiNet IPv4 and a shared 500 Mbps port. Check how addresses change before relying on an IP allowlist.",
+      "ja": "HiNet の動的 IPv4 と共有 500 Mbps ポート。IP 許可リストを使う場合はアドレスの変更条件を確認してください。"
     },
     "price": "USD 21.99 / mo",
     "proof": null
@@ -58,10 +58,10 @@ const PLANS = [
     "url": "https://billing.tcscloud.net/index.php?rp=%2Fstore%2Ftaiwan-vps-dynamic",
     "lg": null,
     "notes": {
-      "sc": "Seednet 动态 IPv4，300 Mbps 共享端口。要比较台湾两家接入商，可与该商家的 HiNet 动态款对照。 核对时无货。",
-      "tc": "Seednet 動態 IPv4，300 Mbps 共享埠。要比較台灣兩家接取商，可與該商家的 HiNet 動態款對照。 核對時無貨。",
-      "en": "Dynamic Seednet IPv4 on a shared 300 Mbps port. Compare with the HiNet dynamic plan when choosing a Taiwanese access network. Out of stock at review.",
-      "ja": "Seednet の動的 IPv4 と共有 300 Mbps ポート。同社の HiNet 動的プランとは台湾側のアクセス回線が異なります。 確認時は在庫切れ。"
+      "sc": "Seednet 动态 IPv4，300 Mbps 共享端口。要比较台湾两家接入商，可与该商家的 HiNet 动态款对照。",
+      "tc": "Seednet 動態 IPv4，300 Mbps 共享埠。要比較台灣兩家接取商，可與該商家的 HiNet 動態款對照。",
+      "en": "Dynamic Seednet IPv4 on a shared 300 Mbps port. Compare with the HiNet dynamic plan when choosing a Taiwanese access network.",
+      "ja": "Seednet の動的 IPv4 と共有 300 Mbps ポート。同社の HiNet 動的プランとは台湾側のアクセス回線が異なります。"
     },
     "price": "USD 19.99 / mo",
     "proof": null
@@ -124,10 +124,10 @@ const PLANS = [
     "url": "https://cloud.boil.network/store/japan-shared-bandwidth",
     "lg": null,
     "notes": {
-      "sc": "东京练马 KDDI / au 家宽方案，IPv4 通过 MAP-E 分配端口。需要开放特定端口时，应先确认可用范围。 核对时无货。",
-      "tc": "東京練馬 KDDI / au 家寬方案，IPv4 透過 MAP-E 分配連接埠。需要開放特定埠時，應先確認可用範圍。 核對時無貨。",
-      "en": "The Nerima residential plan uses KDDI / au. MAP-E restricts available IPv4 ports. Check the assigned range before hosting services. Out of stock at review.",
-      "ja": "東京・練馬の KDDI／au 家庭向け回線。MAP-E では IPv4 で利用できるポートが限られるため、必要なポートの割り当てを確認してください。 確認時は在庫切れ。"
+      "sc": "东京练马 KDDI / au 家宽方案，IPv4 通过 MAP-E 分配端口。需要开放特定端口时，应先确认可用范围。",
+      "tc": "東京練馬 KDDI / au 家寬方案，IPv4 透過 MAP-E 分配連接埠。需要開放特定埠時，應先確認可用範圍。",
+      "en": "The Nerima residential plan uses KDDI / au. MAP-E restricts available IPv4 ports. Check the assigned range before hosting services.",
+      "ja": "東京・練馬の KDDI／au 家庭向け回線。MAP-E では IPv4 で利用できるポートが限られるため、必要なポートの割り当てを確認してください。"
     },
     "price": "USD 138 / mo",
     "proof": null
@@ -146,10 +146,10 @@ const PLANS = [
     "url": "https://cloud.boil.network/store/japan-shared-bandwidth",
     "lg": null,
     "notes": {
-      "sc": "东京练马动态家宽，签约速率 100/40 Mbps，可申请更换 ISP。指定 SoftBank 时应确认交付条件。 核对时无货。",
-      "tc": "東京練馬動態家寬，簽約速率 100/40 Mbps，可申請更換 ISP。指定 SoftBank 時應確認交付條件。 核對時無貨。",
-      "en": "Dynamic residential access in Nerima with a 100/40 Mbps contract. The provider lists changeable ISPs. Check delivery terms if you require SoftBank. Out of stock at review.",
-      "ja": "東京・練馬の動的な家庭向け回線。契約帯域は 100/40 Mbps で ISP の変更に対応。SoftBank 指定なら提供条件を確認してください。 確認時は在庫切れ。"
+      "sc": "东京练马动态家宽，签约速率 100/40 Mbps，可申请更换 ISP。指定 SoftBank 时应确认交付条件。",
+      "tc": "東京練馬動態家寬，簽約速率 100/40 Mbps，可申請更換 ISP。指定 SoftBank 時應確認交付條件。",
+      "en": "Dynamic residential access in Nerima with a 100/40 Mbps contract. The provider lists changeable ISPs. Check delivery terms if you require SoftBank.",
+      "ja": "東京・練馬の動的な家庭向け回線。契約帯域は 100/40 Mbps で ISP の変更に対応。SoftBank 指定なら提供条件を確認してください。"
     },
     "price": "USD 99 / mo",
     "proof": null
@@ -555,10 +555,10 @@ const PLANS = [
     "url": "https://www.oneprovide.net/store/tfn",
     "lg": null,
     "notes": {
-      "sc": "TFN 静态企业宽带。商家注明原生 IPv4、三网优化；未给去回程路径。核对时无货，月租另收一次性 CNY 10 设置费。",
-      "tc": "TFN 靜態企業寬頻。商家註明原生 IPv4、三網優化，未列去回程路徑。核對時無貨，月租另收一次性 CNY 10 設定費。",
-      "en": "Static TFN business broadband. The seller calls the IPv4 native and advertises three-carrier optimization without directional details. Out of stock at review, with a CNY 10 setup fee.",
-      "ja": "TFN の固定法人回線。販売元はネイティブ IPv4 と中国 3 社向け最適化を掲げていますが、往復別の経路は未記載です。確認時は在庫切れ、初期費用は CNY 10。"
+      "sc": "TFN 静态企业宽带。商家注明原生 IPv4、三网优化；未给去回程路径。月租另收一次性 CNY 10 设置费。",
+      "tc": "TFN 靜態企業寬頻。商家註明原生 IPv4、三網優化，未列去回程路徑。月租另收一次性 CNY 10 設定費。",
+      "en": "Static TFN business broadband. The seller calls the IPv4 native and advertises three-carrier optimization without directional details. One-time setup fee: CNY 10.",
+      "ja": "TFN の固定法人回線。販売元はネイティブ IPv4 と中国 3 社向け最適化を掲げていますが、往復別の経路は未記載です。初期費用は CNY 10。"
     },
     "price": "CNY 70 / mo",
     "proof": null

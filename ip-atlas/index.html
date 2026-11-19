@@ -4,8 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b1723"><meta name="description" content="全球 VPS、住宅线路与物理服务器的选址图鉴。按城市、线路证据、运营商与优惠筛选，对照样本 IP。">
 <title>PITOPONE · 全球网络选址图鉴</title>
-<link rel="stylesheet" href="atlas.css"><link rel="stylesheet" href="edition.css"><link rel="stylesheet" href="comic.css"><link rel="preload" href="art/wall-1.webp" as="image">
-<script defer src="locale.js"></script><script defer src="catalog.js"></script><script defer src="edition-data.js"></script><script defer src="edition.js"></script><script defer src="comic.js"></script><script defer src="atlas.js"></script>
+<link rel="stylesheet" href="atlas.css"><link rel="stylesheet" href="edition.css"><link rel="stylesheet" href="comic.css"><link rel="stylesheet" href="buying.css"><link rel="preload" href="art/wall-1.webp" as="image">
+<script defer src="locale.js"></script><script defer src="catalog.js"></script><script defer src="edition-data.js"></script><script defer src="commercial-data.js"></script><script defer src="edition.js"></script><script defer src="comic.js"></script><script defer src="buying.js"></script><script defer src="stock.js"></script><script defer src="stock-list.js"></script><script defer src="atlas.js"></script>
 </head>
 <body>
 <header class="mast"><div class="bound mast-inner">
@@ -16,7 +16,7 @@
 <section id="home" data-view="top" class="comic-home"><div class="bound"><div class="book-head"><div><p class="series">PITOPONE <span>×</span> YUKI</p><h1 id="hero-title" data-t="comicTitle">长城外有信号！</h1></div><p class="story-intro" data-t="comicIntro"></p></div><div class="comic-deck" id="comic-deck" data-shot="1"><button type="button" class="comic-frame frame-1" data-frame="1" aria-expanded="true"><span class="frame-art"></span><span class="frame-num" aria-hidden="true">01</span><span class="frame-label" data-t="chapter1"></span><span class="speech" data-t="bubble1"></span></button><button type="button" class="comic-frame frame-2" data-frame="2" aria-expanded="false"><span class="frame-art"></span><span class="frame-num" aria-hidden="true">02</span><span class="frame-label" data-t="chapter2"></span><span class="speech" data-t="bubble2"></span></button><button type="button" class="comic-frame frame-3" data-frame="3" aria-expanded="false"><span class="frame-art"></span><span class="frame-num" aria-hidden="true">03</span><span class="frame-label" data-t="chapter3"></span><span class="speech" data-t="bubble3"></span></button></div><div class="book-foot"><img class="jump-loop" src="art/yuki-still.webp" width="105" height="54" alt=""><span id="story-status" aria-live="polite"></span><div class="play-controls"><button type="button" id="scene-prev">←</button><button type="button" id="motion">Ⅱ</button><button type="button" id="scene-next">→</button></div><a class="go entry" href="#directory"><span data-t="enterBook"></span> ↗</a></div><div id="coverage-numbers" class="stats"></div></div></section>
 <div class="bound">
 <section id="directory" data-view="directory" class="block"><div class="comic-ribbon"><img class="jump-loop" src="art/yuki-still.webp" width="112" height="68" alt=""><div><p class="series">PITOPONE / YUKI</p><strong data-t="comicTitle"></strong></div><a href="#top" data-t="homeComic"></a></div>
-<div class="section-head"><h2 data-t="browse"></h2><div class="folio">PITOPONE <span>／</span> <time datetime="2026-11-18">2026.11.18</time></div></div>
+<div class="section-head"><h2 data-t="browse"></h2><div class="folio">PITOPONE <span>／</span> <time datetime="2026-11-20">2026.11.20</time></div></div>
 <div id="scope-banner"><span id="scope-title"></span><div class="continents" id="zones" role="group" aria-label="地区"></div></div>
 <button class="filter-toggle" type="button" id="filter-toggle" aria-controls="filter-fold" aria-expanded="true"><span data-t="filters"></span><b aria-hidden="true">⇄</b></button><div class="index-layout" id="catalog-layout"><aside class="index-side" id="filter-fold"><div class="filter-clip"><div class="filter-interior"><form class="filters" id="filters" role="search">
 <label class="search-field"><span data-t="search"></span><input type="search" id="search" autocomplete="off"></label>
@@ -25,7 +25,7 @@
 <label><span data-t="ip"></span><select id="ip"></select></label>
 <label><span data-t="route"></span><select id="route"></select></label>
 <label><span data-t="carrier"></span><select id="carrier"></select></label>
-</form><div id="market-counts" class="market-counts"></div></div></div></aside><div class="index-results"><div class="resultbar"><output id="total" aria-live="polite"></output><div><label class="check"><input id="promo" type="checkbox"><span data-t="promoOnly"></span></label><button type="button" id="reset" data-t="reset"></button><button type="button" id="compare" class="solid"></button></div></div>
+<label class="shopping-filter"><span data-t="shoppingFilter"></span><select id="buy-filter"><option value="" data-t="all"></option><option value="price" data-t="publishedPrice"></option><option value="spec" data-t="fullSpec"></option><option value="probe" data-t="probeOnly"></option></select></label></form><div id="market-counts" class="market-counts"></div></div></div></aside><div class="index-results"><div class="resultbar"><output id="total" aria-live="polite"></output><div><label class="check"><input id="promo" type="checkbox"><span data-t="promoOnly"></span></label><button type="button" id="reset" data-t="reset"></button><button type="button" id="compare" class="solid"></button></div></div>
 <div class="directory-table" id="listing"></div>
 <nav id="paging" class="paging"></nav><p class="context" data-t="routeHint"></p></div></div>
 </section>

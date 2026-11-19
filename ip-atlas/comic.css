@@ -10,3 +10,19 @@ body[data-book=directory] main{background-color:#f2f7e7}body[data-book=verify] m
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 @media(max-width:700px){.index-layout,.index-layout.folded{grid-template-rows:auto auto}.index-side{display:grid;grid-template-rows:1fr;transition:grid-template-rows .48s var(--ease),opacity .36s}.index-layout.folded .index-side{grid-template-rows:0fr}.filter-clip{min-height:0;overflow:hidden}}
+
+/* The printed radio rings grow from Yuki's receiver when a spread opens. */
+.radio-ripple{position:absolute;width:76px;height:76px;top:18%;right:22%;pointer-events:none;border:3px solid #fffdf0;border-radius:50%;box-shadow:0 0 0 2px #191722b0,0 0 0 8px #fff8,0 0 0 10px #19172299}
+.ink-transition{--turn-art:url(art/wall-2.webp);--turn-paper:#62d3db}
+.ink-transition[data-destination=top],.ink-transition[data-destination=directory]{--turn-art:url(art/wall-1.webp);--turn-paper:#f6dd67}
+.ink-transition[data-destination=offers],.ink-transition[data-destination=field]{--turn-art:url(art/wall-3.webp);--turn-paper:#ffae6d}
+.ink-transition i:nth-child(3){overflow:hidden;background-color:var(--turn-paper);background-image:radial-gradient(#19172228 1.4px,transparent 1.7px);background-size:8px 8px}
+.ink-transition i:nth-child(3):after{content:"";position:absolute;left:-4%;right:-4%;top:36%;height:28%;background:var(--turn-art) 65% center/cover;transform:rotate(-5deg);border-block:5px solid var(--ink);box-shadow:0 8px var(--paper),0 12px var(--ink)}
+.region-print{position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,#16141fe0,#16141f77),url(art/wall-1.webp) center 48%/cover}
+.region-print[data-area=america]{background-image:linear-gradient(90deg,#16141fe0,#16141f77),url(art/wall-2.webp)}
+.region-print[data-area=europe]{background-image:linear-gradient(90deg,#16141fe0,#16141f77),url(art/wall-3.webp)}
+.compare-stamp{z-index:8;position:fixed;top:0;left:0;width:28px;height:28px;display:grid;place-items:center;pointer-events:none;background:var(--sun);border:2px solid var(--ink);box-shadow:2px 2px var(--ink);border-radius:3px}
+.compare-stamp:before{content:"";width:11px;height:7px;border-left:3px solid var(--ink);border-bottom:3px solid var(--ink);transform:translateY(-2px) rotate(-45deg)}
+.record:has(.pick[aria-pressed=true]){border-color:#265b4d;box-shadow:3px 3px #418f78}
+.record .pick[aria-pressed=true]{background:var(--mint);color:var(--ink)}
+@media(max-width:700px){.ink-transition i:nth-child(3):after{height:19%;background-position:68% center}.radio-ripple{width:45px;height:45px;right:17%}}

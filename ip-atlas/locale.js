@@ -1,6 +1,12 @@
 // Interface copy for the four supported editions.
 const WORDS = {
   "sc": {
+    "ovhgbTerms": "新订基础配置首年 £27.11/月，标准租金 £33.89/月，另付一次安装费 £33.89。均为税前价格。",
+    "ovhfrTerms": "新订基础配置首年 €30.39/月，标准租金 €37.99/月，另付一次安装费 €37.99。均为税前价格。",
+    "azdigiTerms": "新订 Pro VPS Platinum 2 及以上方案，税前价格优惠 20%。可叠加赠送时长，付 12 个月用 15 个月，付 24 个月用 31 个月。",
+    "ownlinuxTerms": "Linux VPS-II 至 VPS-XII 首月五折。VPS-II 为 2 vCPU、4 GB 内存和 60 GB NVMe，首月 4.50 美元，续费 9 美元/月。",
+    "ownwinTerms": "Windows 10、Windows 11 及 Forex VPS 首月五折。随后按所选方案的正常月费续订。",
+    "devosterTerms": "美国犹他州 KVM VPS 首张账单月付优惠 15%，年付优惠 30%。首期结束后按标准费率续费。",
     "title": "全球网络选址图鉴",
     "strap": "PITOPONE 网络研究室",
     "intro": "从机房位置、IP 来源和中国大陆线路入手，比较 VPS 与物理服务器。",
@@ -118,6 +124,12 @@ const WORDS = {
     "countryHint": "输入两位国家或地区代码，如 MX、IS、PE。"
   },
   "tc": {
+    "ovhgbTerms": "新訂基本配置首年 £27.11/月，標準租金 £33.89/月，另收一次安裝費 £33.89。均為未稅價。",
+    "ovhfrTerms": "新訂基本配置首年 €30.39/月，標準租金 €37.99/月，另收一次安裝費 €37.99。均為未稅價。",
+    "azdigiTerms": "新訂 Pro VPS Platinum 2 及以上方案，稅前價格折 20%。可併用贈送月份優惠，繳 12 個月用 15 個月，繳 24 個月用 31 個月。",
+    "ownlinuxTerms": "Linux VPS-II 至 VPS-XII 首月五折。VPS-II 提供 2 vCPU、4 GB 記憶體與 60 GB NVMe，首月 4.50 美元，續約 9 美元/月。",
+    "ownwinTerms": "Windows 10、Windows 11 及 Forex VPS 首月五折。之後依所選方案的正常月費續約。",
+    "devosterTerms": "美國猶他州 KVM VPS 首張帳單月繳折 15%，年繳折 30%。首期結束後依標準費率續約。",
     "title": "全球網路選址圖鑑",
     "strap": "PITOPONE 網路研究室",
     "intro": "從機房位置、IP 來源與中國大陸線路著手，比較 VPS 與實體伺服器。",
@@ -235,6 +247,12 @@ const WORDS = {
     "countryHint": "輸入兩位國家或地區代碼，例如 MX、IS、PE。"
   },
   "en": {
+    "ovhgbTerms": "New base configurations cost £27.11 per month for up to 12 months. Standard rental is £33.89 per month, plus a one-time setup fee of £33.89. Prices exclude VAT.",
+    "ovhfrTerms": "New base configurations cost €30.39 per month for up to 12 months. Standard rental is €37.99 per month, plus a one-time setup fee of €37.99. Prices exclude VAT.",
+    "azdigiTerms": "New Pro VPS Platinum orders from plan 2 qualify for 20% off before VAT. Prepay 12 months for 15 months of service, or 24 for 31.",
+    "ownlinuxTerms": "First month only on Linux VPS-II through VPS-XII. VPS-II includes 2 vCPU, 4 GB RAM and 60 GB NVMe for $4.50 in month one, then $9 per month.",
+    "ownwinTerms": "The first monthly invoice for Windows 10, Windows 11 and Forex VPS is half price. Later invoices use the selected plan’s standard monthly rate.",
+    "devosterTerms": "KVM VPS in Utah, USA. The first monthly invoice is discounted by 15%, or the first annual invoice by 30%. Subsequent terms renew at regular rates.",
     "title": "Global Hosting Atlas",
     "strap": "PITOPONE Network Research",
     "intro": "Compare VPS and bare metal by location, IP allocation and connectivity to mainland China.",
@@ -352,6 +370,12 @@ const WORDS = {
     "countryHint": "Enter a two-letter country or territory code, such as MX, IS or PE."
   },
   "ja": {
+    "ovhgbTerms": "基本構成の新規注文は最長12か月、月額£27.11。通常月額は£33.89で、別途初期費用£33.89がかかります。表示は税抜です。",
+    "ovhfrTerms": "基本構成の新規注文は最長12か月、月額€30.39。通常月額は€37.99で、別途初期費用€37.99がかかります。表示は税抜です。",
+    "azdigiTerms": "Pro VPS Platinum 2 以上の新規注文で税抜価格が20%引き。期間特典と併用でき、12か月前払いで15か月、24か月前払いで31か月利用できます。",
+    "ownlinuxTerms": "Linux VPS-II〜VPS-XII の初月が半額。VPS-II は 2 vCPU、メモリ 4 GB、NVMe 60 GB。初月 4.50 米ドル、更新は月額 9 米ドル。",
+    "ownwinTerms": "Windows 10、Windows 11、Forex VPS の初月が半額。翌月から選択したプランの通常料金で更新。",
+    "devosterTerms": "米国ユタ州の KVM VPS。初回請求は月払いで15%引き、年払いで30%引き。次回以降は通常料金で更新。",
     "title": "世界のサーバー選定ガイド",
     "strap": "PITOPONE ネットワーク研究室",
     "intro": "設置場所、IP の割り当て、中国本土への経路から VPS と専用サーバーを比較できます。",

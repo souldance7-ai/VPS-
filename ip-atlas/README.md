@@ -23,3 +23,9 @@ edition-data.js 收录新增地区记录及其四语采购说明，catalog.js �
 ## 长城漫画版
 
 comic.js 与 comic.css 提供封面画格、滑动浏览、整屏叠页、筛选折叠及右侧详情抽屉。原创画面位于 art/wall-1.webp 至 wall-3.webp。Yuki 跳跃动画由 yuki-jump.gif 播放，暂停或减少动态效果时使用 yuki-still.webp。保留 #directory、#verify、#offers 和 #field 深层链接。
+
+## 选购与库存版 · 2026-11-20
+
+生产项目为 pitopone-ip-atlas。把部署 ZIP 上传到现有 Pages 项目的生产环境，保留根目录 _worker.js 和 _routes.json。静态资源由 Pages 提供，库存由同域 /api/stock/ 接口提供。打开独立 HTML 文件可以预览目录，实时库存需要部署环境。
+
+commercial-data.js 保存按产品和地区整理的报价快照。使用原币别及其实际计费周期。购买页分别展示 CPU、内存、存储、端口速率和流量额度。目录允许仅显示公开报价、公开配置和可自动查询库存的方案。stock.js 和 stock-list.js 对可见产品更新库存，_worker.js 读取商家公开库存源。商家库存读取时间与下单时的最终库存可能有差异。优惠按商家条款及其时区判断是否到期，新优惠和价格需要更新数据后部署。
