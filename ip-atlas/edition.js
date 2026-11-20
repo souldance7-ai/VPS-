@@ -25,7 +25,7 @@ let scene=0,pageIndex=0,signature='',lastSceneAt=0;
 const perPage=12;
 function vendorCount(rows){return new Set(rows.map(p=>p.provider.trim().toLowerCase())).size}
 function currentPageRows(rows){
- const key=[zone,...['market','kind','ip','route','carrier','search'].map(k=>$(k).value),$('promo').checked].join('|');
+ const key=[zone,...['market','vendor','kind','ip','route','carrier','search'].map(k=>$(k).value),$('promo').checked].join('|');
  if(key!==signature){signature=key;pageIndex=0}
  pageIndex=Math.min(pageIndex,Math.max(0,Math.ceil(rows.length/perPage)-1));
  return rows.slice(pageIndex*perPage,(pageIndex+1)*perPage)
@@ -51,7 +51,7 @@ function paintEdition(rows){
  $('scope-banner').dataset.area=active;$('scope-title').textContent=current?market(current):tr(active==='all'?'photoAll':active);
  
  const box=$('market-counts');box.replaceChildren(el('h3',tr('destinations')));
- for(const code of groups[zone]||Object.keys(MARKETS)){
+ for(const code of (groups[zone]||Object.keys(MARKETS)).filter(code=>catalogMarkets.has(code))){
   const count=vendorCount(PLANS.filter(p=>p.market===code));const b=btn(market(code),()=>{
    $('market').value=code===current?'':code;pageIndex=0;list()
   });b.setAttribute('aria-pressed',code===current);b.append(el('small',String(count)));b.title=count+' '+tr('merchants');box.append(b)
@@ -68,7 +68,7 @@ function localizeEdition(){
  $('scene-prev').setAttribute('aria-label',tr('prevScene'));$('scene-next').setAttribute('aria-label',tr('nextScene'));
  localizeComic();
  const stats=$('coverage-numbers');stats.replaceChildren();
- for(const [n,k] of [[new Set(PLANS.map(p=>p.market)).size,'marketsN'],[vendorCount(PLANS),'merchants'],[PLANS.length,'results'],[PLANS.filter(p=>p.kind==='bare').length,'metalN']]){
+ for(const [n,k] of [[new Set(PLANS.map(p=>['LAX','SJC','SEA'].includes(p.market)?'US':p.market)).size,'countriesN'],[vendorCount(PLANS),'merchants'],[PLANS.length,'results'],[PLANS.filter(p=>p.kind==='bare').length,'metalN']]){
   const node=el('div');node.append(el('strong',String(n)),el('span',tr(k)));stats.append(node)
  }
  const rail=$('research-trail');rail.replaceChildren();const h=el('h3',tr('fieldSource'));rail.append(h);

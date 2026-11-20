@@ -9,7 +9,7 @@ if exist "C:\workspace\pitopone-node-v24\node-v24.22.3-win-arm64\npx.cmd" (
 )
 where npx.cmd >nul 2>nul
 if errorlevel 1 goto node_missing
-node -e "process.exit(Number(process.versions.node.split('.')[0])>=22?0:1)"
+node -e "process.exit(((p)=>p[0]>22||(p[0]===22&&p[1]>=12))(process.versions.node.split('.').map(Number))?0:1)"
 if errorlevel 1 goto node_missing
 if /i "%~1"=="monitor" goto monitor
 echo [1/2] Publishing the website to pitopone-ip-atlas ^(production, main^) ...
@@ -24,10 +24,10 @@ echo Collection status: https://ip-guide.pitopone.com/api/stock-history/health
 pause
 exit /b 0
 :layout
-echo Extract the entire ZIP before running deploy.cmd. Keep pages and monitor beside it.
+echo Run deploy-ip-atlas.cmd from the repository root with the ip-atlas and atlas-stock-monitor folders beside it.
 goto failed
 :node_missing
-echo Node.js 22 or newer with npm and npx is required. Open a terminal with Node on PATH.
+echo Node.js 22.12 or newer with npm and npx is required. Open a terminal with Node on PATH.
 goto failed
 :pages_failed
 echo Website upload failed. Check the Wrangler message above. For an expired login, run: npx --yes wrangler@4 login

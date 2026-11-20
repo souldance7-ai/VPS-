@@ -1,11 +1,13 @@
 import targets from './targets.json' with { type: 'json' };
-import {stockTarget,observe} from './stock-source.mjs';
+import {stockTarget,observeListing} from './stock-source.mjs';
 
 const LIMIT = 6;
 const byKey = new Map(targets.map(t => [t.key,t]));
 const periodMinutes = Math.ceil(targets.length / LIMIT);
 const stable = new Set(['in-stock','sold-out','low']);
 const states = new Set([...stable,'offline','unreported']);
+const stockTargets=targets.filter(t=>!t.quoteOnly);
+const quoteTargets=targets.filter(t=>['mkcloud','nnb','vmsilo','backwaves','wasabi','vultr','tamago'].includes(stockTarget(t.key)?.family));
 const rowsPerResponse = 12;
 const retention = 30 * 86400000;
 
@@ -27,7 +29,12 @@ const upsertSql = [
 ].join(' ');
 export async function persist(db, sample) {
  const args = [sample.key,sample.at,sample.state,stable.has(sample.state)?1:0];
- return db.batch([db.prepare(eventSql).bind(...args),db.prepare(upsertSql).bind(...args)]);
+ const statements=[db.prepare(eventSql).bind(...args),db.prepare(upsertSql).bind(...args)];
+ if(sample.offer){
+  const quoteTime=Date.parse(sample.offer.checkedAt);
+  statements.push(db.prepare('INSERT INTO offer_latest(probe,observed_at,payload) VALUES(?,?,?) ON CONFLICT(probe) DO UPDATE SET observed_at=excluded.observed_at,payload=excluded.payload WHERE offer_latest.observed_at<excluded.observed_at').bind(sample.key,quoteTime,JSON.stringify(sample.offer)));
+ }
+ return db.batch(statements);
 }
 async function sampleTarget(target, env, fetcher) {
  const started=Date.now();
@@ -37,14 +44,17 @@ async function sampleTarget(target, env, fetcher) {
   if(!resp.ok||!resp.headers.get('content-type')?.includes('application/json'))throw Error('endpoint');
   const data=await resp.json(),at=Date.parse(data.checkedAt),age=Date.now()-at;
   if(data.key!==target.key||data.sku!==target.sku||data.zone!==target.zone||!states.has(data.state)||!Number.isFinite(at)||age< -30000||age>300000)throw Error('invalid snapshot');
-  return {key:target.key,state:data.state,at};
+  let offer=null;
+  const candidate=data.offer,observed=Date.parse(candidate?.checkedAt);
+  if(candidate&&Number.isFinite(observed)&&observed<=at+30000&&at-observed<=300000&&/^[0-9]+(?:\.[0-9]+)?$/.test(candidate.amount)&&['CNY','HKD','EUR','USD'].includes(candidate.currency)&&candidate.period==='month'&&['base','listed','base-config','starting'].includes(candidate.basis))offer=candidate;
+  return {key:target.key,state:data.state,at,offer};
  } catch { return {key:target.key,state:'offline',at:started}; }
 }
 async function readStockSource(url){
  const key=url.pathname.split('/').at(-1),target=stockTarget(key);
  if(!target)return Response.json({error:'Unknown stock probe'},{status:404});
- const state=await observe(target);
- return Response.json({key,sku:target.sku,zone:target.zone,state,checkedAt:new Date().toISOString()});
+ const observation=await observeListing(target);
+ return Response.json({key,sku:target.sku,zone:target.zone,...observation,checkedAt:new Date().toISOString()});
 }
 export async function collect(at,env,fetcher=readStockSource) {
  const batch=round(at);let i=0;
@@ -59,16 +69,24 @@ export async function read(req,env) {
  if(req.method!=='GET')return json({error:'GET required'},405);
  if(path==='/api/stock-history/health'){
   const row=await env.DB.prepare("SELECT COUNT(*) AS sampled, SUM(current_state IN ('in-stock','sold-out','low')) AS verified, SUM(current_state = 'offline') AS offline, SUM(current_state = 'unreported') AS unreported, MAX(checked_at) AS last, MIN(checked_at) AS oldest FROM stock_latest").first();
-  return json({installed:true,targetCount:targets.length,periodMinutes,sampled:Number(row?.sampled||0),verified:Number(row?.verified||0),offline:Number(row?.offline||0),unreported:Number(row?.unreported||0),lastCheckedAt:iso(row?.last),oldestCheckedAt:iso(row?.oldest)});
+  const freshSince=Date.now()-(periodMinutes+2)*60000;
+  const [quoteRows,stockRows]=await env.DB.batch([
+   env.DB.prepare('SELECT COUNT(*) AS count, SUM(observed_at>=?) AS fresh, MAX(observed_at) AS last, MIN(observed_at) AS oldest FROM offer_latest').bind(freshSince),
+   env.DB.prepare('SELECT SUM(checked_at>=?) AS fresh, MAX(checked_at) AS last FROM stock_latest WHERE probe NOT IN ('+targets.filter(t=>t.quoteOnly).map(()=>'?').join(',')+')').bind(freshSince,...targets.filter(t=>t.quoteOnly).map(t=>t.key))
+  ]);
+  const quotes=quoteRows.results[0],stock=stockRows.results[0];
+  return json({installed:true,schemaVersion:10,stockTargetCount:stockTargets.length,quoteTargetCount:quoteTargets.length,quoteSampled:quotes?.count||0,lastQuoteAt:iso(quotes?.last),oldestQuoteAt:iso(quotes?.oldest),quoteFresh:Number(quotes?.fresh||0),stockChecksFresh:Number(stock?.fresh||0),lastStockCheckAt:iso(stock?.last),freshWithinMinutes:periodMinutes+2,targetCount:targets.length,periodMinutes,sampled:Number(row?.sampled||0),verified:Number(row?.verified||0),offline:Number(row?.offline||0),unreported:Number(row?.unreported||0),lastCheckedAt:iso(row?.last),oldestCheckedAt:iso(row?.oldest)});
  }
  const key=path.match(/^\/api\/stock-history\/([A-Za-z0-9-]+)$/)?.[1];
  const t=byKey.get(key);if(!t)return json({error:'Unknown probe'},404);
- const [current,events]=await env.DB.batch([
+ const [current,events,quote]=await env.DB.batch([
   env.DB.prepare('SELECT * FROM stock_latest WHERE probe=?').bind(key),
-  env.DB.prepare('SELECT at,from_state,to_state FROM stock_changes WHERE probe=? AND at>=? ORDER BY at DESC LIMIT ?').bind(key,Date.now()-retention,rowsPerResponse)
+  env.DB.prepare('SELECT at,from_state,to_state FROM stock_changes WHERE probe=? AND at>=? ORDER BY at DESC LIMIT ?').bind(key,Date.now()-retention,rowsPerResponse),
+  env.DB.prepare('SELECT observed_at,payload FROM offer_latest WHERE probe=?').bind(key)
  ]);
  const s=current.results[0];
- return json({installed:true,key,sku:t.sku,zone:t.zone,periodMinutes,
+ const q=quote.results[0];
+ return json({installed:true,schemaVersion:10,key,sku:t.sku,zone:t.zone,periodMinutes,lastOffer:q?{...JSON.parse(q.payload),checkedAt:iso(q.observed_at)}:null,
   latest:s?{state:s.current_state,checkedAt:iso(s.checked_at),confirmedState:s.confirmed_state,confirmedAt:iso(s.confirmed_at),changedAt:iso(s.changed_at)}:null,
   events:events.results.map(e=>({at:iso(e.at),from:e.from_state,to:e.to_state}))});
 }

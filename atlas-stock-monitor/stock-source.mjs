@@ -336,7 +336,155 @@ const networkStockTargets={
   "url": "https://api.nnb.ltd/api/v1/nodes"
  }
 };
+Object.assign(networkStockTargets,{
+ "field-backwaves-sg01": {
+  "family": "backwaves",
+  "zone": "SG",
+  "pid": 60,
+  "sku": "SG | SIN | Global 01",
+  "url": "https://backwaves.net/store/sg-sgp-global"
+ },
+ "field-wasabi-sg1": {
+  "family": "wasabi",
+  "zone": "SG",
+  "pid": 135,
+  "sku": "1GB - EXTREME PERFORMANCE - Singapore",
+  "url": "https://billing.wasabihosting.com/store/singapore-vps"
+ }
+});
+Object.assign(networkStockTargets,{
+ "vultr-v10-sao": {
+  "family": "vultr",
+  "zone": "sao",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/sao/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-scl": {
+  "family": "vultr",
+  "zone": "scl",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/scl/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-jnb": {
+  "family": "vultr",
+  "zone": "jnb",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/jnb/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-mel": {
+  "family": "vultr",
+  "zone": "mel",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/mel/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-sto": {
+  "family": "vultr",
+  "zone": "sto",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/sto/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-waw": {
+  "family": "vultr",
+  "zone": "waw",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/waw/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-mad": {
+  "family": "vultr",
+  "zone": "mad",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/mad/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-mex": {
+  "family": "vultr",
+  "zone": "mex",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/mex/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-blr": {
+  "family": "vultr",
+  "zone": "blr",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/blr/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-tlv": {
+  "family": "vultr",
+  "zone": "tlv",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/tlv/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ }
+});
+Object.assign(networkStockTargets,{
+ "meow-tamagowtt-1": {
+  "family": "tamago",
+  "zone": "HK",
+  "pid": 27,
+  "sku": "WTT.500M.VPS.4",
+  "url": "https://tamago.network/index.php?rp=/store/wtt-dynamic-vps"
+ }
+});
+const quoteOnlyTargets={
+ "vmsilo-tw": {
+  "family": "vmsilo",
+  "zone": "TW",
+  "pid": 49,
+  "sku": "fz-tw ipv6（cu）",
+  "url": "https://portal.vmsilo.com/store/iepl",
+  "quoteOnly": true
+ },
+ "vmsilo-jp": {
+  "family": "vmsilo",
+  "zone": "JP",
+  "pid": 45,
+  "sku": "sh-jp ipv6（ct）",
+  "url": "https://portal.vmsilo.com/store/iepl",
+  "quoteOnly": true
+ },
+ "vmsilo-de": {
+  "family": "vmsilo",
+  "zone": "DE",
+  "pid": 55,
+  "sku": "sh-de ipv6（ct）",
+  "url": "https://portal.vmsilo.com/store/iepl",
+  "quoteOnly": true
+ },
+ "vmsilo-kr": {
+  "family": "vmsilo",
+  "zone": "KR",
+  "pid": 52,
+  "sku": "sh-kr ipv6（ct）",
+  "url": "https://portal.vmsilo.com/store/iepl",
+  "quoteOnly": true
+ },
+ "vmsilo-us": {
+  "family": "vmsilo",
+  "zone": "US",
+  "pid": 53,
+  "sku": "sh-us ipv6（ct）",
+  "url": "https://portal.vmsilo.com/store/iepl",
+  "quoteOnly": true
+ },
+ "vmsilo-hk": {
+  "family": "vmsilo",
+  "zone": "HK",
+  "pid": 54,
+  "sku": "sh-hk ipv6（ct）",
+  "url": "https://portal.vmsilo.com/store/iepl",
+  "quoteOnly": true
+ }
+};
 function stockTarget(key){
+ if(Object.hasOwn(quoteOnlyTargets,key))return quoteOnlyTargets[key];
  if(Object.hasOwn(networkStockTargets,key))return networkStockTargets[key];
  if(Object.hasOwn(campaignTargets,key))return campaignTargets[key];
  const host=key.match(/^hh-([A-Z]{3})-([1-7])$/);
@@ -522,7 +670,7 @@ async function currentStorefront(family){
    if(typeof group.slug!=='string'||!Array.isArray(group.products))throw Error('Invalid product group');
    for(const product of group.products){
     if(products.has(product.id))throw Error('Ambiguous product ID');
-    products.set(product.id,{group:group.slug,sku:product.slug});
+    products.set(product.id,{group:group.slug,sku:product.slug,product});
    }
   }
   data={products,sold:new Set(inventory.products)};
@@ -531,7 +679,7 @@ async function currentStorefront(family){
   if(result.code!==200||!Array.isArray(result.data?.items))throw Error('Invalid node catalog');
   data=result.data.items;
  }
- recentStorefronts.set(family,{expires:now+25000,data});
+ recentStorefronts.set(family,{expires:now+25000,data,at:new Date().toISOString()});
  return data;
 }
 function classifyStorefront(target,data){
@@ -549,7 +697,182 @@ function classifyStorefront(target,data){
  return 'unreported';
 }
 
+function amountFor(value){
+ if(typeof value!=='string'&&typeof value!=='number')return null;
+ const amount=String(value);
+ return /^\d{1,8}(?:\.\d{1,4})?$/.test(amount)?amount:null;
+}
+function shortText(text){
+ return typeof text==='string'?text.replace(/<[^>]{0,500}>/g,' ').replace(/\s+/g,' ').trim().slice(0,240):'';
+}
+function rangeText(range,unit){
+ if(!Number.isFinite(range?.min)||!Number.isFinite(range?.max)||range.min<0||range.max<range.min)return '';
+ return (range.min===range.max?range.min:range.min+'–'+range.max)+' '+unit;
+}
+function newNbOffer(node){
+ const amount=amountFor(node.monthly_prices?.base?.yuan);
+ if(node.monthly_available!==true||amount===null)return null;
+ const net=Array.isArray(node.primary_nics)?node.primary_nics.slice(0,5):[];
+ const network=net.map(n=>[shortText(n.label),shortText(n.hint)].filter(Boolean).join(' · ')).filter(Boolean);
+ const allowance=net.map(n=>({min:n.traffic?.min_gb,max:n.traffic?.max_gb})).map(r=>rangeText(r,'GB')).filter(Boolean);
+ return {amount,currency:'CNY',period:'month',basis:'base',
+  cpu:rangeText(node.limits?.cpu,'vCPU'),ram:rangeText(node.limits?.memory_gb,'GB'),disk:rangeText(node.limits?.disk_gb,'GB'),
+  port:rangeText(node.limits?.bandwidth_mbps,'Mbps'),traffic:[...new Set(allowance)].join(' / '),
+  direction:node.traffic_direction==='both'?'both':'',route:network.join(' / '),ip:'',access:''};
+}
+function mkOffer(product){
+ const amount=amountFor(product.price?.monthly);
+ if(amount===null)return null;
+ const description=String(product.description||'').replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]{0,500}>/g,' ');
+ const first=(re)=>shortText(description.match(re)?.[1]);
+ const cpu=first(/CPU[ \t]*([\d.]+)[ \t]*核/i),ram=first(/内存[ \t]*([\d.]+[ \t]*GB)/i),disk=first(/硬盘[ \t]*([\d.]+[ \t]*[TG]B)/i);
+ const speed=description.match(/带宽[ \t]*([\d.]+)[ \t]*([GM])(?:bps)?[ \t]*(峰值|独享)?/i);
+ const port=speed?Number(speed[1])*(speed[2].toUpperCase()==='G'?1000:1)+' Mbps':'';
+ const ingress=first(/入口[ \t]+([^\r\n|]+)/),egress=first(/出口[ \t]+([^\r\n|]+)/);
+ return {amount,currency:'CNY',period:'month',basis:'listed',cpu:cpu?cpu+(description.includes('独立服务器')?' cores':' vCPU'):'',ram,disk,port,
+  portType:speed?.[3]==='峰值'?'peak':speed?.[3]==='独享'?'dedicated':'',
+  traffic:first(/流量\/月[ \t]+([^\r\n|]+)/),route:[ingress,egress].filter(Boolean).join(' → '),
+  ip:first(/(独享IPv4[^\r\n|]+)/i),access:shortText(product.name)};
+}
+function vmsiloOffer(target,html){
+ // Require exactly one card with both the merchant-assigned product ID and expected heading.
+ const cards=[...html.matchAll(/<article\b[^>]{0,600}\bid=["']product(\d+)["'][^>]*>([\s\S]*?)<\/article>/gi)].filter(m=>Number(m[1])===target.pid);
+ if(cards.length!==1)return null;
+ const body=cards[0][2];
+ if(shortText(body.match(/<h3\b[^>]*>([\s\S]*?)<\/h3>/i)?.[1])!==target.sku)return null;
+ const footer=body.match(/<footer\b[^>]*>([\s\S]*?)<\/footer>/i)?.[1]||'';
+ const amount=amountFor(shortText(footer.match(/<span\s+class=["']price["'][^>]*>([^<]*)<\/span>/i)?.[1]).match(/^¥?\s*(\d+(?:\.\d+)?)\s*CNY$/)?.[1]);
+ if(amount===null||!/<small>\/\s*month<\/small>/i.test(footer))return null;
+ const fields={};
+ const desc=body.match(/<div\s+class=["']bv-plan-desc["'][^>]*>([\s\S]*?)<footer/i)?.[1]||'';
+ for(const line of desc.split(/<br\s*\/?>/i)){
+  const parts=shortText(line).match(/^(CPU Cores|Amount Of RAM|Disk Space|IPV4|IPV6|Bandwidth|Network Rate)[：:]\s*(.+)$/i);
+  if(parts)fields[parts[1].toLowerCase()]=parts[2];
+ }
+ const qty=(value,rawUnit,unit)=>new RegExp('^(\\d+)'+rawUnit+'$','i').test(value)?parseInt(value,10)+' '+unit:'';
+ const rate=fields['network rate']?.match(/^(\d+)Mbps[（(](Shared)[）)]$/i);
+ const transfer=fields.bandwidth?.match(/^(\d+)G[（(]in\+out[）)]$/i);
+ return {amount,currency:'CNY',period:'month',basis:'base-config',
+  cpu:qty(fields['cpu cores'],'','vCPU'),ram:qty(fields['amount of ram'],'M','MB'),disk:qty(fields['disk space'],'G','GB'),
+  port:rate?rate[1]+' Mbps':'',portType:rate?'shared':'',traffic:transfer?transfer[1]+' GB':'',direction:transfer?'both':'',
+  ip:fields.ipv4!=null&&fields.ipv6!=null?'IPv4 × '+fields.ipv4+' / IPv6 × '+fields.ipv6:'',
+  route:target.sku,access:'IEPL'};
+}
+async function lagomObservation(t){
+ const now=Date.now(),cached=recentStorefronts.get(t.family);
+ let html=cached?.data,at=cached?.at;
+ if(!cached||cached.expires<=now){
+  const r=await fetch(t.url,{redirect:'error',signal:AbortSignal.timeout(7000),headers:{accept:'text/html'},cf:{cacheEverything:true,cacheTtl:45}});
+  const age=Number(r.headers.get('age')||0);
+  if(!r.ok||!r.headers.get('content-type')?.includes('text/html')||!Number.isFinite(age)||age>300)throw Error('Invalid store response');
+  html=new TextDecoder().decode(await readLimitedBytes(r.body,350000));at=new Date().toISOString();recentStorefronts.set(t.family,{expires:now+25000,data:html,at});
+ }
+ const nodes=html.split(/<div\b[^>]*class=["']package["'][^>]*id=["']product/i).slice(1);
+ const card=nodes.filter(row=>row.startsWith(t.pid+'"')||row.startsWith(t.pid+"'"));
+ if(card.length!==1)return {state:'unreported',offer:null};
+ const packageBody=card[0].split(/<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*(?:<\/section>|<form|<script)/i)[0].slice(0,18000);
+ const field=(re)=>shortText(packageBody.match(re)?.[1]);
+ if(field(/<h3\s+class=["']package-title["'][^>]*>([\s\S]*?)<\/h3>/i)!==t.sku)return {state:'unreported',offer:null};
+ const qty=field(/<div\s+class=["']package-qty["'][^>]*>([\s\S]*?)<\/div>/i).match(/^(\d+)\s*(?:可用|Available)$/i);
+ let state=qty?(Number(qty[1])===0?'sold-out':'in-stock'):'unreported';
+ if(!qty&&/(?:>\s*(?:Out of stock|Sold out|售完|缺貨|缺货)\s*<)/i.test(packageBody))state='sold-out';
+ const cycle=field(/<div\s+class=["']price-cycle[^"']*["'][^>]*>([\s\S]*?)<\/div>/i);
+ const price=field(/<div\s+class=["']price-amount[^"']*["'][^>]*>([\s\S]*?)<\/div>/i);
+ const isBack=t.family==='backwaves';
+ const literal=isBack?price.match(/^HK\$(\d+(?:\.\d+)?)$/):price.match(/^€(\d+(?:[,.]\d{1,2})?)\s*EUR$/);
+ const amount=amountFor(literal?.[1].replace(',','.'));
+ if(amount===null||!/^(?:月繳|月缴|Monthly)$/i.test(cycle))return {state,offer:null};
+ const lines=[...packageBody.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/ig)].map(m=>shortText(m[1]));
+ const line=(pattern)=>lines.find(value=>pattern.test(value))||'';
+ const without=(pattern)=>line(pattern).replace(pattern,'').trim();
+ const offer={amount,currency:isBack?'HKD':'EUR',period:'month',basis:'starting',checkedAt:at,
+  cpu:isBack?without(/^vCPU\s+/i):line(/^\d+\s*vCore/i),ram:isBack?without(/^vRAM\s+/i):line(/DDR5 RAM$/i),
+  disk:isBack?without(/^vDisk\s+/i):line(/SSD Storage$/i),port:isBack?without(/^Shared Port\s+/i):line(/Bandwidth \(FUP\)/i),portType:isBack?'shared':'',
+  traffic:isBack?without(/^Traffic\s+/i):'',ip:isBack?[without(/^IPv4\s+/),without(/^IPv6\s+/)].filter(Boolean).join(' / '):'',route:isBack?t.sku:'',access:''};
+ return {state,offer};
+}
+
+async function vultrDocument(cacheKey,url){
+ const now=Date.now(),cached=recentStorefronts.get(cacheKey);
+ if(cached&&cached.expires>now)return cached;
+ const r=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(6500),headers:{accept:'application/json'},cf:{cacheEverything:true,cacheTtl:45}});
+ const age=Number(r.headers.get('age')||0);
+ if(!r.ok||!r.headers.get('content-type')?.includes('application/json')||!Number.isFinite(age)||age>300)throw Error('Invalid Vultr source');
+ const raw=await readLimitedBytes(r.body,350000),data=JSON.parse(new TextDecoder().decode(raw));
+ const result={expires:now+25000,data,at:new Date().toISOString()};recentStorefronts.set(cacheKey,result);return result;
+}
+async function vultrObservation(t){
+ const [rates,availability]=await Promise.allSettled([vultrDocument('vultr-plans',t.priceUrl),vultrDocument('vultr-'+t.zone,t.url)]);
+ let state='offline',offer=null;
+ if(availability.status==='fulfilled'){
+  const list=availability.value.data.available_plans;
+  state=!Array.isArray(list)||!list.every(x=>typeof x==='string')?'unreported':list.includes(t.sku)?'in-stock':'sold-out';
+ }
+ if(rates.status==='fulfilled'){
+  const document=rates.value.data,plans=document.plans;
+  const matched=Array.isArray(plans)?plans.filter(p=>p.id===t.sku&&p.type==='vc2'&&Array.isArray(p.locations)&&p.locations.includes(t.zone)):[];
+  if(matched.length===1){
+   const p=matched[0],override=p.location_cost?.[t.zone],amount=amountFor(override?override.monthly_cost:p.monthly_cost);
+   const quantity=(v,u)=>Number.isFinite(v)&&v>0?v+' '+u:'';
+   if(amount!==null&&p.invoice_type==='monthly')offer={amount,currency:'USD',period:'month',basis:'listed',checkedAt:rates.value.at,
+    cpu:quantity(p.vcpu_count,'vCPU'),ram:quantity(p.ram,'MB'),disk:quantity(p.disk,'GB')+(typeof p.disk_type==='string'?' '+shortText(p.disk_type):''),traffic:quantity(p.bandwidth,'GB'),
+    port:'',ip:'',route:'',access:''};
+  }
+ }
+ return {state,offer};
+}
+
+async function tamagoObservation(t){
+ const r=await fetch(t.url,{redirect:'error',signal:AbortSignal.timeout(7000),headers:{accept:'text/html'},cf:{cacheEverything:true,cacheTtl:45}});
+ const age=Number(r.headers.get('age')||0);
+ if(!r.ok||!r.headers.get('content-type')?.includes('text/html')||!Number.isFinite(age)||age>300)throw Error('Invalid Tamago catalog');
+ const html=new TextDecoder().decode(await readLimitedBytes(r.body,250000));
+ const matched=[...html.matchAll(/<div\b[^>]*\bid=["']product27["'][^>]*>([\s\S]*?<\/footer>)/ig)];
+ if(matched.length!==1)return {state:'unreported',offer:null};
+ const card=matched[0][1],name=shortText(card.match(/<span\s+id=["']product27-name["']>([^<]+)<\/span>/i)?.[1]);
+ if(name!==t.sku||/<div\b[^>]*\bid=["']product\d+["']/.test(card))return {state:'unreported',offer:null};
+ const header=card.match(/<header>([\s\S]*?)<\/header>/i)?.[1]||'',quantity=shortText(header.match(/<span\s+class=["']qty["']>([\s\S]*?)<\/span>/i)?.[1]).match(/^(\d+)\s*(?:可用|Available)$/i);
+ const state=quantity?quantityStatus([quantity[1]]):'unreported';
+ const pricing=shortText(card.match(/<div\b[^>]*id=["']product27-price["'][^>]*>([\s\S]*?)<\/div>/i)?.[1]);
+ const amount=amountFor(pricing.match(/^\$(\d+(?:\.\d+)?) USD (?:月繳|月缴|Monthly)$/i)?.[1]);
+ if(amount===null)return {state,offer:null};
+ const description=card.match(/<p\s+id=["']product27-description["']>([\s\S]*?)<\/p>/i)?.[1]||'';
+ const lines=description.split(/<br\s*\/?>/i).map(shortText);
+ const get=re=>lines.find(s=>re.test(s))||'';
+ return {state,offer:{amount,currency:'USD',period:'month',basis:'listed',checkedAt:new Date().toISOString(),
+  cpu:get(/^\d+x\s+AMD/i),ram:get(/^\d+\s+GB\s+DDR/i),disk:get(/^\d+\s+GB\s+NVMe/i),port:get(/^(?:共享|Shared)\s+\d+\s+Mbps/i).replace(/^(?:共享|Shared)\s+/i,''),
+  portType:'shared',traffic:get(/^\d+\s+GB\s+(?:流量|Traffic)/i).replace(/\s+(?:流量|Traffic)$/i,''),route:get(/^WTT\s/i),ip:get(/^\d+\s+.+IPv4$/i),access:''}};
+}
+
+async function observeListing(target){
+ if(target.family==="tamago")return tamagoObservation(target);
+ if(target.family==="vultr")return vultrObservation(target);
+ if(["backwaves","wasabi"].includes(target.family))return lagomObservation(target);
+ if(target.family==='vmsilo'){
+  const now=Date.now(),cached=recentStorefronts.get('vmsilo');let html=cached?.data,at=cached?.at;
+  if(!cached||cached.expires<=now){
+   const r=await fetch(target.url,{redirect:'error',signal:AbortSignal.timeout(7000),headers:{accept:'text/html','accept-language':'en'},cf:{cacheEverything:true,cacheTtl:60}});
+   if(!r.ok||!r.headers.get('content-type')?.includes('text/html')||Number(r.headers.get('age')||0)>300)throw Error('Invalid store HTML');
+   html=new TextDecoder().decode(await readLimitedBytes(r.body,300000));at=new Date().toISOString();recentStorefronts.set('vmsilo',{expires:now+25000,data:html,at});
+  }
+  const offer=vmsiloOffer(target,html);
+  return {state:'unreported',offer:offer?{...offer,checkedAt:at}:null};
+ }
+ if(target.family!=='mkcloud'&&target.family!=='nnb')return {state:await observe(target),offer:null};
+ const data=await currentStorefront(target.family),state=classifyStorefront(target,data);
+ let offer=null;
+ if(target.family==='mkcloud'){
+  const p=data.products.get(target.pid);
+  if(p?.group===target.group&&p.sku===target.sku)offer=mkOffer(p.product);
+ }else{
+  const nodes=data.filter(n=>n.id===target.pid&&n.name===target.sku&&n.region===target.region);
+  if(nodes.length===1)offer=newNbOffer(nodes[0]);
+ }
+ return {state,offer:offer?{...offer,checkedAt:recentStorefronts.get(target.family).at}:null};
+}
+
 async function observe(t){
+ if(["vmsilo","backwaves","wasabi","vultr","tamago"].includes(t.family))return (await observeListing(t)).state;
  if(t.family==="mkcloud"||t.family==="nnb")return classifyStorefront(t,await currentStorefront(t.family));
  const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),7000);
  try{
@@ -573,4 +896,4 @@ async function observe(t){
   return ({available:'in-stock',scarce:'low',shortage:'sold-out'})[raw]||'unreported';
  }finally{clearTimeout(timeout)}
 }
-export {stockTarget, observe};
+export {stockTarget,observe,observeListing};

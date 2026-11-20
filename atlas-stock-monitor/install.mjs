@@ -19,17 +19,35 @@ function findDb(){
  if(matches.length>1)throw Error('多个同名数据库。请选择正确的 Cloudflare 账户。');
  return matches[0]?.uuid;
 }
+async function confirmPublicMonitor(){
+ const expected=JSON.parse(fs.readFileSync('targets.json','utf8')).length;
+ const healthUrl='https://ip-guide.pitopone.com/api/stock-history/health';
+ for(let attempt=0;attempt<4;attempt++){
+  try{
+   const r=await fetch(healthUrl,{cache:'no-store',signal:AbortSignal.timeout(4500)});
+   if(r.ok){
+    const report=await r.json();
+    if(report.installed&&report.schemaVersion===10&&report.targetCount===expected){
+     console.log('公网已确认新版采集器。共 '+report.targetCount+' 个目标，'+report.stockTargetCount+' 个库存目标，'+report.quoteTargetCount+' 个报价目标，轮巡约 '+report.periodMinutes+' 分钟。');
+     return;
+    }
+   }
+  }catch{}
+  if(attempt<3)await new Promise(resolve=>setTimeout(resolve,2500));
+ }
+ console.log('Cloudflare 已接收 Worker 部署。公网状态可能正在传播，请稍后在「近期优惠 → 后台采集状态」查看目标数 '+expected+'。');
+}
 async function main(){
  let found=false;
  for(let attempt=0;attempt<8&&!found;attempt++){
   try{
    const response=await fetch(new URL('/api/stock/nnb-2',cfg.vars.PAGES_ORIGIN),{signal:AbortSignal.timeout(10000)});
    const data=await response.json();
-   found=response.ok&&data.key==='nnb-2'&&data.zone==='JP'&&data.sku==='TY #2 Performance';
+   found=response.ok&&data.key==='nnb-2'&&data.zone==='JP'&&data.sku==='TY #2 Performance'&&data.schemaVersion===10;
   }catch{}
   if(!found&&attempt<7)await new Promise(resolve=>setTimeout(resolve,5000));
  }
- if(!found)throw Error('V9 网页尚未在 Pages 生产域名生效。确认网页部署成功后，在完整包目录运行 deploy.cmd monitor。');
+ if(!found)throw Error('V10 网页尚未在 Pages 生产域名生效。确认网页部署成功后，在完整包目录运行 deploy.cmd monitor。');
  console.log('将配置 '+cfg.name+'、历史数据库 '+name+' 及 '+cfg.routes[0].pattern);
  cli(['whoami']);
  let id=findDb();
@@ -39,6 +57,7 @@ async function main(){
  fs.writeFileSync('wrangler.json',JSON.stringify(cfg,null,2));
  cli(['d1','execute',name,'--remote','--config','wrangler.json','--file','schema.sql','--yes']);
  cli(['deploy','--config','wrangler.json']);
+ await confirmPublicMonitor();
  console.log('部署成功。打开 https://ip-guide.pitopone.com/api/stock-history/health 查看采集进度。');
 }
 main().catch(e=>{console.error(e.message);process.exitCode=1});

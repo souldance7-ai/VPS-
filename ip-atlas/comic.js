@@ -40,7 +40,7 @@ function syncComicMotion(){
   if(currentView==='top'&&!document.hidden&&!$('comic-deck').matches(':hover,:focus-within')&&!document.querySelector('.play-controls:focus-within'))selectShot(shot+1);
  },7000);
 }
-function pageName(hash){const name=hash.replace(/^#/,'');return ['directory','verify','offers','field'].includes(name)?name:'top'}
+function pageName(hash){const name=hash.replace(/^#/,'');return ['directory','verify','offers','journal','field'].includes(name)?name:'top'}
 function showView(name,restore,focus){
  for(const panel of document.querySelectorAll('[data-view]')) panel.hidden=panel.dataset.view!==name;
  for(const a of document.querySelectorAll('.mast nav a')) {

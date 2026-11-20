@@ -21,11 +21,19 @@ function renderFeaturedOffers(){
  clearTimeout(featuredOfferTimer);
  const now = Date.now();
  const stagePriority = {offer: 0, limited: 1, checkout: 2};
+ // Prefer the source's publication or quote date when it differs from the import date.
+ const dateOfOffer = offer => {
+  for (const value of [offer.publishedAt, offer.postDate, offer.quotedAt, offer.quoteDate, offer.start, offer.observed]) {
+   const instant = Date.parse(value);
+   if (Number.isFinite(instant)) return instant;
+  }
+  return 0;
+ };
  const candidates = COMMUNITY_OFFERS.filter(offer => offer.price != null && offer.price !== '' && Object.hasOwn(stagePriority, communityStage(offer, now)));
  candidates.sort((left, right) => {
   const priority = stagePriority[communityStage(left, now)] - stagePriority[communityStage(right, now)];
-  const freshness = Date.parse(right.observed || '') - Date.parse(left.observed || '');
-  return priority || freshness || 0;
+  const freshness = dateOfOffer(right) - dateOfOffer(left);
+  return freshness || priority;
  });
  const providers = new Set();
  const picks = candidates.filter(offer => {
@@ -45,8 +53,13 @@ function renderFeaturedOffers(){
   heading.append(state, el('span', (offer.markets || []).slice(0, 2).map(communityPlace).join(' · '), 'featured-location'));
   const detail = btn(tr('portalViewOffer') + ' ↗', () => openHighlightedOffer(offer), 'featured-action');
   detail.setAttribute('aria-label', tr('portalViewOffer') + ' · ' + offer.provider + ' ' + val(offer.plan));
-  price.append(el('b', communityAmount(offer.price, offer)), detail);
-  card.append(heading, el('h3', offer.provider), el('p', val(offer.plan)), price);
+  const amount = el('div', null, 'featured-quote');
+  const terms = [communityPriceLabel(offer), offer.code].filter(Boolean).join(' · ');
+  amount.append(el('small', terms), el('b', communityAmount(offer.price, offer)));
+  price.append(amount, detail);
+  const ram = val(offer.ram);
+  const details = [val(offer.plan), val(offer.cpu), ram && ram + ' RAM', val(offer.port)];
+  card.append(heading, el('h3', offer.provider), el('p', details.filter(Boolean).join(' · ')), price);
   mount.append(card);
  }
  if (!picks.length) mount.append(el('p', tr('portalDealEmpty'), 'featured-empty'));

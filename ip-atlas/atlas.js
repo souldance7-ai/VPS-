@@ -1,6 +1,7 @@
 'use strict';
 const $ = id => document.getElementById(id);
-const groups = {asia:['CN','JP','TW','HK','KR','VN','PH','SG'],america:['CA','US','LAX','SJC','SEA'],europe:['DE','NL','GB','FR']};
+const groups = {asia:['CN','JP','TW','HK','KR','VN','PH','SG','AE','IL','IN','MY','TH','TR'],america:['CA','US','LAX','SJC','SEA','MX'],europe:['DE','NL','GB','FR','ES','SE','PL','CH','DK','RO'],oceania:['AU'],africa:['ZA'],southamerica:['BR','CL']};
+const catalogMarkets=new Set(PLANS.map(p=>p.market));
 const tags = {sc:'zh-CN',tc:'zh-TW',en:'en',ja:'ja'};
 const carrierNames = {CT:['中国电信','中國電信','China Telecom','中国電信'],CU:['中国联通','中國聯通','China Unicom','中国聯通'],CM:['中国移动','中國移動','China Mobile','中国移動']};
 const deals = {
@@ -54,7 +55,8 @@ async function copy(value){try{await navigator.clipboard.writeText(value);toast(
 function stateOf(d,now=Date.now()){return d.start&&now<Date.parse(d.start)?'upcoming':now>Date.parse(d.end)?'expired':'active'}
 const cityNames={'Taiwan':['台湾','台灣','台湾'],'Japan':['日本','日本','日本'],'Changhua':['彰化','彰化','彰化'],'Tokyo':['东京','東京','東京'],'Hong Kong':['香港','香港','香港'],'Los Angeles':['洛杉矶','洛杉磯','ロサンゼルス'],'Seoul':['首尔','首爾','ソウル'],'Hanoi':['河内','河內','ハノイ'],'Ho Chi Minh City':['胡志明市','胡志明市','ホーチミン市'],'Manila':['马尼拉','馬尼拉','マニラ'],'San Jose':['圣何塞','聖荷西','サンノゼ'],'Seattle':['西雅图','西雅圖','シアトル'],'Beauharnois':['博阿努瓦','博阿努瓦','ボアルノワ'],'Falkenstein':['法尔肯施泰因','法爾肯施泰因','ファルケンシュタイン'],'Frankfurt':['法兰克福','法蘭克福','フランクフルト'],'Amsterdam':['阿姆斯特丹','阿姆斯特丹','アムステルダム'],'Vancouver':['温哥华','溫哥華','バンクーバー']};
 Object.assign(cityNames,{"Taipei":["台北","台北","台北"],"Taichung":["台中","台中","台中"],"Osaka":["大阪","大阪","大阪"],"Singapore":["新加坡","新加坡","シンガポール"],"London":["伦敦","倫敦","ロンドン"],"Manchester":["曼彻斯特","曼徹斯特","マンチェスター"],"Paris":["巴黎","巴黎","パリ"],"Nuremberg":["纽伦堡","紐倫堡","ニュルンベルク"],"Roubaix":["鲁贝","魯貝","ルーベ"],"Montreal":["蒙特利尔","蒙特婁","モントリオール"],"Toronto":["多伦多","多倫多","トロント"],"France":["法国","法國","フランス"],"Germany":["德国","德國","ドイツ"],"Canada":["加拿大","加拿大","カナダ"],"Netherlands":["荷兰","荷蘭","オランダ"],"United Kingdom":["英国","英國","英国"],"Ontario":["安大略省","安大略省","オンタリオ州"]});
-function city(p){return cityNames[p.city]?.[{sc:0,tc:1,ja:2}[lang]]||p.city}
+Object.assign(cityNames,{"São Paulo":["圣保罗","聖保羅","サンパウロ"],"Santiago":["圣地亚哥","聖地牙哥","サンティアゴ"],"Johannesburg":["约翰内斯堡","約翰尼斯堡","ヨハネスブルグ"],"Melbourne":["墨尔本","墨爾本","メルボルン"],"Stockholm":["斯德哥尔摩","斯德哥爾摩","ストックホルム"],"Warsaw":["华沙","華沙","ワルシャワ"],"Madrid":["马德里","馬德里","マドリード"],"Mexico City":["墨西哥城","墨西哥城","メキシコシティ"],"Bangalore":["班加罗尔","班加羅爾","ベンガルール"],"Tel Aviv":["特拉维夫","特拉維夫","テルアビブ"],"Bangkok":["曼谷","曼谷","バンコク"],"Dubai":["迪拜","杜拜","ドバイ"],"Zurich":["苏黎世","蘇黎世","チューリッヒ"],"Copenhagen":["哥本哈根","哥本哈根","コペンハーゲン"],"Bucharest":["布加勒斯特","布加勒斯特","ブカレスト"],"Seattle":["西雅图","西雅圖","シアトル"],"Sydney":["悉尼","雪梨","シドニー"],"Istanbul":["伊斯坦布尔","伊斯坦堡","イスタンブール"],"North Carolina":["北卡罗来纳州","北卡羅來納州","ノースカロライナ州"],"Kuala Lumpur":["吉隆坡","吉隆坡","クアラルンプール"]});
+function city(p){if(p.market==='US'&&p.city==='United States')return {sc:'城市未公布',tc:'城市未公布',en:'City undisclosed',ja:'都市非公開'}[lang];return cityNames[p.city]?.[{sc:0,tc:1,ja:2}[lang]]||p.city}
 Object.assign(cityNames,{'United States':['美国','美國','米国'],'South Korea':['韩国','韓國','韓国'],Shanghai:['上海','上海','上海']});
 const localChoice = ()=>({sc:'原生 IP 候选（含 ISP 与住宅）',tc:'原生 IP 候選（含 ISP 與住宅）',en:'Native IP candidates (local, ISP, residential)',ja:'現地 IP 候補（ISP・住宅回線を含む）'}[lang]);
 function nativeLead(p){return ['isp','local','residential'].includes(p.ip)}
@@ -66,7 +68,9 @@ function monthlyCost(p){
 function renderOrder(){const currencyCodes=[...new Set(PLANS.map(p=>monthlyCost(p)?.currency).filter(Boolean))].sort();opt("order",[["",tr("fullestFirst")],...currencyCodes.map(code=>[code,code+" · "+tr("lowestMonthly")])],$("order").value)}
 function renderControls(){
  renderOrder();
- const ids=groups[zone]||Object.keys(MARKETS);
+ const ids=(groups[zone]||Object.keys(MARKETS)).filter(code=>catalogMarkets.has(code));
+ const vendors=[...new Set(PLANS.map(p=>p.provider))].sort((a,b)=>a.localeCompare(b,tags[lang]));
+ opt('vendor',[['',tr('all')],...vendors.map(name=>[name,name])],$('vendor').value);
  const zones=$('zones');zones.replaceChildren();
  for(const key of ['all',...Object.keys(groups)]){const b=btn(tr(key),()=>{applyZone(key)});b.setAttribute('aria-pressed',key===zone);zones.append(b)}
  opt('market',[['',tr('allMarkets')],...ids.map(v=>[v,market(v)])],$('market').value);
@@ -85,6 +89,7 @@ function searchable(p){
  return norm(tokens.join(' '));
 }
 function matches(p){
+ if($('vendor').value&&p.provider!==$('vendor').value)return false;
  if(!shoppingMatch(p))return false;
  if($("order").value&&monthlyCost(p)?.currency!==$("order").value)return false;
  if(zone!=='all' && !groups[zone].includes(p.market))return false;
@@ -118,7 +123,7 @@ function providerFromPost(post){
 function feedToCatalog(post){
  const provider=providerFromPost(post);if(!provider)return null;
  const a=el('a',({sc:'查看套餐',tc:'查看方案',en:'Compare plans',ja:'プラン比較'}[lang])+' · '+provider+' →','feed-to-catalog');
- a.href='?'+new URLSearchParams({'q-search':provider})+'#directory';a.dataset.directoryQuery='';return a;
+ a.href='?'+new URLSearchParams({'q-vendor':provider})+'#directory';a.dataset.directoryQuery='';return a;
 }
 function pair(main,sub,cls){const n=el('div',null,cls);n.append(el('strong',main));if(sub)n.append(el('small',sub,'sub'));return n}
 function toggle(p){
@@ -153,7 +158,7 @@ function openDialog(p){
  modal=p||'compare';const out=$('dialog-body');out.replaceChildren();
  const title=el('h2',p?p.provider+' · '+val(p.plan):tr('comparison'));title.id='dialog-title';out.append(title);$('drawer').setAttribute('aria-labelledby',title.id);
  if(p){
-  showBuying(out,p);renderStock(out,p);renderQuickEvidence(out,p);renderCommunityFor(out,p);
+  showBuying(out,p);renderStock(out,p);renderQuickEvidence(out,p);renderCommunityFor(out,p);renderRelatedReports(out,p);
   const grid=el('dl',null,'detailgrid');for(const [k,v] of attributes(p).filter(([k])=>!hardware.includes(k)&&k!=='price')){const d=el('div');d.append(el('dt',tr(k)),el('dd',v));grid.append(d)}
   const actions=el('div',null,'actionrow');actions.append(...merchantLinks(p),btn(tr('ask'),()=>copy(p.provider+' · '+val(p.plan)+'\n'+tr('askText')),'solid'));
   if(val(p.notes))out.append(el('p',val(p.notes),'detail-note'));out.append(grid);
@@ -223,13 +228,13 @@ function render(){
  document.querySelectorAll('[data-t]').forEach(n=>n.textContent=tr(n.dataset.t));
  $('search').placeholder=tr('searchHint');$('close').setAttribute('aria-label',tr('back'));$('zones').setAttribute('aria-label',tr('region'));
  const names=new Intl.DisplayNames([tags[lang]],{type:'region'});const options=iso.map(c=>[c,names.of(c)+' · '+c]).sort((a,b)=>a[1].localeCompare(b[1],tags[lang]));
- opt('country',options,$('country').value||'PH');renderControls();restoreQuickPickOnce();list();offers();countryLinks();showIP();motion();localizeEdition()
+ opt('country',options,$('country').value||'PH');renderControls();restoreQuickPickOnce();list();offers();renderJournal();paintHealth();countryLinks();showIP();motion();localizeEdition()
 }
 $('language').onchange=e=>{lang=e.target.value;save('lang',lang);render()};
 $('motion').onclick=()=>{paused=!paused;save('motion',paused?'paused':'playing');motion()};
 $('filters').onsubmit=e=>e.preventDefault();$('filters').oninput=()=>{pageIndex=0;list()};$('promo').onchange=()=>{pageIndex=0;list()};
 $('order').onchange=()=>{pageIndex=0;list()};
-$('reset').onclick=()=>{clearQuickPick();$('order').value='';zone='all';pageIndex=0;for(const k of ['search','kind','market','route','ip','carrier','buy-filter'])$(k).value='';$('promo').checked=false;renderControls();list()};
+$('reset').onclick=()=>{clearQuickPick();$('order').value='';zone='all';pageIndex=0;for(const k of ['search','vendor','kind','market','route','ip','carrier','buy-filter'])$(k).value='';$('promo').checked=false;renderControls();list()};
 $('compare').onclick=()=>openDialog(null);$('close').onclick=()=>closeComicDialog();$('drawer').onclose=()=>{modal=null};$('drawer').onclick=e=>{if(e.target===$('drawer')){const r=$('drawer').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeComicDialog()}};
 $('country').onchange=countryLinks;$('ipform').onsubmit=lookup;
 render();

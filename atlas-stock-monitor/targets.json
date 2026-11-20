@@ -368,5 +368,106 @@
   "key": "nnb-5",
   "sku": "SH #1 沪港",
   "zone": "HK"
+ },
+ {
+  "key": "vmsilo-tw",
+  "sku": "fz-tw ipv6（cu）",
+  "zone": "TW",
+  "quoteOnly": true
+ },
+ {
+  "key": "vmsilo-jp",
+  "sku": "sh-jp ipv6（ct）",
+  "zone": "JP",
+  "quoteOnly": true
+ },
+ {
+  "key": "vmsilo-de",
+  "sku": "sh-de ipv6（ct）",
+  "zone": "DE",
+  "quoteOnly": true
+ },
+ {
+  "key": "vmsilo-kr",
+  "sku": "sh-kr ipv6（ct）",
+  "zone": "KR",
+  "quoteOnly": true
+ },
+ {
+  "key": "vmsilo-us",
+  "sku": "sh-us ipv6（ct）",
+  "zone": "US",
+  "quoteOnly": true
+ },
+ {
+  "key": "vmsilo-hk",
+  "sku": "sh-hk ipv6（ct）",
+  "zone": "HK",
+  "quoteOnly": true
+ },
+ {
+  "key": "field-backwaves-sg01",
+  "sku": "SG | SIN | Global 01",
+  "zone": "SG"
+ },
+ {
+  "key": "field-wasabi-sg1",
+  "sku": "1GB - EXTREME PERFORMANCE - Singapore",
+  "zone": "SG"
+ },
+ {
+  "key": "vultr-v10-sao",
+  "sku": "vc2-1c-1gb",
+  "zone": "sao"
+ },
+ {
+  "key": "vultr-v10-scl",
+  "sku": "vc2-1c-1gb",
+  "zone": "scl"
+ },
+ {
+  "key": "vultr-v10-jnb",
+  "sku": "vc2-1c-1gb",
+  "zone": "jnb"
+ },
+ {
+  "key": "vultr-v10-mel",
+  "sku": "vc2-1c-1gb",
+  "zone": "mel"
+ },
+ {
+  "key": "vultr-v10-sto",
+  "sku": "vc2-1c-1gb",
+  "zone": "sto"
+ },
+ {
+  "key": "vultr-v10-waw",
+  "sku": "vc2-1c-1gb",
+  "zone": "waw"
+ },
+ {
+  "key": "vultr-v10-mad",
+  "sku": "vc2-1c-1gb",
+  "zone": "mad"
+ },
+ {
+  "key": "vultr-v10-mex",
+  "sku": "vc2-1c-1gb",
+  "zone": "mex"
+ },
+ {
+  "key": "vultr-v10-blr",
+  "sku": "vc2-1c-1gb",
+  "zone": "blr"
+ },
+ {
+  "key": "vultr-v10-tlv",
+  "sku": "vc2-1c-1gb",
+  "zone": "tlv"
+ },
+ {
+  "key": "meow-tamagowtt-1",
+  "sku": "WTT.500M.VPS.4",
+  "zone": "HK"
  }
 ]

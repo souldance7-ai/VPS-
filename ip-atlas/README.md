@@ -1,6 +1,6 @@
 # PITOPONE 全球主机选购图鉴
 
-长城漫画版收录 VPS、住宅接入候选及物理服务器。简体中文为默认语言，右上角可切换繁体中文、英语和日语。网址为 https://ip-guide.pitopone.com/ 。
+V10 时间轴版收录 VPS、住宅接入候选及物理服务器。简体中文为默认语言，右上角可切换繁体中文、英语和日语。网址为 https://ip-guide.pitopone.com/ 。
 
 ## 部署到现有网站
 
@@ -18,7 +18,7 @@ VPS.TAIPEI 的官方公开页列出平台和机房条件。其 VM 创建页要�
 ## 购买方案与复核
 
 - 「套餐报价」支持按机房、来源、活动状态、虚拟或物理服务器及库存探针筛选。展开后可对照 CPU、内存、硬盘、端口速率、流量、付款周期、续费和用码条件。一次性优惠、多期续费和用码前的原价都有独立说明。
-- 「补货与新帖」可切换 NodeSeek、烧饼推广、VPSDeer、VPSTS、VPSUU 和 PoorVPSMsg。公开 RSS 或频道预览提供帖子原文、发布时间与本次读取时间。打开消息标签后每 5 分钟刷新当前来源。可从识别出的商家直接进入站内方案目录。边缘缓存为 5 分钟。订阅源中断时，界面可显示上一份成功读取的缓存及其时间。
+- 「补货与新帖」可切换 NodeSeek、NodeSeek 拼车、MeowVPS 商家动态、ICMP不可达喵评测、烧饼推广、VPSDeer、VPSTS、VPSUU 和 PoorVPSMsg。公开 RSS 或频道预览提供帖子原文、发布时间与本次读取时间。打开消息标签后每 5 分钟刷新当前来源。可从识别出的商家直接进入站内方案目录。边缘缓存为 5 分钟。订阅源中断时，界面可显示上一份成功读取的缓存及其时间。
 - 「品牌活动」列出商家条款和活动窗口。「方案目录」支持地区、原生 IP 证据、大陆线路、运营商、服务器类别与优惠的组合，也可按商家、线路及优惠码搜索，最多并排比较三种方案。
 - 截止日期只有年月日时，活动页照录原文。具体 IP 类型和线路随产品、运营商及方向而异。核验页按用户输入的单个公网 IP 向 RIPEstat 查询路由前缀与起源 ASN。需由商家或用户提供的机房样本做进一步比对。
 
@@ -26,11 +26,11 @@ VPS.TAIPEI 的官方公开页列出平台和机房条件。其 VM 创建页要�
 
 套餐和机房标识与商家库存字段匹配时，目录和详情可以查询。详情打开时每 2 分钟刷新。显示商家原始来源及读取时间。Ava Nano 读取活动发布的剩余名额。第三方监控导航、结账按钮、多机房选择器分别保留来源和购买入口。库存判读依赖具体产品的公示字段。
 
-无人访问时持续采集，需要安装 atlas-stock-monitor 内的独立 Cloudflare Worker 与 D1。先发布网站，再按该目录的 README.zh-CN.md 安装。健康检查地址为 https://ip-guide.pitopone.com/api/stock-history/health 。每分钟处理最多六款，当前清单共 74 项，完整轮巡约 13 分钟。详情提供最近有效读数、读取时间及最近 30 天发生的状态变动。
+无人访问时持续采集，需要安装 atlas-stock-monitor 内的独立 Cloudflare Worker 与 D1。先发布网站，再按该目录的 README.zh-CN.md 安装。健康检查地址为 https://ip-guide.pitopone.com/api/stock-history/health 。每分钟处理最多六款，本版共 93 个目标，每个目标约 16 分钟读取一次。87 个支持库存或云主机可部署状态，57 个支持价格与配置，部分目标支持两种读取。详情提供最近有效读数、读取时间及最近 30 天发生的状态变动。
 
 ## 文件与来源
 
-catalog.js 与 edition-data.js 保存地区和产品证据。commercial-data.js 保存报价快照。community-data.js 保存 2026-11-20 采集的论坛和评测报价、相关商家条款及套餐映射。已编辑的价格表随版本部署。RSS 在网站运行时更新。
+catalog.js 与 edition-data.js 保存地区和产品证据。commercial-data.js 保存报价快照。community-data.js 保存 2026-11-20 采集的论坛和评测报价、相关商家条款及套餐映射。编辑采集价保留采集日，部署新版本时更新。商家公开的实时字段在方案详情另标来源与读取时间。订阅在浏览时自动刷新。
 
 forum-feed.js 展示订阅内容，community.js 展示报价和适用条件。stock.js 与 stock-list.js 调用同域库存 API。_worker.js 使用固定来源读取库存与订阅。_routes.json 限定接口路径。
 
@@ -47,3 +47,11 @@ forum-feed.js 展示订阅内容，community.js 展示报价和适用条件。st
 ## 专线商家
 
 network-plans.js 提供 Neburst、NewNB Cloud、Mkcloud 和 VMSilo 的详细方案。目的地可指线路出口；另列主机位置。价格按报价来源、币种及周期展示。Mkcloud 以商家产品组、SKU 和 ID 联合核对缺货清单；NewNB 按节点及月付订购状态采集。
+
+## V10 的测评与商品入口
+
+首页可以打开近期优惠、条件选机和 YUKI 的长城漫画。测评时间轴支持按作者、地区和型号查找。原文测评直达作者文章。作者主题索引保留公开列表中的页码。评测中的速度及报价对应测试样本，当前可采购的配置在商家目录查看。
+
+后台轮巡读取商家明确公开的字段。Vultr 按地区及型号显示可部署状态，VMSilo 产品页提供价格和配置。缺少库存字段时保留商家入口。线路名称按来源标明，用户测评保留其机房和方向。
+
+[作者主题](https://www.nodeseek.com/space/61099#/discussions) · [ICMP不可达喵](https://www.nodeseek.com/space/28302#/discussions) · [MeowVPS 时间轴](https://meowvps.com/timeline/) · [NodeSeek 拼车](https://www.nodeseek.com/categories/carpool)

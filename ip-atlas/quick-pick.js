@@ -24,7 +24,7 @@ const quickWords={
 };
 function quickWord(key){return quickWords[key][{sc:0,tc:1,en:2,ja:3}[lang]]}
 const quickActive=new Set(),quickFeatures=new WeakMap();
-const quickFields=['search','market','kind','ip','route','carrier','buy-filter','order'];
+const quickFields=['search','vendor','market','kind','ip','route','carrier','buy-filter','order'];
 let quickInitialized=false,quickRestoring=false,quickFeedback=false;
 function quickGroups(){
  const groups=Object.entries(IP_EVIDENCE_OPTIONS).map(([id,values])=>({id,values}));
@@ -128,7 +128,7 @@ function renderQuickPick(out,baseRows,rows){
  const head=el('div',null,'quick-mast'),heading=el('div',null,'quick-heading'),title=el('h3',quickWord('title')),summary=el('output',null,'quick-count');
  title.id='quick-title';out.setAttribute('aria-labelledby',title.id);summary.id='quick-count';summary.setAttribute('aria-live','polite');
  const placeLabel=el('label',null,'quick-place'),place=el('select');place.id='quick-market';
- place.add(new Option(quickWord('allLocations'),''));for(const code of Object.keys(MARKETS))place.add(new Option(market(code),code));
+ place.add(new Option(quickWord('allLocations'),''));for(const code of Object.keys(MARKETS).filter(code=>catalogMarkets.has(code)))place.add(new Option(market(code),code));
  place.value=$('market').value;
  place.onchange=()=>{const code=place.value;quickChange(()=>{if(!code||zone!=='all'&&!groups[zone].includes(code)){zone='all';renderControls()}$('market').value=code})};
  placeLabel.append(el('span',quickWord('location')),place);

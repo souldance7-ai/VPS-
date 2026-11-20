@@ -336,7 +336,155 @@ const networkStockTargets={
   "url": "https://api.nnb.ltd/api/v1/nodes"
  }
 };
+Object.assign(networkStockTargets,{
+ "field-backwaves-sg01": {
+  "family": "backwaves",
+  "zone": "SG",
+  "pid": 60,
+  "sku": "SG | SIN | Global 01",
+  "url": "https://backwaves.net/store/sg-sgp-global"
+ },
+ "field-wasabi-sg1": {
+  "family": "wasabi",
+  "zone": "SG",
+  "pid": 135,
+  "sku": "1GB - EXTREME PERFORMANCE - Singapore",
+  "url": "https://billing.wasabihosting.com/store/singapore-vps"
+ }
+});
+Object.assign(networkStockTargets,{
+ "vultr-v10-sao": {
+  "family": "vultr",
+  "zone": "sao",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/sao/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-scl": {
+  "family": "vultr",
+  "zone": "scl",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/scl/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-jnb": {
+  "family": "vultr",
+  "zone": "jnb",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/jnb/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-mel": {
+  "family": "vultr",
+  "zone": "mel",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/mel/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-sto": {
+  "family": "vultr",
+  "zone": "sto",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/sto/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-waw": {
+  "family": "vultr",
+  "zone": "waw",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/waw/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-mad": {
+  "family": "vultr",
+  "zone": "mad",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/mad/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-mex": {
+  "family": "vultr",
+  "zone": "mex",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/mex/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-blr": {
+  "family": "vultr",
+  "zone": "blr",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/blr/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ },
+ "vultr-v10-tlv": {
+  "family": "vultr",
+  "zone": "tlv",
+  "sku": "vc2-1c-1gb",
+  "url": "https://api.vultr.com/v2/regions/tlv/availability?type=vc2",
+  "priceUrl": "https://api.vultr.com/v2/plans?type=vc2&per_page=500"
+ }
+});
+Object.assign(networkStockTargets,{
+ "meow-tamagowtt-1": {
+  "family": "tamago",
+  "zone": "HK",
+  "pid": 27,
+  "sku": "WTT.500M.VPS.4",
+  "url": "https://tamago.network/index.php?rp=/store/wtt-dynamic-vps"
+ }
+});
+const quoteOnlyTargets={
+ "vmsilo-tw": {
+  "family": "vmsilo",
+  "zone": "TW",
+  "pid": 49,
+  "sku": "fz-tw ipv6（cu）",
+  "url": "https://portal.vmsilo.com/store/iepl",
+  "quoteOnly": true
+ },
+ "vmsilo-jp": {
+  "family": "vmsilo",
+  "zone": "JP",
+  "pid": 45,
+  "sku": "sh-jp ipv6（ct）",
+  "url": "https://portal.vmsilo.com/store/iepl",
+  "quoteOnly": true
+ },
+ "vmsilo-de": {
+  "family": "vmsilo",
+  "zone": "DE",
+  "pid": 55,
+  "sku": "sh-de ipv6（ct）",
+  "url": "https://portal.vmsilo.com/store/iepl",
+  "quoteOnly": true
+ },
+ "vmsilo-kr": {
+  "family": "vmsilo",
+  "zone": "KR",
+  "pid": 52,
+  "sku": "sh-kr ipv6（ct）",
+  "url": "https://portal.vmsilo.com/store/iepl",
+  "quoteOnly": true
+ },
+ "vmsilo-us": {
+  "family": "vmsilo",
+  "zone": "US",
+  "pid": 53,
+  "sku": "sh-us ipv6（ct）",
+  "url": "https://portal.vmsilo.com/store/iepl",
+  "quoteOnly": true
+ },
+ "vmsilo-hk": {
+  "family": "vmsilo",
+  "zone": "HK",
+  "pid": 54,
+  "sku": "sh-hk ipv6（ct）",
+  "url": "https://portal.vmsilo.com/store/iepl",
+  "quoteOnly": true
+ }
+};
 function stockTarget(key){
+ if(Object.hasOwn(quoteOnlyTargets,key))return quoteOnlyTargets[key];
  if(Object.hasOwn(networkStockTargets,key))return networkStockTargets[key];
  if(Object.hasOwn(campaignTargets,key))return campaignTargets[key];
  const host=key.match(/^hh-([A-Z]{3})-([1-7])$/);
@@ -361,6 +509,9 @@ function stockTarget(key){
  return null;
 }
 function getStockKey(p){
+ if(p.id==='meow-tamagowtt-1'&&/^Tamago(?: Network)?$/i.test(p.provider))return p.id;
+ if(p.provider==='Vultr'&&Object.hasOwn(networkStockTargets,p.id)&&networkStockTargets[p.id].family==='vultr')return p.id;
+ if(p.id==='field-backwaves-sg01'&&p.provider==='Back Waves'||p.id==='field-wasabi-sg1'&&p.provider==='Wasabi Hosting')return p.id;
  if(p.stockKey===p.id && Object.hasOwn(networkStockTargets,p.id))return p.id;
  const provider=p.provider.toLowerCase(),name=typeof p.plan==='string'?p.plan:(p.plan?.en||p.plan?.sc||'');
  const label=[p.sku,p.spec?.sku,p.specs?.sku,name].filter(s=>typeof s==='string').join(' ');
@@ -414,6 +565,48 @@ const stockStrings={
  local:['在部署后的网站查看自动库存','在部署後的網站查看自動庫存','Open the deployed site for live inventory','公開サイトで自動在庫照会を利用できます']
 };
 function stockText(key){return stockStrings[key][{sc:0,tc:1,en:2,ja:3}[lang]]}
+const offerStrings={
+ live:['商家实时报价','商家即時報價','Live provider quote','事業者の最新価格'],archived:['最近一次有效报价','最近一次有效報價','Last recorded provider quote','直近の有効な価格記録'],
+ unavailable:['本次未取得报价','本次未取得報價','No quote in this reading','今回の価格は取得できませんでした'],
+ fetch:['正在读取商家…','正在讀取商家…','Reading the provider…','事業者に照会中…'],
+ quoteStock:['实时报价与库存','即時報價與庫存','Live pricing and stock','最新価格と在庫'],quote:['商家实时报价','商家即時報價','Live provider pricing','事業者の最新価格'],
+ starting:['套餐月价起','方案月價起','Monthly price from','月額料金から'],
+ listed:['商家月价','商家月價','Listed monthly price','掲載月額'],base:['节点基础月价起','節點基本月價起','Node base price from','ノード基本月額から'],
+ 'base-config':['默认配置月价','預設配置月價','Default configuration per month','初期構成の月額'],
+ config:['可选配置范围','可選配置範圍','Selectable configuration range','選択できる構成の範囲'],
+ cpu:['处理器','處理器','CPU','CPU'],ram:['内存','記憶體','RAM','メモリ'],disk:['磁盘','磁碟','Storage','ディスク'],
+ port:['端口速率','連接埠速率','Port speed','ポート速度'],traffic:['每月流量','每月流量','Monthly transfer','月間転送量'],
+ ip:['IP 配置','IP 配置','IP allocation','IP 割当'],route:['商家标示线路','商家標示線路','Route advertised by provider','事業者の公称経路'],
+ peak:['峰值','峰值','peak','ピーク'],dedicated:['独享','獨享','dedicated','専有'],shared:['共享','共享','shared','共有'],both:['双向合计','雙向合計','in + out','送受信合算'],
+ source:['商家数据 ↗','商家資料 ↗','Provider data ↗','事業者データ ↗'],
+ refresh:['重新读取商家','重新讀取商家','Refresh provider data','事業者データを更新']
+};
+function offerText(k){return offerStrings[k][{sc:0,tc:1,en:2,ja:3}[lang]]}
+function quoteCapable(t){return t&&['nnb','vmsilo','mkcloud','backwaves','wasabi','vultr','tamago'].includes(t.family)}
+function observationKey(p){return getStockKey(p)||(p.provider.toLowerCase()==='vmsilo'&&Object.hasOwn(quoteOnlyTargets,p.id)?p.id:'')}
+function goodQuote(q){
+ return q&&typeof q.amount==='string'&&/^\d{1,8}(?:\.\d{1,4})?$/.test(q.amount)&&['CNY','HKD','EUR','USD'].includes(q.currency)&&q.period==='month'&&
+ ['listed','base','base-config','starting'].includes(q.basis)&&Number.isFinite(Date.parse(q.checkedAt));
+}
+function offerPrice(q){return offerText(q.basis)+' · '+q.currency+' '+q.amount}
+function renderOffer(container,q,t,archived=false){
+ container.replaceChildren();
+ if(!goodQuote(q)){container.append(el('small',offerText('unavailable')));return}
+ const price=el('strong',offerPrice(q)),time=new Date(q.checkedAt).toLocaleString(document.documentElement.lang,{hour12:false});
+ container.append(el('h4',offerText(archived?'archived':'live')),price,el('p',stockText('observed')+' '+time));
+ if(q.basis==='base')container.append(el('p',offerText('config')));
+ const list=el('dl',null,'stock-offer-specs');
+ for(const key of ['cpu','ram','disk','port','traffic','ip','route']){
+  if(typeof q[key]!=='string'||!q[key])continue;
+  let value=q[key];
+  if(key==='route'&&q.access&&q.access!==value)value=q.access+' · '+value;
+  if(key==='port'&&['peak','dedicated','shared'].includes(q.portType))value+=' · '+offerText(q.portType);
+  if(key==='traffic'&&q.direction==='both')value+=' · '+offerText('both');
+  list.append(el('dt',offerText(key)),el('dd',value));
+ }
+ container.append(list,link(offerText('source'),t.priceUrl||t.url));
+}
+
 async function readStockObservation(key,t,signal){
  const resp=await fetch('/api/stock/'+encodeURIComponent(key),{signal,cache:'no-store'});
  if(!resp.ok||!resp.headers.get('content-type')?.includes('application/json'))throw Error('endpoint');
@@ -423,6 +616,8 @@ async function readStockObservation(key,t,signal){
  return data;
 }
 function stockLabel(t,state){
+ if(t.family==='vultr'&&state==='in-stock')return ({sc:'区域开放部署此规格',tc:'區域開放部署此規格',en:'Plan available for deployment in this region',ja:'この地域で構築を受付中'})[lang];
+ if(t.family==='vultr'&&state==='sold-out')return ({sc:'区域未开放此规格',tc:'區域未開放此規格',en:'Plan unavailable for deployment in this region',ja:'この地域では構築を受付停止中'})[lang];
  if(t.family==='nnb'&&state==='in-stock')return ({sc:'节点开放月付订购',tc:'節點開放月付訂購',en:'Node open for monthly orders',ja:'ノードは月額注文受付中'})[lang];
  if(t.family==='nnb'&&state==='sold-out')return ({sc:'节点暂停月付订购',tc:'節點暫停月付訂購',en:'Monthly ordering closed',ja:'月額注文受付停止'})[lang];
  return stockText(t.family==='ava'&&stockStrings['quota-'+state]?'quota-'+state:state)}
@@ -446,6 +641,7 @@ function stockHistory(section,key,t){
    if(!Number.isFinite(age)||age< -60000||!['in-stock','low','sold-out','offline','unreported'].includes(s.state))throw Error('sample');
    summary.textContent+=' · '+(age>(d.periodMinutes+2)*60000?stockText('stale'):stockText('scheduled'))+' · '+d.periodMinutes+' min';
    body.append(el('p',stockLabel(t,s.state)+' · '+stamp(s.checkedAt)));
+   if(quoteCapable(t)&&goodQuote(d.lastOffer)){const archived=el('section',null,'stock-offer');renderOffer(archived,d.lastOffer,t,true);body.append(archived)}
    if(s.confirmedState&&['in-stock','low','sold-out'].includes(s.confirmedState)&&['offline','unreported'].includes(s.state)){
     body.append(el('p',stockText('lastConfirmed')+' · '+stockLabel(t,s.confirmedState)+' · '+stamp(s.confirmedAt)));
    }
@@ -471,16 +667,18 @@ function renderStock(out,p){
  status.setAttribute('role','status');const links=el('div',null,'linkline');
  links.append(link(stockText('order'),p.url));
  section.append(title,status);out.append(section);
- const key=getStockKey(p),t=stockTarget(key);
+ const key=observationKey(p),t=stockTarget(key);
  if(!t){status.textContent=stockText('manual');section.append(links);return}
  if(t.family==='ava')title.textContent=stockText('quota');
+ const quote=quoteCapable(t)?el('div',null,'stock-offer'):null;
+ if(quote){title.textContent=offerText(t.quoteOnly?'quote':'quoteStock');section.insertBefore(quote,status);const recorded=out.querySelector('.purchase');if(recorded?.parentElement===out)out.insertBefore(section,recorded)}
  const fixed=t.family==='ovh'?' · 32 GB ECC / 2 × 512 GB NVMe':'';
  section.append(el('p',t.zone.toUpperCase()+' · '+t.sku+fixed,'stock-config'));
- links.append(link(stockText('source'),t.url));
+ if(!quote||t.priceUrl)links.append(link(stockText('source'),t.url));
  if(location.protocol==='file:'){status.textContent=stockText('local');section.append(links);return}
  const detail=el('small',stockText('interval'),'stock-time');section.append(detail);
  const history=stockHistory(section,key,t);
- const refresh=btn(stockText('refresh'),run,'inline');links.prepend(refresh);section.append(links);
+ const refresh=btn(quote?offerText('refresh'):stockText('refresh'),run,'inline');links.prepend(refresh);section.append(links);
  const dialog=section.closest('dialog');let timer,ctrl,dead=false;
  function stop(){dead=true;history.stop();clearTimeout(timer);ctrl?.abort();dialog?.removeEventListener('close',stop);document.removeEventListener('visibilitychange',visible);stopStockSession=null}
  function visible(){if(!document.hidden&&!dead&&!ctrl)run()}
@@ -488,14 +686,14 @@ function renderStock(out,p){
   clearTimeout(timer);if(dead||ctrl)return;
   if(!section.isConnected){stop();return}
   if(document.hidden){status.textContent=stockText('loading');return}
-  history.update();ctrl=new AbortController();refresh.disabled=true;status.textContent=stockText('loading');section.dataset.stockState='loading';detail.textContent=stockText('interval');
+  history.update();ctrl=new AbortController();refresh.disabled=true;status.textContent=quote?offerText('fetch'):stockText('loading');section.dataset.stockState='loading';detail.textContent=stockText('interval');
   const timeout=setTimeout(()=>ctrl?.abort(),10000);
   try{
    const data=await readStockObservation(key,t,ctrl.signal);if(dead)return;
    const time=Date.parse(data.checkedAt);
-   status.textContent=stockLabel(t,data.state);section.dataset.stockState=data.state;
+   status.textContent=stockLabel(t,data.state);section.dataset.stockState=data.state;if(quote)renderOffer(quote,data.offer,t);
    detail.textContent=stockText('observed')+' '+new Date(time).toLocaleString(document.documentElement.lang,{hour12:false})+' · '+stockText('interval');
-  }catch{if(!dead){status.textContent=stockText('offline');section.dataset.stockState='offline'}}
+  }catch{if(!dead){status.textContent=stockText('offline');section.dataset.stockState='offline';if(quote)renderOffer(quote,null,t)}}
   finally{clearTimeout(timeout);ctrl=null;if(!dead){refresh.disabled=false;timer=setTimeout(run,120000)}}
  }
  dialog?.addEventListener('close',stop);document.addEventListener('visibilitychange',visible);stopStockSession=stop;run();

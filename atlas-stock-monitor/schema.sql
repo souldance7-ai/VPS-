@@ -14,3 +14,9 @@ CREATE TABLE IF NOT EXISTS stock_changes (
  PRIMARY KEY (probe, at)
 );
 CREATE INDEX IF NOT EXISTS stock_changes_by_time ON stock_changes(at);
+
+CREATE TABLE IF NOT EXISTS offer_latest (
+ probe TEXT PRIMARY KEY,
+ observed_at INTEGER NOT NULL,
+ payload TEXT NOT NULL
+);
