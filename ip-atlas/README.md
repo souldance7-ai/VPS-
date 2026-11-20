@@ -1,31 +1,33 @@
 # PITOPONE 全球主机选购图鉴
 
-简体中文默认，支持繁体中文、英语、日语。纯静态 Cloudflare Pages 项目，无构建依赖。部署包中的 index.html、脚本、样式、art、fonts 和 _headers 均位于站点根目录。保留目录结构并上传整个 ZIP。以本地 HTTP 服务预览。生产域名为 https://ip-guide.pitopone.com/ 。
+长城漫画版收录 VPS、住宅接入候选及物理服务器。简体中文为默认语言，右上角可切换繁体中文、英语和日语。网址为 https://ip-guide.pitopone.com/ 。
 
-## 编辑目录
+## 部署到现有网站
 
-catalog.js 的每条记录对应具体市场与产品。city、provider 与 plan 标识方案；notes 提供四种语言的证据范围与购买提示。url 为商家来源，proof 为补充证据，lg 为公开测试页。商家声明按套餐标注，实测线路需要日期、方向、运营商与可复核记录。入口 ASN、IP 登记国及地理位置不能单独证明住宅接入。IP 检查仅在主动提交后向 RIPEstat 查询单个地址，其他数据库由读者自行打开。
+打开 Cloudflare 的「Workers 和 Pages」，选择现有项目 pitopone-ip-atlas，进入「部署 → 创建部署 → 生产环境」，直接上传 pitopone-atlas-forum-v6.zip。index.html、_worker.js 和 _routes.json 都在 ZIP 根目录。完成后打开 https://ip-guide.pitopone.com/#offers 。网站和库存历史采集器使用两个独立部署包。
 
-## 优惠维护
+## 购买方案与复核
 
-atlas.js 保存活动原文、起止时间及商家时区，locale.js 保存适用条件。只有证据覆盖的产品才可填写 deal。页面按时间显示活动状态，后续新增活动需要编辑与重新部署。网站内容核对日期为 2026-11-18。
+- 「套餐报价」支持按机房、来源、活动状态、虚拟或物理服务器及库存探针筛选。展开后可对照 CPU、内存、硬盘、端口速率、流量、付款周期、续费和用码条件。一次性优惠、多期续费和用码前的原价都有独立说明。
+- 「论坛新帖」读取 NodeSeek 的公开全站 RSS 和烧饼推广版 RSS，显示 VPS 相关标题、原文和读取时间。边缘缓存为 5 分钟。订阅源中断时，界面可显示上一份成功读取的缓存及其时间。
+- 「品牌活动」列出商家条款和活动窗口。「方案目录」支持地区、原生 IP 证据、大陆线路、运营商、服务器类别与优惠的组合，也可按商家、线路及优惠码搜索，最多并排比较三种方案。
+- 截止日期只有年月日时，活动页照录原文。具体 IP 类型和线路随产品、运营商及方向而异。核验页按用户输入的单个公网 IP 向 RIPEstat 查询路由前缀与起源 ASN。需由商家或用户提供的机房样本做进一步比对。
 
-## 来源
+## 库存读取
 
-- https://bulianglin.com/archives/tiktokvps.html
-- https://youtu.be/du1G5dG1qPQ
-- https://www.nodeseek.com/post-1062104-1
-- 详见各方案的商家与补充证据链接。海底光缆为原创概念插画。
-## 区域版
+套餐和机房标识与商家库存字段匹配时，目录和详情可以查询。详情打开时每 2 分钟刷新。显示商家原始来源及读取时间。Ava Nano 读取活动发布的剩余名额。第三方监控导航、结账按钮、多机房选择器分别保留来源和购买入口。库存判读依赖具体产品的公示字段。
 
-edition-data.js 收录新增地区记录及其四语采购说明，catalog.js 保留前版方案。每个市场按商家品牌去重，同品牌跨区可分别查询。界面分页并支持三个地区场景、减少动态效果、个人本地采购笔记。图像属于原创场景插画。Instrument Serif 的字体许可见 fonts/OFL.txt。
+无人访问时持续采集，需要安装 atlas-stock-monitor 内的独立 Cloudflare Worker 与 D1。先发布网站，再按该目录的 README.zh-CN.md 安装。健康检查地址为 https://ip-guide.pitopone.com/api/stock-history/health 。每分钟处理最多六款，当前清单完整轮巡约 6 分钟。详情提供最近有效读数、读取时间及最近 30 天发生的状态变动。
 
-## 长城漫画版
+## 文件与来源
 
-comic.js 与 comic.css 提供封面画格、滑动浏览、整屏叠页、筛选折叠及右侧详情抽屉。原创画面位于 art/wall-1.webp 至 wall-3.webp。Yuki 跳跃动画由 yuki-jump.gif 播放，暂停或减少动态效果时使用 yuki-still.webp。保留 #directory、#verify、#offers 和 #field 深层链接。
+catalog.js 与 edition-data.js 保存地区和产品证据。commercial-data.js 保存报价快照。community-data.js 保存 2026-11-20 采集的论坛和评测报价、相关商家条款及套餐映射。已编辑的价格表随版本部署。RSS 在网站运行时更新。
 
-## 选购与库存版 · 2026-11-20
+forum-feed.js 展示订阅内容，community.js 展示报价和适用条件。stock.js 与 stock-list.js 调用同域库存 API。_worker.js 使用固定来源读取库存与订阅。_routes.json 限定接口路径。
 
-生产项目为 pitopone-ip-atlas。把部署 ZIP 上传到现有 Pages 项目的生产环境，保留根目录 _worker.js 和 _routes.json。静态资源由 Pages 提供，库存由同域 /api/stock/ 接口提供。打开独立 HTML 文件可以预览目录，实时库存需要部署环境。
+漫画分镜、转场和筛选折叠位于 comic.js 和 comic.css。art 内含原创插画和 Yuki 跳跃动画，暂停或使用系统减少动态效果时显示静态图。字体许可见 fonts/OFL.txt。
 
-commercial-data.js 保存按产品和地区整理的报价快照。使用原币别及其实际计费周期。购买页分别展示 CPU、内存、存储、端口速率和流量额度。目录允许仅显示公开报价、公开配置和可自动查询库存的方案。stock.js 和 stock-list.js 对可见产品更新库存，_worker.js 读取商家公开库存源。商家库存读取时间与下单时的最终库存可能有差异。优惠按商家条款及其时区判断是否到期，新优惠和价格需要更新数据后部署。
+- [NodeSeek 情报](https://www.nodeseek.com/categories/info) · [NodeSeek 推广](https://www.nodeseek.com/categories/promotion)
+- [烧饼推广](https://sb.sb/go/promotion/) · [订阅说明](https://sb.sb/pages/feeds/)
+- [D-VPS 超市](https://d-vps.com/) · [DigVPS RackNerd 评测](https://digvps.com/review/racknerd)
+- [不良林文章](https://bulianglin.com/archives/tiktokvps.html) · [原视频](https://youtu.be/du1G5dG1qPQ) · [NodeSeek 查找思路](https://www.nodeseek.com/post-1062104-1)

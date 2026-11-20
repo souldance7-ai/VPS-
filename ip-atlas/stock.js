@@ -4,7 +4,34 @@ const stockCities={
  TPE:['TW','taipei-taiwan'],HKG:['HK','hong-kong'],TYO:['JP','tokyo-japan'],OSA:['JP','osaka-japan'],SEL:['KR','seoul-south-korea'],MNL:['PH','manila-philippines'],HAN:['VN','hanoi-vietnam'],SIN:['SG','singapore']
 };
 const ovhZones={CA:'bhs',FR:'gra',DE:'fra',GB:'lon'};
+const campaignTargets={
+ "ava-nano": {
+  "family": "ava",
+  "sku": "VPS Nano",
+  "zone": "MD",
+  "url": "https://ava.hosting/vps/vps-nano/"
+ },
+ "dedi-cn2annual": {
+  "family": "dedione",
+  "sku": "LAX.VPS.CN2.1C1G10G-Annual",
+  "zone": "LAX",
+  "url": "https://dedione.com/store/los-angeles-kvm-vps-cn2gia"
+ },
+ "dedi-cn25": {
+  "family": "dedione",
+  "sku": "20260520-LAX.VPS.CN.2C2G40G-Special-25.99",
+  "zone": "LAX",
+  "url": "https://dedione.com/store/special-vps-plans"
+ },
+ "dedi-cmin19": {
+  "family": "dedione",
+  "sku": "20260606-LAX.VPS.CMIN2.1C1G10G-Special-19.99",
+  "zone": "LAX",
+  "url": "https://dedione.com/store/special-vps-plans"
+ }
+};
 function stockTarget(key){
+ if(Object.hasOwn(campaignTargets,key))return campaignTargets[key];
  const host=key.match(/^hh-([A-Z]{3})-([1-7])$/);
  if(host&&stockCities[host[1]]) return {family:'hosthink',sku:host[1]+'-'+host[2],zone:stockCities[host[1]][0],url:'https://www.hosthink.net/dedicated-servers/'+stockCities[host[1]][1]+'/'};
  if(key.startsWith('ovh-')&&Object.values(ovhZones).includes(key.slice(4))){
@@ -27,6 +54,9 @@ function stockTarget(key){
 function getStockKey(p){
  const provider=p.provider.toLowerCase(),name=typeof p.plan==='string'?p.plan:(p.plan?.en||p.plan?.sc||'');
  const label=[p.sku,p.spec?.sku,p.specs?.sku,name].filter(s=>typeof s==='string').join(' ');
+ const market=p.market||(Array.isArray(p.markets)&&p.markets.length===1?p.markets[0]:'');
+ if(/^ava(?:host(?:ing)?|[.]hosting)?$/.test(provider.replace(/\s+/g,''))&&market==='MD'&&(p.stockKey==='ava-nano'||p.id==='ns-ava-nano'||/VPS Nano/i.test(label)))return 'ava-nano';
+ if(/^dedione(?:[.]com)?$/.test(provider.replace(/\s+/g,''))&&market==='LAX'){for(const [k,t] of Object.entries(campaignTargets))if(t.family==='dedione'&&label.toLowerCase().includes(t.sku.toLowerCase()))return k}
  if(provider==='hosthink'){
   const sku=label.match(/\b([A-Z]{3})-([1-7])\b/);
   if(sku&&stockCities[sku[1]]?.[0]===p.market)return 'hh-'+sku[0];
@@ -42,6 +72,18 @@ function getStockKey(p){
 }
 function hasStockProbe(p){return Boolean(getStockKey(p))}
 const stockStrings={
+ history:["后台库存记录","背景庫存紀錄","Inventory history","在庫履歴"],
+ notInstalled:["后台采集未启用","背景採集未啟用","Background checks disabled","定期収集は未設定"],
+ awaiting:["等待首次采集","等待首次採集","Awaiting first sample","初回の収集待ち"],
+ scheduled:["定时采集","定時採集","Scheduled checks","定期収集"],
+ stale:["采集延迟","採集延遲","Overdue sample","収集に遅れ"],
+ lastChange:["上次库存变化","上次庫存變化","Last availability change","最終在庫変動"],
+ lastConfirmed:["上次商家明确状态","上次商家明確狀態","Last reported availability","直近の明示在庫"],
+ noHistory:["近 30 天尚无已记录的库存变化","近 30 天尚無已記錄的庫存變化","No recorded availability changes in the past 30 days","過去30日間に記録された在庫変動はありません"],
+ historyOffline:["暂时无法读取","暫時無法讀取","History unavailable","履歴を取得できません"],
+ quota:['活动名额','活動名額','Campaign allotment','キャンペーン枠'],
+ 'quota-in-stock':['活动名额可用','活動名額可用','Campaign slots available','キャンペーン枠あり'],
+ 'quota-sold-out':['活动名额已满','活動名額已滿','Campaign slots exhausted','キャンペーン枠終了'],
  title:['交付库存','交付庫存','Deployment availability','在庫・提供状況'],
  loading:['正在查询商家库存…','正在查詢商家庫存…','Checking vendor inventory…','事業者の在庫を照会中…'],
  'in-stock':['商家显示有货','商家顯示有貨','In stock at the provider','事業者表示：在庫あり'],
@@ -66,6 +108,45 @@ async function readStockObservation(key,t,signal){
  if(data.key!==key||data.sku!==t.sku||data.zone!==t.zone||!Number.isFinite(time)||age>300000||age< -60000||!['in-stock','sold-out','low','unreported','offline'].includes(data.state))throw Error('invalid observation');
  return data;
 }
+function stockLabel(t,state){return stockText(t.family==='ava'&&stockStrings['quota-'+state]?'quota-'+state:state)}
+function stockHistory(section,key,t){
+ const details=el('details',null,'stock-history'),summary=el('summary',stockText('history')),body=el('div');
+ details.append(summary,body);section.append(details);
+ let ended=false,ctrl=null;
+ function stamp(s){const n=Date.parse(s);return Number.isFinite(n)?new Date(n).toLocaleString(document.documentElement.lang,{hour12:false}):'—'}
+ async function update(){
+  if(ended||ctrl||document.hidden)return;
+  ctrl=new AbortController();const timeout=setTimeout(()=>ctrl?.abort(),10000);
+  try{
+   const r=await fetch('/api/stock-history/'+encodeURIComponent(key),{signal:ctrl.signal,cache:'no-store'});
+   if(!r.ok||!r.headers.get('content-type')?.includes('application/json'))throw Error('history');
+   const d=await r.json();if(ended)return;
+   body.replaceChildren();summary.textContent=stockText('history');
+   if(d.installed===false){summary.textContent+=' · '+stockText('notInstalled');return}
+   if(d.installed!==true||d.key!==key||d.zone!==t.zone||d.sku!==t.sku||!Number.isInteger(d.periodMinutes)||d.periodMinutes<1)throw Error('identity');
+   if(d.latest===null){summary.textContent+=' · '+stockText('awaiting');return}
+   const s=d.latest,age=Date.now()-Date.parse(s.checkedAt);
+   if(!Number.isFinite(age)||age< -60000||!['in-stock','low','sold-out','offline','unreported'].includes(s.state))throw Error('sample');
+   summary.textContent+=' · '+(age>(d.periodMinutes+2)*60000?stockText('stale'):stockText('scheduled'))+' · '+d.periodMinutes+' min';
+   body.append(el('p',stockLabel(t,s.state)+' · '+stamp(s.checkedAt)));
+   if(s.confirmedState&&['in-stock','low','sold-out'].includes(s.confirmedState)&&['offline','unreported'].includes(s.state)){
+    body.append(el('p',stockText('lastConfirmed')+' · '+stockLabel(t,s.confirmedState)+' · '+stamp(s.confirmedAt)));
+   }
+   if(s.changedAt)body.append(el('p',stockText('lastChange')+' · '+stamp(s.changedAt)));
+   if(!Array.isArray(d.events))throw Error('events');
+   const list=el('ol');
+   for(const e of d.events.slice(0,5)){
+    if(Number.isFinite(Date.parse(e.at))&&['in-stock','low','sold-out'].includes(e.from)&&['in-stock','low','sold-out'].includes(e.to)){
+     list.append(el('li',stamp(e.at)+' · '+stockLabel(t,e.from)+' → '+stockLabel(t,e.to)));
+    }
+   }
+   body.append(list.childElementCount?list:el('p',stockText('noHistory')));
+  }catch{if(!ended){summary.textContent=stockText('history')+' · '+stockText('historyOffline');body.replaceChildren()}}
+  finally{clearTimeout(timeout);ctrl=null}
+ }
+ details.addEventListener('toggle',()=>{if(details.open)update()});
+ return {update,stop(){ended=true;ctrl?.abort()}};
+}
 let stopStockSession=null;
 function renderStock(out,p){
  stopStockSession?.();
@@ -75,25 +156,27 @@ function renderStock(out,p){
  section.append(title,status);out.append(section);
  const key=getStockKey(p),t=stockTarget(key);
  if(!t){status.textContent=stockText('manual');section.append(links);return}
+ if(t.family==='ava')title.textContent=stockText('quota');
  const fixed=t.family==='ovh'?' · 32 GB ECC / 2 × 512 GB NVMe':'';
  section.append(el('p',t.zone.toUpperCase()+' · '+t.sku+fixed,'stock-config'));
  links.append(link(stockText('source'),t.url));
  if(location.protocol==='file:'){status.textContent=stockText('local');section.append(links);return}
  const detail=el('small',stockText('interval'),'stock-time');section.append(detail);
+ const history=stockHistory(section,key,t);
  const refresh=btn(stockText('refresh'),run,'inline');links.prepend(refresh);section.append(links);
  const dialog=section.closest('dialog');let timer,ctrl,dead=false;
- function stop(){dead=true;clearTimeout(timer);ctrl?.abort();dialog?.removeEventListener('close',stop);document.removeEventListener('visibilitychange',visible);stopStockSession=null}
+ function stop(){dead=true;history.stop();clearTimeout(timer);ctrl?.abort();dialog?.removeEventListener('close',stop);document.removeEventListener('visibilitychange',visible);stopStockSession=null}
  function visible(){if(!document.hidden&&!dead&&!ctrl)run()}
  async function run(){
   clearTimeout(timer);if(dead||ctrl)return;
   if(!section.isConnected){stop();return}
   if(document.hidden){status.textContent=stockText('loading');return}
-  ctrl=new AbortController();refresh.disabled=true;status.textContent=stockText('loading');section.dataset.stockState='loading';detail.textContent=stockText('interval');
+  history.update();ctrl=new AbortController();refresh.disabled=true;status.textContent=stockText('loading');section.dataset.stockState='loading';detail.textContent=stockText('interval');
   const timeout=setTimeout(()=>ctrl?.abort(),10000);
   try{
    const data=await readStockObservation(key,t,ctrl.signal);if(dead)return;
    const time=Date.parse(data.checkedAt);
-   status.textContent=stockText(data.state);section.dataset.stockState=data.state;
+   status.textContent=stockLabel(t,data.state);section.dataset.stockState=data.state;
    detail.textContent=stockText('observed')+' '+new Date(time).toLocaleString(document.documentElement.lang,{hour12:false})+' · '+stockText('interval');
   }catch{if(!dead){status.textContent=stockText('offline');section.dataset.stockState='offline'}}
   finally{clearTimeout(timeout);ctrl=null;if(!dead){refresh.disabled=false;timer=setTimeout(run,120000)}}

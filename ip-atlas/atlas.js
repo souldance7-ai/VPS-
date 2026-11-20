@@ -4,6 +4,7 @@ const groups = {asia:['JP','TW','HK','KR','VN','PH','SG'],america:['CA','LAX','S
 const tags = {sc:'zh-CN',tc:'zh-TW',en:'en',ja:'ja'};
 const carrierNames = {CT:['中国电信','中國電信','China Telecom','中国電信'],CU:['中国联通','中國聯通','China Unicom','中国聯通'],CM:['中国移动','中國移動','China Mobile','中国移動']};
 const deals = {
+ purevoltage:{brand:'PureVoltage · Black Friday',start:'2026-11-26T00:00:00-05:00',end:'2026-11-30T23:59:59-05:00',zone:'America/New_York',url:'https://purevoltage.com/black-friday-sale/',rate:'16 GB Bolt VPS'},
  ovh:{brand:'OVHcloud · SYS-2',start:'2026-11-17T16:00:00Z',end:'2026-12-01T20:00:00Z',zone:'America/New_York',url:'https://us.ovhcloud.com/deals/'},
  nvh:{brand:'NVHCloud · VPS',start:'2026-11-16T23:00:00Z',end:'2026-11-30T22:59:59Z',zone:'Europe/Paris',url:'https://www.nvhcloud.com/en/black-friday',code:'BLACKFRIDAY26'},
  ovhfr:{brand:'OVHcloud FR · SYS-2',start:'2026-11-17T13:00:00Z',end:'2026-12-01T13:00:00Z',zone:'Europe/Paris',url:'https://www.ovhcloud.com/fr/black-friday/'},
@@ -13,6 +14,25 @@ const deals = {
  ownwin:{brand:'OwnWebServers · Windows / Forex VPS',end:'2026-12-01T04:59:59Z',zone:'America/New_York',url:'https://ownwebservers.com/vps-black-friday-offer',code:'BFWIN50',rate:'−50%'},
  devoster:{brand:'Devoster · KVM VPS',start:'2026-11-20T00:00:00Z',end:'2026-12-02T23:59:59Z',zone:'UTC',url:'https://devoster.com/black-friday/',code:'BF2026',rate:'−15% / −30%'}
 };
+const campaignHeadings={sc:"品牌活动与适用条件",tc:"品牌活動與適用條件",en:"Merchant campaigns and eligibility",ja:"事業者キャンペーンと適用条件"};
+for(const [language,heading] of Object.entries(campaignHeadings))WORDS[language].brandCampaigns=heading;
+for(const [key,labels] of Object.entries({skuQuotes:['套餐报价','套餐報價','Plan prices','プラン料金'],freshPosts:['论坛新帖','論壇新帖','Latest threads','最新の投稿'],brandDeals:['品牌活动','品牌活動','Merchant campaigns','事業者のセール']}))editionLangs.forEach((language,i)=>WORDS[language][key]=labels[i]);
+const pvTerms={sc:'纽约、达拉斯和西雅图列入正式黑五活动。16 GB Bolt VPS 的价格和完整配置在美国东部时间 11 月 26 日公开，具体可选机房以对应订单为准；纽约独服预售另有条款。',tc:'紐約、達拉斯和西雅圖列入正式黑五活動。16 GB Bolt VPS 的價格與完整規格於美東時間 11 月 26 日公布，可選機房依該筆訂單；紐約獨服預售另有條款。',en:'The Black Friday event covers New York, Dallas and Seattle. The price and full specs of the 16 GB Bolt VPS are revealed November 26 Eastern time. Check each SKU’s order form for locations. The NYC dedicated pre-sale has separate terms.',ja:'本セールの対象地域はニューヨーク、ダラス、シアトル。16 GB Bolt VPS の価格と詳細は米国東部時間11月26日に公開予定です。選べる拠点は各注文画面でご確認ください。ニューヨーク専用サーバーの先行販売には別の条件があります。'};
+for(const [language,terms] of Object.entries(pvTerms))WORDS[language].purevoltageTerms=terms;
+const offerTabs=[...document.querySelectorAll('[data-offer-tab]')];
+function activateOfferTab(button){
+ for(const tab of offerTabs){const active=tab===button;tab.tabIndex=active?0:-1;tab.setAttribute('aria-selected',String(active));$(tab.getAttribute('aria-controls')).hidden=!active}
+ if(button.dataset.offerTab==='feed')drawForumFeed();
+}
+offerTabs.forEach((tab,i)=>{
+ tab.addEventListener('click',()=>activateOfferTab(tab));
+ tab.addEventListener('keydown',e=>{
+  const next={ArrowRight:(i+1)%offerTabs.length,ArrowLeft:(i+offerTabs.length-1)%offerTabs.length,Home:0,End:offerTabs.length-1}[e.key];
+  if(next===undefined)return;e.preventDefault();activateOfferTab(offerTabs[next]);offerTabs[next].focus();
+ });
+});
+const offersByPlan=new Map();
+for(const offer of COMMUNITY_OFFERS){for(const id of offer.planIds||[]){if(!offersByPlan.has(id))offersByPlan.set(id,[]);offersByPlan.get(id).push(offer)}}
 const iso = 'AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY HK HM HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS YE YT ZA ZM ZW'.split(' ');
 function saved(key){try{return localStorage.getItem('atlas.'+key)}catch{return null}}
 function save(key,v){try{localStorage.setItem('atlas.'+key,v)}catch{}}
@@ -48,6 +68,7 @@ const norm = s => String(s).normalize('NFKC').toLowerCase().replace(/[\s·/_–-
 function searchable(p){
  const aliases={SJC:'San Jose San José 圣河西 聖河西 圣何塞 聖荷西 圣荷西 硅谷 矽谷',SEA:'Seattle 西雅图 西雅圖',LAX:'Los Angeles 洛城 洛杉矶 洛杉磯',TW:'Taiwan 臺灣 台灣 台湾',CA:'Canada 加拿大'};
  const tokens=[p.market,...Object.values(MARKETS[p.market]),aliases[p.market]||'',p.provider,val(p.plan),p.city,...(cityNames[p.city]||[]),val(p.routeName),tr(p.kind),tr(p.ip)];
+ for(const offer of offersByPlan.get(p.id)||[])tokens.push(offer.code||"",offer.source,offer.sku||"",offer.routeName||"");
  if(nativeLead(p))tokens.push('原生 native');
  tokens.push(showSku(p),...hardware.map(k=>specValue(p,k)),priceText(p));
  for(const c of p.carriers)tokens.push(c,...(carrierNames[c]||[]));
@@ -59,7 +80,11 @@ function matches(p){
  if($('ip').value==='native' ? !nativeLead(p) : $('ip').value && $('ip').value!==p.ip)return false;
  for(const k of ['market','kind','route'])if($(k).value && p[k]!==$(k).value)return false;
  if($('carrier').value && !p.carriers.includes($('carrier').value))return false;
- if($('promo').checked && !(deals[p.deal] && stateOf(deals[p.deal])==='active'))return false;
+ if($('promo').checked){
+  const brandOffer=deals[p.deal]&&stateOf(deals[p.deal])==='active';
+  const skuOffer=offersByPlan.get(p.id)?.some(o=>['offer','checkout','limited'].includes(communityStage(o)));
+  if(!brandOffer&&!skuOffer)return false;
+ }
  return $('search').value.trim().split(/\s+/).every(q=>searchable(p).includes(norm(q)));
 }
 function pair(main,sub,cls){const n=el('div',null,cls);n.append(el('strong',main));if(sub)n.append(el('small',sub,'sub'));return n}
@@ -87,14 +112,14 @@ function list(){
 function attributes(p){return [
  ['market',market(p.market)+' · '+city(p)],['kind',tr(p.kind)],['ip',tr(p.ip==='unknown'?'ipUnknown':p.ip)],
  ['route',[tr(p.route==='unknown'?'routeUnknown':p.route),val(p.routeName)].filter(Boolean).join(' · ')],['carrier',p.carriers.map(carrier).join(' / ')||tr('unknown')],
- ['price',priceText(p)||tr('noPrice')],...hardware.map(k=>[k,specValue(p,k)||tr('specAvailability')])
+ ['price',priceText(p)?[priceText(p),purchaseQualifier(p)].filter(Boolean).join(' · '):tr('noPrice')],...hardware.map(k=>[k,specValue(p,k)||tr('specAvailability')])
 ]}
 function merchantLinks(p){const links=[link(tr('source')+' ↗',p.url)];if(p.lg)links.push(link(tr('test')+' ↗',p.lg));if(p.proof && /^https?:\/\//.test(p.proof) && p.proof!==p.url)links.push(link(tr('evidence')+' ↗',p.proof));if(deals[p.deal])links.push(link(tr('terms')+' ↗',deals[p.deal].url));return links}
 function openDialog(p){
  modal=p||'compare';const out=$('dialog-body');out.replaceChildren();
  const title=el('h2',p?p.provider+' · '+val(p.plan):tr('comparison'));title.id='dialog-title';out.append(title);$('drawer').setAttribute('aria-labelledby',title.id);
  if(p){
-  showBuying(out,p);renderStock(out,p);
+  showBuying(out,p);renderStock(out,p);renderCommunityFor(out,p);
   const grid=el('dl',null,'detailgrid');for(const [k,v] of attributes(p).filter(([k])=>!hardware.includes(k)&&k!=='price')){const d=el('div');d.append(el('dt',tr(k)),el('dd',v));grid.append(d)}
   const actions=el('div',null,'actionrow');actions.append(...merchantLinks(p),btn(tr('ask'),()=>copy(p.provider+' · '+val(p.plan)+'\n'+tr('askText')),'solid'));
   if(val(p.notes))out.append(el('p',val(p.notes),'detail-note'));out.append(grid);
@@ -145,6 +170,7 @@ async function lookup(ev){
  }catch{if(id===lookupId)ipState={ip,status:'failed'}}finally{clearTimeout(timer);if(id===lookupId)showIP()}
 }
 function offers(){
+ renderCommunity();drawForumFeed();
  const box=$('deals');box.replaceChildren();for(const [id,d] of Object.entries(deals)){
   const status=stateOf(d),section=el('article',null,'deal'),meta=el('div',null,'deal-meta');
   meta.append(el('h3',d.brand),el('span',tr(status),'state '+status));

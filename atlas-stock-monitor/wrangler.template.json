@@ -1,0 +1,28 @@
+{
+  "name": "pitopone-stock-watch",
+  "main": "monitor.mjs",
+  "compatibility_date": "2025-11-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "triggers": {
+    "crons": [
+      "* * * * *"
+    ]
+  },
+  "routes": [
+    {
+      "pattern": "ip-guide.pitopone.com/api/stock-history/*",
+      "zone_name": "pitopone.com"
+    }
+  ],
+  "vars": {
+    "PAGES_ORIGIN": "https://pitopone-ip-atlas.pages.dev"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pitopone-stock-history",
+      "database_id": "REPLACE_FROM_CLOUDFLARE"
+    }
+  ]
+}

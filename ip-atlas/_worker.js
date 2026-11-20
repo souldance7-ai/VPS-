@@ -1,10 +1,217 @@
+// Two public, fixed feed endpoints. This API exposes titles and permalinks only.
+const forumSources = {
+  nodeseek: {feed: 'https://rss.nodeseek.com/', hosts: ['www.nodeseek.com', 'nodeseek.com']},
+  sb: {feed: 'https://sb.sb/go/promotion/rss.xml', hosts: ['sb.sb']}
+};
+const forumFreshSeconds = 300;
+const forumStaleSeconds = 86400;
+const forumByteLimit = 1500000;
+const forumKeywords = /vps|vds|kvm|hinet|cn2|cmin2|as9929|as4837|bare.?metal|dedicated server|服务器|伺服器|云主机|雲主機|独服|獨服|机房|機房|家宽|家寬|双isp|雙isp|racknerd|dmit|cloudcone|bandwagonhost|搬瓦工|绿云|綠雲|greencloud|ovhcloud|hetzner|jtti|akilecloud|tcscloud|dedione|kurun|pqs|海沫云|海沫雲|热陈互联|熱陳互聯|hostdare|raksmart|hosthatch|hosthink|ramnode|vir[m]?ach|buyvm|boilcloud|vultr|linode|digitalocean|netcup|clawcloud|vmiss/i;
+function forumDecode(text) {
+  const table = {amp: '&', lt: '<', gt: '>', apos: "'", quot: '"'};
+  return text.replace(/&(amp|lt|gt|apos|quot|#\d{1,7}|#x[\da-f]{1,6});/gi, (all, key) => {
+    if (key[0] !== '#') return table[key.toLowerCase()];
+    const hex = key[1].toLowerCase() === 'x';
+    const n = parseInt(key.slice(hex ? 2 : 1), hex ? 16 : 10);
+    return n >= 32 && n <= 0x10ffff && !(n >= 0xd800 && n <= 0xdfff) ? String.fromCodePoint(n) : ' ';
+  });
+}
+function forumPostURL(raw, source) {
+  if (!raw || raw.length > 800) return null;
+  try {
+    const u = new URL(raw.trim());
+    if (u.protocol !== 'https:' || u.username || u.password || u.port || !forumSources[source].hosts.includes(u.hostname)) return null;
+    if (source === 'sb') {
+      const match = u.pathname.match(/^\/t\/([1-9]\d{0,14})\/?$/);
+      return match ? 'https://sb.sb/t/' + match[1] + '/' : null;
+    }
+    const match = u.pathname.match(/^\/post-([1-9]\d{0,14})-[1-9]\d{0,5}\/?$/);
+    return match ? 'https://www.nodeseek.com/post-' + match[1] + '-1' : null;
+  } catch { return null; }
+}
+function forumOpenTag(xml, start) {
+  // The sticky tokenizer advances once per name/attribute, including quoted '>' values.
+  const namePattern = /[A-Za-z_:][A-Za-z0-9_.:-]*/y;
+  const attrPattern = /\s+([A-Za-z_:][A-Za-z0-9_.:-]*)\s*=\s*(?:"([^"<]*)"|'([^'<]*)')/y;
+  const endPattern = /\s*(\/?)>/y;
+  namePattern.lastIndex = start + 1;
+  const name = namePattern.exec(xml);
+  if (!name) throw Error('invalid XML tag');
+  let i = namePattern.lastIndex;
+  const attrs = Object.create(null);
+  for (;;) {
+    endPattern.lastIndex = i;
+    const end = endPattern.exec(xml);
+    if (end) return {name: name[0], attrs, empty: !!end[1], end: endPattern.lastIndex};
+    attrPattern.lastIndex = i;
+    const field = attrPattern.exec(xml);
+    if (!field || attrPattern.lastIndex - start > 65536 || Object.hasOwn(attrs, field[1])) throw Error('invalid XML attribute');
+    attrs[field[1]] = forumDecode(field[2] ?? field[3]);
+    i = attrPattern.lastIndex;
+  }
+}
+function forumHeadlines(xml, source = 'nodeseek') {
+  if (!Object.hasOwn(forumSources, source) || xml.length > forumByteLimit) throw Error('invalid feed');
+  const stack = [], posts = new Map();
+  const localName = name => name.slice(name.lastIndexOf(':') + 1).toLowerCase();
+  let current = null, field = '', fieldDepth = 0, root = '', i = 0;
+  function append(raw, decode) {
+    if (!stack.length && raw.trim()) throw Error('unexpected XML text');
+    if (field && current && current[field].length < 1024) current[field] += (decode ? forumDecode(raw) : raw).slice(0, 1024 - current[field].length);
+  }
+  function close(name) {
+    const depth = stack.length;
+    if (!depth || stack.pop().name !== name) throw Error('unbalanced XML');
+    if (fieldDepth === depth) { field = ''; fieldDepth = 0; }
+    if (!current || current.depth !== depth) return;
+    const title = current.title.replace(/<[^<>]{1,250}>/g, ' ').replace(/[\u0000-\u0020\u007f]+/g, ' ').trim().slice(0, 230);
+    const url = forumPostURL(current.alternate || current.link || current.guid || current.id, source);
+    if (url && forumKeywords.test(title) && !posts.has(url)) {
+      const time = Date.parse(current.pubdate || current.published || current.date || current.updated);
+      posts.set(url, {title, link: url, ...(Number.isFinite(time) ? {date: new Date(time).toISOString()} : {})});
+    }
+    current = null;
+  }
+  function after(from, marker) {
+    const end = xml.indexOf(marker, from);
+    if (end < 0) throw Error('unterminated XML');
+    return end + marker.length;
+  }
+  while (i < xml.length) {
+    if (xml[i] !== '<') {
+      const end = xml.indexOf('<', i);
+      append(xml.slice(i, end === -1 ? xml.length : end), true);
+      i = end === -1 ? xml.length : end;
+      continue;
+    }
+    if (xml.startsWith('<!--', i)) { i = after(i + 4, '-->'); continue; }
+    if (xml.startsWith('<?', i)) { i = after(i + 2, '?>'); continue; }
+    if (xml.startsWith('<![CDATA[', i)) {
+      const end = after(i + 9, ']]>');
+      append(xml.slice(i + 9, end - 3), false);
+      i = end;
+      continue;
+    }
+    // DTDs, ENTITY definitions and arbitrary declarations are not part of the public feed contract.
+    if (xml.startsWith('<!', i)) throw Error('unsupported XML declaration');
+    if (xml.startsWith('</', i)) {
+      const end = xml.indexOf('>', i + 2);
+      if (end < 0) throw Error('unterminated end tag');
+      close(xml.slice(i + 2, end).trim());
+      i = end + 1;
+      continue;
+    }
+    const tag = forumOpenTag(xml, i), local = localName(tag.name);
+    const parent = stack.at(-1)?.local;
+    if (!stack.length) {
+      if (root || !['rss', 'feed'].includes(local)) throw Error('unexpected XML root');
+      root = local;
+    }
+    stack.push({name: tag.name, local});
+    if (stack.length > 64) throw Error('XML too deep');
+    const rssItem = root === 'rss' && parent === 'channel' && local === 'item' && stack.length === 3;
+    const atomItem = root === 'feed' && parent === 'feed' && local === 'entry' && stack.length === 2;
+    if (rssItem || atomItem) {
+      current = {depth: stack.length, title: '', link: '', alternate: '', guid: '', id: '', pubdate: '', published: '', date: '', updated: ''};
+    } else if (current && stack.length === current.depth + 1 && ['title','link','guid','id','pubdate','published','date','updated'].includes(local)) {
+      field = local;
+      fieldDepth = stack.length;
+      if (local === 'link' && root === 'feed' && tag.attrs.href && (!tag.attrs.rel || tag.attrs.rel === 'alternate')) {
+        current.alternate ||= forumPostURL(tag.attrs.href, source) || '';
+      }
+    }
+    if (tag.empty) close(tag.name);
+    i = tag.end;
+  }
+  if (!root || stack.length) throw Error('incomplete XML');
+  return Array.from(posts.values()).sort((a,b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0)).slice(0, 12);
+}
+async function forumReadBody(reply) {
+  if (!reply.body || Number(reply.headers.get('Content-Length') || 0) > forumByteLimit) throw Error('oversize');
+  const reader = reply.body.getReader(), decoder = new TextDecoder('utf-8', {fatal:true});
+  let size = 0, xml = '';
+  try {
+    for (;;) {
+      const {value,done} = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > forumByteLimit) throw Error('oversize');
+      xml += decoder.decode(value, {stream:true});
+    }
+    return xml + decoder.decode();
+  } catch (e) {
+    await reader.cancel().catch(()=>{});
+    throw e;
+  } finally { reader.releaseLock(); }
+}
+function forumResponse(data, status = 200, seconds = 0) {
+  return Response.json(data, {status,headers:{
+    'Cache-Control': seconds ? 'public, max-age=' + seconds : 'no-store',
+    'X-Content-Type-Options':'nosniff'
+  }});
+}
+async function serveForumFeed(req, ctx) {
+  const path = new URL(req.url).pathname;
+  const source = path.match(/^\/api\/deal-feed\/(nodeseek|sb)$/)?.[1];
+  if (!source) return forumResponse({error:'unknown feed'},404);
+  if (req.method !== 'GET') return new Response(null,{status:405,headers:{Allow:'GET','Cache-Control':'no-store'}});
+  const cache = globalThis.caches?.default;
+  const key = new Request(new URL('/api/deal-feed/' + source + '?format=2',req.url));
+  let cached = null;
+  try { cached = await (await cache?.match(key))?.json(); } catch {}
+  const age = cached ? (Date.now() - Date.parse(cached.observed)) / 1000 : Infinity;
+  if (cached?.source === source && age >= 0 && age < forumFreshSeconds) return forumResponse(cached,200,Math.max(1,Math.floor(forumFreshSeconds - age)));
+  const ctl = new AbortController(), timeout = setTimeout(() => ctl.abort(),7000);
+  try {
+    const reply = await fetch(forumSources[source].feed,{method:'GET',signal:ctl.signal,redirect:'error',headers:{Accept:'application/rss+xml, application/atom+xml, application/xml, text/xml'}});
+    if (!reply.ok || reply.headers.get('content-type')?.includes('text/html')) throw Error('upstream');
+    const xml = await forumReadBody(reply);
+    const body = {source,observed:new Date().toISOString(),stale:false,items:forumHeadlines(xml,source)};
+    if (cache) {
+      const write = cache.put(key,forumResponse(body,200,forumStaleSeconds)).catch(()=>{});
+      if (ctx?.waitUntil) ctx.waitUntil(write); else await write;
+    }
+    return forumResponse(body,200,forumFreshSeconds);
+  } catch {
+    if (cached?.source === source && age >= 0 && age < forumStaleSeconds) return forumResponse({...cached,stale:true},200,30);
+    return forumResponse({source,error:'upstream unavailable'},503);
+  } finally { clearTimeout(timeout); }
+}
+
 const stockCities={
  LAX:['LAX','los-angeles-usa'],SEA:['SEA','seattle-usa'],TOR:['CA','toronto-canada'],
  AMS:['NL','amsterdam-netherlands'],FRA:['DE','frankfurt-germany'],LON:['GB','london-uk'],PAR:['FR','paris-france'],
  TPE:['TW','taipei-taiwan'],HKG:['HK','hong-kong'],TYO:['JP','tokyo-japan'],OSA:['JP','osaka-japan'],SEL:['KR','seoul-south-korea'],MNL:['PH','manila-philippines'],HAN:['VN','hanoi-vietnam'],SIN:['SG','singapore']
 };
 const ovhZones={CA:'bhs',FR:'gra',DE:'fra',GB:'lon'};
+const campaignTargets={
+ "ava-nano": {
+  "family": "ava",
+  "sku": "VPS Nano",
+  "zone": "MD",
+  "url": "https://ava.hosting/vps/vps-nano/"
+ },
+ "dedi-cn2annual": {
+  "family": "dedione",
+  "sku": "LAX.VPS.CN2.1C1G10G-Annual",
+  "zone": "LAX",
+  "url": "https://dedione.com/store/los-angeles-kvm-vps-cn2gia"
+ },
+ "dedi-cn25": {
+  "family": "dedione",
+  "sku": "20260520-LAX.VPS.CN.2C2G40G-Special-25.99",
+  "zone": "LAX",
+  "url": "https://dedione.com/store/special-vps-plans"
+ },
+ "dedi-cmin19": {
+  "family": "dedione",
+  "sku": "20260606-LAX.VPS.CMIN2.1C1G10G-Special-19.99",
+  "zone": "LAX",
+  "url": "https://dedione.com/store/special-vps-plans"
+ }
+};
 function stockTarget(key){
+ if(Object.hasOwn(campaignTargets,key))return campaignTargets[key];
  const host=key.match(/^hh-([A-Z]{3})-([1-7])$/);
  if(host&&stockCities[host[1]]) return {family:'hosthink',sku:host[1]+'-'+host[2],zone:stockCities[host[1]][0],url:'https://www.hosthink.net/dedicated-servers/'+stockCities[host[1]][1]+'/'};
  if(key.startsWith('ovh-')&&Object.values(ovhZones).includes(key.slice(4))){
@@ -64,26 +271,46 @@ function boilStatus(panels,t){
  const matches=panels.filter(p=>p.name.replace(/\s+/g,'').toLowerCase()===t.sku.replace(/\s+/g,'').toLowerCase());
  return quantityStatus(matches.flatMap(p=>Array.from(p.body.matchAll(/(?:^|\s)(\d+)\s*(?:可用|Available)(?:\s|$)/gi),m=>m[1])));
 }
+function avaStatus(text){
+ const match=text.replace(/\s+/g,' ').match(/Black Friday\s*[·•|-]\s*VPS Nano\s+11[.,]00\s*€\s*\/\s*year\s*[·•|-]\s*([\d,]+)\s+of\s+1,024\s+left\b/i);
+ if(!match||!/^(?:\d{1,3}|1,0(?:[01]\d|2[0-4]))$/.test(match[1]))return 'unreported';
+ return Number(match[1].replace(',',''))>0?'in-stock':'sold-out';
+}
+function dediStatus(cards,target){
+ const amounts=[];
+ for(const text of cards){
+  // Require one complete product wrapper; a neighboring package heading may
+  // follow a quantity in the extracted text representation of the entire page.
+  const ids=text.match(/(?:\d{8}-)?LAX[.]VPS[.][\w.-]+/gi)||[];
+  if(!ids.length||ids.some(id=>id.toLowerCase()!==target.sku.toLowerCase()))continue;
+  const values=[...text.matchAll(/\b(\d+)\s+Available\b/gi)];
+  for(const [,qty] of values)amounts.push(qty);
+ }
+ return quantityStatus(amounts);
+}
 async function htmlStatus(response,t){
  // Stream only human-visible text. A price, checkout link or success status alone never establishes stock.
- const cards=[],active=new Set();let heading='',product='',inTitle=false,inProduct=false,suppress=0;
+ const cards=[],active=new Set();let intro='';let heading='',product='',inTitle=false,inProduct=false,suppress=0;
  const ignored={element(e){suppress++;e.onEndTag(()=>suppress--)}};
  const rows={element(e){const row={text:''};active.add(row);e.onEndTag(()=>{active.delete(row);if(row.text.length<11000)cards.push(row.text)})}};
  const panels=[];let panel=null,readingHeading=false;
  const couponHeading={element(e){if(t.family!=='boil')return;panel={name:'',body:''};panels.push(panel);readingHeading=true;e.onEndTag(()=>readingHeading=false)}};
  const collector={text(chunk){
   if(suppress)return;
+  if(t.family==='ava'&&intro.length<1800)intro+=chunk.text+(chunk.lastInTextNode?' ':'');
   if(panel){const part=readingHeading?'name':'body';if(panel[part].length<14000)panel[part]+=chunk.text+(chunk.lastInTextNode?' ':'')}
   for(const row of active)if(row.text.length<11000)row.text+=chunk.text+(chunk.lastInTextNode?' ':'');
   if(inTitle&&heading.length<240)heading+=chunk.text;
   if(inProduct&&product.length<25000)product+=chunk.text+(chunk.lastInTextNode?' ':'');
  }};
- const reader=new HTMLRewriter().on('script',ignored).on('style',ignored).on('li',rows).on('tr',rows).on('header',rows).on('.product',rows)
+ const reader=new HTMLRewriter().on('script',ignored).on('style',ignored).on('li',rows).on('tr',rows).on('header',rows).on('.product',rows).on('.package',rows).on('.product-item',rows).on('[id^="product"]',rows)
   .on('h3',couponHeading).on('h4',couponHeading).on('h5',couponHeading).on('h6',couponHeading)
   .on('h1',{element(e){inTitle=true;inProduct=true;e.onEndTag(()=>inTitle=false)}})
   .on('h2',{element(){inProduct=false}}).onDocument(collector).transform(response).body.getReader();
  let bytes=0;
  try{for(;;){const {value,done}=await reader.read();if(done)break;bytes+=value.byteLength;if(bytes>MAX_DOCUMENT){await reader.cancel();throw Error('size')}}}finally{reader.releaseLock()}
+ if(t.family==='ava')return avaStatus(intro);
+ if(t.family==='dedione')return dediStatus(cards,t);
  if(t.family==='webnx')return webnxStatus(cards);
  if(t.family==='tcs'||t.family==='greencloud')return stockQuantityCards(cards,t);
  if(t.family==='boil')return boilStatus(panels,t);
@@ -92,7 +319,7 @@ async function htmlStatus(response,t){
 async function observe(t){
  const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),7000);
  try{
-  const html=['hosthink','pingheberg','webnx','tcs','boil','greencloud'].includes(t.family);
+  const html=['hosthink','pingheberg','webnx','tcs','boil','greencloud','ava','dedione'].includes(t.family);
   let u=new URL(t.url),r;
   for(let i=0;i<3;i++){
    r=await fetch(u.href,{headers:{accept:html?'text/html':'application/json','accept-language':['tcs','boil'].includes(t.family)?'zh-TW':'en'},signal:ctrl.signal,redirect:'manual',cf:{cacheEverything:true,cacheTtl:45}});
@@ -117,6 +344,8 @@ function json(body,status=200,age=0){
 }
 export default {async fetch(req,env,ctx){
  const url=new URL(req.url);
+ if(url.pathname.startsWith('/api/deal-feed/'))return serveForumFeed(req,ctx);
+ if(url.pathname.startsWith('/api/stock-history/'))return json({installed:false},200,60);
  if(!url.pathname.startsWith('/api/stock/'))return env.ASSETS.fetch(req);
  if(req.method!=='GET')return json({error:'GET required'},405);
  const key=url.pathname.slice(11),target=stockTarget(key);

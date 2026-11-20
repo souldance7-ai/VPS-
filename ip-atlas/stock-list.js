@@ -12,7 +12,7 @@ function refreshStockList(){
  function draw(row,state,time){
   if(row.drawn===state&&row.time===time)return;
   row.drawn=state;row.time=time;row.output.replaceChildren();row.output.dataset.stockState=state;
-  row.output.append(el('strong',stockText(state)),link(stockText('source'),row.target.url));
+  row.output.append(el('strong',stockLabel(row.target,state)),link(stockText('source'),row.target.url));
   if(time){
    const clock=el('small',stockText('observed')+' '+new Date(time).toLocaleString(document.documentElement.lang,{hour12:false}));
    row.output.append(clock);

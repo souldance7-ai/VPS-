@@ -8,16 +8,22 @@ const selectedTiers=new Map();
 function activeSpec(p){return p.spec?.tiers?.[selectedTiers.get(p.id)||0] || p.spec}
 function published(p){return Boolean(p.spec?.price||p.price)}
 function priceText(p,s=activeSpec(p)){if(s?.price){const term=s.term?(buyingLabels[s.term]?tr(s.term):s.term):'';return [s.currency,s.price].filter(Boolean).join(' ')+(term?' / '+term:'')}return val(p.price)}
+function purchaseQualifier(p){
+ const row=offersByPlan.get(p.id)?.[0];if(!row)return '';
+ if(row.status==='expired'||row.start&&Date.now()<Date.parse(row.start)||row.end&&Date.now()>=Date.parse(row.end)||Date.now()>=communityCalendar(row)[0])return row.regular?communityLabel('regular'):'';
+ if(['beforeCode','afterCode'].includes(row.priceBasis))return communityLabel(row.priceBasis)+(row.code?' · '+row.code:'');
+ const stage=communityStage(row);return ['limited','checkout'].includes(stage)?communityLabel(stage):'';
+}
 function showSku(p){return activeSpec(p)?.sku || val(p.plan)}
 function specValue(p,k){return val(activeSpec(p)?.[k])}
 function shoppingMatch(p){const mode=$('buy-filter').value;if(mode==='price')return published(p);if(mode==='spec')return Boolean(published(p)&&p.spec?.cpu&&p.spec?.ram&&p.spec?.port);if(mode==='probe')return hasStockProbe(p);return true}
 function commercialScore(p){return (published(p)?6:0)+(p.spec?.cpu?2:0)+(p.spec?.ram?2:0)+(p.spec?.port?1:0)}
-function specSummary(p){const line=el('div',null,'spec-summary');if(published(p))line.append(el('b',priceText(p)));const specs=[specValue(p,'cpu'),specValue(p,'ram'),specValue(p,'port')].filter(Boolean).join(' · ');if(specs)line.append(el('span',specs));if(!published(p))line.append(link(tr('orderPage')+' ↗',p.url));return line}
+function specSummary(p){const line=el('div',null,'spec-summary');if(published(p)){line.append(el('b',priceText(p)));const note=purchaseQualifier(p);if(note)line.append(el('small',note,'offer-condition'))}const specs=[specValue(p,'cpu'),specValue(p,'ram'),specValue(p,'port')].filter(Boolean).join(' · ');if(specs)line.append(el('span',specs));if(!published(p))line.append(link(tr('orderPage')+' ↗',p.url));return line}
 function showBuying(out,p){
  const section=el('section',null,'purchase'),head=el('div',null,'purchase-heading');head.append(el('h3',tr('commercial')));section.append(head);
  const choices=p.spec?.tiers||[],body=el('div',null,'purchase-body');
  function draw(s){
-  body.replaceChildren();const rate=priceText(p,s);if(rate)body.append(el('strong',rate,'purchase-rate'));
+  body.replaceChildren();const rate=priceText(p,s);if(rate){body.append(el('strong',rate,'purchase-rate'));const note=purchaseQualifier(p);if(note)body.append(el('small',note,'offer-condition'))}
   if(s?.sku)body.append(el('span',s.sku,'sku-name'));
   if(s&&hardware.some(k=>s[k])){const grid=el('dl',null,'hardware');for(const k of hardware){const cell=el('div');cell.append(el('dt',tr(k)),el('dd',val(s[k])||tr('specAvailability')));grid.append(cell)}body.append(grid)}else body.append(el('p',tr('customConfig')));
   if(s?.sourceNote)body.append(el('p',tr('notesLabel')+' · '+val(s.sourceNote),'bill-note'));

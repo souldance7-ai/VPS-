@@ -1,0 +1,172 @@
+[
+ {
+  "key": "ava-nano",
+  "sku": "VPS Nano",
+  "zone": "MD"
+ },
+ {
+  "key": "boil-kddi",
+  "sku": "1區 - 靜態 KDDI/au 1000Mbps VPS",
+  "zone": "JP"
+ },
+ {
+  "key": "boil-softbank",
+  "sku": "2區 - SoftBank 100Mbps VPS",
+  "zone": "JP"
+ },
+ {
+  "key": "dedi-cmin19",
+  "sku": "20260606-LAX.VPS.CMIN2.1C1G10G-Special-19.99",
+  "zone": "LAX"
+ },
+ {
+  "key": "dedi-cn25",
+  "sku": "20260520-LAX.VPS.CN.2C2G40G-Special-25.99",
+  "zone": "LAX"
+ },
+ {
+  "key": "dedi-cn2annual",
+  "sku": "LAX.VPS.CN2.1C1G10G-Annual",
+  "zone": "LAX"
+ },
+ {
+  "key": "gc-sjc-vds2",
+  "sku": "EPYCVDSSJCVF-2",
+  "zone": "SJC"
+ },
+ {
+  "key": "hh-AMS-1",
+  "sku": "AMS-1",
+  "zone": "NL"
+ },
+ {
+  "key": "hh-FRA-1",
+  "sku": "FRA-1",
+  "zone": "DE"
+ },
+ {
+  "key": "hh-HAN-1",
+  "sku": "HAN-1",
+  "zone": "VN"
+ },
+ {
+  "key": "hh-HKG-1",
+  "sku": "HKG-1",
+  "zone": "HK"
+ },
+ {
+  "key": "hh-LAX-1",
+  "sku": "LAX-1",
+  "zone": "LAX"
+ },
+ {
+  "key": "hh-LON-1",
+  "sku": "LON-1",
+  "zone": "GB"
+ },
+ {
+  "key": "hh-MNL-1",
+  "sku": "MNL-1",
+  "zone": "PH"
+ },
+ {
+  "key": "hh-PAR-1",
+  "sku": "PAR-1",
+  "zone": "FR"
+ },
+ {
+  "key": "hh-SEA-1",
+  "sku": "SEA-1",
+  "zone": "SEA"
+ },
+ {
+  "key": "hh-SEA-2",
+  "sku": "SEA-2",
+  "zone": "SEA"
+ },
+ {
+  "key": "hh-SEL-1",
+  "sku": "SEL-1",
+  "zone": "KR"
+ },
+ {
+  "key": "hh-SIN-1",
+  "sku": "SIN-1",
+  "zone": "SG"
+ },
+ {
+  "key": "hh-TOR-1",
+  "sku": "TOR-1",
+  "zone": "CA"
+ },
+ {
+  "key": "hh-TOR-3",
+  "sku": "TOR-3",
+  "zone": "CA"
+ },
+ {
+  "key": "hh-TPE-1",
+  "sku": "TPE-1",
+  "zone": "TW"
+ },
+ {
+  "key": "hh-TYO-1",
+  "sku": "TYO-1",
+  "zone": "JP"
+ },
+ {
+  "key": "ovh-bhs",
+  "sku": "24sys02-v3-ca",
+  "zone": "bhs"
+ },
+ {
+  "key": "ovh-fra",
+  "sku": "24sys02-v3",
+  "zone": "fra"
+ },
+ {
+  "key": "ovh-gra",
+  "sku": "24sys02-v3",
+  "zone": "gra"
+ },
+ {
+  "key": "ovh-lon",
+  "sku": "24sys02-v3",
+  "zone": "lon"
+ },
+ {
+  "key": "ph-argent",
+  "sku": "VPS Argent",
+  "zone": "FR"
+ },
+ {
+  "key": "scw-fr-par-1",
+  "sku": "DEV1-S",
+  "zone": "fr-par-1"
+ },
+ {
+  "key": "scw-nl-ams-1",
+  "sku": "DEV1-S",
+  "zone": "nl-ams-1"
+ },
+ {
+  "key": "tcs-dh1",
+  "sku": "DH1-HINET-500M",
+  "zone": "TW"
+ },
+ {
+  "key": "tcs-ds1",
+  "sku": "DS1-SEEDNET-300M",
+  "zone": "TW"
+ },
+ {
+  "key": "tcs-fh1",
+  "sku": "FH1-HINET-500M",
+  "zone": "TW"
+ },
+ {
+  "key": "wn-9754s",
+  "sku": "EPYC 9754S · 256 GB / 25G",
+  "zone": "LAX"
+ }
+]
