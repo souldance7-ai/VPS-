@@ -1,4 +1,3 @@
-// Generated from the Pages stock parser for direct scheduled collection.
 const stockCities={
  LAX:['LAX','los-angeles-usa'],SEA:['SEA','seattle-usa'],TOR:['CA','toronto-canada'],
  AMS:['NL','amsterdam-netherlands'],FRA:['DE','frankfurt-germany'],LON:['GB','london-uk'],PAR:['FR','paris-france'],
@@ -31,7 +30,314 @@ const campaignTargets={
   "url": "https://dedione.com/store/special-vps-plans"
  }
 };
+const networkStockTargets={
+ "mk-4": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "gz-hk-1t",
+  "group": "gz-hk-sh",
+  "pid": 4,
+  "url": "https://www.mkcloud.net/index.php/store/gz-hk-sh"
+ },
+ "mk-43": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "gz-hk-5m",
+  "group": "gz-hk-ex",
+  "pid": 43,
+  "url": "https://www.mkcloud.net/index.php/store/gz-hk-ex"
+ },
+ "mk-183": {
+  "family": "mkcloud",
+  "zone": "JP",
+  "sku": "sh-jp-1t",
+  "group": "sh-jp-sh",
+  "pid": 183,
+  "url": "https://www.mkcloud.net/index.php/store/sh-jp-sh"
+ },
+ "mk-44": {
+  "family": "mkcloud",
+  "zone": "JP",
+  "sku": "sh-jp-5m",
+  "group": "sh-jp-ex",
+  "pid": 44,
+  "url": "https://www.mkcloud.net/index.php/store/sh-jp-ex"
+ },
+ "mk-46": {
+  "family": "mkcloud",
+  "zone": "JP",
+  "sku": "sh-jp-5m",
+  "group": "shh-jp-ex",
+  "pid": 46,
+  "url": "https://www.mkcloud.net/index.php/store/shh-jp-ex"
+ },
+ "mk-190": {
+  "family": "mkcloud",
+  "zone": "US",
+  "sku": "sh-us-1t",
+  "group": "sh-us-sh",
+  "pid": 190,
+  "url": "https://www.mkcloud.net/index.php/store/sh-us-sh"
+ },
+ "mk-45": {
+  "family": "mkcloud",
+  "zone": "US",
+  "sku": "sh-us-5m",
+  "group": "sh-us-ex",
+  "pid": 45,
+  "url": "https://www.mkcloud.net/index.php/store/sh-us-ex"
+ },
+ "mk-62": {
+  "family": "mkcloud",
+  "zone": "US",
+  "sku": "sh-us-5m",
+  "group": "shh-us-ex",
+  "pid": 62,
+  "url": "https://www.mkcloud.net/index.php/store/shh-us-ex"
+ },
+ "mk-91": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "cloud-hk-2t-new",
+  "group": "cloud-hk-sh",
+  "pid": 91,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-hk-sh"
+ },
+ "mk-196": {
+  "family": "mkcloud",
+  "zone": "JP",
+  "sku": "cloud-jp-1t-new",
+  "group": "cloud-jp-sh",
+  "pid": 196,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-jp-sh"
+ },
+ "mk-108": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "cloud-hk-100m",
+  "group": "cloud-hk-ex",
+  "pid": 108,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-hk-ex"
+ },
+ "mk-120": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "gz-hk-1g",
+  "group": "gz-yd-hk-ex",
+  "pid": 120,
+  "url": "https://www.mkcloud.net/index.php/store/gz-yd-hk-ex"
+ },
+ "mk-115": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "gz-hk-1g",
+  "group": "gz-th-hk-ex",
+  "pid": 115,
+  "url": "https://www.mkcloud.net/index.php/store/gz-th-hk-ex"
+ },
+ "mk-136": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "gd-hk-1g",
+  "group": "gd-dx-hk-ex",
+  "pid": 136,
+  "url": "https://www.mkcloud.net/index.php/store/gd-dx-hk-ex"
+ },
+ "mk-204": {
+  "family": "mkcloud",
+  "zone": "US",
+  "sku": "cloud-us-1t",
+  "group": "cloud-us-sh",
+  "pid": 204,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-us-sh"
+ },
+ "mk-160": {
+  "family": "mkcloud",
+  "zone": "JP",
+  "sku": "cloud-jp-20m",
+  "group": "cloud-jp-ex",
+  "pid": 160,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-jp-ex"
+ },
+ "mk-162": {
+  "family": "mkcloud",
+  "zone": "US",
+  "sku": "cloud-us-20m",
+  "group": "cloud-us-ex",
+  "pid": 162,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-us-ex"
+ },
+ "mk-165": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "xm-hk-200m",
+  "group": "xm-hk-ex",
+  "pid": 165,
+  "url": "https://www.mkcloud.net/index.php/store/xm-hk-ex"
+ },
+ "mk-173": {
+  "family": "mkcloud",
+  "zone": "CN",
+  "sku": "sh-cn2-500m",
+  "group": "sh-cn2-ex",
+  "pid": 173,
+  "url": "https://www.mkcloud.net/index.php/store/sh-cn2-ex"
+ },
+ "mk-174": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "qz-hk-200m",
+  "group": "qz-hk-ex",
+  "pid": 174,
+  "url": "https://www.mkcloud.net/index.php/store/qz-hk-ex"
+ },
+ "mk-217": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "cloud-hk-2t",
+  "group": "cloud-sh-hk-sh",
+  "pid": 217,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-sh-hk-sh"
+ },
+ "mk-221": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "cloud-hk-100m",
+  "group": "cloud-sh-hk-ex",
+  "pid": 221,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-sh-hk-ex"
+ },
+ "mk-228": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "sh-hk-5m",
+  "group": "sh-hk-ex",
+  "pid": 228,
+  "url": "https://www.mkcloud.net/index.php/store/sh-hk-ex"
+ },
+ "mk-253": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "gd-hk-1g",
+  "group": "gd-lt-hk-ex",
+  "pid": 253,
+  "url": "https://www.mkcloud.net/index.php/store/gd-lt-hk-ex"
+ },
+ "mk-272": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "sh-hk-1t",
+  "group": "sh-hk-sh",
+  "pid": 272,
+  "url": "https://www.mkcloud.net/index.php/store/sh-hk-sh"
+ },
+ "mk-278": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "sh-hk-5m",
+  "group": "shh-hk-ex",
+  "pid": 278,
+  "url": "https://www.mkcloud.net/index.php/store/shh-hk-ex"
+ },
+ "mk-293": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "gz-sg-1t",
+  "group": "gz-sg-sh",
+  "pid": 293,
+  "url": "https://www.mkcloud.net/index.php/store/gz-sg-sh"
+ },
+ "mk-299": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "cloud-sg-2t",
+  "group": "cloud-sg-sh",
+  "pid": 299,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-sg-sh"
+ },
+ "mk-319": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "gz-sg-5m",
+  "group": "gz-sg-ex",
+  "pid": 319,
+  "url": "https://www.mkcloud.net/index.php/store/gz-sg-ex"
+ },
+ "mk-327": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "cloud-sg-100m",
+  "group": "cloud-sg-ex",
+  "pid": 327,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-sg-ex"
+ },
+ "mk-306": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "sh-sg-1t",
+  "group": "sh-sg-sh",
+  "pid": 306,
+  "url": "https://www.mkcloud.net/index.php/store/sh-sg-sh"
+ },
+ "mk-312": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "cloud-sg-2t",
+  "group": "cloud-sh-sg-sh",
+  "pid": 312,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-sh-sg-sh"
+ },
+ "mk-334": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "sh-sg-5m",
+  "group": "sh-sg-ex",
+  "pid": 334,
+  "url": "https://www.mkcloud.net/index.php/store/sh-sg-ex"
+ },
+ "mk-348": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "cloud-sg-100m",
+  "group": "cloud-sh-sg-ex",
+  "pid": 348,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-sh-sg-ex"
+ },
+ "mk-342": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "sh-sg-5m",
+  "group": "shh-sg-ex",
+  "pid": 342,
+  "url": "https://www.mkcloud.net/index.php/store/shh-sg-ex"
+ },
+ "nnb-2": {
+  "family": "nnb",
+  "pid": 2,
+  "sku": "TY #2 Performance",
+  "zone": "JP",
+  "region": "tokyo",
+  "url": "https://api.nnb.ltd/api/v1/nodes"
+ },
+ "nnb-3": {
+  "family": "nnb",
+  "pid": 3,
+  "sku": "SH #1 沪日",
+  "zone": "JP",
+  "region": "shanghai",
+  "url": "https://api.nnb.ltd/api/v1/nodes"
+ },
+ "nnb-5": {
+  "family": "nnb",
+  "pid": 5,
+  "sku": "SH #1 沪港",
+  "zone": "HK",
+  "region": "shanghai",
+  "url": "https://api.nnb.ltd/api/v1/nodes"
+ }
+};
 function stockTarget(key){
+ if(Object.hasOwn(networkStockTargets,key))return networkStockTargets[key];
  if(Object.hasOwn(campaignTargets,key))return campaignTargets[key];
  const host=key.match(/^hh-([A-Z]{3})-([1-7])$/);
  if(host&&stockCities[host[1]]) return {family:'hosthink',sku:host[1]+'-'+host[2],zone:stockCities[host[1]][0],url:'https://www.hosthink.net/dedicated-servers/'+stockCities[host[1]][1]+'/'};
@@ -171,7 +477,80 @@ async function htmlStatus(response,t){
  if(t.family==='boil')return boilStatus(panels,t);
  return t.family==='hosthink'?hosthinkStatus(cards,t.sku):pinghebergStatus(heading,product);
 }
+// The two public storefronts expose different inventory semantics.
+const recentStorefronts = new Map();
+async function readLimitedBytes(stream, limit) {
+ if(!stream)throw Error('Missing response body');
+ const reader=stream.getReader(),chunks=[];
+ let length=0;
+ try{
+  for(;;){
+   const {value,done}=await reader.read();if(done)break;
+   length+=value.byteLength;
+   if(length>limit){await reader.cancel();throw Error('Storefront response too large')}
+   chunks.push(value);
+  }
+ }finally{reader.releaseLock()}
+ const buffer=new Uint8Array(length);let offset=0;
+ for(const chunk of chunks){buffer.set(chunk,offset);offset+=chunk.length}
+ return buffer;
+}
+async function storefrontJson(url,{catalog=false}={}){
+ const reply=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(7500),headers:{accept:catalog?'application/octet-stream, application/json':'application/json'},cf:{cacheEverything:true,cacheTtl:catalog?300:25}});
+ if(!reply.ok)throw Error('Storefront HTTP '+reply.status);
+ const type=reply.headers.get('content-type')||'';
+ if(/text\/html/i.test(type))throw Error('Unexpected store response');
+ const age=Number(reply.headers.get('age')||0);
+ if(!catalog&&(!Number.isFinite(age)||age>300))throw Error('Stale stock response');
+ let bytes=await readLimitedBytes(reply.body,800000);
+ if(catalog&&bytes[0]===0x1f&&bytes[1]===0x8b){
+  bytes=await readLimitedBytes(new Response(bytes).body.pipeThrough(new DecompressionStream('gzip')),800000);
+ }
+ return JSON.parse(new TextDecoder().decode(bytes));
+}
+async function currentStorefront(family){
+ const now=Date.now(),entry=recentStorefronts.get(family);
+ if(entry&&entry.expires>now)return entry.data;
+ let data;
+ if(family==='mkcloud'){
+  const inventory=await storefrontJson('https://www.mkcloud.net/index.php?m=newcart&page=getoutofstock');
+  if(!Array.isArray(inventory.products)||inventory.count!==inventory.products.length||!inventory.products.every(Number.isSafeInteger)||!Number.isSafeInteger(inventory.bin_parameter)||inventory.bin_parameter<0)throw Error('Invalid stock list');
+  const catalog=await storefrontJson('https://www.mkcloud.net/modules/addons/newcart/product_bin.json.gz?param='+inventory.bin_parameter,{catalog:true});
+  if(!Array.isArray(catalog.productgroups)||!catalog.productgroups.length)throw Error('Empty product catalog');
+  const products=new Map();
+  for(const group of catalog.productgroups){
+   if(typeof group.slug!=='string'||!Array.isArray(group.products))throw Error('Invalid product group');
+   for(const product of group.products){
+    if(products.has(product.id))throw Error('Ambiguous product ID');
+    products.set(product.id,{group:group.slug,sku:product.slug});
+   }
+  }
+  data={products,sold:new Set(inventory.products)};
+ }else{
+  const result=await storefrontJson('https://api.nnb.ltd/api/v1/nodes');
+  if(result.code!==200||!Array.isArray(result.data?.items))throw Error('Invalid node catalog');
+  data=result.data.items;
+ }
+ recentStorefronts.set(family,{expires:now+25000,data});
+ return data;
+}
+function classifyStorefront(target,data){
+ if(target.family==='mkcloud'){
+  const p=data.products.get(target.pid);
+  if(p?.group!==target.group||p.sku!==target.sku)return 'unreported';
+  return data.sold.has(target.pid)?'sold-out':'in-stock';
+ }
+ const nodes=data.filter(n=>n.id===target.pid&&n.name===target.sku&&n.region===target.region);
+ if(nodes.length!==1)return 'unreported';
+ const n=nodes[0];
+ if(typeof n.orderable!=='boolean'||typeof n.provisionable!=='boolean'||typeof n.monthly_available!=='boolean'||typeof n.status!=='string')return 'unreported';
+ if(!n.orderable||!n.monthly_available)return 'sold-out';
+ if(n.status==='active'&&n.provisionable)return 'in-stock';
+ return 'unreported';
+}
+
 async function observe(t){
+ if(t.family==="mkcloud"||t.family==="nnb")return classifyStorefront(t,await currentStorefront(t.family));
  const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),7000);
  try{
   const html=['hosthink','pingheberg','webnx','tcs','boil','greencloud','ava','dedione'].includes(t.family);

@@ -30,7 +30,314 @@ const campaignTargets={
   "url": "https://dedione.com/store/special-vps-plans"
  }
 };
+const networkStockTargets={
+ "mk-4": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "gz-hk-1t",
+  "group": "gz-hk-sh",
+  "pid": 4,
+  "url": "https://www.mkcloud.net/index.php/store/gz-hk-sh"
+ },
+ "mk-43": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "gz-hk-5m",
+  "group": "gz-hk-ex",
+  "pid": 43,
+  "url": "https://www.mkcloud.net/index.php/store/gz-hk-ex"
+ },
+ "mk-183": {
+  "family": "mkcloud",
+  "zone": "JP",
+  "sku": "sh-jp-1t",
+  "group": "sh-jp-sh",
+  "pid": 183,
+  "url": "https://www.mkcloud.net/index.php/store/sh-jp-sh"
+ },
+ "mk-44": {
+  "family": "mkcloud",
+  "zone": "JP",
+  "sku": "sh-jp-5m",
+  "group": "sh-jp-ex",
+  "pid": 44,
+  "url": "https://www.mkcloud.net/index.php/store/sh-jp-ex"
+ },
+ "mk-46": {
+  "family": "mkcloud",
+  "zone": "JP",
+  "sku": "sh-jp-5m",
+  "group": "shh-jp-ex",
+  "pid": 46,
+  "url": "https://www.mkcloud.net/index.php/store/shh-jp-ex"
+ },
+ "mk-190": {
+  "family": "mkcloud",
+  "zone": "US",
+  "sku": "sh-us-1t",
+  "group": "sh-us-sh",
+  "pid": 190,
+  "url": "https://www.mkcloud.net/index.php/store/sh-us-sh"
+ },
+ "mk-45": {
+  "family": "mkcloud",
+  "zone": "US",
+  "sku": "sh-us-5m",
+  "group": "sh-us-ex",
+  "pid": 45,
+  "url": "https://www.mkcloud.net/index.php/store/sh-us-ex"
+ },
+ "mk-62": {
+  "family": "mkcloud",
+  "zone": "US",
+  "sku": "sh-us-5m",
+  "group": "shh-us-ex",
+  "pid": 62,
+  "url": "https://www.mkcloud.net/index.php/store/shh-us-ex"
+ },
+ "mk-91": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "cloud-hk-2t-new",
+  "group": "cloud-hk-sh",
+  "pid": 91,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-hk-sh"
+ },
+ "mk-196": {
+  "family": "mkcloud",
+  "zone": "JP",
+  "sku": "cloud-jp-1t-new",
+  "group": "cloud-jp-sh",
+  "pid": 196,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-jp-sh"
+ },
+ "mk-108": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "cloud-hk-100m",
+  "group": "cloud-hk-ex",
+  "pid": 108,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-hk-ex"
+ },
+ "mk-120": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "gz-hk-1g",
+  "group": "gz-yd-hk-ex",
+  "pid": 120,
+  "url": "https://www.mkcloud.net/index.php/store/gz-yd-hk-ex"
+ },
+ "mk-115": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "gz-hk-1g",
+  "group": "gz-th-hk-ex",
+  "pid": 115,
+  "url": "https://www.mkcloud.net/index.php/store/gz-th-hk-ex"
+ },
+ "mk-136": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "gd-hk-1g",
+  "group": "gd-dx-hk-ex",
+  "pid": 136,
+  "url": "https://www.mkcloud.net/index.php/store/gd-dx-hk-ex"
+ },
+ "mk-204": {
+  "family": "mkcloud",
+  "zone": "US",
+  "sku": "cloud-us-1t",
+  "group": "cloud-us-sh",
+  "pid": 204,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-us-sh"
+ },
+ "mk-160": {
+  "family": "mkcloud",
+  "zone": "JP",
+  "sku": "cloud-jp-20m",
+  "group": "cloud-jp-ex",
+  "pid": 160,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-jp-ex"
+ },
+ "mk-162": {
+  "family": "mkcloud",
+  "zone": "US",
+  "sku": "cloud-us-20m",
+  "group": "cloud-us-ex",
+  "pid": 162,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-us-ex"
+ },
+ "mk-165": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "xm-hk-200m",
+  "group": "xm-hk-ex",
+  "pid": 165,
+  "url": "https://www.mkcloud.net/index.php/store/xm-hk-ex"
+ },
+ "mk-173": {
+  "family": "mkcloud",
+  "zone": "CN",
+  "sku": "sh-cn2-500m",
+  "group": "sh-cn2-ex",
+  "pid": 173,
+  "url": "https://www.mkcloud.net/index.php/store/sh-cn2-ex"
+ },
+ "mk-174": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "qz-hk-200m",
+  "group": "qz-hk-ex",
+  "pid": 174,
+  "url": "https://www.mkcloud.net/index.php/store/qz-hk-ex"
+ },
+ "mk-217": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "cloud-hk-2t",
+  "group": "cloud-sh-hk-sh",
+  "pid": 217,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-sh-hk-sh"
+ },
+ "mk-221": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "cloud-hk-100m",
+  "group": "cloud-sh-hk-ex",
+  "pid": 221,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-sh-hk-ex"
+ },
+ "mk-228": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "sh-hk-5m",
+  "group": "sh-hk-ex",
+  "pid": 228,
+  "url": "https://www.mkcloud.net/index.php/store/sh-hk-ex"
+ },
+ "mk-253": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "gd-hk-1g",
+  "group": "gd-lt-hk-ex",
+  "pid": 253,
+  "url": "https://www.mkcloud.net/index.php/store/gd-lt-hk-ex"
+ },
+ "mk-272": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "sh-hk-1t",
+  "group": "sh-hk-sh",
+  "pid": 272,
+  "url": "https://www.mkcloud.net/index.php/store/sh-hk-sh"
+ },
+ "mk-278": {
+  "family": "mkcloud",
+  "zone": "HK",
+  "sku": "sh-hk-5m",
+  "group": "shh-hk-ex",
+  "pid": 278,
+  "url": "https://www.mkcloud.net/index.php/store/shh-hk-ex"
+ },
+ "mk-293": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "gz-sg-1t",
+  "group": "gz-sg-sh",
+  "pid": 293,
+  "url": "https://www.mkcloud.net/index.php/store/gz-sg-sh"
+ },
+ "mk-299": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "cloud-sg-2t",
+  "group": "cloud-sg-sh",
+  "pid": 299,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-sg-sh"
+ },
+ "mk-319": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "gz-sg-5m",
+  "group": "gz-sg-ex",
+  "pid": 319,
+  "url": "https://www.mkcloud.net/index.php/store/gz-sg-ex"
+ },
+ "mk-327": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "cloud-sg-100m",
+  "group": "cloud-sg-ex",
+  "pid": 327,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-sg-ex"
+ },
+ "mk-306": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "sh-sg-1t",
+  "group": "sh-sg-sh",
+  "pid": 306,
+  "url": "https://www.mkcloud.net/index.php/store/sh-sg-sh"
+ },
+ "mk-312": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "cloud-sg-2t",
+  "group": "cloud-sh-sg-sh",
+  "pid": 312,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-sh-sg-sh"
+ },
+ "mk-334": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "sh-sg-5m",
+  "group": "sh-sg-ex",
+  "pid": 334,
+  "url": "https://www.mkcloud.net/index.php/store/sh-sg-ex"
+ },
+ "mk-348": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "cloud-sg-100m",
+  "group": "cloud-sh-sg-ex",
+  "pid": 348,
+  "url": "https://www.mkcloud.net/index.php/store/cloud-sh-sg-ex"
+ },
+ "mk-342": {
+  "family": "mkcloud",
+  "zone": "SG",
+  "sku": "sh-sg-5m",
+  "group": "shh-sg-ex",
+  "pid": 342,
+  "url": "https://www.mkcloud.net/index.php/store/shh-sg-ex"
+ },
+ "nnb-2": {
+  "family": "nnb",
+  "pid": 2,
+  "sku": "TY #2 Performance",
+  "zone": "JP",
+  "region": "tokyo",
+  "url": "https://api.nnb.ltd/api/v1/nodes"
+ },
+ "nnb-3": {
+  "family": "nnb",
+  "pid": 3,
+  "sku": "SH #1 沪日",
+  "zone": "JP",
+  "region": "shanghai",
+  "url": "https://api.nnb.ltd/api/v1/nodes"
+ },
+ "nnb-5": {
+  "family": "nnb",
+  "pid": 5,
+  "sku": "SH #1 沪港",
+  "zone": "HK",
+  "region": "shanghai",
+  "url": "https://api.nnb.ltd/api/v1/nodes"
+ }
+};
 function stockTarget(key){
+ if(Object.hasOwn(networkStockTargets,key))return networkStockTargets[key];
  if(Object.hasOwn(campaignTargets,key))return campaignTargets[key];
  const host=key.match(/^hh-([A-Z]{3})-([1-7])$/);
  if(host&&stockCities[host[1]]) return {family:'hosthink',sku:host[1]+'-'+host[2],zone:stockCities[host[1]][0],url:'https://www.hosthink.net/dedicated-servers/'+stockCities[host[1]][1]+'/'};
@@ -54,6 +361,7 @@ function stockTarget(key){
  return null;
 }
 function getStockKey(p){
+ if(p.stockKey===p.id && Object.hasOwn(networkStockTargets,p.id))return p.id;
  const provider=p.provider.toLowerCase(),name=typeof p.plan==='string'?p.plan:(p.plan?.en||p.plan?.sc||'');
  const label=[p.sku,p.spec?.sku,p.specs?.sku,name].filter(s=>typeof s==='string').join(' ');
  const market=p.market||(Array.isArray(p.markets)&&p.markets.length===1?p.markets[0]:'');
@@ -114,7 +422,10 @@ async function readStockObservation(key,t,signal){
  if(data.key!==key||data.sku!==t.sku||data.zone!==t.zone||!Number.isFinite(time)||age>300000||age< -60000||!['in-stock','sold-out','low','unreported','offline'].includes(data.state))throw Error('invalid observation');
  return data;
 }
-function stockLabel(t,state){return stockText(t.family==='ava'&&stockStrings['quota-'+state]?'quota-'+state:state)}
+function stockLabel(t,state){
+ if(t.family==='nnb'&&state==='in-stock')return ({sc:'节点开放月付订购',tc:'節點開放月付訂購',en:'Node open for monthly orders',ja:'ノードは月額注文受付中'})[lang];
+ if(t.family==='nnb'&&state==='sold-out')return ({sc:'节点暂停月付订购',tc:'節點暫停月付訂購',en:'Monthly ordering closed',ja:'月額注文受付停止'})[lang];
+ return stockText(t.family==='ava'&&stockStrings['quota-'+state]?'quota-'+state:state)}
 function stockHistory(section,key,t){
  const details=el('details',null,'stock-history'),summary=el('summary',stockText('history')),body=el('div');
  details.append(summary,body);section.append(details);

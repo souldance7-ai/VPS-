@@ -178,5 +178,195 @@
   "key": "wn-9754s",
   "sku": "EPYC 9754S · 256 GB / 25G",
   "zone": "LAX"
+ },
+ {
+  "key": "mk-4",
+  "sku": "gz-hk-1t",
+  "zone": "HK"
+ },
+ {
+  "key": "mk-43",
+  "sku": "gz-hk-5m",
+  "zone": "HK"
+ },
+ {
+  "key": "mk-183",
+  "sku": "sh-jp-1t",
+  "zone": "JP"
+ },
+ {
+  "key": "mk-44",
+  "sku": "sh-jp-5m",
+  "zone": "JP"
+ },
+ {
+  "key": "mk-46",
+  "sku": "sh-jp-5m",
+  "zone": "JP"
+ },
+ {
+  "key": "mk-190",
+  "sku": "sh-us-1t",
+  "zone": "US"
+ },
+ {
+  "key": "mk-45",
+  "sku": "sh-us-5m",
+  "zone": "US"
+ },
+ {
+  "key": "mk-62",
+  "sku": "sh-us-5m",
+  "zone": "US"
+ },
+ {
+  "key": "mk-91",
+  "sku": "cloud-hk-2t-new",
+  "zone": "HK"
+ },
+ {
+  "key": "mk-196",
+  "sku": "cloud-jp-1t-new",
+  "zone": "JP"
+ },
+ {
+  "key": "mk-108",
+  "sku": "cloud-hk-100m",
+  "zone": "HK"
+ },
+ {
+  "key": "mk-120",
+  "sku": "gz-hk-1g",
+  "zone": "HK"
+ },
+ {
+  "key": "mk-115",
+  "sku": "gz-hk-1g",
+  "zone": "HK"
+ },
+ {
+  "key": "mk-136",
+  "sku": "gd-hk-1g",
+  "zone": "HK"
+ },
+ {
+  "key": "mk-204",
+  "sku": "cloud-us-1t",
+  "zone": "US"
+ },
+ {
+  "key": "mk-160",
+  "sku": "cloud-jp-20m",
+  "zone": "JP"
+ },
+ {
+  "key": "mk-162",
+  "sku": "cloud-us-20m",
+  "zone": "US"
+ },
+ {
+  "key": "mk-165",
+  "sku": "xm-hk-200m",
+  "zone": "HK"
+ },
+ {
+  "key": "mk-173",
+  "sku": "sh-cn2-500m",
+  "zone": "CN"
+ },
+ {
+  "key": "mk-174",
+  "sku": "qz-hk-200m",
+  "zone": "HK"
+ },
+ {
+  "key": "mk-217",
+  "sku": "cloud-hk-2t",
+  "zone": "HK"
+ },
+ {
+  "key": "mk-221",
+  "sku": "cloud-hk-100m",
+  "zone": "HK"
+ },
+ {
+  "key": "mk-228",
+  "sku": "sh-hk-5m",
+  "zone": "HK"
+ },
+ {
+  "key": "mk-253",
+  "sku": "gd-hk-1g",
+  "zone": "HK"
+ },
+ {
+  "key": "mk-272",
+  "sku": "sh-hk-1t",
+  "zone": "HK"
+ },
+ {
+  "key": "mk-278",
+  "sku": "sh-hk-5m",
+  "zone": "HK"
+ },
+ {
+  "key": "mk-293",
+  "sku": "gz-sg-1t",
+  "zone": "SG"
+ },
+ {
+  "key": "mk-299",
+  "sku": "cloud-sg-2t",
+  "zone": "SG"
+ },
+ {
+  "key": "mk-319",
+  "sku": "gz-sg-5m",
+  "zone": "SG"
+ },
+ {
+  "key": "mk-327",
+  "sku": "cloud-sg-100m",
+  "zone": "SG"
+ },
+ {
+  "key": "mk-306",
+  "sku": "sh-sg-1t",
+  "zone": "SG"
+ },
+ {
+  "key": "mk-312",
+  "sku": "cloud-sg-2t",
+  "zone": "SG"
+ },
+ {
+  "key": "mk-334",
+  "sku": "sh-sg-5m",
+  "zone": "SG"
+ },
+ {
+  "key": "mk-348",
+  "sku": "cloud-sg-100m",
+  "zone": "SG"
+ },
+ {
+  "key": "mk-342",
+  "sku": "sh-sg-5m",
+  "zone": "SG"
+ },
+ {
+  "key": "nnb-2",
+  "sku": "TY #2 Performance",
+  "zone": "JP"
+ },
+ {
+  "key": "nnb-3",
+  "sku": "SH #1 沪日",
+  "zone": "JP"
+ },
+ {
+  "key": "nnb-5",
+  "sku": "SH #1 沪港",
+  "zone": "HK"
  }
 ]

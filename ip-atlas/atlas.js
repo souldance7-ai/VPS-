@@ -1,6 +1,6 @@
 'use strict';
 const $ = id => document.getElementById(id);
-const groups = {asia:['JP','TW','HK','KR','VN','PH','SG'],america:['CA','LAX','SJC','SEA'],europe:['DE','NL','GB','FR']};
+const groups = {asia:['CN','JP','TW','HK','KR','VN','PH','SG'],america:['CA','US','LAX','SJC','SEA'],europe:['DE','NL','GB','FR']};
 const tags = {sc:'zh-CN',tc:'zh-TW',en:'en',ja:'ja'};
 const carrierNames = {CT:['中国电信','中國電信','China Telecom','中国電信'],CU:['中国联通','中國聯通','China Unicom','中国聯通'],CM:['中国移动','中國移動','China Mobile','中国移動']};
 const deals = {
@@ -55,6 +55,7 @@ function stateOf(d,now=Date.now()){return d.start&&now<Date.parse(d.start)?'upco
 const cityNames={'Taiwan':['台湾','台灣','台湾'],'Japan':['日本','日本','日本'],'Changhua':['彰化','彰化','彰化'],'Tokyo':['东京','東京','東京'],'Hong Kong':['香港','香港','香港'],'Los Angeles':['洛杉矶','洛杉磯','ロサンゼルス'],'Seoul':['首尔','首爾','ソウル'],'Hanoi':['河内','河內','ハノイ'],'Ho Chi Minh City':['胡志明市','胡志明市','ホーチミン市'],'Manila':['马尼拉','馬尼拉','マニラ'],'San Jose':['圣何塞','聖荷西','サンノゼ'],'Seattle':['西雅图','西雅圖','シアトル'],'Beauharnois':['博阿努瓦','博阿努瓦','ボアルノワ'],'Falkenstein':['法尔肯施泰因','法爾肯施泰因','ファルケンシュタイン'],'Frankfurt':['法兰克福','法蘭克福','フランクフルト'],'Amsterdam':['阿姆斯特丹','阿姆斯特丹','アムステルダム'],'Vancouver':['温哥华','溫哥華','バンクーバー']};
 Object.assign(cityNames,{"Taipei":["台北","台北","台北"],"Taichung":["台中","台中","台中"],"Osaka":["大阪","大阪","大阪"],"Singapore":["新加坡","新加坡","シンガポール"],"London":["伦敦","倫敦","ロンドン"],"Manchester":["曼彻斯特","曼徹斯特","マンチェスター"],"Paris":["巴黎","巴黎","パリ"],"Nuremberg":["纽伦堡","紐倫堡","ニュルンベルク"],"Roubaix":["鲁贝","魯貝","ルーベ"],"Montreal":["蒙特利尔","蒙特婁","モントリオール"],"Toronto":["多伦多","多倫多","トロント"],"France":["法国","法國","フランス"],"Germany":["德国","德國","ドイツ"],"Canada":["加拿大","加拿大","カナダ"],"Netherlands":["荷兰","荷蘭","オランダ"],"United Kingdom":["英国","英國","英国"],"Ontario":["安大略省","安大略省","オンタリオ州"]});
 function city(p){return cityNames[p.city]?.[{sc:0,tc:1,ja:2}[lang]]||p.city}
+Object.assign(cityNames,{'United States':['美国','美國','米国'],'South Korea':['韩国','韓國','韓国'],Shanghai:['上海','上海','上海']});
 const localChoice = ()=>({sc:'原生 IP 候选（含 ISP 与住宅）',tc:'原生 IP 候選（含 ISP 與住宅）',en:'Native IP candidates (local, ISP, residential)',ja:'現地 IP 候補（ISP・住宅回線を含む）'}[lang]);
 function nativeLead(p){return ['isp','local','residential'].includes(p.ip)}
 function monthlyCost(p){
@@ -76,7 +77,7 @@ function renderControls(){
 const norm = s => String(s).normalize('NFKC').toLowerCase().replace(/[\s·/_–-]/g,'');
 function searchable(p){
  const aliases={SJC:'San Jose San José 圣河西 聖河西 圣何塞 聖荷西 圣荷西 硅谷 矽谷',SEA:'Seattle 西雅图 西雅圖',LAX:'Los Angeles 洛城 洛杉矶 洛杉磯',TW:'Taiwan 臺灣 台灣 台湾',CA:'Canada 加拿大'};
- const tokens=[p.market,...Object.values(MARKETS[p.market]),aliases[p.market]||'',p.provider,val(p.plan),p.city,...(cityNames[p.city]||[]),val(p.routeName),tr(p.kind),tr(p.ip)];
+ const tokens=[...(p.searchTerms||[]),...(p.networkFilters||[]).map(quickLabel),p.market,...Object.values(MARKETS[p.market]),aliases[p.market]||'',p.provider,val(p.plan),p.city,...(cityNames[p.city]||[]),val(p.routeName),tr(p.kind),tr(p.ip)];
  for(const offer of offersByPlan.get(p.id)||[])tokens.push(offer.code||"",offer.source,offer.sku||"",offer.routeName||"");
  if(nativeLead(p))tokens.push('原生 native');
  tokens.push(showSku(p),...hardware.map(k=>specValue(p,k)),priceText(p));
@@ -102,7 +103,7 @@ function providerFromPost(post){
  if(!feedProviderAliases){
   const providers=[...new Set(PLANS.map(p=>p.provider))];
   feedProviderAliases=providers.filter(s=>s.length>=4).map(p=>[p,p]);
-  for(const [label,provider] of [['绿云','GreenCloud'],['綠雲','GreenCloud'],['搬瓦工','BandwagonHost'],['狗妈','GoMami'],['狗媽','GoMami'],['台北101','VPS.TAIPEI (Taipei101)'],['丽萨主机','LisaHost'],['麗薩主機','LisaHost']])if(providers.some(p=>p.toLowerCase()===provider.toLowerCase()))feedProviderAliases.push([label,providers.find(p=>p.toLowerCase()===provider.toLowerCase())]);
+  for(const [label,provider] of [['绿云','GreenCloud'],['綠雲','GreenCloud'],['搬瓦工','BandwagonHost'],['狗妈','GoMami'],['狗媽','GoMami'],['台北101','VPS.TAIPEI (Taipei101)'],['奶爸','Neburst'],['NoBrand Cloud','NewNB Cloud'],['NNB','NewNB Cloud'],['丽萨主机','LisaHost'],['麗薩主機','LisaHost']])if(providers.some(p=>p.toLowerCase()===provider.toLowerCase()))feedProviderAliases.push([label,providers.find(p=>p.toLowerCase()===provider.toLowerCase())]);
   feedProviderAliases.sort((a,b)=>b[0].length-a[0].length);
  }
  const copy=(post.title+' '+(post.snippet||'')).normalize('NFKC').toLowerCase();
@@ -127,6 +128,7 @@ function toggle(p){
  list();const focusButton=Array.from($('listing').querySelectorAll('.pick')).find(b=>b.dataset.id===p.id);focusButton?.focus({preventScroll:true});
 }
 function list(){
+ renderProviderShortcuts();
  const baseRows=PLANS.filter(matches);const rows=applyQuickPick(baseRows).sort((a,b)=>$("order").value?monthlyCost(a).monthly-monthlyCost(b).monthly||commercialScore(b)-commercialScore(a):commercialScore(b)-commercialScore(a));renderQuickPick($("quick-pick"),baseRows,rows);const visible=currentPageRows(rows);$('total').textContent=vendorCount(rows)+' '+tr('merchants')+' · '+rows.length+' '+tr('results');
  $('compare').textContent=tr('compare')+' ('+chosen.length+'/3)';$('compare').disabled=chosen.length<2;$('compare').title=tr('chooseTwo');
  const head=el('div',null,'colheads');for(const s of ['market','product','ip','route','links',''])head.append(el('span',s?tr(s):''));
@@ -146,7 +148,7 @@ function attributes(p){return [
  ['route',[tr(p.route==='unknown'?'routeUnknown':p.route),val(p.routeName)].filter(Boolean).join(' · ')],['carrier',p.carriers.map(carrier).join(' / ')||tr('unknown')],
  ['price',priceText(p)?[priceText(p),purchaseQualifier(p)].filter(Boolean).join(' · '):tr('noPrice')],...hardware.map(k=>[k,specValue(p,k)||tr('specAvailability')])
 ]}
-function merchantLinks(p){const links=[link(tr('source')+' ↗',p.url)];if(p.lg)links.push(link(tr('test')+' ↗',p.lg));if(p.proof && /^https?:\/\//.test(p.proof) && p.proof!==p.url)links.push(link(tr('evidence')+' ↗',p.proof));if(deals[p.deal])links.push(link(tr('terms')+' ↗',deals[p.deal].url));return links}
+function merchantLinks(p){const links=[link(tr('source')+' ↗',p.url)];if(p.review)links.push(link('NodeSeek · '+tr('evidence')+' ↗',p.review));if(p.terms)links.push(link(tr('terms')+' ↗',p.terms));if(p.lg)links.push(link(tr('test')+' ↗',p.lg));if(p.proof && /^https?:\/\//.test(p.proof) && p.proof!==p.url)links.push(link(tr('evidence')+' ↗',p.proof));if(deals[p.deal])links.push(link(tr('terms')+' ↗',deals[p.deal].url));return links}
 function openDialog(p){
  modal=p||'compare';const out=$('dialog-body');out.replaceChildren();
  const title=el('h2',p?p.provider+' · '+val(p.plan):tr('comparison'));title.id='dialog-title';out.append(title);$('drawer').setAttribute('aria-labelledby',title.id);

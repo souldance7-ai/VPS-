@@ -7,9 +7,9 @@ const hardware=['cpu','ram','disk','port','traffic'];
 const selectedTiers=new Map();
 function activeSpec(p){return p.spec?.tiers?.[selectedTiers.get(p.id)||0] || p.spec}
 function published(p){return Boolean(p.spec?.price||p.price)}
-function priceText(p,s=activeSpec(p)){if(s?.price){const term=s.term?(buyingLabels[s.term]?tr(s.term):s.term):'';return [s.currency,s.price].filter(Boolean).join(' ')+(term?' / '+term:'')}return val(p.price)}
+function priceText(p,s=activeSpec(p)){if(s?.price){const term=s.term?(buyingLabels[s.term]?tr(s.term):s.term):'';return (s.priceType==='from'?quickWord('fromPrice')+' ':'')+[s.currency,s.price].filter(Boolean).join(' ')+(term?' / '+term:'')}return val(p.price)}
 function purchaseQualifier(p){
- const row=offersByPlan.get(p.id)?.[0];if(!row)return '';if(['historical','estimate'].includes(row.priceBasis))return communityLabel(row.priceBasis);
+ const row=offersByPlan.get(p.id)?.[0];if(!row)return p.spec?.priceType==='review'?quickWord('reviewPrice'):'';if(['historical','estimate'].includes(row.priceBasis))return communityLabel(row.priceBasis);
  if(row.status==='expired'||row.start&&Date.now()<Date.parse(row.start)||row.end&&Date.now()>=Date.parse(row.end)||Date.now()>=communityCalendar(row)[0])return row.regular?communityLabel('regular'):'';
  if(['beforeCode','afterCode'].includes(row.priceBasis))return communityLabel(row.priceBasis)+(row.code?' · '+row.code:'');
  const stage=communityStage(row);return ['limited','checkout'].includes(stage)?communityLabel(stage):'';
@@ -27,7 +27,7 @@ function showBuying(out,p){
   if(s?.sku)body.append(el('span',s.sku,'sku-name'));
   if(s&&hardware.some(k=>s[k])){const grid=el('dl',null,'hardware');for(const k of hardware){const cell=el('div');cell.append(el('dt',tr(k)),el('dd',val(s[k])||tr('specAvailability')));grid.append(cell)}body.append(grid)}else body.append(el('p',tr('customConfig')));
   if(s?.sourceNote)body.append(el('p',tr('notesLabel')+' · '+val(s.sourceNote),'bill-note'));
-  body.append(link((rate||s?.cpu?tr('priceSource'):tr('orderPage'))+' ↗',s?.proof||p.spec?.proof||p.url));
+  body.append(link((rate||s?.cpu?(s?.priceType==='review'?quickWord('reviewSource'):tr('priceSource')):tr('orderPage'))+' ↗',s?.proof||p.spec?.proof||p.url));
   if(rate)body.append(el('small',tr('quoteDate')+' · '+(s?.price&&p.spec?.date||'2026-11-18'),'spec-date'));
  }
  if(choices.length>1){const select=el('select');select.setAttribute('aria-label',tr('tier'));choices.forEach((s,i)=>select.add(new Option(s.sku,String(i))));select.value=String(selectedTiers.get(p.id)||0);select.onchange=()=>{selectedTiers.set(p.id,+select.value);draw(activeSpec(p));list()};head.append(select)}

@@ -1,9 +1,10 @@
 'use strict';
 const quickWords={
+ ...networkFilterWords,
  title:['找出口','找出口','Find an exit','出口を探す'],
- intro:['选择机房，再组合 IP 属性和大陆线路。','選擇機房，再組合 IP 屬性與大陸線路。','Choose a location and combine IP properties with mainland routes.','拠点を選び、IP 属性と中国本土向け回線を組み合わせます。'],
+ intro:['选择目的地、入口线路和 IP 属性，机房与出口分别列在方案详情。','選擇目的地、入口線路和 IP 屬性，機房與出口分別列在方案詳情。','Filter by destination, ingress and IP properties. Plan details identify the host and egress.','対象地域、入口回線、IP 属性で絞り込みます。設置拠点と出口はプラン詳細で確認できます。'],
  count:['个方案','個方案','plans','プラン'], merchants:['家商家','家商家','providers','事業者'],
- location:['部署地点','部署地點','Location','設置場所'],
+ location:['目的地 / 出口','目的地 / 出口','Destination / egress','対象地域・出口'],
  allLocations:['全部地点','全部地點','All locations','すべての拠点'],
  route:['大陆优化线路','大陸優化線路','Mainland routing','中国本土向け回線'],
  hosting:['服务器与库存','伺服器與庫存','Server and stock','サーバー・在庫'],
@@ -27,7 +28,7 @@ const quickFields=['search','market','kind','ip','route','carrier','buy-filter',
 let quickInitialized=false,quickRestoring=false,quickFeedback=false;
 function quickGroups(){
  const groups=Object.entries(IP_EVIDENCE_OPTIONS).map(([id,values])=>({id,values}));
- groups.push({id:'route',values:['ct','cu','cm']},{id:'hosting',values:['bare','probe']});
+ groups.push({id:'lineClass',values:['iepl','iplc','ixp','private-route','optimized-transit']},{id:'usageClass',values:['hourly','quota-transfer','dedicated-port']},{id:'route',values:['ct','cu','cm']},{id:'hosting',values:['bare','probe']});
  return groups;
 }
 function quickLabel(value){return Object.hasOwn(quickWords,value)?quickWord(value):ipEvidenceLabel(value,lang)}
@@ -35,8 +36,15 @@ function quickClass(value){return quickGroups().find(g=>g.values.includes(value)
 function quickExclusive(group){return group!=='hosting'&&group!=='route'}
 function quickEvidenceFeatures(plan){
  let values=quickFeatures.get(plan);if(values)return values;
- values=new Set(getIpEvidence(plan).map(e=>e.value));
+ values=new Set([...getIpEvidence(plan).map(e=>e.value),...(plan.networkFilters||[])]);
  if(plan.route==='claimed'||plan.route==='measured'){for(const c of plan.carriers||[])values.add(c.toLowerCase())}
+ if(plan.spec?.term==='hour')values.add('hourly');
+ if(!plan.networkFilters){
+  const line=typeof plan.routeName==='object'?plan.routeName.en:plan.routeName||'';
+  for(const k of ['iepl','iplc','ixp'])if(new RegExp('\\b'+k+'\\b','i').test(line))values.add(k);
+  const transfer=plan.spec?.traffic,allowance=typeof transfer==='object'?transfer?.en:transfer;
+  if(typeof allowance==='string'&&/\d\s*(?:TB|GB)\b/i.test(allowance))values.add('quota-transfer');
+ }
  if(plan.kind==='bare')values.add('bare');
  if(typeof getStockKey==='function'&&getStockKey(plan))values.add('probe');
  quickFeatures.set(plan,values);return values;

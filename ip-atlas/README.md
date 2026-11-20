@@ -4,7 +4,8 @@
 
 ## 部署到现有网站
 
-打开 Cloudflare 的「Workers 和 Pages」，选择现有项目 pitopone-ip-atlas，进入「部署 → 创建部署 → 生产环境」，直接上传 pitopone-atlas-portal-v8.zip。index.html、_worker.js 和 _routes.json 都在 ZIP 根目录。完成后打开 https://ip-guide.pitopone.com/ 。首页直接显示近期优惠。网站和库存历史采集器使用两个独立部署包。
+下载完整部署包，全部解压后在 Windows 运行 deploy.cmd。命令先发布 pages 目录到现有 pitopone-ip-atlas 的 main 生产环境，再更新 pitopone-stock-watch 并复用已有 D1。要手动上传前端，可在 Pages 的「创建部署」里选择生产环境并拖入 pages 文件夹。仅补发后台时运行 deploy.cmd monitor。
+
 
 ## 按需求选购
 
@@ -25,7 +26,7 @@ VPS.TAIPEI 的官方公开页列出平台和机房条件。其 VM 创建页要�
 
 套餐和机房标识与商家库存字段匹配时，目录和详情可以查询。详情打开时每 2 分钟刷新。显示商家原始来源及读取时间。Ava Nano 读取活动发布的剩余名额。第三方监控导航、结账按钮、多机房选择器分别保留来源和购买入口。库存判读依赖具体产品的公示字段。
 
-无人访问时持续采集，需要安装 atlas-stock-monitor 内的独立 Cloudflare Worker 与 D1。先发布网站，再按该目录的 README.zh-CN.md 安装。健康检查地址为 https://ip-guide.pitopone.com/api/stock-history/health 。每分钟处理最多六款，当前清单完整轮巡约 6 分钟。详情提供最近有效读数、读取时间及最近 30 天发生的状态变动。
+无人访问时持续采集，需要安装 atlas-stock-monitor 内的独立 Cloudflare Worker 与 D1。先发布网站，再按该目录的 README.zh-CN.md 安装。健康检查地址为 https://ip-guide.pitopone.com/api/stock-history/health 。每分钟处理最多六款，当前清单共 74 项，完整轮巡约 13 分钟。详情提供最近有效读数、读取时间及最近 30 天发生的状态变动。
 
 ## 文件与来源
 
@@ -42,3 +43,7 @@ forum-feed.js 展示订阅内容，community.js 展示报价和适用条件。st
 
 - [VPSDeer](https://t.me/vpsdeer) · [VPSTS](https://t.me/vpsts) · [VPSUU](https://t.me/vpsuu) · [PoorVPSMsg](https://t.me/PoorVPSMsg)
 - [VPS.TAIPEI 机房与计价](https://vps.taipei/) · [VM 创建](https://vps.taipei/customer/vms/new)
+
+## 专线商家
+
+network-plans.js 提供 Neburst、NewNB Cloud、Mkcloud 和 VMSilo 的详细方案。目的地可指线路出口；另列主机位置。价格按报价来源、币种及周期展示。Mkcloud 以商家产品组、SKU 和 ID 联合核对缺货清单；NewNB 按节点及月付订购状态采集。

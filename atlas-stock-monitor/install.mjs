@@ -20,9 +20,16 @@ function findDb(){
  return matches[0]?.uuid;
 }
 async function main(){
- const sample=await fetch(new URL('/api/stock/gc-sg-prem-mini',cfg.vars.PAGES_ORIGIN),{signal:AbortSignal.timeout(15000)});
- const body=await sample.json();
- if(!sample.ok||body.key!=='gc-sg-prem-mini'||body.zone!=='SG')throw Error('请先将 V7 或更新版网站 ZIP 部署到 pitopone-ip-atlas 的生产环境。');
+ let found=false;
+ for(let attempt=0;attempt<8&&!found;attempt++){
+  try{
+   const response=await fetch(new URL('/api/stock/nnb-2',cfg.vars.PAGES_ORIGIN),{signal:AbortSignal.timeout(10000)});
+   const data=await response.json();
+   found=response.ok&&data.key==='nnb-2'&&data.zone==='JP'&&data.sku==='TY #2 Performance';
+  }catch{}
+  if(!found&&attempt<7)await new Promise(resolve=>setTimeout(resolve,5000));
+ }
+ if(!found)throw Error('V9 网页尚未在 Pages 生产域名生效。确认网页部署成功后，在完整包目录运行 deploy.cmd monitor。');
  console.log('将配置 '+cfg.name+'、历史数据库 '+name+' 及 '+cfg.routes[0].pattern);
  cli(['whoami']);
  let id=findDb();

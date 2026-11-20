@@ -264,3 +264,8 @@ body.paused .portal-sweep, body.paused .featured-offer::after, body.paused .sect
 @keyframes route-pulse { from{opacity:.15;transform:translateX(-6%)} to{opacity:.8;transform:translateX(8%)} }
 body.paused #directory .section-head::after { animation:none; }
 @media(prefers-reduced-motion:reduce) { #directory .section-head::after { animation:none; } }
+
+.carrier-nav{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin:.35rem 0 1.15rem}
+.carrier-nav strong{font-size:.9rem;margin-right:.35rem;color:var(--text,#d5e5ff)}
+.carrier-nav a{font-size:.88rem;padding:.4rem .75rem;border:1px solid #435374;border-radius:.4rem;text-decoration:none;color:#c7d8f4;background:#152035;line-height:1.5}
+.carrier-nav a:hover,.carrier-nav a:focus-visible,.carrier-nav a[aria-current]{background:#263958;border-color:#8dd7ff;color:#fff}
