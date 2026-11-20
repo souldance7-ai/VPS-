@@ -483,6 +483,557 @@ const quoteOnlyTargets={
   "quoteOnly": true
  }
 };
+const catalogStockTargets = {
+ "ms-bage-jp-small": {
+  "family": "bagevm",
+  "sku": "Japan - SMALL",
+  "zone": "JP",
+  "pid": 33,
+  "url": "https://www.bagevm.com/index.php/store/japan-servers"
+ },
+ "ms-bage-jp-tiny": {
+  "family": "bagevm",
+  "sku": "Japan - TINY",
+  "zone": "JP",
+  "pid": 31,
+  "url": "https://www.bagevm.com/index.php/store/japan-servers"
+ },
+ "ms-bage-jp-starter": {
+  "family": "bagevm",
+  "sku": "Japan - STARTER",
+  "zone": "JP",
+  "pid": 28,
+  "url": "https://www.bagevm.com/index.php/store/japan-servers"
+ },
+ "ms-bage-jp-medium": {
+  "family": "bagevm",
+  "sku": "Japan - MEDIUM",
+  "zone": "JP",
+  "pid": 29,
+  "url": "https://www.bagevm.com/index.php/store/japan-servers"
+ },
+ "ms-bage-jp-large": {
+  "family": "bagevm",
+  "sku": "Japan - LARGE",
+  "zone": "JP",
+  "pid": 30,
+  "url": "https://www.bagevm.com/index.php/store/japan-servers"
+ },
+ "regional-matrix-q1-1": {
+  "family": "matrix",
+  "sku": "Q1 - LA - 活动款",
+  "zone": "LAX",
+  "pid": 9,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q1-2": {
+  "family": "matrix",
+  "sku": "Q1 - LA - 标准款",
+  "zone": "LAX",
+  "pid": 10,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q1-3": {
+  "family": "matrix",
+  "sku": "Q1 - LA - 进阶款",
+  "zone": "LAX",
+  "pid": 11,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q1-4": {
+  "family": "matrix",
+  "sku": "Q1 - LA - 高阶款",
+  "zone": "LAX",
+  "pid": 12,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q1-5": {
+  "family": "matrix",
+  "sku": "Q1 - LA - 顶配款",
+  "zone": "LAX",
+  "pid": 13,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q2-1": {
+  "family": "matrix",
+  "sku": "Q2 - LA - 活动款",
+  "zone": "LAX",
+  "pid": 33,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q2-2": {
+  "family": "matrix",
+  "sku": "Q2 - LA - 轻量款",
+  "zone": "LAX",
+  "pid": 38,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q2-3": {
+  "family": "matrix",
+  "sku": "Q2 - LA - 标准款",
+  "zone": "LAX",
+  "pid": 39,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q2-4": {
+  "family": "matrix",
+  "sku": "Q2 - LA - 进阶款",
+  "zone": "LAX",
+  "pid": 40,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q2-5": {
+  "family": "matrix",
+  "sku": "Q2 - LA - 顶配款",
+  "zone": "LAX",
+  "pid": 41,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-4837-1": {
+  "family": "matrix",
+  "sku": "圣何塞 4837 优化 活动款",
+  "zone": "SJC",
+  "pid": 4,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-4837-2": {
+  "family": "matrix",
+  "sku": "圣何塞 4837 优化 轻量款",
+  "zone": "SJC",
+  "pid": 5,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-4837-3": {
+  "family": "matrix",
+  "sku": "圣何塞 4837 优化 标准款",
+  "zone": "SJC",
+  "pid": 6,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-4837-4": {
+  "family": "matrix",
+  "sku": "圣何塞 4837 优化 进阶款",
+  "zone": "SJC",
+  "pid": 7,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-4837-5": {
+  "family": "matrix",
+  "sku": "圣何塞 4837 优化 顶配款",
+  "zone": "SJC",
+  "pid": 16,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-4837-6": {
+  "family": "matrix",
+  "sku": "圣何塞 4837 优化 pro",
+  "zone": "SJC",
+  "pid": 43,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "let11-prepaid-8": {
+  "family": "prepaid",
+  "sku": "PreBF-8",
+  "zone": "DE",
+  "code": "prebf-8",
+  "url": "https://prepaid-host.com/en/aktion/prebf-8"
+ },
+ "let11-prepaid-10": {
+  "family": "prepaid",
+  "sku": "PreBF-10",
+  "zone": "DE",
+  "code": "prebf-10",
+  "url": "https://prepaid-host.com/en/aktion/prebf-8"
+ },
+ "let11-prepaid-16": {
+  "family": "prepaid",
+  "sku": "FLASH-16",
+  "zone": "DE",
+  "code": "flash-16",
+  "url": "https://prepaid-host.com/en/aktion/prebf-8"
+ },
+ "ms-bwh-usca-5-p166": {
+  "family": "bwh",
+  "sku": "80G KVM - ECOMMERCE SLA LOS ANGELES",
+  "zone": "LAX",
+  "pid": 166,
+  "dc": "USCA_5",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-usca-6-p89": {
+  "family": "bwh",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "LAX",
+  "pid": 89,
+  "dc": "USCA_6",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-usca-9-p89": {
+  "family": "bwh",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "LAX",
+  "pid": 89,
+  "dc": "USCA_9",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-usca-sjc5-p89": {
+  "family": "bwh",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "SJC",
+  "pid": 89,
+  "dc": "USCA_SJC5",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-hk-8-p95": {
+  "family": "bwh",
+  "sku": "SPECIAL 40G KVM PROMO V5 - HONG KONG CN2 GIA",
+  "zone": "HK",
+  "pid": 95,
+  "dc": "HK_8",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-jpos-6-p134": {
+  "family": "bwh",
+  "sku": "SPECIAL 40G KVM PROMO V5 - OSAKA CN2 GIA",
+  "zone": "JP",
+  "pid": 134,
+  "dc": "JPOS_6",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-jpty-8-p108": {
+  "family": "bwh",
+  "sku": "SPECIAL 40G KVM PROMO V5 - TOKYO CN2 GIA",
+  "zone": "JP",
+  "pid": 108,
+  "dc": "JPTY_8",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-sg-8-p173": {
+  "family": "bwh",
+  "sku": "SPECIAL 40G KVM PROMO V5 - SINGAPORE CN2 GIA",
+  "zone": "SG",
+  "pid": 173,
+  "dc": "SG_8",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-cabc-6-p89": {
+  "family": "bwh",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "CA",
+  "pid": 89,
+  "dc": "CABC_6",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "bwh-ams": {
+  "family": "bwh",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "NL",
+  "pid": 89,
+  "dc": "EUNL_9",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-usny-8-p89": {
+  "family": "bwh",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "US",
+  "pid": 89,
+  "dc": "USNY_8",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-aedxb-1-p89": {
+  "family": "bwh",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "AE",
+  "pid": 89,
+  "dc": "AEDXB_1",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ }
+};
+Object.assign(catalogStockTargets,{
+ "ms-akile-859": {
+  "family": "akile",
+  "sku": "TW-Dynamic-STD",
+  "zone": "TW",
+  "area": 6,
+  "node": 16,
+  "pid": 859,
+  "priceId": 1235,
+  "cycle": 1,
+  "url": "https://api.akile.ai/api/v1/store/GetVpsStoreV3"
+ },
+ "ms-akile-906": {
+  "family": "akile",
+  "sku": "TW-Static-2G",
+  "zone": "TW",
+  "area": 6,
+  "node": 21,
+  "pid": 906,
+  "priceId": 1297,
+  "cycle": 1,
+  "url": "https://api.akile.ai/api/v1/store/GetVpsStoreV3"
+ },
+ "akile-hinet": {
+  "family": "akile",
+  "sku": "TWHinet-Mini-NAT",
+  "zone": "TW",
+  "area": 6,
+  "node": 31,
+  "pid": 980,
+  "priceId": 1402,
+  "cycle": 12,
+  "url": "https://api.akile.ai/api/v1/store/GetVpsStoreV3"
+ },
+ "ms-akile-827": {
+  "family": "akile",
+  "sku": "TWLite-Mini",
+  "zone": "TW",
+  "area": 6,
+  "node": 11,
+  "pid": 827,
+  "priceId": 1181,
+  "cycle": 1,
+  "url": "https://api.akile.ai/api/v1/store/GetVpsStoreV3"
+ },
+ "ms-isvoro-149": {
+  "family": "isvoro",
+  "sku": "HK CN2 Core",
+  "zone": "HK",
+  "pid": 149,
+  "category": 46,
+  "planId": 297,
+  "url": "https://isvoro.com/api/v1/products?page=1"
+ }
+});
+Object.assign(catalogStockTargets,{
+ "supp-akko-sjc-1": {
+  "family": "akko",
+  "sku": "美国圣何塞KVM-CN2-A2 mini年付特惠套餐",
+  "zone": "SJC",
+  "quoteOnly": true,
+  "pid": 175,
+  "url": "https://www.akkocloud.com/cart.php?gid=17"
+ },
+ "supp-akko-sjc-2": {
+  "family": "akko",
+  "sku": "美西圣何塞KVM-CN2-B1 mini 年付特惠套餐",
+  "zone": "SJC",
+  "quoteOnly": true,
+  "pid": 187,
+  "url": "https://www.akkocloud.com/cart.php?gid=17"
+ },
+ "supp-akko-sjc-3": {
+  "family": "akko",
+  "sku": "美国圣何塞KVM-CN2-B1",
+  "zone": "SJC",
+  "quoteOnly": true,
+  "pid": 178,
+  "url": "https://www.akkocloud.com/cart.php?gid=17"
+ }
+});
+Object.assign(catalogStockTargets,{
+ "mhy-p46": {
+  "family": "mhy",
+  "sku": "TW-HKG - 512M",
+  "zone": "HK",
+  "pid": 46,
+  "path": "/index.php/store/tw-hkg/tw-hkg-512",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/tw-hkg"
+ },
+ "mhy-p47": {
+  "family": "mhy",
+  "sku": "TW-HKG - 1024M",
+  "zone": "HK",
+  "pid": 47,
+  "path": "/index.php/store/tw-hkg/tw-hkg-1024m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/tw-hkg"
+ },
+ "mhy-p48": {
+  "family": "mhy",
+  "sku": "TW-HKG - 2048M",
+  "zone": "HK",
+  "pid": 48,
+  "path": "/index.php/store/tw-hkg/tw-hkg-2048m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/tw-hkg"
+ },
+ "mhy-p49": {
+  "family": "mhy",
+  "sku": "TW-HKG - 4096M",
+  "zone": "HK",
+  "pid": 49,
+  "path": "/index.php/store/tw-hkg/tw-hkg-4096m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/tw-hkg"
+ },
+ "mhy-p30": {
+  "family": "mhy",
+  "sku": "HK BGP - 512M",
+  "zone": "HK",
+  "pid": 30,
+  "path": "/index.php/store/hk-vps/hk-bgp",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/hk-vps"
+ },
+ "mhy-p31": {
+  "family": "mhy",
+  "sku": "HK BGP - 1024M",
+  "zone": "HK",
+  "pid": 31,
+  "path": "/index.php/store/hk-vps/hk-vps-1024m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/hk-vps"
+ },
+ "mhy-p32": {
+  "family": "mhy",
+  "sku": "HK BGP - 2048M",
+  "zone": "HK",
+  "pid": 32,
+  "path": "/index.php/store/hk-vps/hk-bgp-2048m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/hk-vps"
+ },
+ "mhy-p33": {
+  "family": "mhy",
+  "sku": "HK BGP - 4096M",
+  "zone": "HK",
+  "pid": 33,
+  "path": "/index.php/store/hk-vps/hk-bgp-4096m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/hk-vps"
+ },
+ "mhy-p64": {
+  "family": "mhy",
+  "sku": "德国BGP-512M",
+  "zone": "DE",
+  "pid": 64,
+  "path": "/index.php/store/bgp-9929/de-guo-bgp-yu-shou-kuan-512m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p56": {
+  "family": "mhy",
+  "sku": "德国BGP-1024M",
+  "zone": "DE",
+  "pid": 56,
+  "path": "/index.php/store/bgp-9929/deyusyushyushouyushou",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p59": {
+  "family": "mhy",
+  "sku": "德国BGP-2048M",
+  "zone": "DE",
+  "pid": 59,
+  "path": "/index.php/store/bgp-9929/de-guo-bgp-yu-shou-kuan-2048m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p60": {
+  "family": "mhy",
+  "sku": "德国BGP-4096M",
+  "zone": "DE",
+  "pid": 60,
+  "path": "/index.php/store/bgp-9929/de-guo-bgp-yu-shou-kuan-4096m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p67": {
+  "family": "mhy",
+  "sku": "德国BGP-年付-512M",
+  "zone": "DE",
+  "pid": 67,
+  "path": "/index.php/store/bgp-9929/de-guo-bgp-nian-fu-512m",
+  "period": "year",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p57": {
+  "family": "mhy",
+  "sku": "德国BGP-年付1024M",
+  "zone": "DE",
+  "pid": 57,
+  "path": "/index.php/store/bgp-9929/de-guo-bgp-9929-nian-fu-yu-shou",
+  "period": "year",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p58": {
+  "family": "mhy",
+  "sku": "德国BGP-年付2048M",
+  "zone": "DE",
+  "pid": 58,
+  "path": "/index.php/store/bgp-9929/de-guo-bgp-yu-shou-kuan-nian-fu-2",
+  "period": "year",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p62": {
+  "family": "mhy",
+  "sku": "德国BGP-年付4096M",
+  "zone": "DE",
+  "pid": 62,
+  "path": "/index.php/store/bgp-9929/de-guo-bgp-9929-yu-shou-kuan-nian-fu-4096m",
+  "period": "year",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p52": {
+  "family": "mhy",
+  "sku": "MO-HKG - 512M",
+  "zone": "HK",
+  "pid": 52,
+  "path": "/index.php/store/mo-hkg/mo-hkg-512m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/mo-hkg"
+ },
+ "mhy-p53": {
+  "family": "mhy",
+  "sku": "MO-HKG - 1024M",
+  "zone": "HK",
+  "pid": 53,
+  "path": "/index.php/store/mo-hkg/mo-hkg-1024m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/mo-hkg"
+ },
+ "mhy-p54": {
+  "family": "mhy",
+  "sku": "MO-HKG - 2048M",
+  "zone": "HK",
+  "pid": 54,
+  "path": "/index.php/store/mo-hkg/mo-hkg-2048m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/mo-hkg"
+ },
+ "mhy-p55": {
+  "family": "mhy",
+  "sku": "MO-HKG - 4096M",
+  "zone": "HK",
+  "pid": 55,
+  "path": "/index.php/store/mo-hkg/mo-hkg-4096m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/mo-hkg"
+ },
+ "mhy-p51": {
+  "family": "mhy",
+  "sku": "香港BGP - 新年特别款",
+  "zone": "HK",
+  "pid": 51,
+  "path": "/index.php/store/huo-dong/xiang-gang-bgp-xin-nian-te-bie-kuan",
+  "period": "year",
+  "url": "https://mhyidc.com/index.php/store/huo-dong"
+ }
+});
+Object.assign(networkStockTargets,catalogStockTargets);
 function stockTarget(key){
  if(Object.hasOwn(quoteOnlyTargets,key))return quoteOnlyTargets[key];
  if(Object.hasOwn(networkStockTargets,key))return networkStockTargets[key];
@@ -509,6 +1060,7 @@ function stockTarget(key){
  return null;
 }
 function getStockKey(p){
+ if(Object.hasOwn(catalogStockTargets,p.id))return catalogStockTargets[p.id].quoteOnly?'':p.id;
  if(p.id==='meow-tamagowtt-1'&&/^Tamago(?: Network)?$/i.test(p.provider))return p.id;
  if(p.provider==='Vultr'&&Object.hasOwn(networkStockTargets,p.id)&&networkStockTargets[p.id].family==='vultr')return p.id;
  if(p.id==='field-backwaves-sg01'&&p.provider==='Back Waves'||p.id==='field-wasabi-sg1'&&p.provider==='Wasabi Hosting')return p.id;
@@ -570,10 +1122,12 @@ const offerStrings={
  unavailable:['本次未取得报价','本次未取得報價','No quote in this reading','今回の価格は取得できませんでした'],
  fetch:['正在读取商家…','正在讀取商家…','Reading the provider…','事業者に照会中…'],
  quoteStock:['实时报价与库存','即時報價與庫存','Live pricing and stock','最新価格と在庫'],quote:['商家实时报价','商家即時報價','Live provider pricing','事業者の最新価格'],
+ year:['商家年价','商家年價','Listed annual price','掲載年額'],quarter:['商家季价','商家季價','Listed quarterly price','掲載四半期価格'],halfyear:['商家半年价','商家半年價','Listed half-year price','掲載半年価格'],
  starting:['套餐月价起','方案月價起','Monthly price from','月額料金から'],
  listed:['商家月价','商家月價','Listed monthly price','掲載月額'],base:['节点基础月价起','節點基本月價起','Node base price from','ノード基本月額から'],
  'base-config':['默认配置月价','預設配置月價','Default configuration per month','初期構成の月額'],
  config:['可选配置范围','可選配置範圍','Selectable configuration range','選択できる構成の範囲'],
+ stockQuantity:['商家显示可用数量','商家顯示可用數量','Units listed as available','販売元の表示在庫数'],
  cpu:['处理器','處理器','CPU','CPU'],ram:['内存','記憶體','RAM','メモリ'],disk:['磁盘','磁碟','Storage','ディスク'],
  port:['端口速率','連接埠速率','Port speed','ポート速度'],traffic:['每月流量','每月流量','Monthly transfer','月間転送量'],
  ip:['IP 配置','IP 配置','IP allocation','IP 割当'],route:['商家标示线路','商家標示線路','Route advertised by provider','事業者の公称経路'],
@@ -582,13 +1136,13 @@ const offerStrings={
  refresh:['重新读取商家','重新讀取商家','Refresh provider data','事業者データを更新']
 };
 function offerText(k){return offerStrings[k][{sc:0,tc:1,en:2,ja:3}[lang]]}
-function quoteCapable(t){return t&&['nnb','vmsilo','mkcloud','backwaves','wasabi','vultr','tamago'].includes(t.family)}
-function observationKey(p){return getStockKey(p)||(p.provider.toLowerCase()==='vmsilo'&&Object.hasOwn(quoteOnlyTargets,p.id)?p.id:'')}
+function quoteCapable(t){return t&&['nnb','vmsilo','mkcloud','backwaves','wasabi','vultr','tamago','bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy'].includes(t.family)}
+function observationKey(p){return getStockKey(p)||(Object.hasOwn(catalogStockTargets,p.id)&&catalogStockTargets[p.id].quoteOnly?p.id:'')||(p.provider.toLowerCase()==='vmsilo'&&Object.hasOwn(quoteOnlyTargets,p.id)?p.id:'')}
 function goodQuote(q){
- return q&&typeof q.amount==='string'&&/^\d{1,8}(?:\.\d{1,4})?$/.test(q.amount)&&['CNY','HKD','EUR','USD'].includes(q.currency)&&q.period==='month'&&
+ return q&&typeof q.amount==='string'&&/^\d{1,8}(?:\.\d{1,4})?$/.test(q.amount)&&['CNY','HKD','EUR','USD'].includes(q.currency)&&['month','quarter','halfyear','year'].includes(q.period)&&
  ['listed','base','base-config','starting'].includes(q.basis)&&Number.isFinite(Date.parse(q.checkedAt));
 }
-function offerPrice(q){return offerText(q.basis)+' · '+q.currency+' '+q.amount}
+function offerPrice(q){return offerText(q.period==='month'?q.basis:q.period)+' · '+q.currency+' '+q.amount}
 function renderOffer(container,q,t,archived=false){
  container.replaceChildren();
  if(!goodQuote(q)){container.append(el('small',offerText('unavailable')));return}
@@ -596,6 +1150,7 @@ function renderOffer(container,q,t,archived=false){
  container.append(el('h4',offerText(archived?'archived':'live')),price,el('p',stockText('observed')+' '+time));
  if(q.basis==='base')container.append(el('p',offerText('config')));
  const list=el('dl',null,'stock-offer-specs');
+ if(Number.isSafeInteger(q.stockQuantity)&&q.stockQuantity>=0)list.append(el('dt',offerText('stockQuantity')),el('dd',String(q.stockQuantity)));
  for(const key of ['cpu','ram','disk','port','traffic','ip','route']){
   if(typeof q[key]!=='string'||!q[key])continue;
   let value=q[key];
@@ -628,7 +1183,7 @@ function stockHistory(section,key,t){
  function stamp(s){const n=Date.parse(s);return Number.isFinite(n)?new Date(n).toLocaleString(document.documentElement.lang,{hour12:false}):'—'}
  async function update(){
   if(ended||ctrl||document.hidden)return;
-  ctrl=new AbortController();const timeout=setTimeout(()=>ctrl?.abort(),10000);
+  ctrl=new AbortController();const timeout=setTimeout(()=>ctrl?.abort(),15000);
   try{
    const r=await fetch('/api/stock-history/'+encodeURIComponent(key),{signal:ctrl.signal,cache:'no-store'});
    if(!r.ok||!r.headers.get('content-type')?.includes('application/json'))throw Error('history');
@@ -687,7 +1242,7 @@ function renderStock(out,p){
   if(!section.isConnected){stop();return}
   if(document.hidden){status.textContent=stockText('loading');return}
   history.update();ctrl=new AbortController();refresh.disabled=true;status.textContent=quote?offerText('fetch'):stockText('loading');section.dataset.stockState='loading';detail.textContent=stockText('interval');
-  const timeout=setTimeout(()=>ctrl?.abort(),10000);
+  const timeout=setTimeout(()=>ctrl?.abort(),15000);
   try{
    const data=await readStockObservation(key,t,ctrl.signal);if(dead)return;
    const time=Date.parse(data.checkedAt);

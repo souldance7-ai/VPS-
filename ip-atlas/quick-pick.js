@@ -22,13 +22,14 @@ const quickWords={
  markets:['匹配地点','匹配地點','Matching locations','該当する拠点'],
  notices:['已选条件','已選條件','Selected filters','選択中の条件']
 };
+Object.assign(quickWords,ROUTE_LABELS);
 function quickWord(key){return quickWords[key][{sc:0,tc:1,en:2,ja:3}[lang]]}
 const quickActive=new Set(),quickFeatures=new WeakMap();
 const quickFields=['search','vendor','market','kind','ip','route','carrier','buy-filter','order'];
 let quickInitialized=false,quickRestoring=false,quickFeedback=false;
 function quickGroups(){
  const groups=Object.entries(IP_EVIDENCE_OPTIONS).map(([id,values])=>({id,values}));
- groups.push({id:'lineClass',values:['iepl','iplc','ixp','private-route','optimized-transit']},{id:'usageClass',values:['hourly','quota-transfer','dedicated-port']},{id:'route',values:['ct','cu','cm']},{id:'hosting',values:['bare','probe']});
+ groups.push({id:'lineClass',values:['iepl','iplc','ixp','private-route','optimized-transit']},{id:'usageClass',values:['hourly','quota-transfer','dedicated-port']},...Object.entries(ROUTE_CHOICES).map(([id,values])=>({id,values})),{id:'hosting',values:['bare','probe']});
  return groups;
 }
 function quickLabel(value){return Object.hasOwn(quickWords,value)?quickWord(value):ipEvidenceLabel(value,lang)}
@@ -37,7 +38,6 @@ function quickExclusive(group){return group!=='hosting'&&group!=='route'}
 function quickEvidenceFeatures(plan){
  let values=quickFeatures.get(plan);if(values)return values;
  values=new Set([...getIpEvidence(plan).map(e=>e.value),...(plan.networkFilters||[])]);
- if(plan.route==='claimed'||plan.route==='measured'){for(const c of plan.carriers||[])values.add(c.toLowerCase())}
  if(plan.spec?.term==='hour')values.add('hourly');
  if(!plan.networkFilters){
   const line=typeof plan.routeName==='object'?plan.routeName.en:plan.routeName||'';
@@ -49,16 +49,19 @@ function quickEvidenceFeatures(plan){
  if(typeof getStockKey==='function'&&getStockKey(plan))values.add('probe');
  quickFeatures.set(plan,values);return values;
 }
-function applyQuickPick(rows){
- if(!quickActive.size)return rows;
- return rows.filter(p=>{const values=quickEvidenceFeatures(p);return [...quickActive].every(k=>values.has(k))});
+function quickMatcher(selected){
+ const ordinary=selected.filter(value=>!routeTokens.has(value));
+ const route=routePredicate(selected,($('carrier')?.value||'').toLowerCase(),$('route')?.value);
+ return plan=>(!route||route(plan))&&(!ordinary.length||ordinary.every(value=>quickEvidenceFeatures(plan).has(value)));
 }
+function applyQuickPick(rows){return quickActive.size?rows.filter(quickMatcher([...quickActive])):rows;}
 function quickCandidateCounts(baseRows){
  const counts=new Map(),selected=[...quickActive];
  for(const group of quickGroups()){
   for(const value of group.values){
    const others=selected.filter(k=>k!==value&&(!quickExclusive(group.id)||!group.values.includes(k)));
-   let count=0;for(const p of baseRows){const keys=quickEvidenceFeatures(p);if(keys.has(value)&&others.every(k=>keys.has(k)))count++}
+   const accept=quickMatcher([...others,value]);
+   let count=0;for(const plan of baseRows)if(accept(plan))count++;
    counts.set(value,count);
   }
  }
@@ -93,7 +96,8 @@ function quickRestoreLocation(){
   const area=params.get('q-zone');zone=Object.hasOwn(groups,area)?area:'all';renderControls();
   for(const field of quickFields){
    const input=$(field);if(!input)continue;
-   const value=params.get('q-'+field)||'';
+   const rawValue=params.get('q-'+field)||'';
+   const value=field==='vendor'&&rawValue==='ColossusCloud'?'ServerPoint':rawValue;
    if(input.tagName==='SELECT')input.value=[...input.options].some(o=>o.value===value)?value:input.options[0]?.value||'';
    else input.value=value;
   }
@@ -149,7 +153,9 @@ function renderQuickPick(out,baseRows,rows){
  summary.append(el('strong',String(rows.length)),el('span',quickWord('count')+' · '+vendorCount(rows)+' '+quickWord('merchants')));
  const share=btn(quickWord('share'),()=>copy(quickDirectoryUrl().href),'quick-share'),clear=btn(quickWord('clear'),()=>quickChange(quickClearLocation),'quick-clear');
  share.id='quick-share';clear.id='quick-clear';clear.disabled=!quickActive.size&&!place.value&&zone==='all';
- actions.append(clear,share);footer.append(summary,actions);out.replaceChildren(head,matrix,footer);
+ const glossary=el('details',null,'route-glossary');glossary.open=Boolean(out.querySelector('.route-glossary[open]'));
+ glossary.append(el('summary',quickWord('routeTerms')),el('p',quickWord('routeCaption')),el('p',quickWord('routeTermNote')));
+ actions.append(clear,share);footer.append(summary,actions);out.replaceChildren(head,matrix,glossary,footer);
  if(!rows.length&&quickActive.size)out.append(el('p',quickWord('noMatches'),'quick-empty'));
  if(rows.length&&quickActive.size&&!place.value){
   const marketCounts=new Map();for(const p of rows)marketCounts.set(p.market,(marketCounts.get(p.market)||0)+1);

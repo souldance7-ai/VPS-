@@ -8,6 +8,7 @@ const probePanelWords={
  probeTargets:['监测方案','監測方案','Monitored targets','監視対象'],
  probeWindow:['统计时间窗','統計時間窗','Freshness window','集計時間幅'],
  probeStockFresh:['窗口内已查库存','時間窗內已查庫存','Stock checks in window','期間内に照会した在庫'],
+ probeConfirmed:['窗口内取得明确库存','時間窗內取得明確庫存','Confirmed stock readings in window','期間内に確定した在庫'],
  probeQuoteFresh:['窗口内取得报价','時間窗內取得報價','Quotes read in window','期間内に取得した価格'],
  probeMostRecent:['最近采集','最近採集','Last collection','直近の取得'],
  probeHealthLink:['查看原始记录','查看原始紀錄','View health data','API の応答を見る'],
@@ -20,10 +21,11 @@ let healthTimer=null,healthCtrl=null,healthRecord=null;
 function paintHealth(){
  if(!healthRecord){healthBody.textContent=tr('probeStatusLoading');return}
  if(!healthRecord.installed){healthBody.textContent=tr('probeStatusDown');return}
- const r=healthRecord,modern=r.schemaVersion===10;
+ const r=healthRecord,modern=r.schemaVersion>=10;
  const list=el('dl',null,'probe-metrics');
  const measures=[['probeTargets',r.targetCount],['probeCycle',r.periodMinutes+' '+tr('probeMinutes')]];
  if(modern)measures.push(['probeWindow',r.freshWithinMinutes+' '+tr('probeMinutes')],['probeStockFresh',r.stockChecksFresh+' / '+r.stockTargetCount],['probeQuoteFresh',r.quoteFresh+' / '+r.quoteTargetCount]);
+ if(Number.isInteger(r.stockReadingsFresh))measures.push(['probeConfirmed',r.stockReadingsFresh+' / '+r.stockTargetCount]);
  measures.push(['probeMostRecent',Number.isFinite(Date.parse(r.lastCheckedAt))?new Date(r.lastCheckedAt).toLocaleString(tags[lang],{hour12:false}):tr('probeNoRead')]);
  for(const [key,value] of measures){const cell=el('div');cell.append(el('dt',tr(key)),el('dd',value));list.append(cell)}
  healthBody.replaceChildren(list);if(!modern)healthBody.append(el('small',tr('probeLegacy')));

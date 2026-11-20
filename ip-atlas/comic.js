@@ -8,37 +8,18 @@ const comicWords = {
  previousShot:['上一格','上一格','Previous panel','前のコマ'],nextShot:['下一格','下一格','Next panel','次のコマ'],comicGesture:['点击画格或左右滑动','點選畫格或左右滑動','Tap a panel or swipe','コマをタップ・左右にスワイプ']
 };
 for(const [key,values] of Object.entries(comicWords)) editionLangs.forEach((l,i)=>WORDS[l][key]=values[i]);
-let shot=1, currentView='', routeSequence=0, wave=[], drawerAnimation=null, closing=false, storyTimer;
+let currentView='', routeSequence=0, wave=[], drawerAnimation=null, closing=false;
 const scrollMemory=new Map(), reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
 const canMove=()=>!paused&&!reduceMotion.matches;
-function selectShot(value) {
- const previous=shot;
- shot=(value+2)%3+1;
- $('comic-deck').dataset.shot=shot;
- for(const b of document.querySelectorAll('[data-frame]')) b.setAttribute('aria-expanded',String(Number(b.dataset.frame)===shot));
- $('story-status').textContent='0'+shot+' / 03  ·  '+tr('chapter'+shot);
- if(previous!==shot&&currentView==='top'&&canMove()) {
-  const panel=$('comic-deck').children[shot-1];
-  const pulse=document.createElement('i');
-  pulse.className='radio-ripple';pulse.setAttribute('aria-hidden','true');panel.append(pulse);
-  transient(pulse,[{transform:'scale(.16)',opacity:0},{transform:'scale(.35)',opacity:.82,offset:.18},{transform:'scale(2.6)',opacity:0}],{duration:850});
- }
-}
 function localizeComic(){
  $('portal-motion')?.setAttribute('aria-label',tr('portalMotion'));
  document.title=tr('title')+' · PITOPONE';
- $('scene-prev').setAttribute('aria-label',tr('previousShot'));$('scene-next').setAttribute('aria-label',tr('nextShot'));
- $('comic-deck').setAttribute('aria-label',tr('comicGesture'));selectShot(shot);
 }
 function syncComicMotion(){
  const motionButton=$('portal-motion');
  if(motionButton){motionButton.textContent=canMove()?'Ⅱ':'▶';motionButton.setAttribute('aria-label',tr('portalMotion'));motionButton.setAttribute('aria-pressed',String(!canMove()))}
  if(!canMove())for(const a of comicEffects)a.cancel();
  for(const img of document.querySelectorAll('.jump-loop')) img.src='art/'+(canMove()?'yuki-jump.gif':'yuki-still.webp');
- clearInterval(storyTimer);
- if(canMove()) storyTimer=setInterval(()=>{
-  if(currentView==='top'&&!document.hidden&&!$('comic-deck').matches(':hover,:focus-within')&&!document.querySelector('.play-controls:focus-within'))selectShot(shot+1);
- },7000);
 }
 function pageName(hash){const name=hash.replace(/^#/,'');return ['directory','verify','offers','journal','field'].includes(name)?name:'top'}
 function showView(name,restore,focus){
@@ -89,14 +70,7 @@ async function closeComicDialog(){
  d.close();closing=false;
 }
 function startComic(){
- const deck=$('comic-deck');let pointer=null,suppress=0;
- for(const b of deck.children)b.onclick=()=>{if(performance.now()>suppress)selectShot(Number(b.dataset.frame))};
- deck.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight'].includes(e.key))return;e.preventDefault();selectShot(shot+(e.key==='ArrowLeft'?-1:1));deck.children[shot-1].focus()});
- deck.addEventListener('pointerdown',e=>{pointer={x:e.clientX,y:e.clientY}});
- deck.addEventListener('pointercancel',()=>pointer=null);
- deck.addEventListener('pointerup',e=>{if(!pointer)return;const dx=e.clientX-pointer.x,dy=e.clientY-pointer.y;pointer=null;if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)){suppress=performance.now()+500;selectShot(shot+(dx<0?1:-1))}});
- $('scene-prev').onclick=()=>selectShot(shot-1);$('scene-next').onclick=()=>selectShot(shot+1);
- $('motion').addEventListener('click',syncComicMotion);reduceMotion.addEventListener('change',syncComicMotion);syncComicMotion();
+ $('portal-motion').addEventListener('click',syncComicMotion);reduceMotion.addEventListener('change',syncComicMotion);syncComicMotion();
  $('filter-toggle').onclick=e=>{const button=e.currentTarget,open=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',open);$('filter-fold').inert=!open;$('catalog-layout').classList.toggle('folded',!open)};
  $('drawer').addEventListener('cancel',e=>{e.preventDefault();closeComicDialog()});
  history.scrollRestoration='manual';

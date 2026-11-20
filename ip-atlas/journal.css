@@ -22,3 +22,5 @@
 #probe-status{margin:.65rem 0 1.1rem;border:1px solid #3e505c;border-radius:6px;padding:.6rem .85rem;color:#cfdfe6}#probe-status summary{cursor:pointer;font-size:.85rem;font-weight:700}#probe-status a{color:#a1e0f0;font-size:.8rem}#probe-status-data{font-size:.86rem}.probe-metrics{display:flex;flex-wrap:wrap;gap:1rem 2rem;margin:.8rem 0}.probe-metrics dt{font-size:.74rem}.probe-metrics dd{margin:.15rem 0 0;color:#f5fcff;font-weight:650}
 
 .journal-resultbar{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;padding:.6rem 0}.journal-resultbar #journal-count{margin:0 auto 0 0}.journal-resultbar button{border:0;border-bottom:1px solid #6e8d94;background:transparent;color:#a1e0f0;padding:.3rem 0;font-size:.82rem}.journal-resultbar button:hover{color:#fff}
+
+.carrier-nav .merchant-additional summary{cursor:pointer;color:#a3e6dc;font-size:.86rem;padding:.3rem .5rem}.carrier-nav:has(.merchant-additional[open]) .merchant-additional{flex-basis:100%}.merchant-menu{display:flex;flex-wrap:wrap;gap:.45rem;padding:.6rem 0}.merchant-menu a{display:inline-flex;align-items:center}

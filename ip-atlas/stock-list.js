@@ -46,7 +46,7 @@ function refreshStockList(){
  }
  async function read(row){
   const ctrl=new AbortController();row.ctrl=ctrl;active++;
-  draw(row,'loading');const timeout=setTimeout(()=>ctrl.abort('timeout'),10000);
+  draw(row,'loading');const timeout=setTimeout(()=>ctrl.abort('timeout'),15000);
   try{
    const data=await readStockObservation(row.key,row.target,ctrl.signal);
    if(!live||ctrl.signal.aborted||!visible.has(row))return;

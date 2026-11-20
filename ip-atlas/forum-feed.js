@@ -1,6 +1,20 @@
 'use strict';
 
+const packagedForumPosts={"nodeseek":{"source":"nodeseek","observed":"2026-11-20T06:33:00.142Z","stale":true,"editionSnapshot":true,"items":[{"title":"【收】剩余价值收Vmiss tri basic 4.5cad/月","link":"https://www.nodeseek.com/post-1067683-1","date":"2026-11-20T06:29:27.000Z"},{"title":"帮收两台，共溢价2500，ovh杜甫独服，sys-stor-le-1，4x12t硬盘的","link":"https://www.nodeseek.com/post-1067676-1","date":"2026-11-20T06:26:53.000Z"},{"title":"130收68段VMISS 4.5 TRI","link":"https://www.nodeseek.com/post-1067673-1","date":"2026-11-20T06:26:04.000Z"},{"title":"【交易中】【杀鸡】十块改油，RN racknerd，2025黑五10刀","link":"https://www.nodeseek.com/post-1067669-1","date":"2026-11-20T06:25:44.000Z"}]},"carpool":{"source":"carpool","observed":"2026-11-20T06:33:00.142Z","stale":true,"editionSnapshot":true,"items":[{"title":"gemini 20x 独享或两人700 独享 350 拼车","link":"https://www.nodeseek.com/post-1067686-1","hostingTitle":false,"date":"2026-11-20T06:30:00.000Z"}]},"meow":{"source":"meow","observed":"2026-11-20T06:34:01.784Z","stale":true,"editionSnapshot":true,"items":[{"title":"新商家GoldCloud 德国DC1产品 新品测评","link":"https://meowvps.com/blog/goldcloudde/","coupons":[{"code":"GCFWZDB75BUM"}],"date":"2026-11-18T23:00:00.000Z"},{"title":"PPFlight 美国洛杉矶LAX LIFT产品 测评","link":"https://meowvps.com/blog/ppflightlift/","date":"2026-11-17T23:00:00.000Z"},{"title":"Gomami 德国FRA Pulse产品 新品测评","link":"https://meowvps.com/blog/gomamide/","coupons":[{"code":"Hi,FRA"}],"date":"2026-11-15T23:00:00.000Z"},{"title":"新商家Bocchi 日本东京Tokyo高性能 新品首发测评","link":"https://meowvps.com/blog/bocchijp/","coupons":[{"code":"MeowVPS"}],"date":"2026-11-13T23:00:00.000Z"},{"title":"六六云 菲律宾双ISP产品 测评","link":"https://meowvps.com/blog/666cloudsph/","coupons":[{"code":"DOUBLE11"}],"date":"2026-11-12T23:00:00.000Z"},{"title":"新商家干杯云 AT&T商业宽带PRO美国家宽 产品测评","link":"https://meowvps.com/blog/usvps24proup/","coupons":[{"code":"MeowVPS"}],"date":"2026-11-11T23:00:00.000Z"},{"title":"商家NexKr 韩国SKB家宽产品 测评","link":"https://meowvps.com/blog/nexkrskb/","coupons":[{"code":"WELCOME"},{"code":"SMSVERIFYFEE"}],"date":"2026-11-10T23:00:00.000Z"},{"title":"新商家Tamago 香港WTT商宽 新品测评","link":"https://meowvps.com/blog/tamagowtt/","coupons":[{"code":"1111W3R3PM"}],"date":"2026-11-08T23:00:00.000Z"},{"title":"新商家ATTVPS AT&T美国家宽产品 复测","link":"https://meowvps.com/blog/attvpsre/","coupons":[{"code":"MeowVPS"}],"date":"2026-11-07T23:00:00.000Z"},{"title":"JCloudHosting 西班牙产品 测评","link":"https://meowvps.com/blog/jcloudhosting/","coupons":[{"code":"79FHTOS7JL"}],"date":"2026-11-05T23:00:00.000Z"},{"title":"新商家PanstarCloud 美国LAX Premium DC2 新品测评","link":"https://meowvps.com/blog/panstarusdc2/","coupons":[{"code":"USPre75DC2"}],"date":"2026-11-03T23:00:00.000Z"}]},"meowoffers":{"source":"meowoffers","observed":"2026-11-20T06:34:01.885Z","stale":true,"editionSnapshot":true,"items":[{"title":"LayerOne 提供 VPS，地区未注明，限量入门款为 1 vCPU、1 GB 内存、15 GB NVMe，7 美元/年。另一…","sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223566/layerone-black-friday-limited-time-offers-7-yr-flash-sale","date":"2026-11-19T21:12:36.000Z"},{"title":"VPSNerds 提供独立服务器，称覆盖 32 个以上地点，但未列出本次套餐具体地区；起步配置为 Xeon D-1531（6 核…","sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223563/99-9-uptime-high-powered-dedicated-servers-32-locations-world-wide","date":"2026-11-19T19:38:06.000Z"},{"title":"1GB 套餐 1 GB 内存 1 CPU 核心 20 GB SSD 存储 3000 GB 月流量 1 Gbps 带宽 1个 IP…","sourceName":"RackNerd","link":"https://meowvps.com/timeline/?merchant=racknerd_promo#offers","date":"2026-11-19T17:53:58.000Z"},{"title":"RackNerd 提供多地区 KVM VPS、达拉斯共享及分销主机和独服，VPS 可选地区以订单页库存为准。VPS 起步为 1…","sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223558/racknerd-s-black-friday-takeover-new-deals-new-tech-adminbolt-hosting-hundreds-of-giveaways","date":"2026-11-19T17:48:20.000Z"},{"title":"AvaHosting 提供共享主机、VPS 和独服，机房地区未注明；Nano VPS 配备 1 vCPU、512MB 内存、20…","coupons":[{"code":"BFAVA"}],"sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223492/ava-hosting-black-friday-deals-big-restock-vps-nano-giveaways","date":"2026-11-18T17:14:12.000Z"}]},"sb":{"source":"sb","observed":"2026-11-20T06:34:01.026Z","stale":true,"editionSnapshot":true,"items":[{"title":"PQS 双十一优惠活动即将开跑!","link":"https://sb.sb/t/18494/","date":"2026-11-09T07:47:39.000Z"},{"title":"🔥海沫云｜双十一特惠年付｜香港 / 美国 / 大陆","link":"https://sb.sb/t/18177/","date":"2026-11-08T07:38:19.000Z"}]},"lowendtalk":{"source":"lowendtalk","observed":"2026-11-20T06:33:06.265Z","stale":true,"editionSnapshot":true,"items":[{"title":"LayerOne - BLACK FRIDAY! Limited time offers! - $7/yr FLASH SALE","link":"https://lowendtalk.com/discussion/223566/layerone-black-friday-limited-time-offers-7-yr-flash-sale","date":"2026-11-19T21:12:36.000Z"},{"title":"RackNerd’s BLACK FRIDAY TAKEOVER! NEW DEALS, NEW TECH, AdminBolt HOSTING + HUNDREDS OF GIVEAWAYS!","link":"https://lowendtalk.com/discussion/223558/racknerd-s-black-friday-takeover-new-deals-new-tech-adminbolt-hosting-hundreds-of-giveaways","date":"2026-11-19T17:48:20.000Z"},{"title":"noez.de – Prepaid Hosting from Frankfurt, since 2012","link":"https://lowendtalk.com/discussion/223518/noez-de-prepaid-hosting-from-frankfurt-since-2012","date":"2026-11-19T11:17:21.000Z"},{"title":"Looking for a cPanel alternative? Get aaPanel Pro for $98 for one year and save $190","link":"https://lowendtalk.com/discussion/223509/looking-for-a-cpanel-alternative-get-aapanel-pro-for-98-for-one-year-and-save-190","date":"2026-11-19T04:12:18.000Z"},{"title":"Ava.hosting - Black Friday Deals + BIG Restock VPS Nano! + Giveaways!","link":"https://lowendtalk.com/discussion/223492/ava-hosting-black-friday-deals-big-restock-vps-nano-giveaways","coupons":[{"code":"BFAVA"}],"date":"2026-11-18T17:14:12.000Z"},{"title":"Streamline-Servers.com - Sydney Dedicated Servers - Early-Black Friday","link":"https://lowendtalk.com/discussion/223393/streamline-servers-com-sydney-dedicated-servers-early-black-friday","coupons":[{"code":"BLACKFRIDAY26SERVER"}],"date":"2026-11-16T23:08:54.000Z"},{"title":"PetroSky Black Friday Sale | 30% OFF KVM VPS in Canada & France | From €4.89/mo","link":"https://lowendtalk.com/discussion/223377/petrosky-black-friday-sale-30-off-kvm-vps-in-canada-france-from-4-89-mo","coupons":[{"code":"BLACKFRIDAY"}],"date":"2026-11-16T16:05:24.000Z"}]},"vpsdeer":{"source":"vpsdeer","observed":"2026-11-20T06:34:02.206Z","stale":true,"editionSnapshot":true,"items":[{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2657","date":"2026-11-20T05:14:24.000Z"},{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2656","date":"2026-11-20T05:14:17.000Z"},{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2655","date":"2026-11-20T05:13:52.000Z"},{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2654","date":"2026-11-20T03:02:44.000Z"}]},"vpsts":{"source":"vpsts","observed":"2026-11-20T06:34:02.187Z","stale":true,"editionSnapshot":true,"items":[{"title":"ZgoCloud - DE Frankfurt AMD VPS - Specials - Starter","link":"https://t.me/vpsts/4425","date":"2026-11-20T06:08:54.000Z"},{"title":"PPFlight库存监控补货通知专属频道","link":"https://t.me/vpsts/4424","date":"2026-11-20T02:54:42.000Z"},{"title":"RackNerd - 2026黑五促销","link":"https://t.me/vpsts/4423","date":"2026-11-19T19:00:55.000Z"},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano - 补货","coupons":[{"code":"Hi,FRA"}],"link":"https://t.me/vpsts/4421","date":"2026-11-18T08:06:49.000Z"},{"title":"❌ GoMami - 🗻LAX.Pulse.Nano - 已售罄","coupons":[{"code":"Hi,LAX"}],"link":"https://t.me/vpsts/4420","date":"2026-11-18T08:06:45.000Z"},{"title":"PPFlight - [US.LAX02] Glide M1","coupons":[{"code":"glideyyds"}],"link":"https://t.me/vpsts/4410","date":"2026-11-17T09:46:40.000Z"},{"title":"PPFlight - [US.LAX02] Glide S1","coupons":[{"code":"glideyyds"}],"link":"https://t.me/vpsts/4409","date":"2026-11-17T09:46:28.000Z"}]},"vpsuu":{"source":"vpsuu","observed":"2026-11-20T06:34:02.173Z","stale":true,"editionSnapshot":true,"items":[{"title":"LayerOne 黑五促销 🖥","link":"https://t.me/vpsuu/6008","date":"2026-11-20T02:11:35.000Z"},{"title":"RackNerd 2026黑五促销 🛒","link":"https://t.me/vpsuu/6007","date":"2026-11-20T00:29:16.000Z"},{"title":"RAKsmart 黑五：香港物理机秒杀$29.99/月，VPS秒杀$2.99/月起，可选国际BGP/大陆优化/精品CN2","link":"https://t.me/vpsuu/6005","date":"2026-11-19T12:15:44.000Z"},{"title":"AVA Host 黑五 8折：VPS 月付 €4 起，Nano €11/年，摩尔多瓦机房/不限流量","link":"https://t.me/vpsuu/6004","date":"2026-11-19T08:58:00.000Z"},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano 补货","coupons":[{"code":"Hi,FRA"}],"link":"https://t.me/vpsuu/6000","date":"2026-11-18T10:07:02.000Z"},{"title":"✅ GoMami - 🗻LAX.Pulse.Nano 补货","coupons":[{"code":"Hi,LAX"}],"link":"https://t.me/vpsuu/5999","date":"2026-11-18T10:06:33.000Z"},{"title":"PPFlight [US.LAX02] Glide S1 补货 🚀","coupons":[{"code":"glideyyds"}],"link":"https://t.me/vpsuu/5995","date":"2026-11-17T10:17:32.000Z"}]},"poorvpsmsg":{"source":"poorvpsmsg","observed":"2026-11-20T06:34:02.165Z","stale":true,"editionSnapshot":true,"items":[{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4807","date":"2026-11-20T06:26:20.000Z"},{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4806","date":"2026-11-20T01:56:22.000Z"},{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4805","date":"2026-11-19T22:56:22.000Z"},{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4804","date":"2026-11-19T22:26:19.000Z"}]},"coupons":{"source":"coupons","observed":"2026-11-20T06:34:02.206Z","items":[{"title":"Ava.hosting - Black Friday Deals + BIG Restock VPS Nano! + Giveaways!","code":"BFAVA","link":"https://lowendtalk.com/discussion/223492/ava-hosting-black-friday-deals-big-restock-vps-nano-giveaways","date":"2026-11-18T17:14:12.000Z","from":"lowendtalk","sourceName":"","sourceObserved":"2026-11-20T06:33:06.265Z","archived":true},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano 补货","code":"Hi,FRA","link":"https://t.me/vpsuu/6000","date":"2026-11-18T10:07:02.000Z","from":"vpsuu","sourceName":"","sourceObserved":"2026-11-20T06:34:02.173Z","archived":true},{"title":"✅ GoMami - 🗻LAX.Pulse.Nano 补货","code":"Hi,LAX","link":"https://t.me/vpsuu/5999","date":"2026-11-18T10:06:33.000Z","from":"vpsuu","sourceName":"","sourceObserved":"2026-11-20T06:34:02.173Z","archived":true},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano - 补货","code":"Hi,FRA","link":"https://t.me/vpsts/4421","date":"2026-11-18T08:06:49.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"❌ GoMami - 🗻LAX.Pulse.Nano - 已售罄","code":"Hi,LAX","link":"https://t.me/vpsts/4420","date":"2026-11-18T08:06:45.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"PPFlight [US.LAX02] Glide S1 补货 🚀","code":"glideyyds","link":"https://t.me/vpsuu/5995","date":"2026-11-17T10:17:32.000Z","from":"vpsuu","sourceName":"","sourceObserved":"2026-11-20T06:34:02.173Z","archived":true},{"title":"PPFlight - [US.LAX02] Glide M1","code":"glideyyds","link":"https://t.me/vpsts/4410","date":"2026-11-17T09:46:40.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"PPFlight - [US.LAX02] Glide S1","code":"glideyyds","link":"https://t.me/vpsts/4409","date":"2026-11-17T09:46:28.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"Streamline-Servers.com - Sydney Dedicated Servers - Early-Black Friday","code":"BLACKFRIDAY26SERVER","link":"https://lowendtalk.com/discussion/223393/streamline-servers-com-sydney-dedicated-servers-early-black-friday","date":"2026-11-16T23:08:54.000Z","from":"lowendtalk","sourceName":"","sourceObserved":"2026-11-20T06:33:06.265Z","archived":true},{"title":"PetroSky Black Friday Sale | 30% OFF KVM VPS in Canada & France | From €4.89/mo","code":"BLACKFRIDAY","link":"https://lowendtalk.com/discussion/223377/petrosky-black-friday-sale-30-off-kvm-vps-in-canada-france-from-4-89-mo","date":"2026-11-16T16:05:24.000Z","from":"lowendtalk","sourceName":"","sourceObserved":"2026-11-20T06:33:06.265Z","archived":true}],"sources":[{"source":"lowendtalk","observed":"2026-11-20T06:33:06.265Z","stale":true,"editionSnapshot":true},{"source":"nodeseek","observed":"2026-11-20T06:33:00.142Z","stale":true,"editionSnapshot":true},{"source":"meowoffers","observed":"2026-11-20T06:34:01.885Z","stale":true,"editionSnapshot":true},{"source":"sb","observed":"2026-11-20T06:34:01.026Z","stale":true,"editionSnapshot":true},{"source":"vpsdeer","observed":"2026-11-20T06:34:02.206Z","stale":true,"editionSnapshot":true},{"source":"vpsts","observed":"2026-11-20T06:34:02.187Z","stale":true,"editionSnapshot":true},{"source":"vpsuu","observed":"2026-11-20T06:34:02.173Z","stale":true,"editionSnapshot":true},{"source":"poorvpsmsg","observed":"2026-11-20T06:34:02.165Z","stale":true,"editionSnapshot":true}],"stale":true,"editionSnapshot":true}};
+function recentPackagedPosts(id){
+ const item=packagedForumPosts[id],age=Date.now()-Date.parse(item?.observed);
+ return age>=0&&age<14*86400000?item:null;
+}
 const publicForumTitles = {
+  coupons:['公开来源新码','公開來源新碼','New public coupon codes','公開情報の新着コード'],
+  couponsIntro:['近 14 天公开帖明确标出的优惠码。每张卡显示原帖时间、来源与期限；实际折扣按商家结账结果。','近 14 天公開貼文明確標出的優惠碼。每張卡顯示原帖時間、來源與期限，實際折扣以商家結帳結果為準。','Codes explicitly named in public posts from the last 14 days. Each entry links its dated source. The store determines eligibility at checkout.','直近14日間の公開投稿に明記されたコードです。掲載日時と元の投稿をご確認ください。適用可否は販売元の決済画面で確認できます。'],
+  couponPeriod:['原帖未注明具体截止时间','原帖未註明具體截止時間','No exact expiry timestamp in the post','投稿に明確な終了日時の記載なし'],
+  couponEnds:['截至','截至','Ends','終了'],couponCopy:['复制','複製','Copy','コピー'],copied:['已复制','已複製','Copied','コピー済み'],
+  couponNone:['本次读取的近 14 天公开帖没有明确标出的优惠码。可切换来源查看活动原帖。','本次讀取的近 14 天公開貼文沒有明確標出的優惠碼。可切換來源查看活動原帖。','No explicitly labelled codes in the public posts read for the last 14 days. Browse the sources for offers.','今回の取得分には直近14日間のコード明記がありません。各配信元でセールをご覧いただけます。'],
+  couponSnapshot:['存档读取','存檔讀取','Archived read','保存取得'],
+  lowendtalk:['LowEndTalk · 特惠','LowEndTalk · 特惠','LowEndTalk · offers','LowEndTalk・セール'],
+  lowendtalkIntro:['LowEndTalk Offers 版的商家原帖。点击帖子查看优惠条款、机房与活动时间。','LowEndTalk Offers 版的商家原帖。點選貼文查看優惠條款、機房與活動時間。','Provider threads on the LowEndTalk Offers board. Open a post for terms, locations and dates.','LowEndTalk Offers 掲示板の販売元による投稿です。適用条件、拠点、期間は元の投稿で確認できます。'],
+  archived:['来源暂不可用，显示存档帖子。','來源暫不可用，顯示存檔貼文。','Source unavailable. Showing dated archive excerpts.','配信元に接続できません。取得日のある保存記事を表示中です。'],
   title:['论坛与频道新帖','論壇與頻道新帖','Forum and channel dispatches','掲示板・チャンネルの新着'],
   nodeseek:['NodeSeek','NodeSeek','NodeSeek','NodeSeek'],
   carpool:['NodeSeek · 拼车','NodeSeek · 拼車','NodeSeek · group buys','NodeSeek・共同購入'],
@@ -42,7 +56,7 @@ const publicForumTitles = {
 const publicTGChannels = Object.freeze({vpsdeer:'vpsdeer',vpsts:'vpsts',vpsuu:'vpsuu',poorvpsmsg:'PoorVPSMsg'});
 const publicForumState = {
   active:'nodeseek', inView:false, observer:null, root:null, timer:null, hostingOnly:true,
-  feeds:Object.fromEntries(['meowoffers','meow','carpool','nodeseek','sb',...Object.keys(publicTGChannels)].map(id=>[id,{}]))
+  feeds:Object.fromEntries(['coupons','lowendtalk','meowoffers','meow','carpool','nodeseek','sb',...Object.keys(publicTGChannels)].map(id=>[id,{}]))
 };
 function choosePublicSource(id) {
   const source = id === 'all' ? 'nodeseek' : id;
@@ -81,12 +95,13 @@ function drawHomeNews() {
       event.preventDefault(); choosePublicSource('meowoffers'); activateOfferTab($('tab-feed'));
       history.pushState(null,'',full.href); turnPage('offers');
     });
-    box.append(heading,story,more); offers.after(box);
-    homeNewsUI = {panel,heading,story,more};
+    const codeFeed=el('a');const codesUrl=new URL(full);codesUrl.searchParams.set('feed','coupons');codeFeed.href=codesUrl.href;codeFeed.className='home-dispatch-codes';codeFeed.addEventListener('click',event=>{if(event.ctrlKey||event.shiftKey||event.metaKey||event.altKey)return;event.preventDefault();choosePublicSource('coupons');activateOfferTab($('tab-feed'));history.pushState(null,'',codesUrl.href);turnPage('offers')});
+    const feedLinks=el('div',null,'home-feed-links');feedLinks.append(codeFeed,more);box.append(heading,story,feedLinks); offers.after(box);
+    homeNewsUI = {panel,heading,story,more,codeFeed};
     if ('MutationObserver' in window) new MutationObserver(scheduleHomeNews).observe(panel,{attributes:true,attributeFilter:['hidden']});
   }
   const txt = forumUIString, state = publicForumState.feeds.meowoffers, ui = homeNewsUI;
-  ui.heading.textContent = txt('homeNews'); ui.more.textContent = txt('allNews');
+  ui.codeFeed.textContent=txt('coupons')+' →'; ui.heading.textContent = txt('homeNews'); ui.more.textContent = txt('allNews');
   ui.story.replaceChildren();
   const post = state.data?.items[0];
   if (post) {
@@ -98,10 +113,10 @@ function drawHomeNews() {
   let notice = '';
   if (location.protocol === 'file:') notice = txt('preview');
   else if (navigator.onLine === false) notice = txt('offline');
-  else if (state.failed) notice = txt('homeFailure');
+  else if (state.failed && !post) notice = txt('homeFailure');
   else if (!post) notice = txt(state.busy || !state.data ? 'loading' : 'noMerchant');
   if (post && (state.data.stale || state.failed || navigator.onLine === false)) {
-    const last = el('small',txt('stale')+' '+txt('time')+' ');
+    const last = el('small',txt(state.data.editionSnapshot?'archived':'stale')+' '+txt('time')+' ');
     const stamp = forumDate(state.data.observed);
     if (stamp) last.append(stamp);
     ui.story.append(last);
@@ -155,6 +170,7 @@ function forumItemLink(value, id) {
       correct = u.hostname === 't.me' && parts.length === 3 && parts[1] === publicTGChannels[id] && /^[1-9]\d{0,14}$/.test(parts[2]);
     } else if (id === 'sb') correct = u.hostname === 'sb.sb' && /^\/t\/[1-9]\d{0,14}\/$/.test(u.pathname);
     else if (id === 'nodeseek' || id === 'carpool') correct = u.hostname === 'www.nodeseek.com' && /^\/post-[1-9]\d{0,14}-1$/.test(u.pathname);
+    else if (id === 'lowendtalk') correct = u.hostname === 'lowendtalk.com' && /^\/discussion\/[1-9]\d{0,12}\/[a-z0-9-]+\/?$/i.test(u.pathname);
     else if (id === 'meow') correct = u.hostname === 'meowvps.com' && /^\/blog\/[\w%-]+\/$/.test(u.pathname);
     if (correct && !u.search && !u.hash) return u.href;
   } catch {}
@@ -205,7 +221,7 @@ function drawForumFeed() {
   const ui = publicForumState.root, id = publicForumState.active, state = publicForumState.feeds[id];
   const txt = forumUIString, telegram = Object.hasOwn(publicTGChannels,id);
   ui.title.textContent = txt('title');
-  ui.intro.textContent = txt(['carpool','meow','meowoffers'].includes(id) ? id+'Intro' : 'intro');
+  ui.intro.textContent = txt(['coupons','lowendtalk','carpool','meow','meowoffers'].includes(id) ? id+'Intro' : 'intro');
   ui.groupScope.hidden = id !== 'carpool';
   ui.scopeText.textContent = txt('carpoolHosting');
   const items = (state.data?.items || []).filter(post => id !== 'carpool' || !publicForumState.hostingOnly || post.hostingTitle === true);
@@ -220,10 +236,10 @@ function drawForumFeed() {
   if (location.protocol === 'file:') notices.push(txt('preview'));
   else if (navigator.onLine === false) notices.push(txt('offline'));
   else if (state.busy) notices.push(txt('loading'));
-  else if (state.failed) notices.push(txt(telegram?'telegramFail':'unavailable'));
-  if (state.data && (state.failed || state.data.stale || navigator.onLine === false)) notices.push(txt('stale'));
+  else if (state.failed && !state.data?.editionSnapshot) notices.push(txt(telegram?'telegramFail':'unavailable'));
+  if (state.data && (state.failed || state.data.stale || navigator.onLine === false)) notices.push(txt(state.data.editionSnapshot?'archived':'stale'));
   if (state.data && !state.data.items.length && !state.busy && !state.failed) {
-    notices.push(txt(state.data.visibility==='link-only'?'limited':telegram?'telegramEmpty':id==='carpool'?'carpoolEmpty':'empty'));
+    notices.push(txt(state.data.visibility==='link-only'?'limited':telegram?'telegramEmpty':id==='coupons'?'couponNone':id==='carpool'?'carpoolEmpty':'empty'));
   } else if (state.data?.items.length && !items.length && id === 'carpool') {
     notices.push(txt('carpoolHostingEmpty'));
   }
@@ -232,11 +248,17 @@ function drawForumFeed() {
   ui.status.hidden = !notices.length;
   ui.list.replaceChildren();
   for (const post of items) {
-    const href = forumItemLink(post.link,id);
+    const href = forumItemLink(post.link,id==='coupons'?post.from:id);
     if (!href || !post.title) continue;
     const row = el('li');
     const copy = el('div',null,'forum-feed-post');
     if (id === 'meowoffers' && typeof post.sourceName === 'string') copy.append(el('span',post.sourceName,'forum-feed-byline'));
+    if(id==='coupons'){
+      const line=el('div',null,'coupon-source-line'),token=el('code',post.code);
+      const copyCode=btn(txt('couponCopy'),async()=>{try{await navigator.clipboard.writeText(post.code);copyCode.textContent=txt('copied')}catch{const range=document.createRange();range.selectNodeContents(token);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range)}});
+      line.append(token,copyCode);copy.append(line,el('span',txt(post.from)+(post.sourceName?' · '+post.sourceName:''),'forum-feed-byline'));
+      const period=el('small',post.endsAt?txt('couponEnds')+' ':txt('couponPeriod'));if(post.endsAt)period.append(forumDate(post.endsAt));if(post.archived){period.append(' · '+txt('couponSnapshot')+' ',forumDate(post.sourceObserved))}copy.append(period);
+    }
     copy.append(link(post.title,href));
     if (telegram && typeof post.snippet === 'string' && post.snippet) copy.append(el('span',post.snippet.slice(0,110),'forum-feed-snippet'));
     if(typeof feedToCatalog==="function"){const catalog=feedToCatalog(post);if(catalog)copy.append(catalog)}
@@ -250,6 +272,8 @@ function drawForumFeed() {
   if (telegram) ui.actions.append(link(txt('openChannel'),'https://t.me/'+publicTGChannels[id]));
   else if (id === 'carpool') ui.actions.append(link(txt('openCarpool'),'https://www.nodeseek.com/categories/carpool'));
   else if (id === 'meow' || id === 'meowoffers') ui.actions.append(link(txt('openTimeline'),'https://meowvps.com/timeline/'+(id==='meowoffers'?'#offers':'')));
+  else if (id === 'coupons')ui.actions.append(link('LowEndTalk Offers ↗','https://lowendtalk.com/categories/offers'),link(txt('nodePromo'),'https://www.nodeseek.com/categories/promotion'));
+  else if (id === 'lowendtalk') ui.actions.append(link(txt('forum'),'https://lowendtalk.com/categories/offers'));
   else if (id === 'sb') ui.actions.append(link(txt('forum'),'https://sb.sb/go/promotion/'));
   else ui.actions.append(link(txt('nodeForum'),'https://www.nodeseek.com/categories/info'),link(txt('nodePromo'),'https://www.nodeseek.com/categories/promotion'));
   ui.foot.replaceChildren();
@@ -266,15 +290,17 @@ async function loadForumFeed(id = publicForumState.active) {
   if (!state || state.busy || location.protocol === 'file:') return;
   state.busy = true; state.failed = false;
   drawForumFeed();
-  const ctl = new AbortController(), timeout = setTimeout(()=>ctl.abort(),['meow','meowoffers'].includes(id)?17500:10000);
+  const ctl = new AbortController(), timeout = setTimeout(()=>ctl.abort(),id==='coupons'?22000:['lowendtalk','meow','meowoffers'].includes(id)?17500:10000);
   try {
     const response = await fetch('/api/deal-feed/' + id,{signal:ctl.signal,cache:'no-store',headers:{Accept:'application/json'}});
     if (!response.ok) throw Error('feed');
     const data = await response.json();
     if (data.source !== id || !Array.isArray(data.items) || !Number.isFinite(Date.parse(data.observed))) throw Error('payload');
-    state.data = {source:id,observed:data.observed,stale:data.stale === true,visibility:data.visibility === 'link-only'?'link-only':'public',
-      items:data.items.slice(0,12).filter(item=>item && typeof item.title === 'string' && forumItemLink(item.link,id))};
+    state.data = {source:id,observed:data.observed,stale:data.stale === true,editionSnapshot:data.editionSnapshot === true,visibility:data.visibility === 'link-only'?'link-only':'public',
+      items:data.items.slice(0,id==='coupons'?30:12).filter(item=>item && typeof item.title === 'string' && (id!=='coupons'||(Object.hasOwn(publicForumState.feeds,item.from)&&item.from!=='coupons'&&/^[A-Za-z0-9][A-Za-z0-9_.-]{1,48}(?:,[A-Za-z0-9][A-Za-z0-9_-]{0,20})?$/.test(item.code))) && forumItemLink(item.link,id==='coupons'?item.from:id))};
   } catch {
+    state.data ||= recentPackagedPosts(id);
+    if(state.data?.editionSnapshot&&!recentPackagedPosts(id))state.data=null;
     state.failed = true;
   } finally {
     clearTimeout(timeout); state.busy = false;

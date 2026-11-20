@@ -589,10 +589,10 @@ const COMMUNITY_OFFERS = [
   "code": "BFAVA",
   "status": "offer",
   "conditions": {
-   "sc": "商家在 NodeSeek 列出 BFAVA 仅限首张账单，月付折后价按官网月费的 80% 计算。推广帖写 12 月 1 日前，官网倒计时标到 12 月 2 日；按较早的日期安排购买。",
-   "tc": "商家在 NodeSeek 列出 BFAVA 僅限首張帳單，月付折後價按官網月費的 80% 計算。推廣帖寫 12 月 1 日前，官網倒數標到 12 月 2 日；按較早的日期安排購買。",
-   "en": "The seller limits BFAVA to the first invoice. The price shown is 80% of the posted monthly rate. Its NodeSeek post says before 1 December, while the homepage counter shows 2 December. Use the earlier date when planning a purchase.",
-   "ja": "BFAVA は初回請求のみが対象です。表示額は公式月額の80%です。販売元の NodeSeek 告知は12月1日まで、公式サイトの表示は12月2日です。購入予定は早いほうの日付を目安にしてください。"
+   "sc": "BFAVA 仅限新订单首张账单打八折，续费恢复原价，VPS Nano 不适用。这里显示折后的首月月费。商家帖写 12 月 1 日前，未公布截止时区。",
+   "tc": "BFAVA 僅限新訂單首張帳單打八折，續費恢復原價，VPS Nano 不適用。這裡顯示折後的首月月費。商家貼文寫 12 月 1 日前，未公布截止時區。",
+   "en": "BFAVA takes 20% off the first invoice on new orders. The price shown is the discounted first month. Renewals use the regular rate. VPS Nano is excluded. The provider says to order before 1 December and gives no cutoff time zone.",
+   "ja": "BFAVA は新規注文の初回請求が20%引きです。表示額は割引後の初月料金で、更新時は通常料金です。VPS Nano は対象外です。販売元は12月1日より前の注文を対象とし、締切のタイムゾーンは公表していません。"
   },
   "endDate": "2026-11-30",
   "priceBasis": "afterCode",
@@ -627,10 +627,10 @@ const COMMUNITY_OFFERS = [
   "code": "BFAVA",
   "status": "offer",
   "conditions": {
-   "sc": "商家在 NodeSeek 列出 BFAVA 仅限首张账单，月付折后价按官网月费的 80% 计算。推广帖写 12 月 1 日前，官网倒计时标到 12 月 2 日；按较早的日期安排购买。",
-   "tc": "商家在 NodeSeek 列出 BFAVA 僅限首張帳單，月付折後價按官網月費的 80% 計算。推廣帖寫 12 月 1 日前，官網倒數標到 12 月 2 日；按較早的日期安排購買。",
-   "en": "The seller limits BFAVA to the first invoice. The price shown is 80% of the posted monthly rate. Its NodeSeek post says before 1 December, while the homepage counter shows 2 December. Use the earlier date when planning a purchase.",
-   "ja": "BFAVA は初回請求のみが対象です。表示額は公式月額の80%です。販売元の NodeSeek 告知は12月1日まで、公式サイトの表示は12月2日です。購入予定は早いほうの日付を目安にしてください。"
+   "sc": "BFAVA 仅限新订单首张账单打八折，续费恢复原价，VPS Nano 不适用。这里显示折后的首月月费。商家帖写 12 月 1 日前，未公布截止时区。",
+   "tc": "BFAVA 僅限新訂單首張帳單打八折，續費恢復原價，VPS Nano 不適用。這裡顯示折後的首月月費。商家貼文寫 12 月 1 日前，未公布截止時區。",
+   "en": "BFAVA takes 20% off the first invoice on new orders. The price shown is the discounted first month. Renewals use the regular rate. VPS Nano is excluded. The provider says to order before 1 December and gives no cutoff time zone.",
+   "ja": "BFAVA は新規注文の初回請求が20%引きです。表示額は割引後の初月料金で、更新時は通常料金です。VPS Nano は対象外です。販売元は12月1日より前の注文を対象とし、締切のタイムゾーンは公表していません。"
   },
   "endDate": "2026-11-30",
   "priceBasis": "afterCode",
@@ -665,10 +665,10 @@ const COMMUNITY_OFFERS = [
   "code": "BFAVA",
   "status": "offer",
   "conditions": {
-   "sc": "商家在 NodeSeek 列出 BFAVA 仅限首张账单，月付折后价按官网月费的 80% 计算。推广帖写 12 月 1 日前，官网倒计时标到 12 月 2 日；按较早的日期安排购买。",
-   "tc": "商家在 NodeSeek 列出 BFAVA 僅限首張帳單，月付折後價按官網月費的 80% 計算。推廣帖寫 12 月 1 日前，官網倒數標到 12 月 2 日；按較早的日期安排購買。",
-   "en": "The seller limits BFAVA to the first invoice. The price shown is 80% of the posted monthly rate. Its NodeSeek post says before 1 December, while the homepage counter shows 2 December. Use the earlier date when planning a purchase.",
-   "ja": "BFAVA は初回請求のみが対象です。表示額は公式月額の80%です。販売元の NodeSeek 告知は12月1日まで、公式サイトの表示は12月2日です。購入予定は早いほうの日付を目安にしてください。"
+   "sc": "BFAVA 仅限新订单首张账单打八折，续费恢复原价，VPS Nano 不适用。这里显示折后的首月月费。商家帖写 12 月 1 日前，未公布截止时区。",
+   "tc": "BFAVA 僅限新訂單首張帳單打八折，續費恢復原價，VPS Nano 不適用。這裡顯示折後的首月月費。商家貼文寫 12 月 1 日前，未公布截止時區。",
+   "en": "BFAVA takes 20% off the first invoice on new orders. The price shown is the discounted first month. Renewals use the regular rate. VPS Nano is excluded. The provider says to order before 1 December and gives no cutoff time zone.",
+   "ja": "BFAVA は新規注文の初回請求が20%引きです。表示額は割引後の初月料金で、更新時は通常料金です。VPS Nano は対象外です。販売元は12月1日より前の注文を対象とし、締切のタイムゾーンは公表していません。"
   },
   "endDate": "2026-11-30",
   "priceBasis": "afterCode",

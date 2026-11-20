@@ -3993,26 +3993,7 @@ MARKETS.US = {sc:'美国',tc:'美國',en:'United States',ja:'米国'};
 MARKETS.CN = {sc:'中国大陆',tc:'中國大陸',en:'Mainland China',ja:'中国本土'};
 IP_EVIDENCE_OPTIONS.sharing.push('ipv6-only');
 ipEvidenceWords['ipv6-only']=ipCopy('仅 IPv6','僅 IPv6','IPv6 only','IPv6 のみ');
-function renderProviderShortcuts(){
- const nav=$('provider-shortcuts');if(!nav)return;
- const search=$('vendor').value.trim().toLowerCase();
- if(nav.dataset.lang===lang&&nav.dataset.search===search)return;
- nav.dataset.lang=lang;nav.dataset.search=search;nav.setAttribute('aria-label',quickWord('browseProviders'));
- nav.replaceChildren(el('strong',quickWord('browseProviders')));
- for(const name of ['Neburst','NewNB Cloud','Mkcloud','VMSilo']){
-  const a=el('a',name);a.href='?'+new URLSearchParams({'q-vendor':name})+'#directory';
-  a.onclick=event=>{
-   if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey||event.button!==0)return;
-   event.preventDefault();quickChange(()=>{
-    clearQuickPick();zone='all';renderControls();
-    for(const field of quickFields)$(field).value='';
-    $('promo').checked=false;$('vendor').value=name;
-   });
-  };
-  if(search===name.toLowerCase())a.setAttribute('aria-current','true');
-  nav.append(a);
- }
-}
+function renderProviderShortcuts(){fillMerchantMenu()}
 for(const plan of NETWORK_PLANS){
  if(plan.provider==='Neburst'){plan.lg='https://neburst.com/looking-glass';if(plan.market==='TW')plan.review='https://www.nodeseek.com/post-793866-1'}
  PLANS.push(plan);

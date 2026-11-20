@@ -1,5 +1,6 @@
 // Public RSS feeds and Telegram channel previews, fetched only from these fixed endpoints.
 const forumSources = {
+  lowendtalk: {feed:'https://lowendtalk.com/categories/offers/feed.rss',hosts:['lowendtalk.com'],maxBytes:1_500_000},
   nodeseek: {feed: 'https://rss.nodeseek.com/', hosts: ['www.nodeseek.com', 'nodeseek.com']},
   carpool: {feed: 'https://rss.nodeseek.com/', hosts: ['www.nodeseek.com', 'nodeseek.com']},
   meow: {feed: 'https://meowvps.com/rss.xml', hosts: ['meowvps.com'], maxBytes: 4_000_000},
@@ -10,6 +11,59 @@ const forumSources = {
   vpsuu: {channel:'vpsuu',feed:'https://t.me/s/vpsuu'},
   poorvpsmsg: {channel:'PoorVPSMsg',feed:'https://t.me/s/PoorVPSMsg'}
 };
+const packagedForumPosts={"nodeseek":{"source":"nodeseek","observed":"2026-11-20T06:33:00.142Z","stale":true,"editionSnapshot":true,"items":[{"title":"【收】剩余价值收Vmiss tri basic 4.5cad/月","link":"https://www.nodeseek.com/post-1067683-1","date":"2026-11-20T06:29:27.000Z"},{"title":"帮收两台，共溢价2500，ovh杜甫独服，sys-stor-le-1，4x12t硬盘的","link":"https://www.nodeseek.com/post-1067676-1","date":"2026-11-20T06:26:53.000Z"},{"title":"130收68段VMISS 4.5 TRI","link":"https://www.nodeseek.com/post-1067673-1","date":"2026-11-20T06:26:04.000Z"},{"title":"【交易中】【杀鸡】十块改油，RN racknerd，2025黑五10刀","link":"https://www.nodeseek.com/post-1067669-1","date":"2026-11-20T06:25:44.000Z"}]},"carpool":{"source":"carpool","observed":"2026-11-20T06:33:00.142Z","stale":true,"editionSnapshot":true,"items":[{"title":"gemini 20x 独享或两人700 独享 350 拼车","link":"https://www.nodeseek.com/post-1067686-1","hostingTitle":false,"date":"2026-11-20T06:30:00.000Z"}]},"meow":{"source":"meow","observed":"2026-11-20T06:34:01.784Z","stale":true,"editionSnapshot":true,"items":[{"title":"新商家GoldCloud 德国DC1产品 新品测评","link":"https://meowvps.com/blog/goldcloudde/","coupons":[{"code":"GCFWZDB75BUM"}],"date":"2026-11-18T23:00:00.000Z"},{"title":"PPFlight 美国洛杉矶LAX LIFT产品 测评","link":"https://meowvps.com/blog/ppflightlift/","date":"2026-11-17T23:00:00.000Z"},{"title":"Gomami 德国FRA Pulse产品 新品测评","link":"https://meowvps.com/blog/gomamide/","coupons":[{"code":"Hi,FRA"}],"date":"2026-11-15T23:00:00.000Z"},{"title":"新商家Bocchi 日本东京Tokyo高性能 新品首发测评","link":"https://meowvps.com/blog/bocchijp/","coupons":[{"code":"MeowVPS"}],"date":"2026-11-13T23:00:00.000Z"},{"title":"六六云 菲律宾双ISP产品 测评","link":"https://meowvps.com/blog/666cloudsph/","coupons":[{"code":"DOUBLE11"}],"date":"2026-11-12T23:00:00.000Z"},{"title":"新商家干杯云 AT&T商业宽带PRO美国家宽 产品测评","link":"https://meowvps.com/blog/usvps24proup/","coupons":[{"code":"MeowVPS"}],"date":"2026-11-11T23:00:00.000Z"},{"title":"商家NexKr 韩国SKB家宽产品 测评","link":"https://meowvps.com/blog/nexkrskb/","coupons":[{"code":"WELCOME"},{"code":"SMSVERIFYFEE"}],"date":"2026-11-10T23:00:00.000Z"},{"title":"新商家Tamago 香港WTT商宽 新品测评","link":"https://meowvps.com/blog/tamagowtt/","coupons":[{"code":"1111W3R3PM"}],"date":"2026-11-08T23:00:00.000Z"},{"title":"新商家ATTVPS AT&T美国家宽产品 复测","link":"https://meowvps.com/blog/attvpsre/","coupons":[{"code":"MeowVPS"}],"date":"2026-11-07T23:00:00.000Z"},{"title":"JCloudHosting 西班牙产品 测评","link":"https://meowvps.com/blog/jcloudhosting/","coupons":[{"code":"79FHTOS7JL"}],"date":"2026-11-05T23:00:00.000Z"},{"title":"新商家PanstarCloud 美国LAX Premium DC2 新品测评","link":"https://meowvps.com/blog/panstarusdc2/","coupons":[{"code":"USPre75DC2"}],"date":"2026-11-03T23:00:00.000Z"}]},"meowoffers":{"source":"meowoffers","observed":"2026-11-20T06:34:01.885Z","stale":true,"editionSnapshot":true,"items":[{"title":"LayerOne 提供 VPS，地区未注明，限量入门款为 1 vCPU、1 GB 内存、15 GB NVMe，7 美元/年。另一…","sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223566/layerone-black-friday-limited-time-offers-7-yr-flash-sale","date":"2026-11-19T21:12:36.000Z"},{"title":"VPSNerds 提供独立服务器，称覆盖 32 个以上地点，但未列出本次套餐具体地区；起步配置为 Xeon D-1531（6 核…","sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223563/99-9-uptime-high-powered-dedicated-servers-32-locations-world-wide","date":"2026-11-19T19:38:06.000Z"},{"title":"1GB 套餐 1 GB 内存 1 CPU 核心 20 GB SSD 存储 3000 GB 月流量 1 Gbps 带宽 1个 IP…","sourceName":"RackNerd","link":"https://meowvps.com/timeline/?merchant=racknerd_promo#offers","date":"2026-11-19T17:53:58.000Z"},{"title":"RackNerd 提供多地区 KVM VPS、达拉斯共享及分销主机和独服，VPS 可选地区以订单页库存为准。VPS 起步为 1…","sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223558/racknerd-s-black-friday-takeover-new-deals-new-tech-adminbolt-hosting-hundreds-of-giveaways","date":"2026-11-19T17:48:20.000Z"},{"title":"AvaHosting 提供共享主机、VPS 和独服，机房地区未注明；Nano VPS 配备 1 vCPU、512MB 内存、20…","coupons":[{"code":"BFAVA"}],"sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223492/ava-hosting-black-friday-deals-big-restock-vps-nano-giveaways","date":"2026-11-18T17:14:12.000Z"}]},"sb":{"source":"sb","observed":"2026-11-20T06:34:01.026Z","stale":true,"editionSnapshot":true,"items":[{"title":"PQS 双十一优惠活动即将开跑!","link":"https://sb.sb/t/18494/","date":"2026-11-09T07:47:39.000Z"},{"title":"🔥海沫云｜双十一特惠年付｜香港 / 美国 / 大陆","link":"https://sb.sb/t/18177/","date":"2026-11-08T07:38:19.000Z"}]},"lowendtalk":{"source":"lowendtalk","observed":"2026-11-20T06:33:06.265Z","stale":true,"editionSnapshot":true,"items":[{"title":"LayerOne - BLACK FRIDAY! Limited time offers! - $7/yr FLASH SALE","link":"https://lowendtalk.com/discussion/223566/layerone-black-friday-limited-time-offers-7-yr-flash-sale","date":"2026-11-19T21:12:36.000Z"},{"title":"RackNerd’s BLACK FRIDAY TAKEOVER! NEW DEALS, NEW TECH, AdminBolt HOSTING + HUNDREDS OF GIVEAWAYS!","link":"https://lowendtalk.com/discussion/223558/racknerd-s-black-friday-takeover-new-deals-new-tech-adminbolt-hosting-hundreds-of-giveaways","date":"2026-11-19T17:48:20.000Z"},{"title":"noez.de – Prepaid Hosting from Frankfurt, since 2012","link":"https://lowendtalk.com/discussion/223518/noez-de-prepaid-hosting-from-frankfurt-since-2012","date":"2026-11-19T11:17:21.000Z"},{"title":"Looking for a cPanel alternative? Get aaPanel Pro for $98 for one year and save $190","link":"https://lowendtalk.com/discussion/223509/looking-for-a-cpanel-alternative-get-aapanel-pro-for-98-for-one-year-and-save-190","date":"2026-11-19T04:12:18.000Z"},{"title":"Ava.hosting - Black Friday Deals + BIG Restock VPS Nano! + Giveaways!","link":"https://lowendtalk.com/discussion/223492/ava-hosting-black-friday-deals-big-restock-vps-nano-giveaways","coupons":[{"code":"BFAVA"}],"date":"2026-11-18T17:14:12.000Z"},{"title":"Streamline-Servers.com - Sydney Dedicated Servers - Early-Black Friday","link":"https://lowendtalk.com/discussion/223393/streamline-servers-com-sydney-dedicated-servers-early-black-friday","coupons":[{"code":"BLACKFRIDAY26SERVER"}],"date":"2026-11-16T23:08:54.000Z"},{"title":"PetroSky Black Friday Sale | 30% OFF KVM VPS in Canada & France | From €4.89/mo","link":"https://lowendtalk.com/discussion/223377/petrosky-black-friday-sale-30-off-kvm-vps-in-canada-france-from-4-89-mo","coupons":[{"code":"BLACKFRIDAY"}],"date":"2026-11-16T16:05:24.000Z"}]},"vpsdeer":{"source":"vpsdeer","observed":"2026-11-20T06:34:02.206Z","stale":true,"editionSnapshot":true,"items":[{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2657","date":"2026-11-20T05:14:24.000Z"},{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2656","date":"2026-11-20T05:14:17.000Z"},{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2655","date":"2026-11-20T05:13:52.000Z"},{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2654","date":"2026-11-20T03:02:44.000Z"}]},"vpsts":{"source":"vpsts","observed":"2026-11-20T06:34:02.187Z","stale":true,"editionSnapshot":true,"items":[{"title":"ZgoCloud - DE Frankfurt AMD VPS - Specials - Starter","link":"https://t.me/vpsts/4425","date":"2026-11-20T06:08:54.000Z"},{"title":"PPFlight库存监控补货通知专属频道","link":"https://t.me/vpsts/4424","date":"2026-11-20T02:54:42.000Z"},{"title":"RackNerd - 2026黑五促销","link":"https://t.me/vpsts/4423","date":"2026-11-19T19:00:55.000Z"},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano - 补货","coupons":[{"code":"Hi,FRA"}],"link":"https://t.me/vpsts/4421","date":"2026-11-18T08:06:49.000Z"},{"title":"❌ GoMami - 🗻LAX.Pulse.Nano - 已售罄","coupons":[{"code":"Hi,LAX"}],"link":"https://t.me/vpsts/4420","date":"2026-11-18T08:06:45.000Z"},{"title":"PPFlight - [US.LAX02] Glide M1","coupons":[{"code":"glideyyds"}],"link":"https://t.me/vpsts/4410","date":"2026-11-17T09:46:40.000Z"},{"title":"PPFlight - [US.LAX02] Glide S1","coupons":[{"code":"glideyyds"}],"link":"https://t.me/vpsts/4409","date":"2026-11-17T09:46:28.000Z"}]},"vpsuu":{"source":"vpsuu","observed":"2026-11-20T06:34:02.173Z","stale":true,"editionSnapshot":true,"items":[{"title":"LayerOne 黑五促销 🖥","link":"https://t.me/vpsuu/6008","date":"2026-11-20T02:11:35.000Z"},{"title":"RackNerd 2026黑五促销 🛒","link":"https://t.me/vpsuu/6007","date":"2026-11-20T00:29:16.000Z"},{"title":"RAKsmart 黑五：香港物理机秒杀$29.99/月，VPS秒杀$2.99/月起，可选国际BGP/大陆优化/精品CN2","link":"https://t.me/vpsuu/6005","date":"2026-11-19T12:15:44.000Z"},{"title":"AVA Host 黑五 8折：VPS 月付 €4 起，Nano €11/年，摩尔多瓦机房/不限流量","link":"https://t.me/vpsuu/6004","date":"2026-11-19T08:58:00.000Z"},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano 补货","coupons":[{"code":"Hi,FRA"}],"link":"https://t.me/vpsuu/6000","date":"2026-11-18T10:07:02.000Z"},{"title":"✅ GoMami - 🗻LAX.Pulse.Nano 补货","coupons":[{"code":"Hi,LAX"}],"link":"https://t.me/vpsuu/5999","date":"2026-11-18T10:06:33.000Z"},{"title":"PPFlight [US.LAX02] Glide S1 补货 🚀","coupons":[{"code":"glideyyds"}],"link":"https://t.me/vpsuu/5995","date":"2026-11-17T10:17:32.000Z"}]},"poorvpsmsg":{"source":"poorvpsmsg","observed":"2026-11-20T06:34:02.165Z","stale":true,"editionSnapshot":true,"items":[{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4807","date":"2026-11-20T06:26:20.000Z"},{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4806","date":"2026-11-20T01:56:22.000Z"},{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4805","date":"2026-11-19T22:56:22.000Z"},{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4804","date":"2026-11-19T22:26:19.000Z"}]},"coupons":{"source":"coupons","observed":"2026-11-20T06:34:02.206Z","items":[{"title":"Ava.hosting - Black Friday Deals + BIG Restock VPS Nano! + Giveaways!","code":"BFAVA","link":"https://lowendtalk.com/discussion/223492/ava-hosting-black-friday-deals-big-restock-vps-nano-giveaways","date":"2026-11-18T17:14:12.000Z","from":"lowendtalk","sourceName":"","sourceObserved":"2026-11-20T06:33:06.265Z","archived":true},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano 补货","code":"Hi,FRA","link":"https://t.me/vpsuu/6000","date":"2026-11-18T10:07:02.000Z","from":"vpsuu","sourceName":"","sourceObserved":"2026-11-20T06:34:02.173Z","archived":true},{"title":"✅ GoMami - 🗻LAX.Pulse.Nano 补货","code":"Hi,LAX","link":"https://t.me/vpsuu/5999","date":"2026-11-18T10:06:33.000Z","from":"vpsuu","sourceName":"","sourceObserved":"2026-11-20T06:34:02.173Z","archived":true},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano - 补货","code":"Hi,FRA","link":"https://t.me/vpsts/4421","date":"2026-11-18T08:06:49.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"❌ GoMami - 🗻LAX.Pulse.Nano - 已售罄","code":"Hi,LAX","link":"https://t.me/vpsts/4420","date":"2026-11-18T08:06:45.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"PPFlight [US.LAX02] Glide S1 补货 🚀","code":"glideyyds","link":"https://t.me/vpsuu/5995","date":"2026-11-17T10:17:32.000Z","from":"vpsuu","sourceName":"","sourceObserved":"2026-11-20T06:34:02.173Z","archived":true},{"title":"PPFlight - [US.LAX02] Glide M1","code":"glideyyds","link":"https://t.me/vpsts/4410","date":"2026-11-17T09:46:40.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"PPFlight - [US.LAX02] Glide S1","code":"glideyyds","link":"https://t.me/vpsts/4409","date":"2026-11-17T09:46:28.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"Streamline-Servers.com - Sydney Dedicated Servers - Early-Black Friday","code":"BLACKFRIDAY26SERVER","link":"https://lowendtalk.com/discussion/223393/streamline-servers-com-sydney-dedicated-servers-early-black-friday","date":"2026-11-16T23:08:54.000Z","from":"lowendtalk","sourceName":"","sourceObserved":"2026-11-20T06:33:06.265Z","archived":true},{"title":"PetroSky Black Friday Sale | 30% OFF KVM VPS in Canada & France | From €4.89/mo","code":"BLACKFRIDAY","link":"https://lowendtalk.com/discussion/223377/petrosky-black-friday-sale-30-off-kvm-vps-in-canada-france-from-4-89-mo","date":"2026-11-16T16:05:24.000Z","from":"lowendtalk","sourceName":"","sourceObserved":"2026-11-20T06:33:06.265Z","archived":true}],"sources":[{"source":"lowendtalk","observed":"2026-11-20T06:33:06.265Z","stale":true,"editionSnapshot":true},{"source":"nodeseek","observed":"2026-11-20T06:33:00.142Z","stale":true,"editionSnapshot":true},{"source":"meowoffers","observed":"2026-11-20T06:34:01.885Z","stale":true,"editionSnapshot":true},{"source":"sb","observed":"2026-11-20T06:34:01.026Z","stale":true,"editionSnapshot":true},{"source":"vpsdeer","observed":"2026-11-20T06:34:02.206Z","stale":true,"editionSnapshot":true},{"source":"vpsts","observed":"2026-11-20T06:34:02.187Z","stale":true,"editionSnapshot":true},{"source":"vpsuu","observed":"2026-11-20T06:34:02.173Z","stale":true,"editionSnapshot":true},{"source":"poorvpsmsg","observed":"2026-11-20T06:34:02.165Z","stale":true,"editionSnapshot":true}],"stale":true,"editionSnapshot":true}};
+function recentPackagedPosts(id){
+ const item=packagedForumPosts[id],age=Date.now()-Date.parse(item?.observed);
+ return age>=0&&age<14*86400000?item:null;
+}
+const couponFeedSources=['lowendtalk','nodeseek','meowoffers','sb','vpsdeer','vpsts','vpsuu','poorvpsmsg'];
+function publishedCouponCodes(raw){
+ if(typeof raw!=='string')return [];
+ const text=forumDecode(raw.slice(0,16000)).replace(/<(?:br\s*\/?|\/p|\/li|\/div)>/gi,'\n').replace(/<[^<>]{0,1000}>/g,' ')
+   .replace(/https?:\/\/[^\s<>]+/gi,' ').replace(/&nbsp;/gi,' ');
+ const labels=/(?:優惠(?:券)?碼|优惠(?:券)?码|折扣[码碼]|促[销銷][码碼]|(?:\b(?:coupon|promo(?:tional)?|discount|voucher)(?:\s+code)?|\buse\s+(?:the\s+)?code))(\s*[:：=]\s*|\s+(?:is\s+)?)(?:[“"'\x60*]{0,3})([A-Za-z0-9][A-Za-z0-9_.-]{1,48}(?:,[A-Za-z0-9][A-Za-z0-9_-]{0,20})?)/gi;
+ const stop=/^(?:code|codes|here|this|does|only|where|with|not|none|unknown|expired|for|the|while|will|works|discount|expires|available|until|applied|auto|automatic|included|please|details|terms|using|notapplicable|undefined|null|offer|off|valid|new|https?|www|click|needed|applies|use|needed|removed|codeword|already|can|cannot|required|after|before|now|special|black|back|any|said|useful|hidden|was|has|that|last|free|all|more|from|credit|checkout|range|start|ends|and|thru|sent|worth|see|released|stock|time|end|summary)$/i;
+ const out=new Map();
+ for(const m of text.matchAll(labels)){
+  const code=m[2].replace(/[.-]+$/,'');if(code.length<3||stop.test(code)||/^\d+(?:[.,]\d+)?$/.test(code))continue;
+  if(!/[:：=]/.test(m[1])&&!/[A-Z0-9_-]/.test(code))continue;
+  const after=text.slice(m.index+m[0].length,m.index+m[0].length+100).split(/[\r\n]/,1)[0];
+  const expiry=after.match(/^\s*[,，;；(（|]?\s*(?:expires?(?:\s+at)?|valid until|截止(?:時間|时间)?|有效至|到期(?:時間|时间)?)\s*[:：]?\s*(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?(?:Z|[+-]\d{2}:\d{2}))/i);
+  const exp=Date.parse(expiry?.[1]),endsAt=Number.isFinite(exp)?new Date(exp).toISOString():null;
+  if(!out.has(code))out.set(code,{code,...(endsAt?{endsAt}:{})});if(out.size===5)break;
+ }
+ return [...out.values()];
+}
+function aggregatePublicCodes(records,now=Date.now()){
+ const items=[],seen=new Set(),sources=[];
+ for(const from of couponFeedSources){
+  const data=records[from];if(!data||data.source!==from||!Array.isArray(data.items))continue;
+  if(!Number.isFinite(Date.parse(data.observed))||now-Date.parse(data.observed)>14*86400000)continue;
+  sources.push({source:from,observed:data.observed,stale:!!data.stale,editionSnapshot:!!data.editionSnapshot});
+  for(const post of data.items){
+   const date=Date.parse(post.date);if(!Number.isFinite(date)||date>now+60000||date<now-14*86400000)continue;
+   for(const {code,endsAt} of post.coupons||[]){
+    if((endsAt&&Date.parse(endsAt)<=now)||seen.has(post.link+'|'+code))continue;
+    seen.add(post.link+'|'+code);items.push({title:post.title,code,link:post.link,date:post.date,from,sourceName:post.sourceName||'',sourceObserved:data.observed,archived:!!data.stale,...(endsAt?{endsAt}:{})});
+   }
+  }
+ }
+ items.sort((a,b)=>Date.parse(b.date)-Date.parse(a.date));
+ return {source:'coupons',observed:new Date(now).toISOString(),items:items.slice(0,30),sources,stale:sources.every(s=>s.stale),editionSnapshot:sources.length>0&&sources.every(s=>s.editionSnapshot)};
+}
+async function servePublicCodes(req,ctx){
+ if(req.method!=='GET')return new Response(null,{status:405,headers:{Allow:'GET'}});
+ const records={};
+ await Promise.all(couponFeedSources.map(async source=>{
+  try{const url=new URL('/api/deal-feed/'+source,req.url);
+   const res=await serveForumFeed(new Request(url),ctx);
+   if(res.ok)records[source]=await res.json();
+  }catch{}
+ }));
+ const body=aggregatePublicCodes(records);
+ if(!body.sources.length)return forumResponse({error:'coupon sources unavailable'},503);
+ return forumResponse(body,200,body.stale?30:180);
+}
 const forumFreshSeconds = 300;
 const forumStaleSeconds = 86400;
 const forumByteLimit = 1500000;
@@ -28,6 +82,7 @@ function forumPostURL(raw, source) {
   try {
     const u = new URL(raw.trim());
     if (u.protocol !== 'https:' || u.username || u.password || u.port || !forumSources[source].hosts.includes(u.hostname)) return null;
+    if (source === 'lowendtalk') return /^\/discussion\/[1-9]\d{0,12}\/[a-z0-9-]+\/?$/i.test(u.pathname) && !u.search ? u.origin+u.pathname : null;
     if (source === 'meow') return /^\/blog\/[\w%-]+\/$/.test(u.pathname) ? u.origin + u.pathname : null;
     if (source === 'sb') {
       const match = u.pathname.match(/^\/t\/([1-9]\d{0,14})\/?$/);
@@ -65,7 +120,8 @@ function forumHeadlines(xml, source = 'nodeseek') {
   let current = null, field = '', fieldDepth = 0, root = '', i = 0;
   function append(raw, decode) {
     if (!stack.length && raw.trim()) throw Error('unexpected XML text');
-    if (field && current && current[field].length < 1024) current[field] += (decode ? forumDecode(raw) : raw).slice(0, 1024 - current[field].length);
+    const limit=['description','summary','encoded','content'].includes(field)?16000:1024;
+    if (field && current && current[field].length < limit) current[field] += (decode ? forumDecode(raw) : raw).slice(0, limit - current[field].length);
   }
   function close(name) {
     const depth = stack.length;
@@ -75,10 +131,11 @@ function forumHeadlines(xml, source = 'nodeseek') {
     const title = current.title.replace(/<[^<>]{1,250}>/g, ' ').replace(/[\u0000-\u0020\u007f]+/g, ' ').trim().slice(0, 230);
     const url = forumPostURL(current.alternate || current.link || current.guid || current.id, source);
     const matches = source === 'carpool' ? current.category.trim().toLowerCase() === 'carpool'
-      : source === 'meow' || forumKeywords.test(title);
+      : source === 'meow' || source === 'lowendtalk' || forumKeywords.test(title);
     if (url && title && matches && !posts.has(url)) {
       const time = Date.parse(current.pubdate || current.published || current.date || current.updated);
-      posts.set(url, {title, link: url, ...(source === 'carpool' ? {hostingTitle:forumKeywords.test(title)} : {}),
+      const coupons=publishedCouponCodes([current.title,current.encoded||current.content||current.description||current.summary].join('\n'));
+      posts.set(url, {title, link: url,...(coupons.length?{coupons}:{}), ...(source === 'carpool' ? {hostingTitle:forumKeywords.test(title)} : {}),
         ...(Number.isFinite(time) ? {date: new Date(time).toISOString()} : {})});
     }
     current = null;
@@ -123,8 +180,8 @@ function forumHeadlines(xml, source = 'nodeseek') {
     const rssItem = root === 'rss' && parent === 'channel' && local === 'item' && stack.length === 3;
     const atomItem = root === 'feed' && parent === 'feed' && local === 'entry' && stack.length === 2;
     if (rssItem || atomItem) {
-      current = {depth: stack.length, title: '', link: '', alternate: '', guid: '', id: '', pubdate: '', published: '', date: '', updated: '', category: ''};
-    } else if (current && stack.length === current.depth + 1 && ['title','link','guid','id','pubdate','published','date','updated','category'].includes(local)) {
+      current = {depth: stack.length, title: '', link: '', alternate: '', guid: '', id: '', pubdate: '', published: '', date: '', updated: '', category: '', description:'',summary:'',encoded:'',content:''};
+    } else if (current && stack.length === current.depth + 1 && ['title','link','guid','id','pubdate','published','date','updated','category','description','summary','encoded','content'].includes(local)) {
       field = local;
       fieldDepth = stack.length;
       if (local === 'link' && root === 'feed' && tag.attrs.href && (!tag.attrs.rel || tag.attrs.rel === 'alternate')) {
@@ -188,7 +245,8 @@ function telegramPreview(html, channel) {
     if (!lines.length || !(forumKeywords.test(post.text) || /补货|補貨|库存|庫存|售罄|缺货|有货|現貨|restock|sold out|data changes|LET offers|vCPU|NVMe|云服务器|雲伺服器|V\.PS/i.test(post.text))) return;
     const title = lines.shift().slice(0,105);
     const snippet = lines.filter(s=>!/^([#@]|[🛒🛍]|购买链接|購買連結|立即搶購|立即抢购)/u.test(s)).join(' · ').slice(0,110);
-    posts.set(post.link,{title,...(snippet ? {snippet} : {}),link:post.link,date:post.date});
+    const coupons=publishedCouponCodes(post.text);
+    posts.set(post.link,{title,...(coupons.length?{coupons}:{}),...(snippet ? {snippet} : {}),link:post.link,date:post.date});
   }
   function close(depth) {
     while (stack.length > depth) {
@@ -278,7 +336,8 @@ function meowMerchantEvents(document) {
     const sourceLink = /^https:\/\/lowendtalk\.com\/discussion\/[1-9]\d{0,12}\/[a-z0-9-]+\/?$/i.test(original) ? original : '';
     const link = sourceLink || 'https://meowvps.com/timeline/?merchant=' + encodeURIComponent(row.merchant) + '#offers';
     const title = fullText.length > 64 ? fullText.slice(0,64).trimEnd() + '…' : fullText;
-    items.push({title, sourceName:sourceName.slice(0,60), link, date:new Date(date).toISOString()});
+    const coupons=publishedCouponCodes(fullText);
+    items.push({title,...(coupons.length?{coupons}:{}), sourceName:sourceName.slice(0,60), link, date:new Date(date).toISOString()});
     if (items.length === 12) break; // The public timeline delivers newest first.
   }
   if (rows.length && !items.length) throw Error('unrecognized merchant records');
@@ -287,7 +346,7 @@ function meowMerchantEvents(document) {
 async function forumFetchPayload(source, signal) {
   const config=forumSources[source];
   const isTelegram=!!config.channel;
-  const response=await fetch(config.feed,{method:'GET',signal,redirect:isTelegram?'manual':'error',
+  const response=await fetch(config.feed,{method:'GET',signal,redirect:'manual',
     headers:{Accept:isTelegram?'text/html':source==='meowoffers'?'application/json':'application/rss+xml, application/atom+xml, application/xml, text/xml'}});
   if (isTelegram && response.status>=300 && response.status<400) {
     const redirect=new URL(response.headers.get('Location') || '',config.feed);
@@ -304,10 +363,11 @@ async function forumFetchPayload(source, signal) {
 async function serveForumFeed(req, ctx) {
   const path = new URL(req.url).pathname;
   const source = path.match(/^\/api\/deal-feed\/([a-z]+)$/)?.[1];
+  if(source==='coupons')return servePublicCodes(req,ctx);
   if (!source || !Object.hasOwn(forumSources,source)) return forumResponse({error:'unknown feed'},404);
   if (req.method !== 'GET') return new Response(null,{status:405,headers:{Allow:'GET','Cache-Control':'no-store'}});
   const cache = globalThis.caches?.default;
-  const key = new Request(new URL('/api/deal-feed/' + source + '?format=4',req.url));
+  const key = new Request(new URL('/api/deal-feed/' + source + '?format=6',req.url));
   let cached = null;
   try { cached = await (await cache?.match(key))?.json(); } catch {}
   const age = cached ? (Date.now() - Date.parse(cached.observed)) / 1000 : Infinity;
@@ -329,7 +389,8 @@ async function serveForumFeed(req, ctx) {
     return forumResponse(body,200,forumFreshSeconds);
   } catch {
     if (cached?.source === source && age >= 0 && age < forumStaleSeconds) return forumResponse({...cached,stale:true},200,30);
-    return forumResponse({source,error:'upstream unavailable'},503);
+    const saved=recentPackagedPosts(source);
+    return saved?forumResponse(saved,200,30):forumResponse({source,error:'upstream unavailable'},503);
   } finally { clearTimeout(timeout); }
 }
 const stockCities={
@@ -817,6 +878,557 @@ const quoteOnlyTargets={
   "quoteOnly": true
  }
 };
+const catalogStockTargets = {
+ "ms-bage-jp-small": {
+  "family": "bagevm",
+  "sku": "Japan - SMALL",
+  "zone": "JP",
+  "pid": 33,
+  "url": "https://www.bagevm.com/index.php/store/japan-servers"
+ },
+ "ms-bage-jp-tiny": {
+  "family": "bagevm",
+  "sku": "Japan - TINY",
+  "zone": "JP",
+  "pid": 31,
+  "url": "https://www.bagevm.com/index.php/store/japan-servers"
+ },
+ "ms-bage-jp-starter": {
+  "family": "bagevm",
+  "sku": "Japan - STARTER",
+  "zone": "JP",
+  "pid": 28,
+  "url": "https://www.bagevm.com/index.php/store/japan-servers"
+ },
+ "ms-bage-jp-medium": {
+  "family": "bagevm",
+  "sku": "Japan - MEDIUM",
+  "zone": "JP",
+  "pid": 29,
+  "url": "https://www.bagevm.com/index.php/store/japan-servers"
+ },
+ "ms-bage-jp-large": {
+  "family": "bagevm",
+  "sku": "Japan - LARGE",
+  "zone": "JP",
+  "pid": 30,
+  "url": "https://www.bagevm.com/index.php/store/japan-servers"
+ },
+ "regional-matrix-q1-1": {
+  "family": "matrix",
+  "sku": "Q1 - LA - 活动款",
+  "zone": "LAX",
+  "pid": 9,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q1-2": {
+  "family": "matrix",
+  "sku": "Q1 - LA - 标准款",
+  "zone": "LAX",
+  "pid": 10,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q1-3": {
+  "family": "matrix",
+  "sku": "Q1 - LA - 进阶款",
+  "zone": "LAX",
+  "pid": 11,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q1-4": {
+  "family": "matrix",
+  "sku": "Q1 - LA - 高阶款",
+  "zone": "LAX",
+  "pid": 12,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q1-5": {
+  "family": "matrix",
+  "sku": "Q1 - LA - 顶配款",
+  "zone": "LAX",
+  "pid": 13,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q2-1": {
+  "family": "matrix",
+  "sku": "Q2 - LA - 活动款",
+  "zone": "LAX",
+  "pid": 33,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q2-2": {
+  "family": "matrix",
+  "sku": "Q2 - LA - 轻量款",
+  "zone": "LAX",
+  "pid": 38,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q2-3": {
+  "family": "matrix",
+  "sku": "Q2 - LA - 标准款",
+  "zone": "LAX",
+  "pid": 39,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q2-4": {
+  "family": "matrix",
+  "sku": "Q2 - LA - 进阶款",
+  "zone": "LAX",
+  "pid": 40,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-q2-5": {
+  "family": "matrix",
+  "sku": "Q2 - LA - 顶配款",
+  "zone": "LAX",
+  "pid": 41,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-4837-1": {
+  "family": "matrix",
+  "sku": "圣何塞 4837 优化 活动款",
+  "zone": "SJC",
+  "pid": 4,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-4837-2": {
+  "family": "matrix",
+  "sku": "圣何塞 4837 优化 轻量款",
+  "zone": "SJC",
+  "pid": 5,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-4837-3": {
+  "family": "matrix",
+  "sku": "圣何塞 4837 优化 标准款",
+  "zone": "SJC",
+  "pid": 6,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-4837-4": {
+  "family": "matrix",
+  "sku": "圣何塞 4837 优化 进阶款",
+  "zone": "SJC",
+  "pid": 7,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-4837-5": {
+  "family": "matrix",
+  "sku": "圣何塞 4837 优化 顶配款",
+  "zone": "SJC",
+  "pid": 16,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "regional-matrix-4837-6": {
+  "family": "matrix",
+  "sku": "圣何塞 4837 优化 pro",
+  "zone": "SJC",
+  "pid": 43,
+  "url": "https://matrixidc.net/compare-plans"
+ },
+ "let11-prepaid-8": {
+  "family": "prepaid",
+  "sku": "PreBF-8",
+  "zone": "DE",
+  "code": "prebf-8",
+  "url": "https://prepaid-host.com/en/aktion/prebf-8"
+ },
+ "let11-prepaid-10": {
+  "family": "prepaid",
+  "sku": "PreBF-10",
+  "zone": "DE",
+  "code": "prebf-10",
+  "url": "https://prepaid-host.com/en/aktion/prebf-8"
+ },
+ "let11-prepaid-16": {
+  "family": "prepaid",
+  "sku": "FLASH-16",
+  "zone": "DE",
+  "code": "flash-16",
+  "url": "https://prepaid-host.com/en/aktion/prebf-8"
+ },
+ "ms-bwh-usca-5-p166": {
+  "family": "bwh",
+  "sku": "80G KVM - ECOMMERCE SLA LOS ANGELES",
+  "zone": "LAX",
+  "pid": 166,
+  "dc": "USCA_5",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-usca-6-p89": {
+  "family": "bwh",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "LAX",
+  "pid": 89,
+  "dc": "USCA_6",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-usca-9-p89": {
+  "family": "bwh",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "LAX",
+  "pid": 89,
+  "dc": "USCA_9",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-usca-sjc5-p89": {
+  "family": "bwh",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "SJC",
+  "pid": 89,
+  "dc": "USCA_SJC5",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-hk-8-p95": {
+  "family": "bwh",
+  "sku": "SPECIAL 40G KVM PROMO V5 - HONG KONG CN2 GIA",
+  "zone": "HK",
+  "pid": 95,
+  "dc": "HK_8",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-jpos-6-p134": {
+  "family": "bwh",
+  "sku": "SPECIAL 40G KVM PROMO V5 - OSAKA CN2 GIA",
+  "zone": "JP",
+  "pid": 134,
+  "dc": "JPOS_6",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-jpty-8-p108": {
+  "family": "bwh",
+  "sku": "SPECIAL 40G KVM PROMO V5 - TOKYO CN2 GIA",
+  "zone": "JP",
+  "pid": 108,
+  "dc": "JPTY_8",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-sg-8-p173": {
+  "family": "bwh",
+  "sku": "SPECIAL 40G KVM PROMO V5 - SINGAPORE CN2 GIA",
+  "zone": "SG",
+  "pid": 173,
+  "dc": "SG_8",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-cabc-6-p89": {
+  "family": "bwh",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "CA",
+  "pid": 89,
+  "dc": "CABC_6",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "bwh-ams": {
+  "family": "bwh",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "NL",
+  "pid": 89,
+  "dc": "EUNL_9",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-usny-8-p89": {
+  "family": "bwh",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "US",
+  "pid": 89,
+  "dc": "USNY_8",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ },
+ "ms-bwh-aedxb-1-p89": {
+  "family": "bwh",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "AE",
+  "pid": 89,
+  "dc": "AEDXB_1",
+  "cycle": "monthly",
+  "url": "https://bandwagonhost.com/order/catalog.json"
+ }
+};
+Object.assign(catalogStockTargets,{
+ "ms-akile-859": {
+  "family": "akile",
+  "sku": "TW-Dynamic-STD",
+  "zone": "TW",
+  "area": 6,
+  "node": 16,
+  "pid": 859,
+  "priceId": 1235,
+  "cycle": 1,
+  "url": "https://api.akile.ai/api/v1/store/GetVpsStoreV3"
+ },
+ "ms-akile-906": {
+  "family": "akile",
+  "sku": "TW-Static-2G",
+  "zone": "TW",
+  "area": 6,
+  "node": 21,
+  "pid": 906,
+  "priceId": 1297,
+  "cycle": 1,
+  "url": "https://api.akile.ai/api/v1/store/GetVpsStoreV3"
+ },
+ "akile-hinet": {
+  "family": "akile",
+  "sku": "TWHinet-Mini-NAT",
+  "zone": "TW",
+  "area": 6,
+  "node": 31,
+  "pid": 980,
+  "priceId": 1402,
+  "cycle": 12,
+  "url": "https://api.akile.ai/api/v1/store/GetVpsStoreV3"
+ },
+ "ms-akile-827": {
+  "family": "akile",
+  "sku": "TWLite-Mini",
+  "zone": "TW",
+  "area": 6,
+  "node": 11,
+  "pid": 827,
+  "priceId": 1181,
+  "cycle": 1,
+  "url": "https://api.akile.ai/api/v1/store/GetVpsStoreV3"
+ },
+ "ms-isvoro-149": {
+  "family": "isvoro",
+  "sku": "HK CN2 Core",
+  "zone": "HK",
+  "pid": 149,
+  "category": 46,
+  "planId": 297,
+  "url": "https://isvoro.com/api/v1/products?page=1"
+ }
+});
+Object.assign(catalogStockTargets,{
+ "supp-akko-sjc-1": {
+  "family": "akko",
+  "sku": "美国圣何塞KVM-CN2-A2 mini年付特惠套餐",
+  "zone": "SJC",
+  "quoteOnly": true,
+  "pid": 175,
+  "url": "https://www.akkocloud.com/cart.php?gid=17"
+ },
+ "supp-akko-sjc-2": {
+  "family": "akko",
+  "sku": "美西圣何塞KVM-CN2-B1 mini 年付特惠套餐",
+  "zone": "SJC",
+  "quoteOnly": true,
+  "pid": 187,
+  "url": "https://www.akkocloud.com/cart.php?gid=17"
+ },
+ "supp-akko-sjc-3": {
+  "family": "akko",
+  "sku": "美国圣何塞KVM-CN2-B1",
+  "zone": "SJC",
+  "quoteOnly": true,
+  "pid": 178,
+  "url": "https://www.akkocloud.com/cart.php?gid=17"
+ }
+});
+Object.assign(catalogStockTargets,{
+ "mhy-p46": {
+  "family": "mhy",
+  "sku": "TW-HKG - 512M",
+  "zone": "HK",
+  "pid": 46,
+  "path": "/index.php/store/tw-hkg/tw-hkg-512",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/tw-hkg"
+ },
+ "mhy-p47": {
+  "family": "mhy",
+  "sku": "TW-HKG - 1024M",
+  "zone": "HK",
+  "pid": 47,
+  "path": "/index.php/store/tw-hkg/tw-hkg-1024m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/tw-hkg"
+ },
+ "mhy-p48": {
+  "family": "mhy",
+  "sku": "TW-HKG - 2048M",
+  "zone": "HK",
+  "pid": 48,
+  "path": "/index.php/store/tw-hkg/tw-hkg-2048m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/tw-hkg"
+ },
+ "mhy-p49": {
+  "family": "mhy",
+  "sku": "TW-HKG - 4096M",
+  "zone": "HK",
+  "pid": 49,
+  "path": "/index.php/store/tw-hkg/tw-hkg-4096m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/tw-hkg"
+ },
+ "mhy-p30": {
+  "family": "mhy",
+  "sku": "HK BGP - 512M",
+  "zone": "HK",
+  "pid": 30,
+  "path": "/index.php/store/hk-vps/hk-bgp",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/hk-vps"
+ },
+ "mhy-p31": {
+  "family": "mhy",
+  "sku": "HK BGP - 1024M",
+  "zone": "HK",
+  "pid": 31,
+  "path": "/index.php/store/hk-vps/hk-vps-1024m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/hk-vps"
+ },
+ "mhy-p32": {
+  "family": "mhy",
+  "sku": "HK BGP - 2048M",
+  "zone": "HK",
+  "pid": 32,
+  "path": "/index.php/store/hk-vps/hk-bgp-2048m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/hk-vps"
+ },
+ "mhy-p33": {
+  "family": "mhy",
+  "sku": "HK BGP - 4096M",
+  "zone": "HK",
+  "pid": 33,
+  "path": "/index.php/store/hk-vps/hk-bgp-4096m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/hk-vps"
+ },
+ "mhy-p64": {
+  "family": "mhy",
+  "sku": "德国BGP-512M",
+  "zone": "DE",
+  "pid": 64,
+  "path": "/index.php/store/bgp-9929/de-guo-bgp-yu-shou-kuan-512m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p56": {
+  "family": "mhy",
+  "sku": "德国BGP-1024M",
+  "zone": "DE",
+  "pid": 56,
+  "path": "/index.php/store/bgp-9929/deyusyushyushouyushou",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p59": {
+  "family": "mhy",
+  "sku": "德国BGP-2048M",
+  "zone": "DE",
+  "pid": 59,
+  "path": "/index.php/store/bgp-9929/de-guo-bgp-yu-shou-kuan-2048m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p60": {
+  "family": "mhy",
+  "sku": "德国BGP-4096M",
+  "zone": "DE",
+  "pid": 60,
+  "path": "/index.php/store/bgp-9929/de-guo-bgp-yu-shou-kuan-4096m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p67": {
+  "family": "mhy",
+  "sku": "德国BGP-年付-512M",
+  "zone": "DE",
+  "pid": 67,
+  "path": "/index.php/store/bgp-9929/de-guo-bgp-nian-fu-512m",
+  "period": "year",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p57": {
+  "family": "mhy",
+  "sku": "德国BGP-年付1024M",
+  "zone": "DE",
+  "pid": 57,
+  "path": "/index.php/store/bgp-9929/de-guo-bgp-9929-nian-fu-yu-shou",
+  "period": "year",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p58": {
+  "family": "mhy",
+  "sku": "德国BGP-年付2048M",
+  "zone": "DE",
+  "pid": 58,
+  "path": "/index.php/store/bgp-9929/de-guo-bgp-yu-shou-kuan-nian-fu-2",
+  "period": "year",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p62": {
+  "family": "mhy",
+  "sku": "德国BGP-年付4096M",
+  "zone": "DE",
+  "pid": 62,
+  "path": "/index.php/store/bgp-9929/de-guo-bgp-9929-yu-shou-kuan-nian-fu-4096m",
+  "period": "year",
+  "url": "https://mhyidc.com/index.php/store/bgp-9929"
+ },
+ "mhy-p52": {
+  "family": "mhy",
+  "sku": "MO-HKG - 512M",
+  "zone": "HK",
+  "pid": 52,
+  "path": "/index.php/store/mo-hkg/mo-hkg-512m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/mo-hkg"
+ },
+ "mhy-p53": {
+  "family": "mhy",
+  "sku": "MO-HKG - 1024M",
+  "zone": "HK",
+  "pid": 53,
+  "path": "/index.php/store/mo-hkg/mo-hkg-1024m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/mo-hkg"
+ },
+ "mhy-p54": {
+  "family": "mhy",
+  "sku": "MO-HKG - 2048M",
+  "zone": "HK",
+  "pid": 54,
+  "path": "/index.php/store/mo-hkg/mo-hkg-2048m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/mo-hkg"
+ },
+ "mhy-p55": {
+  "family": "mhy",
+  "sku": "MO-HKG - 4096M",
+  "zone": "HK",
+  "pid": 55,
+  "path": "/index.php/store/mo-hkg/mo-hkg-4096m",
+  "period": "month",
+  "url": "https://mhyidc.com/index.php/store/mo-hkg"
+ },
+ "mhy-p51": {
+  "family": "mhy",
+  "sku": "香港BGP - 新年特别款",
+  "zone": "HK",
+  "pid": 51,
+  "path": "/index.php/store/huo-dong/xiang-gang-bgp-xin-nian-te-bie-kuan",
+  "period": "year",
+  "url": "https://mhyidc.com/index.php/store/huo-dong"
+ }
+});
+Object.assign(networkStockTargets,catalogStockTargets);
 function stockTarget(key){
  if(Object.hasOwn(quoteOnlyTargets,key))return quoteOnlyTargets[key];
  if(Object.hasOwn(networkStockTargets,key))return networkStockTargets[key];
@@ -978,7 +1590,7 @@ async function readLimitedBytes(stream, limit) {
  return buffer;
 }
 async function storefrontJson(url,{catalog=false}={}){
- const reply=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(7500),headers:{accept:catalog?'application/octet-stream, application/json':'application/json'},cf:{cacheEverything:true,cacheTtl:catalog?300:25}});
+ const reply=await fetch(url,{redirect:'manual',signal:AbortSignal.timeout(11000),headers:{accept:catalog?'application/octet-stream, application/json':'application/json'},cf:{cacheEverything:true,cacheTtl:catalog?300:25}});
  if(!reply.ok)throw Error('Storefront HTTP '+reply.status);
  const type=reply.headers.get('content-type')||'';
  if(/text\/html/i.test(type))throw Error('Unexpected store response');
@@ -1096,7 +1708,7 @@ async function lagomObservation(t){
  const now=Date.now(),cached=recentStorefronts.get(t.family);
  let html=cached?.data,at=cached?.at;
  if(!cached||cached.expires<=now){
-  const r=await fetch(t.url,{redirect:'error',signal:AbortSignal.timeout(7000),headers:{accept:'text/html'},cf:{cacheEverything:true,cacheTtl:45}});
+  const r=await fetch(t.url,{redirect:'manual',signal:AbortSignal.timeout(7000),headers:{accept:'text/html'},cf:{cacheEverything:true,cacheTtl:45}});
   const age=Number(r.headers.get('age')||0);
   if(!r.ok||!r.headers.get('content-type')?.includes('text/html')||!Number.isFinite(age)||age>300)throw Error('Invalid store response');
   html=new TextDecoder().decode(await readLimitedBytes(r.body,350000));at=new Date().toISOString();recentStorefronts.set(t.family,{expires:now+25000,data:html,at});
@@ -1129,7 +1741,7 @@ async function lagomObservation(t){
 async function vultrDocument(cacheKey,url){
  const now=Date.now(),cached=recentStorefronts.get(cacheKey);
  if(cached&&cached.expires>now)return cached;
- const r=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(6500),headers:{accept:'application/json'},cf:{cacheEverything:true,cacheTtl:45}});
+ const r=await fetch(url,{redirect:'manual',signal:AbortSignal.timeout(6500),headers:{accept:'application/json'},cf:{cacheEverything:true,cacheTtl:45}});
  const age=Number(r.headers.get('age')||0);
  if(!r.ok||!r.headers.get('content-type')?.includes('application/json')||!Number.isFinite(age)||age>300)throw Error('Invalid Vultr source');
  const raw=await readLimitedBytes(r.body,350000),data=JSON.parse(new TextDecoder().decode(raw));
@@ -1157,7 +1769,7 @@ async function vultrObservation(t){
 }
 
 async function tamagoObservation(t){
- const r=await fetch(t.url,{redirect:'error',signal:AbortSignal.timeout(7000),headers:{accept:'text/html'},cf:{cacheEverything:true,cacheTtl:45}});
+ const r=await fetch(t.url,{redirect:'manual',signal:AbortSignal.timeout(7000),headers:{accept:'text/html'},cf:{cacheEverything:true,cacheTtl:45}});
  const age=Number(r.headers.get('age')||0);
  if(!r.ok||!r.headers.get('content-type')?.includes('text/html')||!Number.isFinite(age)||age>300)throw Error('Invalid Tamago catalog');
  const html=new TextDecoder().decode(await readLimitedBytes(r.body,250000));
@@ -1178,14 +1790,145 @@ async function tamagoObservation(t){
   portType:'shared',traffic:get(/^\d+\s+GB\s+(?:流量|Traffic)/i).replace(/\s+(?:流量|Traffic)$/i,''),route:get(/^WTT\s/i),ip:get(/^\d+\s+.+IPv4$/i),access:''}};
 }
 
+async function loadProviderCatalog(t) {
+ const key=t.family+':'+t.url, now=Date.now(),cached=recentStorefronts.get(key);
+ if(cached&&cached.expires>now)return cached;
+ const jsonFormat=['bwh','akile','isvoro'].includes(t.family);
+ const reply=await fetch(t.url,{redirect:'manual',signal:AbortSignal.timeout(11000),
+  headers:{Accept:jsonFormat?'application/json':'text/html','Accept-Language':'en'},
+  cf:{cacheEverything:true,cacheTtl:25}});
+ const age=Number(reply.headers.get('age')||0),type=reply.headers.get('content-type')||'';
+ if(!reply.ok||!Number.isFinite(age)||age>300||!(jsonFormat?/application\/json/i:/text\/html/i).test(type))throw Error('Unavailable provider catalog');
+ const body=new TextDecoder().decode(await readLimitedBytes(reply.body,jsonFormat?1500000:450000));
+ const entry={expires:now+25000,at:new Date(now-age*1000).toISOString(),data:jsonFormat?JSON.parse(body):body};
+ recentStorefronts.set(key,entry);return entry;
+}
+function inventoryCount(n){
+ return Number.isSafeInteger(n)&&n>=0?(n===0?'sold-out':'in-stock'):'unreported';
+}
+function bageObservation(t,data,at){
+ const escaped=t.pid,block=data.match(new RegExp('<h5\\s+id="product'+escaped+'-name">([\\s\\S]{1,480}?)</h5>','i'));
+ if(!block||shortText(block[1].split('<em')[0])!==t.sku)return {state:'unreported',offer:null};
+ const raw=shortText(block[1]).match(/\b(\d+) Available$/i),state=raw?inventoryCount(Number(raw[1])):'unreported';
+ const card=data.slice(block.index+block[0].length).split(/<h5\s+id="product\d+-name"/i)[0];
+ const priceSection=card.match(new RegExp('id="product'+escaped+'-price"[^>]*>([\\s\\S]*?)</div>','i'))?.[1]||'';
+ const amount=amountFor(shortText(priceSection.match(/class="price"[^>]*>([\s\S]*?)<\/span>/i)?.[1]).match(/^\$(\d+(?:\.\d+)?) USD$/)?.[1]);
+ if(amount===null||shortText(priceSection.match(/class="cycle"[^>]*>([\s\S]*?)<\/span>/)?.[1])!=='Monthly')return {state,offer:null};
+ const desc=card.match(new RegExp('id="product'+escaped+'-description"[^>]*>([\\s\\S]*?)</div>','i'))?.[1]||'';
+ const lines=desc.split(/<br\s*\/?>/i).map(shortText),transfer=lines.find(s=>/\bTransfer\s*@/i.test(s))?.match(/^(\d+(?:\.\d+)?\s*[GT]B)\s+Transfer\s*@\s*(\d+)\s*Mbps/i);
+ return {state,offer:{amount,currency:'USD',period:'month',basis:'listed',checkedAt:at,cpu:lines.find(s=>/^\d+\s*vCPU$/i.test(s))||'',
+  ram:lines.find(s=>/^\d+\s*GB RAM$/i.test(s))||'',disk:lines.find(s=>/^\d+\s*GB SSD$/i.test(s))||'',port:transfer?transfer[2]+' Mbps':'',
+  traffic:transfer?.[1]||'',direction:/In\s*(?:&amp;|&)\s*Out/i.test(desc)?'both':'',ip:lines.find(s=>/IPv4.+IPv6/i.test(s))?.replace(/&amp;/g,'&')||''}};
+}
+function matrixObservation(t,html,at){
+ const rows=[...html.matchAll(/<tr\b([^>]*\bdata-matrix-product="(\d+)"[^>]*)>([\s\S]*?)<\/tr>/gi)].filter(m=>Number(m[2])===t.pid);
+ if(rows.length!==1)return {state:'unreported',offer:null};
+ const cells=[...rows[0][3].matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/gi)].map(m=>shortText(m[1]));
+ if(cells.length!==6||cells[0]!==t.sku)return {state:'unreported',offer:null};
+ const stock=cells[5].match(/^剩余\s*(\d+)\s*台$/);
+ const state=!/\bdata-stock-ready="1"/.test(rows[0][1])?'unreported':stock?inventoryCount(Number(stock[1])):cells[5]==='已售罄'?'sold-out':'unreported';
+ const amount=amountFor(cells[4].match(/^¥\s*(\d+(?:\.\d+)?)\s*\/\s*月付$/)?.[1]);
+ if(amount===null)return {state,offer:null};
+ const [cpu,ram]=cells[1].split(/\s*\/\s*/),[disk,ip]=cells[2].split(/\s*\/\s*/),[port,traffic]=cells[3].split(/\s*\/\s*/);
+ return {state,offer:{amount,currency:'CNY',period:'month',basis:'listed',checkedAt:at,cpu,ram,disk,ip,
+  port,traffic:traffic?.replace(/\s*双向合计$/,'')||'',direction:traffic?.includes('双向合计')?'both':''}};
+}
+function prepaidObservation(t,html,at){
+ const cards=[...html.matchAll(/<article\b[^>]*\bdata-promo-card="([^"]+)"[^>]*>([\s\S]*?)<\/article>/gi)].filter(m=>m[1]===t.code);
+ if(cards.length!==1)return {state:'unreported',offer:null};
+ const body=cards[0][2],field=re=>shortText(body.match(re)?.[1]);
+ if(field(/<h3\b[^>]*class="phb-name"[^>]*>([\s\S]*?)<\/h3>/i)!==t.sku)return {state:'unreported',offer:null};
+ const ends=Date.parse(body.match(/<time\s+datetime="([^"]+)"/i)?.[1]),stock=field(/<span\b[^>]*class="phb-flag[^"]*"[^>]*>([\s\S]*?)<\/span>/i);
+ if(!Number.isFinite(ends)||Date.now()>=ends)return {state:'unreported',offer:null};
+ const state=/^sold out$/i.test(stock)?'sold-out':/^(?:in stock|available)$/i.test(stock)?'in-stock':'unreported';
+ const raw=field(/<span\b[^>]*class="phb-price__num"[^>]*>([\s\S]*?)<\/span>/i);
+ const amount=amountFor(raw.match(/^(\d+(?:[,.]\d{2})?)\s*€$/)?.[1].replace(',','.'));
+ const period={'/ year':'year','/ month':'month'}[field(/class="phb-price__per"[^>]*>([\s\S]*?)<\/span>/i)];
+ if(amount===null||!period)return {state,offer:null};
+ const lines=[...body.matchAll(/<li><i[^>]*><\/i><span>([\s\S]*?)<\/span>/gi)].map(m=>shortText(m[1]));
+ return {state,offer:{amount,currency:'EUR',period,basis:'listed',checkedAt:at,cpu:lines.find(s=>/^\d+\s*vCore/i.test(s))||'',ram:lines.find(s=>/\bRAM\b/i.test(s))||'',
+  disk:lines.find(s=>/\bNVMe\b/i.test(s))||'',port:lines.find(s=>/(?:Gbit|Gbps|Mbps)/i.test(s))||'',traffic:lines.find(s=>/\bTB\b/i.test(s))||''}};
+}
+function bwhObservation(t,catalog,at){
+ const rows=Array.isArray(catalog?.offers)?catalog.offers.filter(o=>o.product_id===t.pid&&o.location?.datacenter_id===t.dc&&o.price?.billing_period===t.cycle):[];
+ if(rows.length!==1||rows[0].name!==t.sku)return {state:'unreported',offer:null};
+ const row=rows[0],spec=row.specifications||{},state=row.available===true?'in-stock':row.available===false?'sold-out':'unreported',cents=row.price.amount_cents;
+ const period={monthly:'month',quarterly:'quarter',semiannually:'halfyear',annually:'year'}[t.cycle];
+ if(!period||row.price.currency!=='USD'||!Number.isSafeInteger(cents)||cents<0)return {state,offer:null};
+ const measure=(k,unit)=>Number.isFinite(spec[k])&&spec[k]>0?spec[k]+' '+unit:'';
+ return {state,offer:{amount:(cents/100).toFixed(2),currency:'USD',period,basis:'listed',checkedAt:at,cpu:measure('vcpu_count','vCPU'),ram:measure('ram_mb','MB'),disk:measure('storage_gb','GB'),port:measure('port_speed_mbps','Mbps'),traffic:measure('transfer_gb_per_month','GB')}};
+}
+function akileObservation(t,catalog,at){
+ if(catalog.status_code!==0||!Array.isArray(catalog.data?.areas))return {state:'unreported',offer:null};
+ const areas=catalog.data.areas.filter(a=>a.id===t.area),nodes=areas.length===1?areas[0].nodes?.filter(n=>n.id===t.node):[];
+ const matching=nodes?.length===1?nodes[0].plans?.filter(p=>p.id===t.pid&&p.plan_name===t.sku):[];
+ if(matching?.length!==1)return {state:'unreported',offer:null};
+ const p=matching[0],state=p.is_pre_sale===false?inventoryCount(p.stock):'unreported',prices=p.price_datas?.filter(c=>c.id===t.priceId&&c.cycle===t.cycle);
+ if(prices?.length!==1||!Number.isSafeInteger(prices[0].price)||prices[0].price<0)return {state,offer:null};
+ const measure=(n,u)=>Number.isFinite(n)&&n>0?n+' '+u:'';
+ return {state,offer:{amount:(prices[0].price/100).toFixed(2),currency:'CNY',period:t.cycle===12?'year':'month',basis:'listed',checkedAt:at,cpu:measure(p.cpu,'vCPU'),ram:measure(p.memory,'MB'),disk:measure(p.disk,'GB'),port:measure(p.bandwidth,'Mbps'),traffic:measure(p.flow,'GB')}};
+}
+function isvoroObservation(t,catalog,at){
+ if(catalog.code!==0||!Array.isArray(catalog.data))return {state:'unreported',offer:null};
+ const rows=catalog.data.filter(p=>p.id===t.pid&&p.category_id===t.category&&p.name===t.sku&&p.hidden===false);
+ if(rows.length!==1)return {state:'unreported',offer:null};
+ const p=rows[0],settings=Object.fromEntries((p.settings||[]).filter(s=>s.settingable_id===t.pid).map(s=>[s.key,s.value]));
+ const state=p.ip_available===false?'sold-out':settings.presale_enabled==='0'?inventoryCount(p.stock):'unreported';
+ const plans=p.plans?.filter(s=>s.priceable_id===t.pid&&s.id===t.planId&&s.billing_period===1&&s.billing_unit==='month'&&s.type==='recurring'&&s.hidden===false);
+ const rates=plans?.length===1?plans[0].prices?.filter(r=>r.plan_id===t.planId&&r.currency_code==='CNY'):[];
+ const amount=rates?.length===1?amountFor(rates[0].price):null;
+ if(amount===null)return {state,offer:null};
+ const measure=(k,u)=>/^[1-9]\d*$/.test(settings[k])?settings[k]+' '+u:'';
+ return {state,offer:{amount,currency:'CNY',period:'month',basis:'listed',checkedAt:at,cpu:measure('cores','vCPU'),ram:measure('memory','MB'),disk:measure('disk','GB'),port:p.extension==='Proxmox' && Number(settings.ratelimit)>0?Number(settings.ratelimit)*8+' Mbps':'',traffic:p.extension==='Proxmox'?measure('bandwidth_limit','GB'):''}};
+}
+function akkoObservation(t,html,at){
+ const empty={state:'unreported',offer:null},cards=[...html.matchAll(/<div\b[^>]*class="product clearfix"[^>]*id="product(\d+)"[^>]*>([\s\S]*?)<\/footer>/gi)];
+ const match=cards.filter(c=>c[2].includes('href="cart.php?a=add&pid='+t.pid+'"')&&shortText(c[2].match(/id="product\d+-name">([\s\S]*?)<\/span>/i)?.[1])===t.sku);
+ if(match.length!==1)return empty;
+ const card=match[0][2],prices=card.match(/class="product-pricing"[^>]*>([\s\S]*?)<\/div>/i)?.[1]||'';
+ const amount=amountFor(shortText(prices.match(/class="price">([\s\S]*?)<\/span>/i)?.[1]).match(/^[￥¥]\s*(\d+(?:\.\d+)?)\s*CNY$/)?.[1]),label=shortText(prices),period=label.endsWith('每年')?'year':label.endsWith('每月')?'month':null;
+ if(amount===null||!period)return empty;
+ const desc=shortText(card.match(/id="product\d+-description">([\s\S]*?)<\/p>/i)?.[1]),field=(re,suffix='')=>{const x=desc.match(re)?.[1];return x?x+suffix:''};
+ return {state:'unreported',offer:{amount,currency:'CNY',period,basis:'listed',checkedAt:at,cpu:field(/vCPU[：:]\s*(\d+)/i,' vCPU'),ram:field(/内存[：:]\s*(\d+\s*MB)/),disk:field(/空间[：:]\s*(\d+\s*GB(?: SSD)?)/),port:field(/(\d+)\s*Mbps/i,' Mbps'),traffic:field(/流量[：:]\s*双向\s*(\d+\s*GB)/),direction:desc.includes('双向')?'both':''}};
+}
+function mhyObservation(t,html,at){
+ const empty={state:'unreported',offer:null};
+ const starts=[...html.matchAll(/<div\b[^>]*class="package"[^>]*id="product(\d+)"[^>]*>/gi)],matches=starts.filter(block=>Number(block[1])===t.pid);
+ if(matches.length!==1)return empty;
+ const block=matches[0],end=starts[starts.indexOf(block)+1]?.index??html.length,card=html.slice(block.index,end);
+ const title=shortText(card.match(/<h3\b[^>]*class="package-title"[^>]*>([\s\S]*?)<\/h3>/i)?.[1]);
+ if(title!==t.sku||!card.includes('href="'+t.path+'"'))return empty;
+ const unique=re=>{const values=new Set([...card.matchAll(re)].map(x=>shortText(x[1])));return values.size===1?[...values][0]:''};
+ const rawQty=unique(/<div class="package-qty"[^>]*>([\s\S]*?)<\/div>/gi).match(/^(\d+)\s*(?:可用|Available)$/i);
+ const quantity=rawQty?Number(rawQty[1]):null,state=inventoryCount(quantity);
+ const listed=unique(/<div class="price-amount"[^>]*>([\s\S]*?)<\/div>/gi);
+ const amount=amountFor(listed.match(/^[¥￥]\s*(\d{1,3}(?:,\d{3})+|\d+)(\.\d{2})?\s*CNY$/)?.[0].replace(/^[¥￥]\s*|,|\s*CNY$/g,''));
+ const cycle=unique(/<div class="price-cycle\s*"[^>]*>([\s\S]*?)<\/div>/gi),period=({'每月':'month','每年':'year',Monthly:'month',Annually:'year'})[cycle];
+ if(amount===null||period!==t.period)return {state,offer:null};
+ const lines=(card.match(/<div class="package-content"[^>]*>\s*<p>([\s\S]*?)<\/p>/i)?.[1]||'').split(/<br\s*\/?>|[\r\n]+/gi).map(shortText).filter(Boolean);
+ const field=re=>{for(const line of lines){const match=line.match(re);if(match)return match[1]}return ''};
+ const transfer=field(/^流量[：:]\s*(\d+(?:\.\d+)?)[Gg]\b/),speed=field(/^带宽[：:]\s*(\d+(?:\.\d+)?)[Mm]\b/);
+ const ram=field(/^RAM[：:]\s*(\d+)M\b/i),disk=field(/^硬盘[：:]\s*(\d+)G\b/),storageType=field(/^硬盘[：:]\s*\d+G\s+(SSD|NVMe|HDD)\b/i);
+ const ip=lines.filter(x=>/^IPv[46][：:]|^可额外获得.+IPv6/i.test(x)).join(' · ');
+ return {state,offer:{amount,currency:'CNY',period,basis:'listed',checkedAt:at,
+  cpu:field(/^CPU[：:]\s*(\d+C(?:\s*\*[^<>]+)?)/i),ram:ram?ram+' MB':'',disk:disk?disk+' GB'+(storageType?' '+storageType:''):'',
+  port:speed?speed+' Mbps':'',traffic:transfer?transfer+' GB':'',direction:lines.some(x=>/^流量[：:].+双向/.test(x))?'both':'',portType:lines.some(x=>/^带宽[：:].+共享/.test(x))?'shared':'',ip,...(Number.isSafeInteger(quantity)&&quantity>=0?{stockQuantity:quantity}:{})}};
+}
+async function catalogObservation(t){
+ const table={bagevm:bageObservation,matrix:matrixObservation,prepaid:prepaidObservation,bwh:bwhObservation,akile:akileObservation,isvoro:isvoroObservation,akko:akkoObservation,mhy:mhyObservation};
+ const entry=await loadProviderCatalog(t);
+ return table[t.family](t,entry.data,entry.at);
+}
+
 async function observeListing(target){
+ if(['bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy'].includes(target.family))return catalogObservation(target);
  if(target.family==="tamago")return tamagoObservation(target);
  if(target.family==="vultr")return vultrObservation(target);
  if(["backwaves","wasabi"].includes(target.family))return lagomObservation(target);
  if(target.family==='vmsilo'){
   const now=Date.now(),cached=recentStorefronts.get('vmsilo');let html=cached?.data,at=cached?.at;
   if(!cached||cached.expires<=now){
-   const r=await fetch(target.url,{redirect:'error',signal:AbortSignal.timeout(7000),headers:{accept:'text/html','accept-language':'en'},cf:{cacheEverything:true,cacheTtl:60}});
+   const r=await fetch(target.url,{redirect:'manual',signal:AbortSignal.timeout(7000),headers:{accept:'text/html','accept-language':'en'},cf:{cacheEverything:true,cacheTtl:60}});
    if(!r.ok||!r.headers.get('content-type')?.includes('text/html')||Number(r.headers.get('age')||0)>300)throw Error('Invalid store HTML');
    html=new TextDecoder().decode(await readLimitedBytes(r.body,300000));at=new Date().toISOString();recentStorefronts.set('vmsilo',{expires:now+25000,data:html,at});
   }
@@ -1206,7 +1949,7 @@ async function observeListing(target){
 }
 
 async function observe(t){
- if(["vmsilo","backwaves","wasabi","vultr","tamago"].includes(t.family))return (await observeListing(t)).state;
+ if(["vmsilo","backwaves","wasabi","vultr","tamago","bagevm","matrix","prepaid","bwh","akile","isvoro","akko","mhy"].includes(t.family))return (await observeListing(t)).state;
  if(t.family==="mkcloud"||t.family==="nnb")return classifyStorefront(t,await currentStorefront(t.family));
  const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),7000);
  try{
@@ -1242,11 +1985,11 @@ export default {async fetch(req,env,ctx){
  const key=url.pathname.slice(11),target=stockTarget(key);
  if(!target)return json({error:'Unknown stock probe'},404);
  const cache=globalThis.caches?.default;
- const cacheKey=new Request(url.origin+url.pathname,{method:'GET'});
- const hit=cache&&await cache.match(cacheKey);
+ const cacheKey=new Request(url.origin+url.pathname+"?format=v11",{method:'GET'});
+ let hit=null;try{hit=cache&&await cache.match(cacheKey)}catch{}
  if(hit)return hit;
  let observation;try{observation=await observeListing(target)}catch{observation={state:'offline',offer:null}}
- const result=json({key,...observation,schemaVersion:10,sku:target.sku,zone:target.zone,checkedAt:new Date().toISOString(),source:target.url,refreshSeconds:TTL},200,observation.state==='offline'?25:TTL);
+ const result=json({key,...observation,schemaVersion:11,sku:target.sku,zone:target.zone,checkedAt:new Date().toISOString(),source:target.url,refreshSeconds:TTL},200,observation.state==='offline'?25:TTL);
  if(cache)ctx.waitUntil(cache.put(cacheKey,result.clone()).catch(()=>{}));
  return result;
 }};

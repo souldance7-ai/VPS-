@@ -1,13 +1,13 @@
 import targets from './targets.json' with { type: 'json' };
 import {stockTarget,observeListing} from './stock-source.mjs';
 
-const LIMIT = 6;
+const LIMIT = 11;
 const byKey = new Map(targets.map(t => [t.key,t]));
 const periodMinutes = Math.ceil(targets.length / LIMIT);
 const stable = new Set(['in-stock','sold-out','low']);
 const states = new Set([...stable,'offline','unreported']);
 const stockTargets=targets.filter(t=>!t.quoteOnly);
-const quoteTargets=targets.filter(t=>['mkcloud','nnb','vmsilo','backwaves','wasabi','vultr','tamago'].includes(stockTarget(t.key)?.family));
+const quoteTargets=targets.filter(t=>['mkcloud','nnb','vmsilo','backwaves','wasabi','vultr','tamago','bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy'].includes(stockTarget(t.key)?.family));
 const rowsPerResponse = 12;
 const retention = 30 * 86400000;
 
@@ -40,13 +40,13 @@ async function sampleTarget(target, env, fetcher) {
  const started=Date.now();
  try {
   const url=new URL('/api/stock/'+target.key,env.PAGES_ORIGIN);
-  const resp=await fetcher(url,{signal:AbortSignal.timeout(12000), redirect:'error'});
+  const resp=await fetcher(url,{signal:AbortSignal.timeout(12000), redirect:'manual'});
   if(!resp.ok||!resp.headers.get('content-type')?.includes('application/json'))throw Error('endpoint');
   const data=await resp.json(),at=Date.parse(data.checkedAt),age=Date.now()-at;
   if(data.key!==target.key||data.sku!==target.sku||data.zone!==target.zone||!states.has(data.state)||!Number.isFinite(at)||age< -30000||age>300000)throw Error('invalid snapshot');
   let offer=null;
   const candidate=data.offer,observed=Date.parse(candidate?.checkedAt);
-  if(candidate&&Number.isFinite(observed)&&observed<=at+30000&&at-observed<=300000&&/^[0-9]+(?:\.[0-9]+)?$/.test(candidate.amount)&&['CNY','HKD','EUR','USD'].includes(candidate.currency)&&candidate.period==='month'&&['base','listed','base-config','starting'].includes(candidate.basis))offer=candidate;
+  if(candidate&&Number.isFinite(observed)&&observed<=at+30000&&at-observed<=300000&&/^[0-9]+(?:\.[0-9]+)?$/.test(candidate.amount)&&['CNY','HKD','EUR','USD'].includes(candidate.currency)&&['month','quarter','halfyear','year'].includes(candidate.period)&&['base','listed','base-config','starting'].includes(candidate.basis))offer=candidate;
   return {key:target.key,state:data.state,at,offer};
  } catch { return {key:target.key,state:'offline',at:started}; }
 }
@@ -72,10 +72,10 @@ export async function read(req,env) {
   const freshSince=Date.now()-(periodMinutes+2)*60000;
   const [quoteRows,stockRows]=await env.DB.batch([
    env.DB.prepare('SELECT COUNT(*) AS count, SUM(observed_at>=?) AS fresh, MAX(observed_at) AS last, MIN(observed_at) AS oldest FROM offer_latest').bind(freshSince),
-   env.DB.prepare('SELECT SUM(checked_at>=?) AS fresh, MAX(checked_at) AS last FROM stock_latest WHERE probe NOT IN ('+targets.filter(t=>t.quoteOnly).map(()=>'?').join(',')+')').bind(freshSince,...targets.filter(t=>t.quoteOnly).map(t=>t.key))
+   env.DB.prepare("SELECT SUM(checked_at>=?1) AS fresh, SUM(checked_at>=?1 AND current_state IN ('in-stock','sold-out','low')) AS confirmedfresh, MAX(checked_at) AS last FROM stock_latest WHERE probe NOT IN ("+targets.filter(t=>t.quoteOnly).map(()=>'?').join(',')+')').bind(freshSince,...targets.filter(t=>t.quoteOnly).map(t=>t.key))
   ]);
   const quotes=quoteRows.results[0],stock=stockRows.results[0];
-  return json({installed:true,schemaVersion:10,stockTargetCount:stockTargets.length,quoteTargetCount:quoteTargets.length,quoteSampled:quotes?.count||0,lastQuoteAt:iso(quotes?.last),oldestQuoteAt:iso(quotes?.oldest),quoteFresh:Number(quotes?.fresh||0),stockChecksFresh:Number(stock?.fresh||0),lastStockCheckAt:iso(stock?.last),freshWithinMinutes:periodMinutes+2,targetCount:targets.length,periodMinutes,sampled:Number(row?.sampled||0),verified:Number(row?.verified||0),offline:Number(row?.offline||0),unreported:Number(row?.unreported||0),lastCheckedAt:iso(row?.last),oldestCheckedAt:iso(row?.oldest)});
+  return json({installed:true,schemaVersion:11,stockTargetCount:stockTargets.length,quoteTargetCount:quoteTargets.length,quoteSampled:quotes?.count||0,lastQuoteAt:iso(quotes?.last),oldestQuoteAt:iso(quotes?.oldest),quoteFresh:Number(quotes?.fresh||0),stockReadingsFresh:Number(stock?.confirmedfresh||0),stockChecksFresh:Number(stock?.fresh||0),lastStockCheckAt:iso(stock?.last),freshWithinMinutes:periodMinutes+2,targetCount:targets.length,periodMinutes,sampled:Number(row?.sampled||0),verified:Number(row?.verified||0),offline:Number(row?.offline||0),unreported:Number(row?.unreported||0),lastCheckedAt:iso(row?.last),oldestCheckedAt:iso(row?.oldest)});
  }
  const key=path.match(/^\/api\/stock-history\/([A-Za-z0-9-]+)$/)?.[1];
  const t=byKey.get(key);if(!t)return json({error:'Unknown probe'},404);
@@ -86,7 +86,7 @@ export async function read(req,env) {
  ]);
  const s=current.results[0];
  const q=quote.results[0];
- return json({installed:true,schemaVersion:10,key,sku:t.sku,zone:t.zone,periodMinutes,lastOffer:q?{...JSON.parse(q.payload),checkedAt:iso(q.observed_at)}:null,
+ return json({installed:true,schemaVersion:11,key,sku:t.sku,zone:t.zone,periodMinutes,lastOffer:q?{...JSON.parse(q.payload),checkedAt:iso(q.observed_at)}:null,
   latest:s?{state:s.current_state,checkedAt:iso(s.checked_at),confirmedState:s.confirmed_state,confirmedAt:iso(s.confirmed_at),changedAt:iso(s.changed_at)}:null,
   events:events.results.map(e=>({at:iso(e.at),from:e.from_state,to:e.to_state}))});
 }

@@ -65,7 +65,6 @@ function localizeEdition(){
  const sheet=$("procurement-guide");sheet.replaceChildren(el("h3",tr("titleGuide")));
  const labels=[["a","ab","NodeSeek","https://www.nodeseek.com/post-1062104-1"],["b","bb","RIPEstat","https://stat.ripe.net/docs/data-api/api-endpoints/network-info"],["c","cb",tr("article"),"https://bulianglin.com/archives/tiktokvps.html"]];
  for(const [heading,body,source,url] of labels){const step=el("details"),copy=el("div");step.open=heading==="a";copy.append(el("p",tr(body)),link(source+" ↗",url));if(heading==="b"){const sample=el("a",({sc:"查看有原生 IP 证据的套餐",tc:"查看有原生 IP 證據的方案",en:"Find plans with native IP evidence",ja:"現地 IP の出典があるプランを見る"}[lang])+" →","guide-query");sample.href="?q-use=native#directory";sample.dataset.directoryQuery="";copy.append(sample)}step.append(el("summary",tr(heading)),copy);sheet.append(step)}
- $('scene-prev').setAttribute('aria-label',tr('prevScene'));$('scene-next').setAttribute('aria-label',tr('nextScene'));
  localizeComic();
  const stats=$('coverage-numbers');stats.replaceChildren();
  for(const [n,k] of [[new Set(PLANS.map(p=>['LAX','SJC','SEA'].includes(p.market)?'US':p.market)).size,'countriesN'],[vendorCount(PLANS),'merchants'],[PLANS.length,'results'],[PLANS.filter(p=>p.kind==='bare').length,'metalN']]){

@@ -1,0 +1,16 @@
+.quick-lane[data-dimension="backbone"]{grid-column:1/-1}
+.quick-lane[data-dimension="routeDirection"] .quick-chip,.quick-lane[data-dimension="route"] .quick-chip{white-space:normal;text-align:start}
+.route-glossary{padding:.6rem 1rem;border-top:1px solid #414559;color:#c9d2e1;font-size:.83rem}
+.route-glossary summary{width:fit-content;cursor:pointer;color:#a8efd8;font-weight:700}
+.route-glossary p{margin:.55rem 0 0;max-width:88ch;line-height:1.6}
+.route-proof{padding:1rem 0;margin:.5rem 0;border-block:1px solid #3b435a}
+.route-proof h3{margin:0 0 .7rem}
+.route-table-wrap{overflow-x:auto}
+.route-table{width:100%;min-width:280px;border-collapse:collapse;text-align:start;font-size:.84rem}
+.route-table td,.route-table th{padding:.65rem .55rem;vertical-align:top;border:1px solid #374052}
+.route-table th{font-weight:700;color:#d5e8e5}
+.route-table thead{background:#1d2b34}
+.route-table tbody th{background:#1b2333}
+.route-table td{color:#e1e6f3}
+.route-citation{display:inline-block;margin:.65rem .8rem 0 0;font-size:.78rem;color:#aceedb;text-decoration:underline}
+@media(max-width:620px){.route-glossary{padding:.6rem .7rem}.route-table td,.route-table th{padding:.48rem .3rem}.quick-lane[data-dimension="routeDirection"]{grid-column:1/-1}}

@@ -469,5 +469,333 @@
   "key": "meow-tamagowtt-1",
   "sku": "WTT.500M.VPS.4",
   "zone": "HK"
+ },
+ {
+  "key": "ms-bage-jp-small",
+  "sku": "Japan - SMALL",
+  "zone": "JP"
+ },
+ {
+  "key": "ms-bage-jp-tiny",
+  "sku": "Japan - TINY",
+  "zone": "JP"
+ },
+ {
+  "key": "ms-bage-jp-starter",
+  "sku": "Japan - STARTER",
+  "zone": "JP"
+ },
+ {
+  "key": "ms-bage-jp-medium",
+  "sku": "Japan - MEDIUM",
+  "zone": "JP"
+ },
+ {
+  "key": "ms-bage-jp-large",
+  "sku": "Japan - LARGE",
+  "zone": "JP"
+ },
+ {
+  "key": "regional-matrix-q1-1",
+  "sku": "Q1 - LA - 活动款",
+  "zone": "LAX"
+ },
+ {
+  "key": "regional-matrix-q1-2",
+  "sku": "Q1 - LA - 标准款",
+  "zone": "LAX"
+ },
+ {
+  "key": "regional-matrix-q1-3",
+  "sku": "Q1 - LA - 进阶款",
+  "zone": "LAX"
+ },
+ {
+  "key": "regional-matrix-q1-4",
+  "sku": "Q1 - LA - 高阶款",
+  "zone": "LAX"
+ },
+ {
+  "key": "regional-matrix-q1-5",
+  "sku": "Q1 - LA - 顶配款",
+  "zone": "LAX"
+ },
+ {
+  "key": "regional-matrix-q2-1",
+  "sku": "Q2 - LA - 活动款",
+  "zone": "LAX"
+ },
+ {
+  "key": "regional-matrix-q2-2",
+  "sku": "Q2 - LA - 轻量款",
+  "zone": "LAX"
+ },
+ {
+  "key": "regional-matrix-q2-3",
+  "sku": "Q2 - LA - 标准款",
+  "zone": "LAX"
+ },
+ {
+  "key": "regional-matrix-q2-4",
+  "sku": "Q2 - LA - 进阶款",
+  "zone": "LAX"
+ },
+ {
+  "key": "regional-matrix-q2-5",
+  "sku": "Q2 - LA - 顶配款",
+  "zone": "LAX"
+ },
+ {
+  "key": "regional-matrix-4837-1",
+  "sku": "圣何塞 4837 优化 活动款",
+  "zone": "SJC"
+ },
+ {
+  "key": "regional-matrix-4837-2",
+  "sku": "圣何塞 4837 优化 轻量款",
+  "zone": "SJC"
+ },
+ {
+  "key": "regional-matrix-4837-3",
+  "sku": "圣何塞 4837 优化 标准款",
+  "zone": "SJC"
+ },
+ {
+  "key": "regional-matrix-4837-4",
+  "sku": "圣何塞 4837 优化 进阶款",
+  "zone": "SJC"
+ },
+ {
+  "key": "regional-matrix-4837-5",
+  "sku": "圣何塞 4837 优化 顶配款",
+  "zone": "SJC"
+ },
+ {
+  "key": "regional-matrix-4837-6",
+  "sku": "圣何塞 4837 优化 pro",
+  "zone": "SJC"
+ },
+ {
+  "key": "let11-prepaid-8",
+  "sku": "PreBF-8",
+  "zone": "DE"
+ },
+ {
+  "key": "let11-prepaid-10",
+  "sku": "PreBF-10",
+  "zone": "DE"
+ },
+ {
+  "key": "let11-prepaid-16",
+  "sku": "FLASH-16",
+  "zone": "DE"
+ },
+ {
+  "key": "ms-bwh-usca-5-p166",
+  "sku": "80G KVM - ECOMMERCE SLA LOS ANGELES",
+  "zone": "LAX"
+ },
+ {
+  "key": "ms-bwh-usca-6-p89",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "LAX"
+ },
+ {
+  "key": "ms-bwh-usca-9-p89",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "LAX"
+ },
+ {
+  "key": "ms-bwh-usca-sjc5-p89",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "SJC"
+ },
+ {
+  "key": "ms-bwh-hk-8-p95",
+  "sku": "SPECIAL 40G KVM PROMO V5 - HONG KONG CN2 GIA",
+  "zone": "HK"
+ },
+ {
+  "key": "ms-bwh-jpos-6-p134",
+  "sku": "SPECIAL 40G KVM PROMO V5 - OSAKA CN2 GIA",
+  "zone": "JP"
+ },
+ {
+  "key": "ms-bwh-jpty-8-p108",
+  "sku": "SPECIAL 40G KVM PROMO V5 - TOKYO CN2 GIA",
+  "zone": "JP"
+ },
+ {
+  "key": "ms-bwh-sg-8-p173",
+  "sku": "SPECIAL 40G KVM PROMO V5 - SINGAPORE CN2 GIA",
+  "zone": "SG"
+ },
+ {
+  "key": "ms-bwh-cabc-6-p89",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "CA"
+ },
+ {
+  "key": "bwh-ams",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "NL"
+ },
+ {
+  "key": "ms-bwh-usny-8-p89",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "US"
+ },
+ {
+  "key": "ms-bwh-aedxb-1-p89",
+  "sku": "SPECIAL 80G KVM PROMO V5 - CN2 GIA ECOMMERCE",
+  "zone": "AE"
+ },
+ {
+  "key": "ms-akile-859",
+  "sku": "TW-Dynamic-STD",
+  "zone": "TW"
+ },
+ {
+  "key": "ms-akile-906",
+  "sku": "TW-Static-2G",
+  "zone": "TW"
+ },
+ {
+  "key": "akile-hinet",
+  "sku": "TWHinet-Mini-NAT",
+  "zone": "TW"
+ },
+ {
+  "key": "ms-akile-827",
+  "sku": "TWLite-Mini",
+  "zone": "TW"
+ },
+ {
+  "key": "ms-isvoro-149",
+  "sku": "HK CN2 Core",
+  "zone": "HK"
+ },
+ {
+  "key": "supp-akko-sjc-1",
+  "sku": "美国圣何塞KVM-CN2-A2 mini年付特惠套餐",
+  "zone": "SJC",
+  "quoteOnly": true
+ },
+ {
+  "key": "supp-akko-sjc-2",
+  "sku": "美西圣何塞KVM-CN2-B1 mini 年付特惠套餐",
+  "zone": "SJC",
+  "quoteOnly": true
+ },
+ {
+  "key": "supp-akko-sjc-3",
+  "sku": "美国圣何塞KVM-CN2-B1",
+  "zone": "SJC",
+  "quoteOnly": true
+ },
+ {
+  "key": "mhy-p46",
+  "sku": "TW-HKG - 512M",
+  "zone": "HK"
+ },
+ {
+  "key": "mhy-p47",
+  "sku": "TW-HKG - 1024M",
+  "zone": "HK"
+ },
+ {
+  "key": "mhy-p48",
+  "sku": "TW-HKG - 2048M",
+  "zone": "HK"
+ },
+ {
+  "key": "mhy-p49",
+  "sku": "TW-HKG - 4096M",
+  "zone": "HK"
+ },
+ {
+  "key": "mhy-p30",
+  "sku": "HK BGP - 512M",
+  "zone": "HK"
+ },
+ {
+  "key": "mhy-p31",
+  "sku": "HK BGP - 1024M",
+  "zone": "HK"
+ },
+ {
+  "key": "mhy-p32",
+  "sku": "HK BGP - 2048M",
+  "zone": "HK"
+ },
+ {
+  "key": "mhy-p33",
+  "sku": "HK BGP - 4096M",
+  "zone": "HK"
+ },
+ {
+  "key": "mhy-p64",
+  "sku": "德国BGP-512M",
+  "zone": "DE"
+ },
+ {
+  "key": "mhy-p56",
+  "sku": "德国BGP-1024M",
+  "zone": "DE"
+ },
+ {
+  "key": "mhy-p59",
+  "sku": "德国BGP-2048M",
+  "zone": "DE"
+ },
+ {
+  "key": "mhy-p60",
+  "sku": "德国BGP-4096M",
+  "zone": "DE"
+ },
+ {
+  "key": "mhy-p67",
+  "sku": "德国BGP-年付-512M",
+  "zone": "DE"
+ },
+ {
+  "key": "mhy-p57",
+  "sku": "德国BGP-年付1024M",
+  "zone": "DE"
+ },
+ {
+  "key": "mhy-p58",
+  "sku": "德国BGP-年付2048M",
+  "zone": "DE"
+ },
+ {
+  "key": "mhy-p62",
+  "sku": "德国BGP-年付4096M",
+  "zone": "DE"
+ },
+ {
+  "key": "mhy-p52",
+  "sku": "MO-HKG - 512M",
+  "zone": "HK"
+ },
+ {
+  "key": "mhy-p53",
+  "sku": "MO-HKG - 1024M",
+  "zone": "HK"
+ },
+ {
+  "key": "mhy-p54",
+  "sku": "MO-HKG - 2048M",
+  "zone": "HK"
+ },
+ {
+  "key": "mhy-p55",
+  "sku": "MO-HKG - 4096M",
+  "zone": "HK"
+ },
+ {
+  "key": "mhy-p51",
+  "sku": "香港BGP - 新年特别款",
+  "zone": "HK"
  }
 ]
