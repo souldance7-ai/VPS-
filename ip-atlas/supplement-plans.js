@@ -66,6 +66,7 @@
         plan:sku, ip:group.key === 'tw' ? 'isp' : 'unknown', url:group.url, proof:group.url,
         lg:moeLookingGlass[group.key] || null, route:optimized ? 'claimed' : 'unknown', routeName,
         carriers:optimized ? ['CT','CU','CM'] : [], networkFilters:optimized ? ['optimized-transit','quota-transfer'] : ['quota-transfer'],
+        stockSnapshot:Number.isInteger(quantity)?{state:quantity>0?'in-stock':'sold-out',checkedAt:sourceDate,source:group.url,quantity}:undefined,
         notes, searchTerms:[sku,'lite.moe','萌云','萌雲'],spec});
       const attributes = [['sharing','dedicated-ipv4']];
       if (group.key === 'tw') attributes.push(['access','isp'],['assignment',sku.includes('Fixed') ? 'static' : 'dynamic']);

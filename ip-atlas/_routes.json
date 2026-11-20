@@ -3,7 +3,8 @@
   "include": [
     "/api/stock/*",
     "/api/stock-history/*",
-    "/api/deal-feed/*"
+    "/api/deal-feed/*",
+    "/api/greencloud-prices/*"
   ],
   "exclude": []
 }

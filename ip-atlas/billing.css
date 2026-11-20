@@ -1,0 +1,7 @@
+.billing-rates { margin-block: .85rem; }
+.billing-rates h4 { margin: 0 0 .4rem; font: inherit; font-weight: 700; }
+.billing-rates dl { margin: 0; }
+.billing-rates dl > div { display: grid; grid-template-columns: minmax(4.5rem, 1fr) minmax(0, 3fr); gap: .6rem; padding: .45rem .6rem; border-top: 1px solid #464761; }
+.billing-rates .selected-term { background: #302d49; border-inline-start: 2px solid #b9a8fc; }
+.billing-rates dd { display: flex; align-items: baseline; flex-wrap: wrap; gap: .3rem .65rem; margin: 0; }
+.billing-rates time, .billing-rates a { color: #c3c1d6; font-size: .78em; }

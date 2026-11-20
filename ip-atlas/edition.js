@@ -25,7 +25,7 @@ let scene=0,pageIndex=0,signature='',lastSceneAt=0;
 const perPage=12;
 function vendorCount(rows){return new Set(rows.map(p=>p.provider.trim().toLowerCase())).size}
 function currentPageRows(rows){
- const key=[zone,...['market','vendor','kind','ip','route','carrier','search'].map(k=>$(k).value),$('promo').checked].join('|');
+ const key=[zone,...['market','vendor','kind','ip','route','carrier','search','term'].map(k=>$(k).value),$('promo').checked].join('|');
  if(key!==signature){signature=key;pageIndex=0}
  pageIndex=Math.min(pageIndex,Math.max(0,Math.ceil(rows.length/perPage)-1));
  return rows.slice(pageIndex*perPage,(pageIndex+1)*perPage)
@@ -67,7 +67,7 @@ function localizeEdition(){
  for(const [heading,body,source,url] of labels){const step=el("details"),copy=el("div");step.open=heading==="a";copy.append(el("p",tr(body)),link(source+" ↗",url));if(heading==="b"){const sample=el("a",({sc:"查看有原生 IP 证据的套餐",tc:"查看有原生 IP 證據的方案",en:"Find plans with native IP evidence",ja:"現地 IP の出典があるプランを見る"}[lang])+" →","guide-query");sample.href="?q-use=native#directory";sample.dataset.directoryQuery="";copy.append(sample)}step.append(el("summary",tr(heading)),copy);sheet.append(step)}
  localizeComic();
  const stats=$('coverage-numbers');stats.replaceChildren();
- for(const [n,k] of [[new Set(PLANS.map(p=>['LAX','SJC','SEA'].includes(p.market)?'US':p.market)).size,'countriesN'],[vendorCount(PLANS),'merchants'],[PLANS.length,'results'],[PLANS.filter(p=>p.kind==='bare').length,'metalN']]){
+ for(const [n,k] of [[new Set(PLANS.filter(p=>p.market!=='MULTI').map(p=>['LAX','SJC','SEA'].includes(p.market)?'US':p.market)).size,'countriesN'],[vendorCount(PLANS),'merchants'],[PLANS.length,'results'],[PLANS.filter(p=>p.kind==='bare').length,'metalN']]){
   const node=el('div');node.append(el('strong',String(n)),el('span',tr(k)));stats.append(node)
  }
  const rail=$('research-trail');rail.replaceChildren();const h=el('h3',tr('fieldSource'));rail.append(h);

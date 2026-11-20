@@ -9,9 +9,9 @@ const buyingLabels={
 for(const [key,labels] of Object.entries(buyingLabels))editionLangs.forEach((l,i)=>WORDS[l][key]=labels[i]);
 const hardware=['cpu','ram','disk','port','traffic'];
 const selectedTiers=new Map();
-function activeSpec(p){return p.spec?.tiers?.[selectedTiers.get(p.id)||0] || p.spec}
+function activeSpec(p){return billingSpecForDisplay(p)}
 function published(p){return Boolean(activeSpec(p)?.price||p.price)}
-function priceText(p,s=activeSpec(p)){if(s?.price){const term=s.term?(buyingLabels[s.term]?tr(s.term):s.term):'';return (s.priceType==='from'?quickWord('fromPrice')+' ':'')+[s.currency,s.price].filter(Boolean).join(' ')+(term?' / '+term:'')}return val(p.price)}
+function priceText(p,s=activeSpec(p)){if(s?.price){const term=s.term?((buyingLabels[s.term]||billingLabels[s.term])?tr(s.term):s.term):'';return (s.priceType==='from'?quickWord('fromPrice')+' ':'')+[s.currency,s.price].filter(Boolean).join(' ')+(term?' / '+term:'')}return val(p.price)}
 function priceEvidence(p,s=activeSpec(p)){
  const type=s?.priceType||p.spec?.priceType,proof=s?.proof||p.spec?.proof;
  const snapshot={type:type==='review'?'review':proof?'provider':'unknown',proof,date:s?.date||p.spec?.date};
@@ -64,11 +64,12 @@ function showBuying(out,p){
   body.replaceChildren();const rate=priceText(p,s),basis=priceEvidence(p,s);if(rate){body.append(el('strong',rate,'purchase-rate'));const note=purchaseQualifier(p,s);if(note)body.append(el('small',note,'offer-condition'))}
   if(s?.sku)body.append(el('span',s.sku,'sku-name'));
   if(s&&hardware.some(k=>s[k])){const grid=el('dl',null,'hardware');for(const k of hardware){const cell=el('div');cell.append(el('dt',tr(k)),el('dd',val(s[k])||tr('specAvailability')));grid.append(cell)}body.append(grid)}else body.append(el('p',tr('customConfig')));
+  if(typeof appendGreenCloudQuotePanel!=='function' || !appendGreenCloudQuotePanel(body,p,s))appendBillingRates(body,p);
   if(s?.sourceNote)body.append(el('p',tr('notesLabel')+' · '+val(s.sourceNote),'bill-note'));
   const sourceLabel=basis.type==='review'?quickWord('reviewSource'):basis.type==='provider'?tr('priceSource'):tr('localPriceSource');
   body.append(link((rate||s?.cpu?sourceLabel:tr('orderPage'))+' ↗',basis.proof||p.url));
   if(rate&&basis.date)body.append(el('small',tr('quoteDate')+' · '+basis.date,'spec-date'));
  }
- if(choices.length>1){const select=el('select');select.setAttribute('aria-label',tr('tier'));choices.forEach((s,i)=>select.add(new Option(s.sku,String(i))));select.value=String(selectedTiers.get(p.id)||0);select.onchange=()=>{selectedTiers.set(p.id,+select.value);draw(activeSpec(p));list()};head.append(select)}
- section.append(body);draw(activeSpec(p));const deal=deals[p.deal];if(deal&&stateOf(deal)==='active'){const note=el('div',null,'active-coupon');note.append(el('b',tr('offers')+' · '+(deal.rate||'−20%')),el('p',tr(p.deal+'Terms')),el('small',tr('deadline')+' · '+new Intl.DateTimeFormat(tags[lang],{timeZone:deal.zone,dateStyle:'medium',timeStyle:'short'}).format(new Date(deal.end))+' ('+deal.zone+')'),link(tr('terms')+' ↗',deal.url));if(deal.code)note.append(btn(deal.code+' ⧉',()=>copy(deal.code),'inline'));section.append(note)}out.append(section);
+ if(choices.length>1){const select=el('select');select.setAttribute('aria-label',tr('tier'));choices.forEach((s,i)=>{if(!billingSelection()||billingSupports(p,s,billingSelection()))select.add(new Option(s.sku,String(i)))});select.value=String(choices.indexOf(billingTierForDisplay(p)));select.onchange=()=>{selectedTiers.set(p.id,+select.value);draw(activeSpec(p));list();document.dispatchEvent(new CustomEvent('atlas:billing-change',{detail:{planId:p.id,term:activeSpec(p)?.term}}))};head.append(select)}
+ section.append(body);draw(activeSpec(p));const deal=deals[p.deal];if(deal&&!deal.code&&stateOf(deal)==='active'){const note=el('div',null,'active-coupon');note.append(el('b',tr('offers')+' · '+(deal.rate||'−20%')),el('p',tr(p.deal+'Terms')),el('small',tr('deadline')+' · '+new Intl.DateTimeFormat(tags[lang],{timeZone:deal.zone,dateStyle:'medium',timeStyle:'short'}).format(new Date(deal.end))+' ('+deal.zone+')'),link(tr('terms')+' ↗',deal.url));if(deal.code)note.append(btn(deal.code+' ⧉',()=>copy(deal.code),'inline'));section.append(note)}out.append(section);
 }

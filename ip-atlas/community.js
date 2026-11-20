@@ -24,7 +24,7 @@ const communityText={
  bonusTerms:['商家赠送流量条款','商家贈送流量條款','Provider bandwidth bonus terms','公式の通信量特典条件'],
  sbForum:['烧饼论坛','燒餅論壇','SB Forum','SB フォーラム'],
  drawer:['目录规格与库存','目錄規格與庫存','Directory specs and stock','図鑑の仕様・在庫'],empty:['没有符合条件的记录。','沒有符合條件的紀錄。','No records match these filters.','この条件に一致する記録はありません。'],
- month:['月','月','mo','月'],year:['年','年','yr','年'],quarter:['季度','季','quarter','四半期'],hour:['小时','小時','hour','時間'],
+ month:['月','月','mo','月'],year:['年','年','yr','年'],quarter:['季度','季','quarter','四半期'],halfyear:['半年','半年','six months','半年'],hour:['小时','小時','hour','時間'],
  codeCopy:['复制优惠码','複製優惠碼','Copy coupon','コードをコピー'],datesUnknown:['截止依商家公告或额度','截止依商家公告或額度','End date subject to provider terms or quota','終了は事業者の条件・配布枠による']
 };
 const communityStates=['offer','limited','checkout','upcoming','catalog','configured','estimate','historical','expired'];
@@ -140,10 +140,10 @@ function communityDetails(row,inDrawer){
  if(row.endDate&&!row.end){const t=el('time',communityLabel('ends')+' · '+row.endDate+' ('+communityLabel('dateOnly')+')');t.dateTime=row.endDate;dates.append(t)}
  if(!row.end&&!row.endDate&&row.status!=='catalog'&&row.status!=='expired')dates.append(el('span',communityLabel('datesUnknown')));
  body.append(dates);
- if(row.code){
-  const usable=['offer','checkout','limited'].includes(communityStage(row));
+ if(row.code&&!(inDrawer&&modal?.id)){
+  const usable=currentCommerceOffer(row,'');
   const coupon=usable?btn(row.code+' ⧉',()=>{
-   if(!['offer','checkout','limited'].includes(communityStage(row))){toast(communityLabel(communityStage(row)));renderCommunity();return}
+   if(!currentCommerceOffer(row,'')){toast(communityLabel(communityStage(row)));renderCommunity();return}
    copy(row.code);
   },'community-code'):el('span',row.code,'community-code');
   body.append(el('small',communityLabel('coupon')+'  '),coupon);

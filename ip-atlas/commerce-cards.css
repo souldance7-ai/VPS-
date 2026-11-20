@@ -1,0 +1,29 @@
+.commerce-card{grid-column:1 / -1;min-width:0;display:grid;gap:.45rem;align-content:start}
+.commerce-stock,.commerce-evidence{display:flex;align-items:center;flex-wrap:wrap;gap:.3rem .55rem;min-width:0}
+.commerce-stock{--status:#b5bdd2;--tint:#22283a;font-size:.75rem;line-height:1.4}
+.commerce-stock[data-state="in-stock"],.stock-probe[data-stock-state="in-stock"]{--status:#9af4c5;--tint:#143729}
+.commerce-stock[data-state="sold-out"],.stock-probe[data-stock-state="sold-out"]{--status:#ffa4a0;--tint:#442229}
+.commerce-stock[data-state="low"],.stock-probe[data-stock-state="low"]{--status:#ffda85;--tint:#44331c}
+.commerce-stock[data-state="offline"],.stock-probe[data-stock-state="offline"]{--status:#f0c69a;--tint:#342c29}
+.commerce-stock[data-state="historical"]{--status:#bdb3d4;--tint:#2c2936}
+.commerce-stock-state,.stock-probe[data-stock-state] > [role="status"]{display:inline-flex;gap:.4em;align-items:center;border:1px solid color-mix(in srgb,var(--status,#b5bdd2) 42%, transparent);border-radius:.34rem;background:var(--tint,#22283a);color:var(--status,#b5bdd2);font-weight:650;line-height:1.35;padding:.22em .5em}
+.commerce-stock-state:before,.stock-probe[data-stock-state] > [role="status"]:before{content:"";display:inline-block;flex:none;width:.45em;height:.45em;border-radius:50%;background:currentColor}
+.commerce-stock-source,.commerce-evidence a{font-size:.73rem;color:#b5c5d9;text-decoration:underline;text-underline-offset:.15em;overflow-wrap:anywhere}
+.commerce-stock-source:hover,.commerce-evidence a:hover{color:#fff}
+.commerce-last-stock{flex-basis:100%;color:#c0bed0}
+.commerce-card-codes{display:grid;gap:.3rem}
+.commerce-deal-row{display:flex;align-items:center;flex-wrap:wrap;gap:.34rem .6rem;min-width:0}
+.commerce-copy{display:inline-flex;align-items:center;flex-wrap:wrap;gap:.45em;min-height:30px;max-width:100%;background:#243527;border:1px solid #4d7359;color:#c9f9d6;border-radius:5px;padding:.25em .52em;cursor:pointer;text-align:start;line-height:1.35}
+.commerce-copy:hover,.commerce-copy:focus-visible{color:#eaffed;background:#314d38;outline:1px solid #9fe4b0;outline-offset:1px}
+.commerce-term,.commerce-copy-label{font-size:.7rem;font-weight:600}
+.commerce-copy code{font:700 .82rem var(--mono,monospace);letter-spacing:.02em;overflow-wrap:anywhere}
+.commerce-copy-label{border-left:1px solid #56715c;padding-inline-start:.45em}
+.commerce-net-price{font-weight:650;color:#c8f0d3}.commerce-deadline,.commerce-evidence time,.commerce-deal-details small{color:#bbc2ce;font-size:.74rem}
+.commerce-deal-details{margin:1rem 0;background:#161f23;border:1px solid #435448;border-radius:.45rem;padding:.8rem 1rem}
+.commerce-deal-details h3{margin:0 0 .55rem}
+.commerce-deal-details .commerce-deal-row{padding:.65rem 0}
+.commerce-deal-details .commerce-deal-row+.commerce-deal-row{border-top:1px solid #435448}
+.commerce-deal-details p,.commerce-deal-details small,.commerce-deal-details .commerce-evidence{width:100%;margin:0}
+.commerce-conditions{width:100%;font-size:.88rem}.commerce-conditions summary{cursor:pointer;color:#acdec0;font-weight:650}.commerce-conditions[open] p,.commerce-conditions[open] .commerce-evidence{margin-top:.45rem}.commerce-deal-details p{line-height:1.55}.commerce-card-codes[hidden],.commerce-deal-details[hidden],.stock-list:empty{display:none}
+.stock-list[data-commerce-quote]{background:transparent;color:#c1d6f4;padding:0;border:0;font-size:.72rem}.stock-list[data-commerce-quote] strong{font-size:.8rem}
+@media(max-width:560px){.commerce-copy{min-height:36px}.commerce-card{gap:.5rem}.commerce-stock-source{padding-block:.15rem}}

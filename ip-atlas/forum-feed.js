@@ -297,13 +297,14 @@ async function loadForumFeed(id = publicForumState.active) {
     const data = await response.json();
     if (data.source !== id || !Array.isArray(data.items) || !Number.isFinite(Date.parse(data.observed))) throw Error('payload');
     state.data = {source:id,observed:data.observed,stale:data.stale === true,editionSnapshot:data.editionSnapshot === true,visibility:data.visibility === 'link-only'?'link-only':'public',
-      items:data.items.slice(0,id==='coupons'?30:12).filter(item=>item && typeof item.title === 'string' && (id!=='coupons'||(Object.hasOwn(publicForumState.feeds,item.from)&&item.from!=='coupons'&&/^[A-Za-z0-9][A-Za-z0-9_.-]{1,48}(?:,[A-Za-z0-9][A-Za-z0-9_-]{0,20})?$/.test(item.code))) && forumItemLink(item.link,id==='coupons'?item.from:id))};
+      items:data.items.slice(0,id==='coupons'?30:12).filter(item=>item && typeof item.title === 'string' && (id!=='coupons'||(Object.hasOwn(publicForumState.feeds,item.from)&&item.from!=='coupons'&&/^[A-Za-z0-9][A-Za-z0-9_.-]{1,48}(?:,[A-Za-z0-9][A-Za-z0-9_-]{0,20})?!?$/.test(item.code))) && forumItemLink(item.link,id==='coupons'?item.from:id))};
   } catch {
     state.data ||= recentPackagedPosts(id);
     if(state.data?.editionSnapshot&&!recentPackagedPosts(id))state.data=null;
     state.failed = true;
   } finally {
     clearTimeout(timeout); state.busy = false;
+    if(id==='coupons')refreshDirectoryCouponFeed(state.data);
     const now = Date.now();
     if (state.failed || state.data?.stale) {
       state.failures = Math.min(5,(state.failures || 0) + 1);

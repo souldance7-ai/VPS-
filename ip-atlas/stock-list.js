@@ -12,20 +12,18 @@ function refreshStockList(){
  function draw(row,state,time,offer){
   if(row.drawn===state&&row.time===time&&row.offer===offer)return;row.offer=offer;
   row.drawn=state;row.time=time;row.output.replaceChildren();row.output.dataset.stockState=state;
-  if(goodQuote(offer))row.output.append(el('strong',offerPrice(offer)));
-  if(!row.target.quoteOnly||!goodQuote(offer))row.output.append(el('strong',quoteCapable(row.target)&&state==='loading'?offerText('fetch'):stockLabel(row.target,state)));
-  row.output.append(link(quoteCapable(row.target)?offerText('source'):stockText('source'),row.target.url));
-  if(time){
-   const clock=el('small',stockText('observed')+' '+new Date(time).toLocaleString(document.documentElement.lang,{hour12:false}));
-   row.output.append(clock);
+  paintCommerceStock(row.card.querySelector('.commerce-stock'),row.p,{state,checkedAt:time,source:row.target.url,quantity:goodQuote(offer)?offer.stockQuantity:null},row.target);
+  const rate=stockQuoteForTerm(offer,commerceTerm());
+  if(rate){
+   row.output.dataset.commerceQuote='';row.output.append(el('strong',offerPrice(rate)),link(offerText('source'),row.target.priceUrl||row.target.url));
   }
  }
  for(const card of listing.querySelectorAll('.record')){
   const p=plans.get(card.querySelector('.pick[data-id]')?.dataset.id);
   const key=p&&observationKey(p),target=key&&stockTarget(key);
-  if(!target||(filter.value!=='probe'&&!quoteCapable(target)))continue;
+  if(!target)continue;
   const output=el('div',null,'stock-list');card.append(output);
-  const row={card,key,target,output,ctrl:null};states.set(card,row);draw(row,location.protocol==='file:'?'local':'loading');
+  const row={card,p,key,target,output,ctrl:null};states.set(card,row);draw(row,location.protocol==='file:'?'local':'loading');
  }
  if(!states.size||location.protocol==='file:')return;
  function stop(){
@@ -51,6 +49,7 @@ function refreshStockList(){
    const data=await readStockObservation(row.key,row.target,ctrl.signal);
    if(!live||ctrl.signal.aborted||!visible.has(row))return;
    const time=Date.parse(data.checkedAt),now=Date.now();
+   if(!row.target.quoteOnly&&['in-stock','sold-out','low'].includes(data.state))commerceLastReadings.set(row.p.id,{state:data.state,checkedAt:data.checkedAt,source:row.target.url,quantity:goodQuote(data.offer)?data.offer.stockQuantity:null});
    const expires=data.state==='offline'?now+25000:Math.min(now+120000,Math.max(now+10000,time+120000));
    stockListCache.set(row.key,{state:data.state,time,expires,offer:data.offer});
   }catch{

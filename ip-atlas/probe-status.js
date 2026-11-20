@@ -4,6 +4,10 @@ const probePanelWords={
  probeStatusLoading:['正在读取后台采集记录…','正在讀取背景採集紀錄…','Reading monitor records…','収集記録を読み込み中…'],
  probeStatusDown:['暂时无法取得后台记录。可打开健康接口查看返回结果。','暫時無法取得背景紀錄。可開啟健康介面查看回傳結果。','Monitor data is unavailable. Open the health endpoint to inspect its response.','収集記録を取得できません。ヘルス API の応答を確認できます。'],
  probeCycle:['完整轮巡','完整輪巡','Full rotation','巡回間隔'],
+ probeCycleOther:['其他来源','其他來源','Other sources','その他'],
+ probeCycleGreen:['GreenCloud 轮巡','GreenCloud 輪巡','GreenCloud rotation','GreenCloud 巡回'],
+ probeCycleFacility:['ComputeGuy / EDIS 轮巡','ComputeGuy / EDIS 輪巡','ComputeGuy / EDIS rotation','ComputeGuy / EDIS 巡回'],
+ probeCycleMK:['MKCloud 轮巡','MKCloud 輪巡','MKCloud rotation','MKCloud 巡回'],
  probeMinutes:['分钟','分鐘','min','分'],
  probeTargets:['监测方案','監測方案','Monitored targets','監視対象'],
  probeWindow:['统计时间窗','統計時間窗','Freshness window','集計時間幅'],
@@ -23,8 +27,16 @@ function paintHealth(){
  if(!healthRecord.installed){healthBody.textContent=tr('probeStatusDown');return}
  const r=healthRecord,modern=r.schemaVersion>=10;
  const list=el('dl',null,'probe-metrics');
- const measures=[['probeTargets',r.targetCount],['probeCycle',r.periodMinutes+' '+tr('probeMinutes')]];
- if(modern)measures.push(['probeWindow',r.freshWithinMinutes+' '+tr('probeMinutes')],['probeStockFresh',r.stockChecksFresh+' / '+r.stockTargetCount],['probeQuoteFresh',r.quoteFresh+' / '+r.quoteTargetCount]);
+ const duration=n=>n+' '+tr('probeMinutes');
+ const mixed=[r.legacyPeriodMinutes,r.greenPeriodMinutes,r.mkPeriodMinutes].every(n=>Number.isInteger(n)&&n>0);
+ const measures=[['probeTargets',r.targetCount]];
+ if(mixed)measures.push(['probeCycleOther',duration(r.legacyPeriodMinutes)],['probeCycleGreen',duration(r.greenPeriodMinutes)],['probeCycleMK',duration(r.mkPeriodMinutes)]);
+ else measures.push(['probeCycle',duration(r.periodMinutes)]);
+ if(Number.isInteger(r.facilityPeriodMinutes))measures.push(['probeCycleFacility',duration(r.facilityPeriodMinutes)]);
+ if(modern){
+  const width=mixed?duration(Math.min(r.legacyPeriodMinutes,r.greenPeriodMinutes,r.mkPeriodMinutes)+2)+' – '+duration(r.freshWithinMinutes):duration(r.freshWithinMinutes);
+  measures.push(['probeWindow',width],['probeStockFresh',r.stockChecksFresh+' / '+r.stockTargetCount],['probeQuoteFresh',r.quoteFresh+' / '+r.quoteTargetCount]);
+ }
  if(Number.isInteger(r.stockReadingsFresh))measures.push(['probeConfirmed',r.stockReadingsFresh+' / '+r.stockTargetCount]);
  measures.push(['probeMostRecent',Number.isFinite(Date.parse(r.lastCheckedAt))?new Date(r.lastCheckedAt).toLocaleString(tags[lang],{hour12:false}):tr('probeNoRead')]);
  for(const [key,value] of measures){const cell=el('div');cell.append(el('dt',tr(key)),el('dd',value));list.append(cell)}

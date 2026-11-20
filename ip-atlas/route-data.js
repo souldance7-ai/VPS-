@@ -110,7 +110,15 @@ for(const [sku,cpu,ram,disk,traffic,port,price] of [
   routeMerchantNetworks.get(p.id).push({direction:anyDirection,carrier:'',paths:routePaths(['cn2','9929','cmin2']),source,evidence:'sourceOfficial',date:reviewedOn,scope:'Turin'});
  }
  shop(match(/^field-fxtransit-lax-nano$/),{[anyDirection]:[['cn2','4809'],cuii,cmi]});
- shop(match(/^tg-vpsts-green-sg-(mini|one)$/),{[anyDirection]:[gia,[],cmi]},'https://greencloudvps.com/billing/store/cn-premium-optimized');
+ const greenPremium = PLANS.filter(p=>p.provider==='GreenCloud' && (p.officialGroup==='cn-premium-optimized'||/^tg-vpsts-green-sg-(mini|one)$/.test(p.id)));
+ for(const plan of greenPremium){
+  const mobile = plan.market==='JP' ? 'net-cmin2' : 'net-cmi';
+  attachRoute([plan.id],'https://greencloudvps.com/billing/store/cn-premium-optimized','sourceOfficial',
+    {[anyDirection]:[['net-cn2','net-gia'],['via:CU Premium'],[mobile]]},reviewedOn,plan.spec?.sku);
+ }
+ const greenTokyoMini=greenPremium.filter(p=>p.market==='JP' && p.officialProductId===2213);
+ addRoutes(greenTokyoMini,{[outbound]:[cn2,cuii,cmi],[returning]:[cn2,cuii,cn2]},
+   {source:'https://meowvps.com/blog/greencloudjp/',measured:true,date:'2026-05-07',scope:'CN Premium Optimized Plan Mini · IPv4'});
  for(const p of PLANS.filter(p=>p.provider==='DMIT')){
   const sku=String(p.spec?.sku||p.plan?.en||p.plan);
   if(/\.Pro\./i.test(sku)||/^dmit-(hkg|lax)$/.test(p.id)){

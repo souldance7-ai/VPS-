@@ -53,23 +53,91 @@ for(const p of PLANS){
  const group=merchantIndex.find(g=>g.keys.some(k=>merchantFold(k)===merchantFold(p.provider)));
  if(group)merchantAliases.set(p.provider,group.names);
 }
-const merchantMenuWords={sc:['常用商家','展开商家','收起'],tc:['常用商家','展開商家','收起'],en:['Popular merchants','More merchants','Show fewer'],ja:['注目の事業者','事業者をもっと見る','折りたたむ']};
+const merchantDomains=new Map();
+for(const p of PLANS){
+ const domains=merchantDomains.get(p.provider)||new Set();
+ for(const raw of [p.url,p.spec?.proof]){try{const url=new URL(raw);if(url.protocol!=='https:')continue;const host=url.hostname.toLowerCase();if(/(?:^|\.)(?:nodeseek\.com|t\.me|lowendtalk\.com|meowvps\.com|richvps\.com|digvps\.com|github\.com|youtu\.be|google\.com|sb\.sb)$/.test(host))continue;domains.add(host);domains.add(host.replace(/^(?:www|my|billing|clients|portal|shop|account)\./,''));}catch{}}
+ merchantDomains.set(p.provider,domains);
+}
+for(const [name,domains] of merchantDomains)merchantAliases.set(name,[...new Set([...(merchantAliases.get(name)||[]),...domains])]);
+const merchantMenuCopy={
+ sc:{label:'全站商家',choose:'查找商家',search:'输入商家名或别名，例如绿云',all:'查看商家全部方案',category:'官方商品与信息来源',market:'只看这个地区',empty:'没有找到这个商家。',scope:'当前结果还受线路与其他条件限制。',global:'所有地点',read:'本次读到的公开资料',unread:'本次未能读取商家商品页',matched:'相关优惠原帖',queried:'本次已检索公开优惠',source:'来源',website:'商家网站'},
+ tc:{label:'全站商家',choose:'查找商家',search:'輸入商家名或別名，例如綠雲',all:'查看商家全部方案',category:'官方商品與資訊來源',market:'只看這個地區',empty:'沒有找到這個商家。',scope:'目前結果還受線路與其他條件限制。',global:'所有地點',read:'本次讀到的公開資料',unread:'本次未能讀取商家商品頁',matched:'相關優惠原帖',queried:'本次已檢索公開優惠',source:'來源',website:'商家網站'},
+ en:{label:'All merchants',choose:'Find a merchant',search:'Merchant or alias, e.g. GreenCloud',all:'All plans from this merchant',category:'Store and public sources',market:'See this region only',empty:'No merchant matches that name.',scope:'Route and other filters also narrow these results.',global:'All locations',read:'Public sources read',unread:'Merchant product pages were unavailable on this check',matched:'Promotion posts',queried:'Public promotion search completed',source:'Source',website:'Merchant site'},
+ ja:{label:'全事業者',choose:'事業者を検索',search:'会社名・別名で検索（例 GreenCloud）',all:'この事業者の全プラン',category:'商品ページ・公開情報源',market:'この地域だけで検索',empty:'一致する事業者がありません。',scope:'経路などの条件でも結果を絞り込んでいます。',global:'全地域',read:'確認できた公開資料',unread:'今回の確認では商品ページを取得できませんでした',matched:'割引の原文',queried:'公開割引を検索済み',source:'出典',website:'公式サイト'}
+};
+const allMerchantNames=[...new Set(PLANS.map(p=>p.provider))].sort((a,b)=>a.localeCompare(b,'en'));
+const merchantPlanCounts=new Map();for(const p of PLANS)merchantPlanCounts.set(p.provider,(merchantPlanCounts.get(p.provider)||0)+1);
+function merchantLink(name,label,marketCode=''){
+ const a=el('a',label),q=new URLSearchParams();
+ if(name)q.set('q-vendor',name);if(marketCode)q.set('q-market',marketCode);
+ a.href='?'+q+'#directory';a.dataset.directoryQuery='';return a;
+}
+const merchantCoverageLabels={
+ products:['已讀商品頁','已读商品页','Product pages read','商品ページを確認'],
+ categories:['已讀商店分類','已读商店分类','Store categories read','商品カテゴリを確認'],
+ landing:['已讀商家首頁','已读商家首页','Merchant site read','公式トップページを確認'],
+ community:['可讀資料來自公開原帖','可读资料来自公开原帖','Available evidence came from public community posts','公開記事で情報を確認'],
+ unavailable:['商家商品頁暫時無法讀取','商家商品页暂时无法读取','Merchant product pages were unavailable','商品ページを取得できませんでした'],
+ coverage:['下載全站商家查詢紀錄','下载全站商家查询记录','Download merchant coverage','全事業者の確認記録をダウンロード'],
+ indexed:['公開索引','公开索引','Search index','公開インデックス']
+};
+function merchantCoverageWord(key){return merchantCoverageLabels[key]?.[{tc:0,sc:1,en:2,ja:3}[lang]]||''}
+function directoryMerchantPanel(name){
+ const audit=typeof MERCHANT_AUDIT==='undefined'?null:MERCHANT_AUDIT.merchants?.[name];
+ const deals=typeof MERCHANT_PROMOTION_SEARCH==='undefined'?null:MERCHANT_PROMOTION_SEARCH[name];
+ if(!audit&&!deals)return null;
+ const t=merchantMenuCopy[lang],details=el('details',null,'merchant-source-panel'),summary=el('summary',name+' · '+t.category);details.append(summary);
+ details.addEventListener('toggle',()=>{
+  if(!details.open||details.children.length>1)return;
+  const body=el('div',null,'merchant-evidence'),used=new Set();
+  const add=(url,title,box=body)=>{let parsed;try{parsed=new URL(url)}catch{return}if(!['https:','http:'].includes(parsed.protocol)||used.has(parsed.href))return;used.add(parsed.href);box.append(link((title||parsed.hostname)+' ↗',parsed.href))};
+  if(audit){
+   const at=audit.checkedAt||MERCHANT_AUDIT.checkedAt;
+   body.append(el('small',(merchantCoverageWord(audit.status)||t.read)+(at?' · '+String(at).slice(0,10):'')));
+   const pages=Array.isArray(audit.sources)?audit.sources:[];
+   const more=el('details',null,'merchant-more'),moreLinks=el('div',null,'merchant-extra');for(const entry of pages){if(!entry.listed&&(entry.status==='unavailable'||(typeof entry.status==='number'&&(entry.status<200||entry.status>=400))))continue;add(entry.url,(entry.title||new URL(entry.url).hostname)+(entry.listed?' · '+({sc:'官网目录所列',tc:'官網目錄所列',en:'Listed in store',ja:'公式カタログ掲載'})[lang]:entry.indexed?' · '+merchantCoverageWord('indexed'):''),used.size>=8?moreLinks:body)}if(moreLinks.childElementCount){more.append(el('summary',({sc:'更多商品与分类页',tc:'更多商品與分類頁',en:'More products and categories',ja:'さらに商品とカテゴリを表示'})[lang]+' ('+moreLinks.childElementCount+')'),moreLinks);body.append(more)}
+   for(const channel of audit.channels||[]){if(channel.url)add(channel.url,channel.name)}
+  }
+  if(!used.size){const p=PLANS.find(p=>p.provider===name);if(p)add(p.url,t.website)}
+  if(deals?.searched){body.append(el('small',t.queried+' · '+String(deals.checkedAt).slice(0,10)));for(const entry of deals.leads||[])add(entry.url,entry.title)}
+  details.append(body);
+ });
+ return details;
+}
 function fillMerchantMenu(){
  const nav=$('provider-shortcuts');if(!nav)return;
- const vendor=$('vendor').value;
- if(nav.dataset.lang===lang&&nav.dataset.vendor===vendor)return;
- nav.dataset.lang=lang;nav.dataset.vendor=vendor;
- const labels=merchantMenuWords[lang],providers=[...new Set(PLANS.map(p=>p.provider))];
- const open=nav.querySelector('details')?.open||false;
- nav.replaceChildren(el('strong',labels[0]));nav.setAttribute('aria-label',labels[0]);
- const extra=el('details',null,'merchant-additional'),sum=el('summary',labels[1]),panel=el('div',null,'merchant-menu');extra.append(sum,panel);extra.open=open;
- extra.addEventListener('toggle',()=>{sum.textContent=extra.open?labels[2]:labels[1]});
- for(const group of merchantIndex){
-  const name=providers.find(p=>group.keys.some(k=>merchantFold(k)===merchantFold(p)));if(!name)continue;
-  const short=group.short?.[{sc:0,tc:1}[lang]],a=el('a',short?short+' · '+name:name);
-  a.href='?'+new URLSearchParams({'q-vendor':name})+'#directory';a.dataset.directoryQuery='';
-  if(vendor===name)a.setAttribute('aria-current','true');
-  if(nav.querySelectorAll(':scope > a').length<6)nav.append(a);else panel.append(a);
+ const vendor=$('vendor').value,area=$('market').value,query=$('search').value.trim(),active=quickDirectoryUrl().search;
+ const state=JSON.stringify([lang,vendor,area,query,active]);if(nav.dataset.rendered===state)return;
+ nav.dataset.rendered=state;
+ const t=merchantMenuCopy[lang],open=nav.querySelector('details.merchant-picker')?.open||false;
+ const previous=nav.querySelector('input.merchant-find')?.value||'';
+ nav.replaceChildren(el('strong',t.label+' · '+allMerchantNames.length));nav.setAttribute('aria-label',t.label);
+ for(const group of merchantIndex.slice(0,6)){
+  const name=allMerchantNames.find(n=>group.keys.some(k=>merchantFold(n)===merchantFold(k)));if(!name)continue;
+  const alias=group.short?.[{sc:0,tc:1}[lang]],a=merchantLink(name,alias?alias+' · '+name:name);
+  if(name===vendor)a.setAttribute('aria-current','true');nav.append(a);
  }
- if(panel.children.length){nav.append(extra);if(panel.querySelector('[aria-current]'))extra.open=true}
+ const picker=el('details',null,'merchant-picker'),summary=el('summary',t.choose+' ▾');
+ const input=document.createElement('input');input.className='merchant-find';input.type='search';input.autocomplete='off';input.placeholder=t.search;input.setAttribute('aria-label',t.choose);input.value=previous;
+ const menu=el('div',null,'merchant-menu'),field=el('div',null,'merchant-picker-content');field.append(input,menu);picker.append(summary,field);nav.append(picker);
+ function draw(){
+  const needle=merchantFold(input.value.trim());
+  const found=needle?allMerchantNames.filter(name=>[name,...(merchantAliases.get(name)||[])].some(n=>merchantFold(n).includes(needle))):allMerchantNames;
+  const items=found.map(name=>{const a=merchantLink(name,name+' · '+merchantPlanCounts.get(name));if(name===vendor)a.setAttribute('aria-current','true');return a});
+  menu.replaceChildren(...(items.length?items:[el('small',t.empty)]));menu.scrollTop=0;
+ }
+ picker.open=open;if(open)draw();
+ picker.addEventListener('toggle',()=>{if(picker.open){draw();if(!open)input.focus({preventScroll:true})}});
+ input.addEventListener('input',draw);
+ const exact=vendor||allMerchantNames.find(name=>query&&[name,...(merchantAliases.get(name)||[])].some(x=>merchantFold(x)===merchantFold(query)));
+ const filtered=quickActive.size||['kind','ip','route','carrier','buy-filter','term'].some(id=>$(id)?.value)||$('promo').checked;
+ const info=el('div',null,'merchant-scope');
+ if(filtered&&(area||exact)){
+  info.append(el('small',t.scope));
+  if(area)info.append(merchantLink(exact||'',market(area)+' · '+t.market,area));
+ }
+ if(exact){info.append(merchantLink(exact,t.all+' ('+merchantPlanCounts.get(exact)+')'));const sources=directoryMerchantPanel(exact);if(sources)info.append(sources);}
+ if(info.childNodes.length)nav.append(info);
+ if(typeof MERCHANT_AUDIT!=='undefined'){const a=el('a',merchantCoverageWord('coverage')+' ↓','merchant-export');a.href='merchant-coverage.csv';a.download='pitopone-merchant-coverage.csv';nav.append(a);}
 }

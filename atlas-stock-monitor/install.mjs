@@ -27,7 +27,7 @@ async function confirmPublicMonitor(){
    const r=await fetch(healthUrl,{cache:'no-store',signal:AbortSignal.timeout(4500)});
    if(r.ok){
     const report=await r.json();
-    if(report.installed&&report.schemaVersion===11&&report.targetCount===expected){
+    if(report.installed&&report.schemaVersion===12&&report.targetCount===expected){
      console.log('公网已确认新版采集器。共 '+report.targetCount+' 个目标，'+report.stockTargetCount+' 个库存目标，'+report.quoteTargetCount+' 个报价目标，轮巡约 '+report.periodMinutes+' 分钟。');
      console.log('当前时间窗有效库存 '+report.stockReadingsFresh+' / '+report.stockTargetCount+'，有效报价 '+report.quoteFresh+' / '+report.quoteTargetCount+'。新目标会在下一轮采集逐步出现。');
      return;
@@ -44,15 +44,15 @@ async function main(){
   try{
    const response=await fetch(new URL('/api/stock/nnb-2',cfg.vars.PAGES_ORIGIN),{signal:AbortSignal.timeout(10000)});
    const data=await response.json();
-   found=response.ok&&data.key==='nnb-2'&&data.zone==='JP'&&data.sku==='TY #2 Performance'&&data.schemaVersion===11;
+   found=response.ok&&data.key==='nnb-2'&&data.zone==='JP'&&data.sku==='TY #2 Performance'&&data.schemaVersion===12;
   }catch{}
   if(!found&&attempt<7)await new Promise(resolve=>setTimeout(resolve,5000));
  }
- if(!found)throw Error('V11 网页尚未在 Pages 生产域名生效。确认网页部署成功后，在完整包目录运行 deploy.cmd monitor。');
- console.log('将升级 '+cfg.name+'，连接原 V10 历史数据库 '+name+'，更新 '+cfg.routes[0].pattern);
+ if(!found)throw Error('V12 网页尚未在 Pages 生产域名生效。确认网页部署成功后，在完整包目录运行 deploy.cmd monitor。');
+ console.log('将升级 '+cfg.name+'，连接现有历史数据库 '+name+'，更新 '+cfg.routes[0].pattern);
  cli(['whoami']);
  const id=findDb();
- if(!id)throw Error('当前 Cloudflare 账户没有 V10 使用的 pitopone-stock-history 数据库。请使用已部署 V10 监控器的账户，再运行 deploy.cmd monitor。首次安装需要单独准备数据库及 V10 数据表。');
+ if(!id)throw Error('当前 Cloudflare 账户没有 历史监控使用的 pitopone-stock-history 数据库。请使用已部署库存历史监控器的账户，再运行 deploy.cmd monitor。首次安装需要单独准备数据库及 V10 数据表。');
  if(!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(id||''))throw Error('无法读取数据库标识，请确认账户。');
  cfg.d1_databases[0].database_id=id;
  fs.writeFileSync('wrangler.json',JSON.stringify(cfg,null,2));
