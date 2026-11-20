@@ -10,3 +10,11 @@
 .price-order{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;font-weight:700}.price-order select{padding:5px 8px;max-width:100%;background:#fffbeb;color:inherit;border:1px solid #655d50;border-radius:4px}.resultbar{flex-wrap:wrap}
 
 .stock-offer-specs{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:.3em .85em;margin:.6em 0;overflow-wrap:anywhere}.stock-offer-specs dd{margin:0}
+
+.cpu-summary{flex:1 0 100%;display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 7px}
+.cpu-summary[hidden]{display:none}
+.cpu-caption{font-size:11px;opacity:.82;margin-inline-end:3px}
+.matrix .cpu-caption{display:block}
+.cpu-evidence{display:block;font-size:11px;font-weight:500;margin-top:4px;overflow-wrap:anywhere}
+.cpu-evidence a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.stock-offer-specs{grid-template-columns:minmax(0,max-content) minmax(0,1fr)}

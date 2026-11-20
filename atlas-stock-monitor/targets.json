@@ -9756,5 +9756,35 @@
     "key": "edis-usa-miami-kvm-diamond",
     "sku": "kvm-diamond",
     "zone": "US"
+  },
+  {
+    "key": "let11-servitro-virtual-servers-usd1-server",
+    "sku": "$1 Server",
+    "zone": "DE"
+  },
+  {
+    "key": "let11-servitro-virtual-servers-virtual-1",
+    "sku": "Virtual-1",
+    "zone": "DE"
+  },
+  {
+    "key": "let11-servitro-virtual-servers-ryzen-9-9950x-frankfurt-virtual-1",
+    "sku": "Virtual-1",
+    "zone": "DE"
+  },
+  {
+    "key": "servitro-ryzen-v2",
+    "sku": "Virtual-2",
+    "zone": "DE"
+  },
+  {
+    "key": "servitro-epyc-v3",
+    "sku": "Virtual-3",
+    "zone": "DE"
+  },
+  {
+    "key": "servitro-epyc-v4",
+    "sku": "Virtual-4",
+    "zone": "DE"
   }
 ]

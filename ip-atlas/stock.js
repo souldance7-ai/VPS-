@@ -484,6 +484,12 @@ const quoteOnlyTargets={
  }
 };
 const catalogStockTargets = {
+ "let11-servitro-virtual-servers-usd1-server":{"family":"servitro","sku":"$1 Server","zone":"DE","url":"https://my.servitro.com/store/virtual-servers","slug":"usd1-server"},
+ "let11-servitro-virtual-servers-virtual-1":{"family":"servitro","sku":"Virtual-1","zone":"DE","url":"https://my.servitro.com/store/virtual-servers","slug":"virtual-1"},
+ "let11-servitro-virtual-servers-ryzen-9-9950x-frankfurt-virtual-1":{"family":"servitro","sku":"Virtual-1","zone":"DE","url":"https://my.servitro.com/store/virtual-servers-ryzen-9-9950x-frankfurt","slug":"virtual-1","previousGroup":"virtual-servers-ryzen-9-7950x3d"},
+ "servitro-ryzen-v2":{"family":"servitro","sku":"Virtual-2","zone":"DE","url":"https://my.servitro.com/store/virtual-servers-ryzen-9-9950x-frankfurt","slug":"virtual-2","previousGroup":"virtual-servers-ryzen-9-7950x3d"},
+ "servitro-epyc-v3":{"family":"servitro","sku":"Virtual-3","zone":"DE","url":"https://my.servitro.com/store/virtual-servers","slug":"virtual-3"},
+ "servitro-epyc-v4":{"family":"servitro","sku":"Virtual-4","zone":"DE","url":"https://my.servitro.com/store/virtual-servers","slug":"virtual-4"},
  "ms-bage-jp-small": {
   "family": "bagevm",
   "sku": "Japan - SMALL",
@@ -3223,7 +3229,7 @@ const offerStrings={
  refresh:['重新读取商家','重新讀取商家','Refresh provider data','事業者データを更新']
 };
 function offerText(k){return offerStrings[k][{sc:0,tc:1,en:2,ja:3}[lang]]}
-function quoteCapable(t){return t&&['nnb','vmsilo','mkcloud','backwaves','wasabi','vultr','tamago','bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer'].includes(t.family)}
+function quoteCapable(t){return t&&['nnb','vmsilo','mkcloud','backwaves','wasabi','vultr','tamago','bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer','servitro'].includes(t.family)}
 function observationKey(p){return greenPlanKey(p)||getStockKey(p)||(Object.hasOwn(catalogStockTargets,p.id)&&catalogStockTargets[p.id].quoteOnly?p.id:'')||(p.provider.toLowerCase()==='vmsilo'&&Object.hasOwn(quoteOnlyTargets,p.id)?p.id:'')}
 function goodQuote(q){
  return q&&typeof q.amount==='string'&&/^\d{1,8}(?:\.\d{1,4})?$/.test(q.amount)&&['CNY','HKD','EUR','USD'].includes(q.currency)&&['month','quarter','halfyear','year'].includes(q.period)&&
@@ -3238,6 +3244,10 @@ function stockQuoteForTerm(q,term){
  return goodQuote(selected)?selected:null;
 }
 function offerPrice(q){return offerText(q.period==='month'?q.basis:q.period)+' · '+q.currency+' '+q.amount}
+function stockCpuMatchesTier(plan,target){
+ const sku=billingTierForDisplay(plan)?.sku;
+ return typeof sku==='string'&&sku.trim().toLowerCase()===String(target.sku).trim().toLowerCase();
+}
 function renderOffer(container,q,t,archived=false){
  container.replaceChildren();
  if(!goodQuote(q)){container.append(el('small',offerText('unavailable')));return}
@@ -3246,7 +3256,14 @@ function renderOffer(container,q,t,archived=false){
  if(q.basis==='base')container.append(el('p',offerText('config')));
  const list=el('dl',null,'stock-offer-specs');
  if(Number.isSafeInteger(q.stockQuantity)&&q.stockQuantity>=0)list.append(el('dt',offerText('stockQuantity')),el('dd',String(q.stockQuantity)));
- for(const key of ['cpu','ram','disk','port','traffic','ip','route']){
+ if(cpuText(q.cpu))list.append(el('dt',tr(cpuCoreLabel(q.cpu))),el('dd',q.cpu));
+ const processor=readCpuModel(q,{source:t.priceUrl||t.url,date:q.checkedAt,live:!archived});
+ if(processor){
+  const value=el('dd',processor.value);
+  appendCpuEvidence(value,processor);
+  list.append(el('dt',tr(processor.kind)),value);
+ }
+ for(const key of ['ram','disk','port','traffic','ip','route']){
   if(typeof q[key]!=='string'||!q[key])continue;
   let value=q[key];
   if(key==='route'&&q.access&&q.access!==value)value=q.access+' · '+value;

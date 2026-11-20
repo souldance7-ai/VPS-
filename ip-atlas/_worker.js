@@ -900,6 +900,12 @@ const quoteOnlyTargets={
  }
 };
 const catalogStockTargets = {
+ "let11-servitro-virtual-servers-usd1-server":{"family":"servitro","sku":"$1 Server","zone":"DE","url":"https://my.servitro.com/store/virtual-servers","slug":"usd1-server"},
+ "let11-servitro-virtual-servers-virtual-1":{"family":"servitro","sku":"Virtual-1","zone":"DE","url":"https://my.servitro.com/store/virtual-servers","slug":"virtual-1"},
+ "let11-servitro-virtual-servers-ryzen-9-9950x-frankfurt-virtual-1":{"family":"servitro","sku":"Virtual-1","zone":"DE","url":"https://my.servitro.com/store/virtual-servers-ryzen-9-9950x-frankfurt","slug":"virtual-1","previousGroup":"virtual-servers-ryzen-9-7950x3d"},
+ "servitro-ryzen-v2":{"family":"servitro","sku":"Virtual-2","zone":"DE","url":"https://my.servitro.com/store/virtual-servers-ryzen-9-9950x-frankfurt","slug":"virtual-2","previousGroup":"virtual-servers-ryzen-9-7950x3d"},
+ "servitro-epyc-v3":{"family":"servitro","sku":"Virtual-3","zone":"DE","url":"https://my.servitro.com/store/virtual-servers","slug":"virtual-3"},
+ "servitro-epyc-v4":{"family":"servitro","sku":"Virtual-4","zone":"DE","url":"https://my.servitro.com/store/virtual-servers","slug":"virtual-4"},
  "ms-bage-jp-small": {
   "family": "bagevm",
   "sku": "Japan - SMALL",
@@ -3753,6 +3759,75 @@ function amountFor(value){
 function shortText(text){
  return typeof text==='string'?text.replace(/<[^>]{0,500}>/g,' ').replace(/\s+/g,' ').trim().slice(0,240):'';
 }
+function publicCpu(rawCount, ...modelInputs) {
+ const clean=value=>shortText(value).replace(/&(?:trade|reg|#174|#8482);|[®™]/gi,'').replace(/&nbsp;|&#160;/gi,' ').replace(/[–−]/g,'-').replace(/\s+/g,' ').trim();
+ const countText=clean(rawCount);
+ const countFirst=countText.match(/^(\d+(?:\.\d+)?(?:\s*[–-]\s*\d+)?)\s*(vCPUs?|vCores?|(?:dedicated\s+)?(?:physical\s+)?cores?|核|C\b|x(?=\s*(?:AMD|Intel|ARM|Ampere)))/i);
+ const countLast=countText.match(/^(\d+)\s+(dedicated\s+physical\s+)?(?:AMD\s+)?EPYC\s+(?:Rome|Milan|Genoa|Turin)(?:\/(?:Rome|Milan|Genoa|Turin))?\s+cores?\b/i);
+ const number=countFirst?.[1]||countLast?.[1];
+ let cpu=countText;
+ if(number){
+  const unit=countFirst?.[2]||countLast?.[2]||'cores';
+  cpu=number.replace(/\s*-\s*/g,'–')+(/^vCPUs?$|^vCores?$|^x$/i.test(unit)?' vCPU':/dedicated/i.test(unit)?' dedicated cores':/physical/i.test(unit)?' physical cores':/^cores?$/i.test(unit)?' '+(number==='1'?'core':'cores'):' '+unit);
+  const threads=countText.match(/^\d+\s*C\s*\/\s*(\d+)\s*T\b/i)?.[1];
+  if(threads)cpu=number+' cores / '+threads+' threads';
+ }
+ const text=[countText,...modelInputs.map(clean)].filter(Boolean).join(' · ');
+ const patterns=[
+  [/\b(?:AMD\s*)?EPYC\s*([47-9][0-9A-Z]{3}[A-Z]?)\b/gi,'AMD EPYC'],
+  [/\b(?:AMD\s*)?Ryzen\s+([3579]\s+)?(?:PRO\s+)?(\d{4}(?:X3D|XT|HX|HS|GE|[XGFUE])?)\b/gi,'AMD Ryzen'],
+  [/\b(?:Intel(?:\(R\))?\s*)?(?:Xeon(?:\(R\))?\s*)?((?:E[357]-|D-)[0-9]{4}[A-Z]{0,2}(?:\s*v[2-6])?)\b/gi,'Intel Xeon'],
+  [/\b(?:Intel\s*)?Xeon-D\s+(\d{4}[A-Z]{0,2})\b/gi,'Intel Xeon-D'],
+  [/\b(?:Intel\s*)?Xeon\s+([ELX][356]\d{3})\b/gi,'Intel Xeon'],
+  [/\b(?:Intel\s*)?(?:Xeon\s*)?(Bronze|Silver|Gold|Platinum)\s*(\d{4}[A-Z]{0,2})\b/gi,'Intel Xeon'],
+  [/\b(?:Intel\s*)?Xeon\s+(W-\d{4}[A-Z]{0,2}|[356]\d{3}[A-Z]{0,2})\b/gi,'Intel Xeon'],
+  [/\b(?:Intel\s*)?(?:Core\s*)?(i[3579]-\d{4,5}[A-Z]{0,2})\b/gi,'Intel Core'],
+  [/\b(?:Intel\s*)?Core\s+(Ultra\s+[3579])\s+(\d{3}[A-Z]{0,2})\b/gi,'Intel Core'],
+  [/\b(Ampere\s+Altra(?:\s+Max)?\s+(?:Q|M)\d{2,3}-\d{2})\b/gi,'']
+ ];
+ const exact=new Set();
+ for(const [pattern,brand] of patterns){
+  for(const match of text.matchAll(pattern)){
+   const tail=text.slice(match.index+match[0].length);
+   if(/^\s*(?:Series\b|系列|MHz\b|GHz\b)/i.test(tail)||brand==='AMD EPYC'&&/^(?:400[45]|700[123]|8004|900[45])$/i.test(match[1])||brand==='AMD Ryzen'&&!match[1]&&/^[3-9]000$/.test(match[2]))continue;
+   const parts=match.slice(1).filter(Boolean).map(value=>value.trim().replace(/\s*v([2-6])$/i,' v$1'));
+   if(brand==='AMD EPYC'||brand==='AMD Ryzen')parts[parts.length-1]=parts.at(-1).toUpperCase();
+   if(brand==='Intel Xeon'){
+    parts[0]=parts[0].replace(/^(bronze|silver|gold|platinum)/i,first=>first[0].toUpperCase()+first.slice(1).toLowerCase());
+    const last=parts.length-1;
+    parts[last]=parts[last].replace(/\d[a-z]{1,2}$/i,end=>end.toUpperCase());
+   }
+   const model=[brand,...parts].filter(Boolean).join(' ');
+   exact.add(model);
+   // These alternatives are only accepted when immediately following a fully identified processor.
+   const alternatives=tail.match(/^\s*(?:\/|\bor\b|或)\s*([0-9][0-9A-Z]{3,5})\b/i)?.[1];
+   if(alternatives&&(brand==='AMD EPYC'&&/^[47-9][0-9A-Z]{3}[A-Z]?$/i.test(alternatives)&&!/^(?:400[45]|700[123]|8004|900[45])$/i.test(alternatives)||brand==='AMD Ryzen'&&/^\d{4}(?:X3D|XT|HX|HS|GE|[XGFUE])?$/i.test(alternatives))){
+    exact.add([brand,...parts.slice(0,-1),alternatives.toUpperCase()].join(' '));
+   }
+  }
+ }
+ const candidates=[...exact].slice(0,8);
+ const qualified=/(?:or\s+(?:better|newer|equivalent)|up\s+to|such\s+as|\be\.g\.\s|and\s+above|例如|或同级|或同級|以上|或更高|随机|隨機|可能|混用)/i.test(text);
+ if(candidates.length)return {cpu:number?cpu:'',...(candidates.length>1||qualified?{cpuModels:candidates}:{cpuModel:candidates[0]}),cpuModelScope:'official'};
+ const resolution=[
+  [/(?:\bAMD\s*)?\bEPYC(?:\s+(?:(?:Rome|Milan|Genoa|Turin)(?:\s*\/\s*(?:Rome|Milan|Genoa|Turin))*|400[45]|700[123]|8004|900[45]))?\b/gi,value=>'AMD '+value.replace(/^AMD\s*/i,'').replace(/epyc/i,'EPYC').replace(/rome|milan|genoa|turin/gi,part=>part[0].toUpperCase()+part.slice(1).toLowerCase())],
+  [/(?:\bAMD\s*)?\bRyzen(?:\s+[3579])?(?:\s+AM[45](?:\/AM[45])?)?\b/gi,value=>'AMD '+value.replace(/^AMD\s*/i,'').replace(/ryzen/i,'Ryzen')],
+  [/(?:\bIntel\s*)?(?:\bXeon\s*)?(?:E5\s*v[2-4](?:\/v[2-4])?|(?:Platinum|Gold|Silver|Bronze)\s+Gen\s*\d+)\b/gi,value=>'Intel Xeon '+value.replace(/^(?:Intel\s*)?(?:Xeon\s*)?/i,'')],
+  [/(?:\bIntel\s*)?\bXeon(?:\s+(?:Platinum|Gold|Silver|Bronze))?\b/gi,value=>'Intel '+value.replace(/^Intel\s*/i,'').replace(/xeon/i,'Xeon')],
+  [/\bAmpere\s+Altra(?:\s+Max)?\b/gi,value=>value],
+  [/\bApple\s+M[1-5](?:\s+(?:Pro|Max|Ultra))?\b/gi,value=>value]
+ ];
+ const families=[];
+ for(const [pattern,label] of resolution){
+  for(const match of text.matchAll(pattern)){
+   const value=label(match[0]);
+   if(!families.some(existing=>existing.toLowerCase().includes(value.toLowerCase())))families.push(value);
+  }
+ }
+ if(families.length)return {cpu:number?cpu:'',cpuFamily:families.slice(0,4).join(' / '),cpuModelScope:'official'};
+ return {cpu};
+}
+
 function rangeText(range,unit){
  if(!Number.isFinite(range?.min)||!Number.isFinite(range?.max)||range.min<0||range.max<range.min)return '';
  return (range.min===range.max?range.min:range.min+'–'+range.max)+' '+unit;
@@ -3764,7 +3839,7 @@ function newNbOffer(node){
  const network=net.map(n=>[shortText(n.label),shortText(n.hint)].filter(Boolean).join(' · ')).filter(Boolean);
  const allowance=net.map(n=>({min:n.traffic?.min_gb,max:n.traffic?.max_gb})).map(r=>rangeText(r,'GB')).filter(Boolean);
  return {amount,currency:'CNY',period:'month',basis:'base',
-  cpu:rangeText(node.limits?.cpu,'vCPU'),ram:rangeText(node.limits?.memory_gb,'GB'),disk:rangeText(node.limits?.disk_gb,'GB'),
+  ...publicCpu(rangeText(node.limits?.cpu,'vCPU'),node.cpu_model,node.processor_model),ram:rangeText(node.limits?.memory_gb,'GB'),disk:rangeText(node.limits?.disk_gb,'GB'),
   port:rangeText(node.limits?.bandwidth_mbps,'Mbps'),traffic:[...new Set(allowance)].join(' / '),
   direction:node.traffic_direction==='both'?'both':'',route:network.join(' / '),ip:'',access:''};
 }
@@ -3775,11 +3850,12 @@ function mkOffer(product){
  const {amount,period}=rates[0];
  const description=String(product.description||'').replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]{0,500}>/g,' ');
  const first=(re)=>shortText(description.match(re)?.[1]);
+ const cpuLine=first(/(?:^|\n|\|)\s*(CPU[^\r\n|]*)/i);
  const cpu=first(/CPU[ \t]*([\d.]+)[ \t]*核/i),ram=first(/内存[ \t]*([\d.]+[ \t]*GB)/i),disk=first(/硬盘[ \t]*([\d.]+[ \t]*[TG]B)/i);
  const speed=description.match(/带宽[ \t]*([\d.]+)[ \t]*([GM])(?:bps)?[ \t]*(峰值|独享)?/i);
  const port=speed?Number(speed[1])*(speed[2].toUpperCase()==='G'?1000:1)+' Mbps':'';
  const ingress=first(/入口[ \t]+([^\r\n|]+)/),egress=first(/出口[ \t]+([^\r\n|]+)/);
- return {amount,currency:'CNY',period,basis:'listed',billingRates:rates.map(rate=>({...rate,currency:'CNY'})),cpu:cpu?cpu+(description.includes('独立服务器')?' cores':' vCPU'):'',ram,disk,port,
+ return {amount,currency:'CNY',period,basis:'listed',billingRates:rates.map(rate=>({...rate,currency:'CNY'})),...publicCpu(cpu?cpu+(description.includes('独立服务器')?' cores':' vCPU'):'',cpuLine,product.cpu_model,product.processor_model),ram,disk,port,
   portType:speed?.[3]==='峰值'?'peak':speed?.[3]==='独享'?'dedicated':'',
   traffic:first(/流量\/月[ \t]+([^\r\n|]+)/),route:[ingress,egress].filter(Boolean).join(' → '),
   ip:first(/(独享IPv4[^\r\n|]+)/i),access:shortText(product.name)};
@@ -3796,14 +3872,14 @@ function vmsiloOffer(target,html){
  const fields={};
  const desc=body.match(/<div\s+class=["']bv-plan-desc["'][^>]*>([\s\S]*?)<footer/i)?.[1]||'';
  for(const line of desc.split(/<br\s*\/?>/i)){
-  const parts=shortText(line).match(/^(CPU Cores|Amount Of RAM|Disk Space|IPV4|IPV6|Bandwidth|Network Rate)[：:]\s*(.+)$/i);
+  const parts=shortText(line).match(/^(CPU Cores|CPU Model|Processor Model|Processor|Amount Of RAM|Disk Space|IPV4|IPV6|Bandwidth|Network Rate)[：:]\s*(.+)$/i);
   if(parts)fields[parts[1].toLowerCase()]=parts[2];
  }
  const qty=(value,rawUnit,unit)=>new RegExp('^(\\d+)'+rawUnit+'$','i').test(value)?parseInt(value,10)+' '+unit:'';
  const rate=fields['network rate']?.match(/^(\d+)Mbps[（(](Shared)[）)]$/i);
  const transfer=fields.bandwidth?.match(/^(\d+)G[（(]in\+out[）)]$/i);
  return {amount,currency:'CNY',period:'month',basis:'base-config',
-  cpu:qty(fields['cpu cores'],'','vCPU'),ram:qty(fields['amount of ram'],'M','MB'),disk:qty(fields['disk space'],'G','GB'),
+  ...publicCpu(qty(fields['cpu cores'],'','vCPU')||fields['cpu cores'],fields['cpu model'],fields['processor model'],fields.processor),ram:qty(fields['amount of ram'],'M','MB'),disk:qty(fields['disk space'],'G','GB'),
   port:rate?rate[1]+' Mbps':'',portType:rate?'shared':'',traffic:transfer?transfer[1]+' GB':'',direction:transfer?'both':'',
   ip:fields.ipv4!=null&&fields.ipv6!=null?'IPv4 × '+fields.ipv4+' / IPv6 × '+fields.ipv6:'',
   route:target.sku,access:'IEPL'};
@@ -3836,7 +3912,7 @@ async function lagomObservation(t){
  const line=(pattern)=>lines.find(value=>pattern.test(value))||'';
  const without=(pattern)=>line(pattern).replace(pattern,'').trim();
  const offer={amount,currency:isBack?'HKD':'EUR',period:'month',basis:'starting',checkedAt:at,
-  cpu:isBack?without(/^vCPU\s+/i):line(/^\d+\s*vCore/i),ram:isBack?without(/^vRAM\s+/i):line(/DDR5 RAM$/i),
+  ...publicCpu(isBack?line(/^vCPU\s+/i).replace(/^vCPU\s+(\d+)/i,'$1 vCPU'):line(/^\d+\s*vCore/i),without(/^(?:CPU Model|Processor)\s*[:：]\s*/i)),ram:isBack?without(/^vRAM\s+/i):line(/DDR5 RAM$/i),
   disk:isBack?without(/^vDisk\s+/i):line(/SSD Storage$/i),port:isBack?without(/^Shared Port\s+/i):line(/Bandwidth \(FUP\)/i),portType:isBack?'shared':'',
   traffic:isBack?without(/^Traffic\s+/i):'',ip:isBack?[without(/^IPv4\s+/),without(/^IPv6\s+/)].filter(Boolean).join(' / '):'',route:isBack?t.sku:'',access:''};
  return {state,offer};
@@ -3865,7 +3941,7 @@ async function vultrObservation(t){
    const p=matched[0],override=p.location_cost?.[t.zone],amount=amountFor(override?override.monthly_cost:p.monthly_cost);
    const quantity=(v,u)=>Number.isFinite(v)&&v>0?v+' '+u:'';
    if(amount!==null&&p.invoice_type==='monthly')offer={amount,currency:'USD',period:'month',basis:'listed',checkedAt:rates.value.at,
-    cpu:quantity(p.vcpu_count,'vCPU'),ram:quantity(p.ram,'MB'),disk:quantity(p.disk,'GB')+(typeof p.disk_type==='string'?' '+shortText(p.disk_type):''),traffic:quantity(p.bandwidth,'GB'),
+    ...publicCpu(quantity(p.vcpu_count,'vCPU'),p.cpu_model,p.processor_model),ram:quantity(p.ram,'MB'),disk:quantity(p.disk,'GB')+(typeof p.disk_type==='string'?' '+shortText(p.disk_type):''),traffic:quantity(p.bandwidth,'GB'),
     port:'',ip:'',route:'',access:''};
   }
  }
@@ -3890,7 +3966,7 @@ async function tamagoObservation(t){
  const lines=description.split(/<br\s*\/?>/i).map(shortText);
  const get=re=>lines.find(s=>re.test(s))||'';
  return {state,offer:{amount,currency:'USD',period:'month',basis:'listed',checkedAt:new Date().toISOString(),
-  cpu:get(/^\d+x\s+AMD/i),ram:get(/^\d+\s+GB\s+DDR/i),disk:get(/^\d+\s+GB\s+NVMe/i),port:get(/^(?:共享|Shared)\s+\d+\s+Mbps/i).replace(/^(?:共享|Shared)\s+/i,''),
+  ...publicCpu(get(/^\d+\s*x\s*(?:AMD|Intel)/i),get(/^(?:CPU Model|Processor)\s*[:：]/i)),ram:get(/^\d+\s+GB\s+DDR/i),disk:get(/^\d+\s+GB\s+NVMe/i),port:get(/^(?:共享|Shared)\s+\d+\s+Mbps/i).replace(/^(?:共享|Shared)\s+/i,''),
   portType:'shared',traffic:get(/^\d+\s+GB\s+(?:流量|Traffic)/i).replace(/\s+(?:流量|Traffic)$/i,''),route:get(/^WTT\s/i),ip:get(/^\d+\s+.+IPv4$/i),access:''}};
 }
 
@@ -3909,7 +3985,7 @@ function indexJsonldOffers(html) {
       const properties = Object.fromEntries((product.additionalProperty || []).map(field=>[field.name,field.value]));
       for (const offer of (Array.isArray(product.offers) ? product.offers : [product.offers])) {
         if (offer?.['@type'] !== 'Offer' || !offer.url) continue;
-        let sku = '', period = '', cpu = '', ram = '', disk = '', port = '', traffic = '';
+        let sku = '', period = '', cpu = '', cpuModel = '', ram = '', disk = '', port = '', traffic = '';
         const spec = offer.priceSpecification;
         if (product.brand?.name === 'ComputeGuy' && /^https:\/\/my\.computeguy\.com\/order\//.test(offer.url)) {
           sku = offer.sku || '';
@@ -3920,7 +3996,7 @@ function indexJsonldOffers(html) {
           sku = String(product['@id'] || '').split('#plan-')[1] || '';
           if (spec?.referenceQuantity?.unitCode === 'MON' && Number(spec.referenceQuantity.value)===1 &&
               Number(spec.price)===Number(offer.price) && spec.priceCurrency===offer.priceCurrency) period = 'month';
-          cpu=properties.CPU||''; ram=properties.RAM||''; disk=properties.NVMe?properties.NVMe+' NVMe':(properties.SSD?properties.SSD+' SSD':'');
+          cpu=properties.CPU||''; cpuModel=properties['CPU Model']||properties['Processor Model']||properties.Processor||''; ram=properties.RAM||''; disk=properties.NVMe?properties.NVMe+' NVMe':(properties.SSD?properties.SSD+' SSD':'');
           traffic=properties.Traffic||''; port=properties.Uplink||'';
         }
         if (!sku) continue;
@@ -3929,7 +4005,7 @@ function indexJsonldOffers(html) {
         if (['https://schema.org/OutOfStock','https://schema.org/SoldOut'].includes(offer.availability)) state='sold-out';
         const amount=amountFor(offer.price);
         const currency=offer.priceCurrency;
-        const quote = amount!==null && period && ['EUR','USD'].includes(currency) ? {amount,currency,period,basis:'listed',cpu,ram,disk,traffic,port,ip:''} : null;
+        const quote = amount!==null && period && ['EUR','USD'].includes(currency) ? {amount,currency,period,basis:'listed',...publicCpu(cpu,cpuModel),ram,disk,traffic,port,ip:''} : null;
         const value={sku,state,quote,orderUrl:offer.url,productId:product['@id'],productName:product.name,offerName:offer.name};
         records.set(offer.url,records.has(offer.url)?null:value);
       }
@@ -3969,14 +4045,15 @@ function greenObservation(t,catalog,at){
  }
  if(!specs.cpu){
   const lines=(field('description','p')||'').split(/<br\s*\/?>/i).map(shortText);
-  specs.cpu=lines.find(x=>/^\d+\s+cores?$/i.test(x));
+  specs.cpu=lines.find(x=>/^\d+\b.{0,130}\bcores?\b/i.test(x));
+  specs.processor=lines.find(x=>/^(?:CPU Model|Processor)\s*[:：]/i.test(x));
   specs.ram=lines.find(x=>/^\d+\s*GB RAM$/i.test(x))?.replace(/ RAM$/i,'');
   specs['hard drive']=lines.find(x=>/^\d+\s*GB (?:SSD|NVMe)$/i.test(x));
   specs.bandwidth=lines.find(x=>/^Unmetered Bandwidth @ [\d.]+\s*[GM]bps port$/i.test(x));
  }
  const period={monthly:'month',quarterly:'quarter','semi-annually':'halfyear',annually:'year'}[value[3].toLowerCase()];
  return {state,offer:{amount,currency:'USD',period,basis:value[1]?'starting':'listed',checkedAt:at,
-  cpu:specs.cpu||'',ram:specs.ram||'',disk:specs['hard drive']||specs['hard drives']||specs.ssd||'',
+  ...publicCpu(specs.cpu,specs['cpu model'],specs['processor model'],specs.processor),ram:specs.ram||'',disk:specs['hard drive']||specs['hard drives']||specs.ssd||'',
   port:specs.port||specs.bandwidth?.match(/@\s*([\d.]+\s*[GM]bps)\s+port/i)?.[1]||'',traffic:specs.bandwidth||'',
   ip:[specs.ip,specs.ipv4&&specs.ipv4+' IPv4',specs.ipv6&&specs.ipv6+' IPv6'].filter(Boolean).join(' · '),
   ...(Number.isSafeInteger(count)?{stockQuantity:count}:{})}};
@@ -4013,7 +4090,7 @@ function bageObservation(t,data,at){
  if(amount===null||shortText(priceSection.match(/class="cycle"[^>]*>([\s\S]*?)<\/span>/)?.[1])!=='Monthly')return {state,offer:null};
  const desc=card.match(new RegExp('id="product'+escaped+'-description"[^>]*>([\\s\\S]*?)</div>','i'))?.[1]||'';
  const lines=desc.split(/<br\s*\/?>/i).map(shortText),transfer=lines.find(s=>/\bTransfer\s*@/i.test(s))?.match(/^(\d+(?:\.\d+)?\s*[GT]B)\s+Transfer\s*@\s*(\d+)\s*Mbps/i);
- return {state,offer:{amount,currency:'USD',period:'month',basis:'listed',checkedAt:at,cpu:lines.find(s=>/^\d+\s*vCPU$/i.test(s))||'',
+ return {state,offer:{amount,currency:'USD',period:'month',basis:'listed',checkedAt:at,...publicCpu(lines.find(s=>/^\d+\s*vCPU\b/i.test(s)),lines.find(s=>/^(?:CPU Model|Processor)\s*[:：]/i.test(s))),
   ram:lines.find(s=>/^\d+\s*GB RAM$/i.test(s))||'',disk:lines.find(s=>/^\d+\s*GB SSD$/i.test(s))||'',port:transfer?transfer[2]+' Mbps':'',
   traffic:transfer?.[1]||'',direction:/In\s*(?:&amp;|&)\s*Out/i.test(desc)?'both':'',ip:lines.find(s=>/IPv4.+IPv6/i.test(s))?.replace(/&amp;/g,'&')||''}};
 }
@@ -4027,7 +4104,7 @@ function matrixObservation(t,html,at){
  const amount=amountFor(cells[4].match(/^¥\s*(\d+(?:\.\d+)?)\s*\/\s*月付$/)?.[1]);
  if(amount===null)return {state,offer:null};
  const [cpu,ram]=cells[1].split(/\s*\/\s*/),[disk,ip]=cells[2].split(/\s*\/\s*/),[port,traffic]=cells[3].split(/\s*\/\s*/);
- return {state,offer:{amount,currency:'CNY',period:'month',basis:'listed',checkedAt:at,cpu,ram,disk,ip,
+ return {state,offer:{amount,currency:'CNY',period:'month',basis:'listed',checkedAt:at,...publicCpu(cpu),ram,disk,ip,
   port,traffic:traffic?.replace(/\s*双向合计$/,'')||'',direction:traffic?.includes('双向合计')?'both':''}};
 }
 function prepaidObservation(t,html,at){
@@ -4043,7 +4120,7 @@ function prepaidObservation(t,html,at){
  const period={'/ year':'year','/ month':'month'}[field(/class="phb-price__per"[^>]*>([\s\S]*?)<\/span>/i)];
  if(amount===null||!period)return {state,offer:null};
  const lines=[...body.matchAll(/<li><i[^>]*><\/i><span>([\s\S]*?)<\/span>/gi)].map(m=>shortText(m[1]));
- return {state,offer:{amount,currency:'EUR',period,basis:'listed',checkedAt:at,cpu:lines.find(s=>/^\d+\s*vCore/i.test(s))||'',ram:lines.find(s=>/\bRAM\b/i.test(s))||'',
+ return {state,offer:{amount,currency:'EUR',period,basis:'listed',checkedAt:at,...publicCpu(lines.find(s=>/^\d+\s*vCore/i.test(s)),lines.find(s=>/^(?:CPU Model|Processor)\s*[:：]/i.test(s))),ram:lines.find(s=>/\bRAM\b/i.test(s))||'',
   disk:lines.find(s=>/\bNVMe\b/i.test(s))||'',port:lines.find(s=>/(?:Gbit|Gbps|Mbps)/i.test(s))||'',traffic:lines.find(s=>/\bTB\b/i.test(s))||''}};
 }
 function bwhObservation(t,catalog,at){
@@ -4053,7 +4130,7 @@ function bwhObservation(t,catalog,at){
  const period={monthly:'month',quarterly:'quarter',semiannually:'halfyear',annually:'year'}[t.cycle];
  if(!period||row.price.currency!=='USD'||!Number.isSafeInteger(cents)||cents<0)return {state,offer:null};
  const measure=(k,unit)=>Number.isFinite(spec[k])&&spec[k]>0?spec[k]+' '+unit:'';
- return {state,offer:{amount:(cents/100).toFixed(2),currency:'USD',period,basis:'listed',checkedAt:at,cpu:measure('vcpu_count','vCPU'),ram:measure('ram_mb','MB'),disk:measure('storage_gb','GB'),port:measure('port_speed_mbps','Mbps'),traffic:measure('transfer_gb_per_month','GB')}};
+ return {state,offer:{amount:(cents/100).toFixed(2),currency:'USD',period,basis:'listed',checkedAt:at,...publicCpu(measure('vcpu_count','vCPU'),spec.cpu_model,spec.processor_model),ram:measure('ram_mb','MB'),disk:measure('storage_gb','GB'),port:measure('port_speed_mbps','Mbps'),traffic:measure('transfer_gb_per_month','GB')}};
 }
 function akileObservation(t,catalog,at){
  if(catalog.status_code!==0||!Array.isArray(catalog.data?.areas))return {state:'unreported',offer:null};
@@ -4063,7 +4140,7 @@ function akileObservation(t,catalog,at){
  const p=matching[0],state=p.is_pre_sale===false?inventoryCount(p.stock):'unreported',prices=p.price_datas?.filter(c=>c.id===t.priceId&&c.cycle===t.cycle);
  if(prices?.length!==1||!Number.isSafeInteger(prices[0].price)||prices[0].price<0)return {state,offer:null};
  const measure=(n,u)=>Number.isFinite(n)&&n>0?n+' '+u:'';
- return {state,offer:{amount:(prices[0].price/100).toFixed(2),currency:'CNY',period:t.cycle===12?'year':'month',basis:'listed',checkedAt:at,cpu:measure(p.cpu,'vCPU'),ram:measure(p.memory,'MB'),disk:measure(p.disk,'GB'),port:measure(p.bandwidth,'Mbps'),traffic:measure(p.flow,'GB')}};
+ return {state,offer:{amount:(prices[0].price/100).toFixed(2),currency:'CNY',period:t.cycle===12?'year':'month',basis:'listed',checkedAt:at,...publicCpu(measure(p.cpu,'vCPU'),p.cpu_model,p.processor_model),ram:measure(p.memory,'MB'),disk:measure(p.disk,'GB'),port:measure(p.bandwidth,'Mbps'),traffic:measure(p.flow,'GB')}};
 }
 function isvoroObservation(t,catalog,at){
  if(catalog.code!==0||!Array.isArray(catalog.data))return {state:'unreported',offer:null};
@@ -4076,7 +4153,7 @@ function isvoroObservation(t,catalog,at){
  const amount=rates?.length===1?amountFor(rates[0].price):null;
  if(amount===null)return {state,offer:null};
  const measure=(k,u)=>/^[1-9]\d*$/.test(settings[k])?settings[k]+' '+u:'';
- return {state,offer:{amount,currency:'CNY',period:'month',basis:'listed',checkedAt:at,cpu:measure('cores','vCPU'),ram:measure('memory','MB'),disk:measure('disk','GB'),port:p.extension==='Proxmox' && Number(settings.ratelimit)>0?Number(settings.ratelimit)*8+' Mbps':'',traffic:p.extension==='Proxmox'?measure('bandwidth_limit','GB'):''}};
+ return {state,offer:{amount,currency:'CNY',period:'month',basis:'listed',checkedAt:at,...publicCpu(measure('cores','vCPU'),settings.cpu_model,settings.processor_model),ram:measure('memory','MB'),disk:measure('disk','GB'),port:p.extension==='Proxmox' && Number(settings.ratelimit)>0?Number(settings.ratelimit)*8+' Mbps':'',traffic:p.extension==='Proxmox'?measure('bandwidth_limit','GB'):''}};
 }
 function akkoObservation(t,html,at){
  const empty={state:'unreported',offer:null},cards=[...html.matchAll(/<div\b[^>]*class="product clearfix"[^>]*id="product(\d+)"[^>]*>([\s\S]*?)<\/footer>/gi)];
@@ -4086,7 +4163,7 @@ function akkoObservation(t,html,at){
  const amount=amountFor(shortText(prices.match(/class="price">([\s\S]*?)<\/span>/i)?.[1]).match(/^[￥¥]\s*(\d+(?:\.\d+)?)\s*CNY$/)?.[1]),label=shortText(prices),period=label.endsWith('每年')?'year':label.endsWith('每月')?'month':null;
  if(amount===null||!period)return empty;
  const desc=shortText(card.match(/id="product\d+-description">([\s\S]*?)<\/p>/i)?.[1]),field=(re,suffix='')=>{const x=desc.match(re)?.[1];return x?x+suffix:''};
- return {state:'unreported',offer:{amount,currency:'CNY',period,basis:'listed',checkedAt:at,cpu:field(/vCPU[：:]\s*(\d+)/i,' vCPU'),ram:field(/内存[：:]\s*(\d+\s*MB)/),disk:field(/空间[：:]\s*(\d+\s*GB(?: SSD)?)/),port:field(/(\d+)\s*Mbps/i,' Mbps'),traffic:field(/流量[：:]\s*双向\s*(\d+\s*GB)/),direction:desc.includes('双向')?'both':''}};
+ return {state:'unreported',offer:{amount,currency:'CNY',period,basis:'listed',checkedAt:at,...publicCpu(field(/vCPU[：:]\s*(\d+)/i,' vCPU'),field(/(?:CPU (?:Model|型号)|处理器型号|处理器|Processor)[：:]\s*([^|]{1,140})/i)),ram:field(/内存[：:]\s*(\d+\s*MB)/),disk:field(/空间[：:]\s*(\d+\s*GB(?: SSD)?)/),port:field(/(\d+)\s*Mbps/i,' Mbps'),traffic:field(/流量[：:]\s*双向\s*(\d+\s*GB)/),direction:desc.includes('双向')?'both':''}};
 }
 function mhyObservation(t,html,at){
  const empty={state:'unreported',offer:null};
@@ -4108,17 +4185,50 @@ function mhyObservation(t,html,at){
  const ram=field(/^RAM[：:]\s*(\d+)M\b/i),disk=field(/^硬盘[：:]\s*(\d+)G\b/),storageType=field(/^硬盘[：:]\s*\d+G\s+(SSD|NVMe|HDD)\b/i);
  const ip=lines.filter(x=>/^IPv[46][：:]|^可额外获得.+IPv6/i.test(x)).join(' · ');
  return {state,offer:{amount,currency:'CNY',period,basis:'listed',checkedAt:at,
-  cpu:field(/^CPU[：:]\s*(\d+C(?:\s*\*[^<>]+)?)/i),ram:ram?ram+' MB':'',disk:disk?disk+' GB'+(storageType?' '+storageType:''):'',
+  ...publicCpu(field(/^CPU[：:]\s*(.+)$/i),field(/^(?:CPU Model|处理器型号|处理器|Processor)[：:]\s*(.+)$/i)),ram:ram?ram+' MB':'',disk:disk?disk+' GB'+(storageType?' '+storageType:''):'',
   port:speed?speed+' Mbps':'',traffic:transfer?transfer+' GB':'',direction:lines.some(x=>/^流量[：:].+双向/.test(x))?'both':'',portType:lines.some(x=>/^带宽[：:].+共享/.test(x))?'shared':'',ip,...(Number.isSafeInteger(quantity)&&quantity>=0?{stockQuantity:quantity}:{})}};
 }
+function servitroObservation(t,html,at){
+ const unavailable={state:'unreported',offer:null};
+ const title=shortText(html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1]);
+ const processor=title.match(/^Virtual servers\s+-\s+(.+?)\s+-\s+Frankfurt$/i)?.[1];
+ const orderPath=new URL(t.url).pathname+'/'+t.slug;
+ const orderPaths=[orderPath,...(t.previousGroup?['/store/'+t.previousGroup+'/'+t.slug]:[])];
+ const cards=[...html.matchAll(/<div\b[^>]*class=["']product clearfix["'][^>]*>([\s\S]*?)<\/footer>/gi)];
+ const matches=cards.filter(([,card])=>[...card.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["']/gi)].some(a=>orderPaths.includes(a[1])));
+ if(matches.length!==1)return unavailable;
+ const card=matches[0][1];
+ const read=(pattern)=>shortText(card.match(pattern)?.[1]);
+ const name=read(/<span\b[^>]*\bid=["'][^"']*-name["'][^>]*>([\s\S]*?)<\/span>/i);
+ if(name!==t.sku)return unavailable;
+ const stock=read(/<span\b[^>]*class=["']qty["'][^>]*>([\s\S]*?)<\/span>/i).match(/^(\d+)\s+Available$/i);
+ const quantity=stock?Number(stock[1]):null,state=inventoryCount(quantity);
+ const price=read(/<div\b[^>]*class=["']product-pricing["'][^>]*>([\s\S]*?)<\/div>/i);
+ const pricing=price.match(/^\$(\d+(?:\.\d{2})?)\s+USD\s+(Monthly|Quarterly|Semi-Annually|Annually)$/i);
+ if(!pricing)return {state,offer:null};
+ const amount=amountFor(pricing[1]);
+ const period={monthly:'month',quarterly:'quarter','semi-annually':'halfyear',annually:'year'}[pricing[2].toLowerCase()];
+ const description=card.match(/<p\b[^>]*\bid=["'][^"']*-description["'][^>]*>([\s\S]*?)<\/p>/i)?.[1]||'';
+ const lines=description.split(/<br\s*\/?>/i).map(shortText);
+ const field=(pattern)=>lines.find(line=>pattern.test(line))||'';
+ return {state,offer:{amount,currency:'USD',period,basis:'listed',checkedAt:at,
+  ...publicCpu(field(/^\d+\s+vCores?\b/i),processor,field(/^(?:CPU Model|Processor)\s*[:：]/i)),
+  ram:field(/^\d+(?:\.\d+)?\s+GB\s+.+RAM$/i).replace(/\s+RAM$/i,''),
+  disk:field(/^\d+(?:\.\d+)?\s+GB\s+(?:SSD|NVMe)$/i),
+  port:field(/^\d+(?:\.\d+)?\s*(?:Gbps|Mbps)\s+Port$/i).replace(/\s+Port$/i,''),
+  traffic:field(/^\d+(?:\.\d+)?\s+TB\s+Traffic\*?$/i).replace(/\s+Traffic\*?$/i,''),
+  ip:lines.filter(line=>/^1x\s+IPv[46]\b/i.test(line)).join(' / '),
+  ...(Number.isSafeInteger(quantity)?{stockQuantity:quantity}:{})}};
+}
+
 async function catalogObservation(t,requests){
- const table={bagevm:bageObservation,matrix:matrixObservation,prepaid:prepaidObservation,bwh:bwhObservation,akile:akileObservation,isvoro:isvoroObservation,akko:akkoObservation,mhy:mhyObservation,greenwhmcs:greenObservation,jsonldoffer:jsonldObservation};
+ const table={bagevm:bageObservation,matrix:matrixObservation,prepaid:prepaidObservation,bwh:bwhObservation,akile:akileObservation,isvoro:isvoroObservation,akko:akkoObservation,mhy:mhyObservation,greenwhmcs:greenObservation,jsonldoffer:jsonldObservation,servitro:servitroObservation};
  const entry=await loadProviderCatalog(t,requests);
  return table[t.family](t,entry.data,entry.at);
 }
 
 async function observeListing(target,requests){
- if(['bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer'].includes(target.family))return catalogObservation(target,requests);
+ if(['bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer','servitro'].includes(target.family))return catalogObservation(target,requests);
  if(target.family==="tamago")return tamagoObservation(target);
  if(target.family==="vultr")return vultrObservation(target);
  if(["backwaves","wasabi"].includes(target.family))return lagomObservation(target);
@@ -4148,7 +4258,7 @@ async function observeListing(target,requests){
 }
 
 async function observe(t){
- if(["vmsilo","backwaves","wasabi","vultr","tamago","bagevm","matrix","prepaid","bwh","akile","isvoro","akko","mhy","greenwhmcs","jsonldoffer"].includes(t.family))return (await observeListing(t)).state;
+ if(["vmsilo","backwaves","wasabi","vultr","tamago","bagevm","matrix","prepaid","bwh","akile","isvoro","akko","mhy","greenwhmcs","jsonldoffer","servitro"].includes(t.family))return (await observeListing(t)).state;
  if(t.family==="mkcloud"||t.family==="nnb")return classifyStorefront(t,await currentStorefront(t.family));
  const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),7000);
  try{
@@ -4234,11 +4344,11 @@ export default {async fetch(req,env,ctx){
  const key=url.pathname.slice(11),target=stockTarget(key);
  if(!target)return json({error:'Unknown stock probe'},404);
  const cache=globalThis.caches?.default;
- const cacheKey=new Request(url.origin+url.pathname+"?format=v12",{method:'GET'});
+ const cacheKey=new Request(url.origin+url.pathname+"?format=v13",{method:'GET'});
  let hit=null;try{hit=cache&&await cache.match(cacheKey)}catch{}
  if(hit)return hit;
  let observation;try{observation=await observeListing(target)}catch{observation={state:'offline',offer:null}}
- const result=json({key,...observation,schemaVersion:12,sku:target.sku,zone:target.zone,checkedAt:new Date().toISOString(),source:target.url,refreshSeconds:TTL},200,observation.state==='offline'?25:TTL);
+ const result=json({key,...observation,schemaVersion:13,sku:target.sku,zone:target.zone,checkedAt:new Date().toISOString(),source:target.url,refreshSeconds:TTL},200,observation.state==='offline'?25:TTL);
  if(cache)ctx.waitUntil(cache.put(cacheKey,result.clone()).catch(()=>{}));
  return result;
 }};

@@ -27,7 +27,7 @@ async function confirmPublicMonitor(){
    const r=await fetch(healthUrl,{cache:'no-store',signal:AbortSignal.timeout(4500)});
    if(r.ok){
     const report=await r.json();
-    if(report.installed&&report.schemaVersion===12&&report.targetCount===expected){
+    if(report.installed&&report.schemaVersion===13&&report.targetCount===expected){
      console.log('公网已确认新版采集器。共 '+report.targetCount+' 个目标，'+report.stockTargetCount+' 个库存目标，'+report.quoteTargetCount+' 个报价目标，轮巡约 '+report.periodMinutes+' 分钟。');
      console.log('当前时间窗有效库存 '+report.stockReadingsFresh+' / '+report.stockTargetCount+'，有效报价 '+report.quoteFresh+' / '+report.quoteTargetCount+'。新目标会在下一轮采集逐步出现。');
      return;
@@ -44,11 +44,11 @@ async function main(){
   try{
    const response=await fetch(new URL('/api/stock/nnb-2',cfg.vars.PAGES_ORIGIN),{signal:AbortSignal.timeout(10000)});
    const data=await response.json();
-   found=response.ok&&data.key==='nnb-2'&&data.zone==='JP'&&data.sku==='TY #2 Performance'&&data.schemaVersion===12;
+   found=response.ok&&data.key==='nnb-2'&&data.zone==='JP'&&data.sku==='TY #2 Performance'&&data.schemaVersion===13;
   }catch{}
   if(!found&&attempt<7)await new Promise(resolve=>setTimeout(resolve,5000));
  }
- if(!found)throw Error('V12 网页尚未在 Pages 生产域名生效。确认网页部署成功后，在完整包目录运行 deploy.cmd monitor。');
+ if(!found)throw Error('V13 网页尚未在 Pages 生产域名生效。确认网页部署成功后，在完整包目录运行 deploy.cmd monitor。');
  console.log('将升级 '+cfg.name+'，连接现有历史数据库 '+name+'，更新 '+cfg.routes[0].pattern);
  cli(['whoami']);
  const id=findDb();

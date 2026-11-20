@@ -13,6 +13,12 @@ function refreshStockList(){
   if(row.drawn===state&&row.time===time&&row.offer===offer)return;row.offer=offer;
   row.drawn=state;row.time=time;row.output.replaceChildren();row.output.dataset.stockState=state;
   paintCommerceStock(row.card.querySelector('.commerce-stock'),row.p,{state,checkedAt:time,source:row.target.url,quantity:goodQuote(offer)?offer.stockQuantity:null},row.target);
+  const cpu=row.card.querySelector('.cpu-summary');
+  if(cpu){
+   const belongsToTier=!(row.p.spec?.tiers?.length>1)||stockCpuMatchesTier(row.p,row.target);
+   const model=belongsToTier&&goodQuote(offer)?readCpuModel(offer,{source:row.target.priceUrl||row.target.url,date:offer.checkedAt,live:true}):null;
+   paintCpuSummary(cpu,row.p,model);
+  }
   const rate=stockQuoteForTerm(offer,commerceTerm());
   if(rate){
    row.output.dataset.commerceQuote='';row.output.append(el('strong',offerPrice(rate)),link(offerText('source'),row.target.priceUrl||row.target.url));

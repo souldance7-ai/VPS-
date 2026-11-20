@@ -12,7 +12,7 @@ function cadence(key){const family=stockTarget(key)?.family;return family==='gre
 const stable=new Set(['in-stock','sold-out','low']);
 const states=new Set([...stable,'offline','unreported']);
 const stockTargets=targets.filter(t=>!t.quoteOnly);
-const quoteTargets=targets.filter(t=>['mkcloud','nnb','vmsilo','backwaves','wasabi','vultr','tamago','bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer'].includes(stockTarget(t.key)?.family));
+const quoteTargets=targets.filter(t=>['mkcloud','nnb','vmsilo','backwaves','wasabi','vultr','tamago','bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer','servitro'].includes(stockTarget(t.key)?.family));
 const rowsPerResponse=12;
 const retention=30*86400000;
 
@@ -72,7 +72,7 @@ export async function collectFacilities(at,env,fetcher){
 }
 async function readFacilitySKU(key,t,env){
  const entry=await readFacility(env.DB,facilitiesByKey.get(key)),row=entry.items[key];
- return json({installed:true,schemaVersion:12,key,sku:t.sku,zone:t.zone,periodMinutes:facilityPeriodMinutes,lastOffer:row?.offer||null,
+ return json({installed:true,schemaVersion:13,key,sku:t.sku,zone:t.zone,periodMinutes:facilityPeriodMinutes,lastOffer:row?.offer||null,
   latest:row?{state:row.state,checkedAt:iso(entry.at),confirmedState:row.confirmedState,confirmedAt:iso(row.confirmedAt),changedAt:iso(row.changedAt)}:null,
   events:(row?.events||[]).filter(e=>e.at>=Date.now()-retention).map(e=>({...e,at:iso(e.at)}))});
 }
@@ -236,7 +236,7 @@ export async function read(req,env) {
    quotes.count=(quotes.count||0)+s.withOffer;if(s.lastOffer){quotes.last=Math.max(quotes.last||0,s.lastOffer);quotes.oldest=Math.min(quotes.oldest||s.oldestOffer||s.lastOffer,s.oldestOffer||s.lastOffer)}
    if(fresh){quotes.fresh=(quotes.fresh||0)+s.quotes;stock.fresh=(stock.fresh||0)+s.count;stock.confirmedfresh=(stock.confirmedfresh||0)+s.confirmed}
   }
-  return json({installed:true,schemaVersion:12,stockTargetCount:stockTargets.length,quoteTargetCount:quoteTargets.length,quoteSampled:quotes?.count||0,lastQuoteAt:iso(quotes?.last),oldestQuoteAt:iso(quotes?.oldest),quoteFresh:Number(quotes?.fresh||0),stockReadingsFresh:Number(stock?.confirmedfresh||0),stockChecksFresh:Number(stock?.fresh||0),lastStockCheckAt:iso(stock?.last),freshWithinMinutes:periodMinutes+2,targetCount:targets.length,periodMinutes,legacyPeriodMinutes,greenPeriodMinutes,mkPeriodMinutes,facilityPeriodMinutes,feedSources:publicFeedNames.length,feedPeriodMinutes:publicFeedNames.length,sampled:Number(row?.sampled||0),verified:Number(row?.verified||0),offline:Number(row?.offline||0),unreported:Number(row?.unreported||0),lastCheckedAt:iso(row?.last),oldestCheckedAt:iso(row?.oldest)});
+  return json({installed:true,schemaVersion:13,stockTargetCount:stockTargets.length,quoteTargetCount:quoteTargets.length,quoteSampled:quotes?.count||0,lastQuoteAt:iso(quotes?.last),oldestQuoteAt:iso(quotes?.oldest),quoteFresh:Number(quotes?.fresh||0),stockReadingsFresh:Number(stock?.confirmedfresh||0),stockChecksFresh:Number(stock?.fresh||0),lastStockCheckAt:iso(stock?.last),freshWithinMinutes:periodMinutes+2,targetCount:targets.length,periodMinutes,legacyPeriodMinutes,greenPeriodMinutes,mkPeriodMinutes,facilityPeriodMinutes,feedSources:publicFeedNames.length,feedPeriodMinutes:publicFeedNames.length,sampled:Number(row?.sampled||0),verified:Number(row?.verified||0),offline:Number(row?.offline||0),unreported:Number(row?.unreported||0),lastCheckedAt:iso(row?.last),oldestCheckedAt:iso(row?.oldest)});
  }
  const key=path.match(/^\/api\/stock-history\/([A-Za-z0-9-]+)$/)?.[1];
  const t=byKey.get(key);if(!t)return json({error:'Unknown probe'},404);
@@ -248,7 +248,7 @@ export async function read(req,env) {
  ]);
  const s=current.results[0];
  const q=quote.results[0];
- return json({installed:true,schemaVersion:12,key,sku:t.sku,zone:t.zone,periodMinutes:cadence(key),lastOffer:q?{...JSON.parse(q.payload),checkedAt:iso(q.observed_at)}:null,
+ return json({installed:true,schemaVersion:13,key,sku:t.sku,zone:t.zone,periodMinutes:cadence(key),lastOffer:q?{...JSON.parse(q.payload),checkedAt:iso(q.observed_at)}:null,
   latest:s?{state:s.current_state,checkedAt:iso(s.checked_at),confirmedState:s.confirmed_state,confirmedAt:iso(s.confirmed_at),changedAt:iso(s.changed_at)}:null,
   events:events.results.map(e=>({at:iso(e.at),from:e.from_state,to:e.to_state}))});
 }

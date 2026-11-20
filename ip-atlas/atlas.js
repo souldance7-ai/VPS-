@@ -87,7 +87,7 @@ function searchable(p){
  for(const offer of offersByPlan.get(p.id)||[])tokens.push(currentCommerceOffer(offer,commerceTerm())?offer.code||"":"",offer.source,offer.sku||"",offer.routeName||"");
  for(const row of commerceFeedRows.get(p.id)||[])if(currentCommerceOffer(row,''))tokens.push(row.code);
  if(nativeLead(p))tokens.push('原生 native');
- tokens.push(showSku(p),...hardware.map(k=>specValue(p,k)),priceText(p));
+ tokens.push(showSku(p),...hardware.filter(k=>k!=='cpuModel').map(k=>specValue(p,k)),readCpuModel(activeSpec(p))?.value||'',priceText(p));
  for(const c of routeCarriersFor(p))tokens.push(c,...(carrierNames[c]||[]));
  for(const row of planRouteRows(p)){for(const path of row.paths)tokens.push(routePathLabel(path));if(row.direction!==anyDirection)tokens.push(quickLabel(row.direction))}
  return norm(tokens.join(' '));
@@ -170,7 +170,18 @@ function openDialog(p){
  }else{
   const ps=chosen.map(id=>PLANS.find(p=>p.id===id));const wrap=el('div',null,'matrix-wrap'),table=el('table',null,'matrix');const head=table.createTHead().insertRow();head.append(el('th',tr('product')));ps.forEach(p=>head.append(el('th',p.provider+' · '+showSku(p))));
   const body=table.createTBody();const fields=attributes(ps[0]);
-  fields.forEach(([k],i)=>{const r=body.insertRow();r.append(el('th',tr(k)));ps.forEach(p=>r.append(el('td',attributes(p)[i][1])))});
+  fields.forEach(([k],i)=>{
+   const row=body.insertRow(),label=k==='cpu'&&ps.every(p=>cpuCoreLabel(specValue(p,'cpu'))==='cpuCores')?'cpuCores':k;
+   row.append(el('th',tr(label)));
+   for(const plan of ps){
+    const cell=row.insertCell();
+    if(k!=='cpuModel'){cell.textContent=attributes(plan)[i][1];continue}
+    const model=readCpuModel(activeSpec(plan));
+    if(!model){cell.textContent=tr('cpuUnknown');continue}
+    if(model.kind!=='cpuModel')cell.append(el('small',tr(model.kind),'cpu-caption'));
+    cell.append(el('span',model.value));appendCpuEvidence(cell,model);
+   }
+  });
   for(const k of ['evidence','links']){const r=body.insertRow();r.append(el('th',tr(k)));for(const p of ps){const c=r.insertCell();if(k==='links')c.append(link(tr('source')+' ↗',p.url));else if(val(p.notes))c.textContent=val(p.notes);else c.append(link(tr('source')+' ↗',p.proof||p.url))}}
   wrap.append(table);out.append(wrap)
  }
