@@ -22,3 +22,7 @@ node install.mjs
 当前配置共 36 款，6 分钟轮询一遍，每天约 8,640 次商品读取和 1,440 次 Cron 调用。D1 的记录更新另计，共享账户现有资源。查看 Cloudflare 面板的用量及例外记录。调整或暂停时，修改本地 `wrangler.json` 的 `triggers.crons`，空数组会停用 Cron；重新运行 `npx --yes wrangler@4 deploy --config wrangler.json` 生效。调大 Cron 间隔时请同步修改 monitor.mjs 的分片时间单位，以便每个分片均能被访问。
 
 [Cloudflare 定时触发器](https://developers.cloudflare.com/workers/configuration/cron-triggers/) · [Workers 路由](https://developers.cloudflare.com/workers/configuration/routing/routes/) · [D1 限制](https://developers.cloudflare.com/d1/platform/limits/)
+
+## V8 库存修订
+
+后台使用与网站一致的商家库存识别规则，直接读取商家来源。已部署 V7 时，在 V8 库存包目录运行 node install.mjs 以更新原 Worker 并继续使用现有 D1。健康页面显示 sampled（尝试采集）、verified（本轮得到明确库存状态）、offline（来源无法读取）、unreported（来源没有可识别的库存）。

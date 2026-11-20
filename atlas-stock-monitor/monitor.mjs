@@ -1,4 +1,5 @@
 import targets from './targets.json' with { type: 'json' };
+import {stockTarget,observe} from './stock-source.mjs';
 
 const LIMIT = 6;
 const byKey = new Map(targets.map(t => [t.key,t]));
@@ -39,7 +40,13 @@ async function sampleTarget(target, env, fetcher) {
   return {key:target.key,state:data.state,at};
  } catch { return {key:target.key,state:'offline',at:started}; }
 }
-export async function collect(at,env,fetcher=fetch) {
+async function readStockSource(url){
+ const key=url.pathname.split('/').at(-1),target=stockTarget(key);
+ if(!target)return Response.json({error:'Unknown stock probe'},{status:404});
+ const state=await observe(target);
+ return Response.json({key,sku:target.sku,zone:target.zone,state,checkedAt:new Date().toISOString()});
+}
+export async function collect(at,env,fetcher=readStockSource) {
  const batch=round(at);let i=0;
  async function next(){while(i<batch.length){const result=await sampleTarget(batch[i++],env,fetcher);await persist(env.DB,result)}}
  await Promise.all([next(),next()]);
@@ -51,8 +58,8 @@ export async function read(req,env) {
  const path=new URL(req.url).pathname;
  if(req.method!=='GET')return json({error:'GET required'},405);
  if(path==='/api/stock-history/health'){
-  const row=await env.DB.prepare('SELECT COUNT(*) AS sampled, MAX(checked_at) AS last, MIN(checked_at) AS oldest FROM stock_latest').first();
-  return json({installed:true,targetCount:targets.length,periodMinutes,sampled:Number(row?.sampled||0),lastCheckedAt:iso(row?.last),oldestCheckedAt:iso(row?.oldest)});
+  const row=await env.DB.prepare("SELECT COUNT(*) AS sampled, SUM(current_state IN ('in-stock','sold-out','low')) AS verified, SUM(current_state = 'offline') AS offline, SUM(current_state = 'unreported') AS unreported, MAX(checked_at) AS last, MIN(checked_at) AS oldest FROM stock_latest").first();
+  return json({installed:true,targetCount:targets.length,periodMinutes,sampled:Number(row?.sampled||0),verified:Number(row?.verified||0),offline:Number(row?.offline||0),unreported:Number(row?.unreported||0),lastCheckedAt:iso(row?.last),oldestCheckedAt:iso(row?.oldest)});
  }
  const key=path.match(/^\/api\/stock-history\/([A-Za-z0-9-]+)$/)?.[1];
  const t=byKey.get(key);if(!t)return json({error:'Unknown probe'},404);

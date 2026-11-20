@@ -4,7 +4,7 @@
 
 ## 部署到现有网站
 
-打开 Cloudflare 的「Workers 和 Pages」，选择现有项目 pitopone-ip-atlas，进入「部署 → 创建部署 → 生产环境」，直接上传 pitopone-atlas-sources-v7.zip。index.html、_worker.js 和 _routes.json 都在 ZIP 根目录。完成后打开 https://ip-guide.pitopone.com/#offers 。网站和库存历史采集器使用两个独立部署包。
+打开 Cloudflare 的「Workers 和 Pages」，选择现有项目 pitopone-ip-atlas，进入「部署 → 创建部署 → 生产环境」，直接上传 pitopone-atlas-portal-v8.zip。index.html、_worker.js 和 _routes.json 都在 ZIP 根目录。完成后打开 https://ip-guide.pitopone.com/ 。首页直接显示近期优惠。网站和库存历史采集器使用两个独立部署包。
 
 ## 按需求选购
 

@@ -202,7 +202,7 @@ async function lookup(ev){
  }catch{if(id===lookupId)ipState={ip,status:'failed'}}finally{clearTimeout(timer);if(id===lookupId)showIP()}
 }
 function offers(){
- renderCommunity();drawForumFeed();
+ renderCommunity();renderFeaturedOffers();drawForumFeed();
  const box=$('deals');box.replaceChildren();for(const [id,d] of Object.entries(deals)){
   const status=stateOf(d),section=el('article',null,'deal'),meta=el('div',null,'deal-meta');
   meta.append(el('h3',d.brand),el('span',tr(status),'state '+status));
@@ -234,4 +234,6 @@ render();
 const incomingFeed=new URLSearchParams(location.search).get("feed");
 if(location.hash==="#offers"&&incomingFeed){activateOfferTab($("tab-feed"));if(typeof choosePublicSource==="function")choosePublicSource(incomingFeed)}
 document.querySelector("[data-open-feed]").addEventListener("click",()=>activateOfferTab($("tab-feed")));
+document.querySelector("[data-open-offers]").addEventListener("click",()=>activateOfferTab($("tab-index")));
 startComic();
+startPortal();

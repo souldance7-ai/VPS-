@@ -25,11 +25,14 @@ function selectShot(value) {
  }
 }
 function localizeComic(){
- document.title=tr('comicTitle')+' · PITOPONE';
+ $('portal-motion')?.setAttribute('aria-label',tr('portalMotion'));
+ document.title=tr('title')+' · PITOPONE';
  $('scene-prev').setAttribute('aria-label',tr('previousShot'));$('scene-next').setAttribute('aria-label',tr('nextShot'));
  $('comic-deck').setAttribute('aria-label',tr('comicGesture'));selectShot(shot);
 }
 function syncComicMotion(){
+ const motionButton=$('portal-motion');
+ if(motionButton){motionButton.textContent=canMove()?'Ⅱ':'▶';motionButton.setAttribute('aria-label',tr('portalMotion'));motionButton.setAttribute('aria-pressed',String(!canMove()))}
  if(!canMove())for(const a of comicEffects)a.cancel();
  for(const img of document.querySelectorAll('.jump-loop')) img.src='art/'+(canMove()?'yuki-jump.gif':'yuki-still.webp');
  clearInterval(storyTimer);
@@ -58,11 +61,15 @@ async function turnPage(name,restore=false,initial=false){
  stack.classList.add('turning');
  const ease='cubic-bezier(.28,.04,.16,1)';
  function track(node,keys,timing){const a=node.animate(keys,timing);wave.push(a);return a.finished.catch(()=>{})}
- const out=track(frame,[{transform:'scale(1)',borderRadius:'0px'},{transform:'translateY(2%) scale(.91)',borderRadius:'30px'}],{duration:285,easing:ease,fill:'forwards'});
- await Promise.all([out,...cards.map((s,i)=>track(s,[{transform:'translateY(110%) scale(.92)'},{transform:'translateY(0) scale(1)'}],{duration:310,delay:i*68,easing:ease,fill:'both'}))]);
+ const out=track(frame,[{transform:'scale(1)',opacity:1},{transform:'scale(.975)',opacity:.72}],{duration:215,easing:ease,fill:'both'});
+ await Promise.all([out,...cards.map((card,i)=>track(card,[
+  {opacity:0,clipPath:'circle(0% at 74% 50%)',transform:'scale(1.08)'},
+  {opacity:1,clipPath:'circle(120% at 74% 50%)',transform:'scale(1)'}
+ ],{duration:200,delay:i*24,easing:ease,fill:'both'}))]);
  if(token!==routeSequence)return;
  showView(name,restore,true);
- await Promise.all([track(frame,[{transform:'translateY(4%) scale(.93)'},{transform:'none'}],{duration:400,easing:ease,fill:'forwards'}),...cards.map((s,i)=>track(s,[{transform:'translateY(0)'},{transform:'translateY(-111%)'}],{duration:340,delay:(2-i)*45,easing:ease,fill:'forwards'}))]);
+ await Promise.all([track(frame,[{transform:'scale(1.012)',opacity:.83},{transform:'none',opacity:1}],{duration:290,easing:ease,fill:'both'}),
+  ...cards.map((card,i)=>track(card,[{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale('+(1.08+i*.1)+')'}],{duration:275,delay:(2-i)*18,easing:ease,fill:'both'}))]);
  if(token===routeSequence){for(const a of wave)a.cancel();wave=[];stack.classList.remove('turning')}
 }
 function animateDialogOpen(){
