@@ -19,6 +19,8 @@ for(const [language,heading] of Object.entries(campaignHeadings))WORDS[language]
 for(const [key,labels] of Object.entries({skuQuotes:['套餐报价','套餐報價','Plan prices','プラン料金'],freshPosts:['论坛新帖','論壇新帖','Latest threads','最新の投稿'],brandDeals:['品牌活动','品牌活動','Merchant campaigns','事業者のセール']}))editionLangs.forEach((language,i)=>WORDS[language][key]=labels[i]);
 const pvTerms={sc:'纽约、达拉斯和西雅图列入正式黑五活动。16 GB Bolt VPS 的价格和完整配置在美国东部时间 11 月 26 日公开，具体可选机房以对应订单为准；纽约独服预售另有条款。',tc:'紐約、達拉斯和西雅圖列入正式黑五活動。16 GB Bolt VPS 的價格與完整規格於美東時間 11 月 26 日公布，可選機房依該筆訂單；紐約獨服預售另有條款。',en:'The Black Friday event covers New York, Dallas and Seattle. The price and full specs of the 16 GB Bolt VPS are revealed November 26 Eastern time. Check each SKU’s order form for locations. The NYC dedicated pre-sale has separate terms.',ja:'本セールの対象地域はニューヨーク、ダラス、シアトル。16 GB Bolt VPS の価格と詳細は米国東部時間11月26日に公開予定です。選べる拠点は各注文画面でご確認ください。ニューヨーク専用サーバーの先行販売には別の条件があります。'};
 for(const [language,terms] of Object.entries(pvTerms))WORDS[language].purevoltageTerms=terms;
+const rateLabels=[["sortPlans","排序","排序","Sort","並び順"],["fullestFirst","优先列出详细配置","優先列出詳細規格","Most documented first","仕様が詳しい順"],["lowestMonthly","同币种月均价 ↑","同幣種月均價 ↑","Monthly equivalent ↑","月額換算・安い順"],["monthMean","月均","月均","Monthly equivalent","月額換算"]];
+for(const [key,...labels] of rateLabels)editionLangs.forEach((l,i)=>WORDS[l][key]=labels[i]);
 const offerTabs=[...document.querySelectorAll('[data-offer-tab]')];
 function activateOfferTab(button){
  for(const tab of offerTabs){const active=tab===button;tab.tabIndex=active?0:-1;tab.setAttribute('aria-selected',String(active));$(tab.getAttribute('aria-controls')).hidden=!active}
@@ -55,7 +57,14 @@ Object.assign(cityNames,{"Taipei":["台北","台北","台北"],"Taichung":["台�
 function city(p){return cityNames[p.city]?.[{sc:0,tc:1,ja:2}[lang]]||p.city}
 const localChoice = ()=>({sc:'原生 IP 候选（含 ISP 与住宅）',tc:'原生 IP 候選（含 ISP 與住宅）',en:'Native IP candidates (local, ISP, residential)',ja:'現地 IP 候補（ISP・住宅回線を含む）'}[lang]);
 function nativeLead(p){return ['isp','local','residential'].includes(p.ip)}
+function monthlyCost(p){
+ const s=activeSpec(p),periods={month:1,quarter:3,year:12};if(!s||!Object.hasOwn(periods,s.term)||!s.currency||!s.price)return null;
+ const numeric=String(s.price).trim();if(!/^(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+)(?:\.[0-9]+)?$/.test(numeric))return null;
+ return {currency:s.currency,monthly:Number(numeric.replaceAll(",",""))/periods[s.term]};
+}
+function renderOrder(){const currencyCodes=[...new Set(PLANS.map(p=>monthlyCost(p)?.currency).filter(Boolean))].sort();opt("order",[["",tr("fullestFirst")],...currencyCodes.map(code=>[code,code+" · "+tr("lowestMonthly")])],$("order").value)}
 function renderControls(){
+ renderOrder();
  const ids=groups[zone]||Object.keys(MARKETS);
  const zones=$('zones');zones.replaceChildren();
  for(const key of ['all',...Object.keys(groups)]){const b=btn(tr(key),()=>{applyZone(key)});b.setAttribute('aria-pressed',key===zone);zones.append(b)}
@@ -76,6 +85,7 @@ function searchable(p){
 }
 function matches(p){
  if(!shoppingMatch(p))return false;
+ if($("order").value&&monthlyCost(p)?.currency!==$("order").value)return false;
  if(zone!=='all' && !groups[zone].includes(p.market))return false;
  if($('ip').value==='native' ? !nativeLead(p) : $('ip').value && $('ip').value!==p.ip)return false;
  for(const k of ['market','kind','route'])if($(k).value && p[k]!==$(k).value)return false;
@@ -87,6 +97,28 @@ function matches(p){
  }
  return $('search').value.trim().split(/\s+/).every(q=>searchable(p).includes(norm(q)));
 }
+let feedProviderAliases;
+function providerFromPost(post){
+ if(!feedProviderAliases){
+  const providers=[...new Set(PLANS.map(p=>p.provider))];
+  feedProviderAliases=providers.filter(s=>s.length>=4).map(p=>[p,p]);
+  for(const [label,provider] of [['绿云','GreenCloud'],['綠雲','GreenCloud'],['搬瓦工','BandwagonHost'],['狗妈','GoMami'],['狗媽','GoMami'],['台北101','VPS.TAIPEI (Taipei101)'],['丽萨主机','LisaHost'],['麗薩主機','LisaHost']])if(providers.some(p=>p.toLowerCase()===provider.toLowerCase()))feedProviderAliases.push([label,providers.find(p=>p.toLowerCase()===provider.toLowerCase())]);
+  feedProviderAliases.sort((a,b)=>b[0].length-a[0].length);
+ }
+ const copy=(post.title+' '+(post.snippet||'')).normalize('NFKC').toLowerCase();
+ for(const [label,provider] of feedProviderAliases){
+  const token=label.normalize('NFKC').toLowerCase(),index=copy.indexOf(token);if(index<0)continue;
+  if(/^[a-z\d]/.test(token)&&/[a-z\d]/.test(copy[index-1]||''))continue;
+  if(/[a-z\d]$/.test(token)&&/[a-z\d]/.test(copy[index+token.length]||'')&&!copy.slice(index+token.length).startsWith('vps'))continue;
+  return provider;
+ }
+ return '';
+}
+function feedToCatalog(post){
+ const provider=providerFromPost(post);if(!provider)return null;
+ const a=el('a',({sc:'查看套餐',tc:'查看方案',en:'Compare plans',ja:'プラン比較'}[lang])+' · '+provider+' →','feed-to-catalog');
+ a.href='?'+new URLSearchParams({'q-search':provider})+'#directory';a.dataset.directoryQuery='';return a;
+}
 function pair(main,sub,cls){const n=el('div',null,cls);n.append(el('strong',main));if(sub)n.append(el('small',sub,'sub'));return n}
 function toggle(p){
  if(chosen.includes(p.id))chosen=chosen.filter(x=>x!==p.id);
@@ -95,7 +127,7 @@ function toggle(p){
  list();const focusButton=Array.from($('listing').querySelectorAll('.pick')).find(b=>b.dataset.id===p.id);focusButton?.focus({preventScroll:true});
 }
 function list(){
- const rows=PLANS.filter(matches).sort((a,b)=>commercialScore(b)-commercialScore(a));const visible=currentPageRows(rows);$('total').textContent=vendorCount(rows)+' '+tr('merchants')+' · '+rows.length+' '+tr('results');
+ const baseRows=PLANS.filter(matches);const rows=applyQuickPick(baseRows).sort((a,b)=>$("order").value?monthlyCost(a).monthly-monthlyCost(b).monthly||commercialScore(b)-commercialScore(a):commercialScore(b)-commercialScore(a));renderQuickPick($("quick-pick"),baseRows,rows);const visible=currentPageRows(rows);$('total').textContent=vendorCount(rows)+' '+tr('merchants')+' · '+rows.length+' '+tr('results');
  $('compare').textContent=tr('compare')+' ('+chosen.length+'/3)';$('compare').disabled=chosen.length<2;$('compare').title=tr('chooseTwo');
  const head=el('div',null,'colheads');for(const s of ['market','product','ip','route','links',''])head.append(el('span',s?tr(s):''));
  const out=$('listing');out.replaceChildren(head);
@@ -119,7 +151,7 @@ function openDialog(p){
  modal=p||'compare';const out=$('dialog-body');out.replaceChildren();
  const title=el('h2',p?p.provider+' · '+val(p.plan):tr('comparison'));title.id='dialog-title';out.append(title);$('drawer').setAttribute('aria-labelledby',title.id);
  if(p){
-  showBuying(out,p);renderStock(out,p);renderCommunityFor(out,p);
+  showBuying(out,p);renderStock(out,p);renderQuickEvidence(out,p);renderCommunityFor(out,p);
   const grid=el('dl',null,'detailgrid');for(const [k,v] of attributes(p).filter(([k])=>!hardware.includes(k)&&k!=='price')){const d=el('div');d.append(el('dt',tr(k)),el('dd',v));grid.append(d)}
   const actions=el('div',null,'actionrow');actions.append(...merchantLinks(p),btn(tr('ask'),()=>copy(p.provider+' · '+val(p.plan)+'\n'+tr('askText')),'solid'));
   if(val(p.notes))out.append(el('p',val(p.notes),'detail-note'));out.append(grid);
@@ -160,7 +192,7 @@ function showIP(){
  const {ip,status,prefix,asns}=ipState;if(!status)return;
  if(ip){const e=encodeURIComponent(ip);links.append(link(tr('registry'),'https://rdap.org/ip/'+e),link(tr('ipinfo'),'https://ipinfo.io/'+e),link('RIPEstat','https://stat.ripe.net/resource/'+e),link('DB-IP','https://db-ip.com/'+e),link(tr('risk'),'https://scamalytics.com/ip/'+e),link('Ping0','https://ping0.cc/'))}
  if(status!=='ok'){out.append(el('p',tr(status),status==='waiting'?'loading':'lookup-error'));return}
- const grid=el('div',null,'ipstats');for(const [k,v] of [['prefix',prefix],['asn',asns.map(v=>'AS'+v).join(' / ')||tr('unknown')]]){const d=el('div');d.append(el('span',tr(k),'label'),el('b',v));grid.append(d)}out.append(grid)
+ const grid=el('div',null,'ipstats');for(const [k,v] of [['prefix',prefix],['asn',asns.map(v=>'AS'+v).join(' / ')||tr('unknown')]]){const d=el('div');d.append(el('span',tr(k),'label'),el('b',v));grid.append(d)}out.append(grid,el("p",tr("verifyNextHint"),"bill-note"))
 }
 async function lookup(ev){
  ev.preventDefault();const id=++lookupId,ip=publicIP($('sample').value.trim());ipState={ip,status:ip?'waiting':'invalid'};showIP();if(!ip)return;
@@ -189,13 +221,17 @@ function render(){
  document.querySelectorAll('[data-t]').forEach(n=>n.textContent=tr(n.dataset.t));
  $('search').placeholder=tr('searchHint');$('close').setAttribute('aria-label',tr('back'));$('zones').setAttribute('aria-label',tr('region'));
  const names=new Intl.DisplayNames([tags[lang]],{type:'region'});const options=iso.map(c=>[c,names.of(c)+' · '+c]).sort((a,b)=>a[1].localeCompare(b[1],tags[lang]));
- opt('country',options,$('country').value||'PH');renderControls();list();offers();countryLinks();showIP();motion();localizeEdition()
+ opt('country',options,$('country').value||'PH');renderControls();restoreQuickPickOnce();list();offers();countryLinks();showIP();motion();localizeEdition()
 }
 $('language').onchange=e=>{lang=e.target.value;save('lang',lang);render()};
 $('motion').onclick=()=>{paused=!paused;save('motion',paused?'paused':'playing');motion()};
 $('filters').onsubmit=e=>e.preventDefault();$('filters').oninput=()=>{pageIndex=0;list()};$('promo').onchange=()=>{pageIndex=0;list()};
-$('reset').onclick=()=>{zone='all';pageIndex=0;for(const k of ['search','kind','market','route','ip','carrier','buy-filter'])$(k).value='';$('promo').checked=false;renderControls();list()};
+$('order').onchange=()=>{pageIndex=0;list()};
+$('reset').onclick=()=>{clearQuickPick();$('order').value='';zone='all';pageIndex=0;for(const k of ['search','kind','market','route','ip','carrier','buy-filter'])$(k).value='';$('promo').checked=false;renderControls();list()};
 $('compare').onclick=()=>openDialog(null);$('close').onclick=()=>closeComicDialog();$('drawer').onclose=()=>{modal=null};$('drawer').onclick=e=>{if(e.target===$('drawer')){const r=$('drawer').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeComicDialog()}};
 $('country').onchange=countryLinks;$('ipform').onsubmit=lookup;
 render();
+const incomingFeed=new URLSearchParams(location.search).get("feed");
+if(location.hash==="#offers"&&incomingFeed){activateOfferTab($("tab-feed"));if(typeof choosePublicSource==="function")choosePublicSource(incomingFeed)}
+document.querySelector("[data-open-feed]").addEventListener("click",()=>activateOfferTab($("tab-feed")));
 startComic();

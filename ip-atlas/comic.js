@@ -94,6 +94,8 @@ function startComic(){
  $('drawer').addEventListener('cancel',e=>{e.preventDefault();closeComicDialog()});
  history.scrollRestoration='manual';
  document.addEventListener('click',e=>{
+  const deep=e.target.closest('a[data-directory-query]');
+  if(deep&&!e.defaultPrevented&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey&&e.button===0){e.preventDefault();history.pushState(null,'',deep.href);quickRestoreLocation();list();turnPage('directory');return}
   const a=e.target.closest('a[href^="#"]');if(!a||e.defaultPrevented||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;
   e.preventDefault();const n=pageName(a.hash);
   if(location.hash!==a.hash)history.pushState(null,'',a.hash);turnPage(n);

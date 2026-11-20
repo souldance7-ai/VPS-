@@ -4,12 +4,20 @@
 
 ## 部署到现有网站
 
-打开 Cloudflare 的「Workers 和 Pages」，选择现有项目 pitopone-ip-atlas，进入「部署 → 创建部署 → 生产环境」，直接上传 pitopone-atlas-forum-v6.zip。index.html、_worker.js 和 _routes.json 都在 ZIP 根目录。完成后打开 https://ip-guide.pitopone.com/#offers 。网站和库存历史采集器使用两个独立部署包。
+打开 Cloudflare 的「Workers 和 Pages」，选择现有项目 pitopone-ip-atlas，进入「部署 → 创建部署 → 生产环境」，直接上传 pitopone-atlas-sources-v7.zip。index.html、_worker.js 和 _routes.json 都在 ZIP 根目录。完成后打开 https://ip-guide.pitopone.com/#offers 。网站和库存历史采集器使用两个独立部署包。
+
+## 按需求选购
+
+「找出口」可以把原生或跨地区 IP、接入网络、固定或动态分配、独享公网 IPv4 或共享 NAT，与电信、联通、移动线路、独服和库存组合筛选。候选数值随组合更新。点击产品查看商家原文、属性覆盖的 SKU 或可选服务、采集时间。分享链接可以保留已选地区、条件和搜索词。
+
+目录按同币种月均价排序时，按实际月付、季付或年付金额折算，可查看原账期。估价、过往样机报价和须登录才显示的区域价格各自标明。点击首页「核验样本 IP」可查可见前缀与起源 ASN；选购方法含机房/线路样本、地址归属和去回程复核步骤。
+
+VPS.TAIPEI 的官方公开页列出平台和机房条件。其 VM 创建页要求登录。网站提供购买入口、公开计算示例与注明日期的历史资料。
 
 ## 购买方案与复核
 
 - 「套餐报价」支持按机房、来源、活动状态、虚拟或物理服务器及库存探针筛选。展开后可对照 CPU、内存、硬盘、端口速率、流量、付款周期、续费和用码条件。一次性优惠、多期续费和用码前的原价都有独立说明。
-- 「论坛新帖」读取 NodeSeek 的公开全站 RSS 和烧饼推广版 RSS，显示 VPS 相关标题、原文和读取时间。边缘缓存为 5 分钟。订阅源中断时，界面可显示上一份成功读取的缓存及其时间。
+- 「补货与新帖」可切换 NodeSeek、烧饼推广、VPSDeer、VPSTS、VPSUU 和 PoorVPSMsg。公开 RSS 或频道预览提供帖子原文、发布时间与本次读取时间。打开消息标签后每 5 分钟刷新当前来源。可从识别出的商家直接进入站内方案目录。边缘缓存为 5 分钟。订阅源中断时，界面可显示上一份成功读取的缓存及其时间。
 - 「品牌活动」列出商家条款和活动窗口。「方案目录」支持地区、原生 IP 证据、大陆线路、运营商、服务器类别与优惠的组合，也可按商家、线路及优惠码搜索，最多并排比较三种方案。
 - 截止日期只有年月日时，活动页照录原文。具体 IP 类型和线路随产品、运营商及方向而异。核验页按用户输入的单个公网 IP 向 RIPEstat 查询路由前缀与起源 ASN。需由商家或用户提供的机房样本做进一步比对。
 
@@ -31,3 +39,6 @@ forum-feed.js 展示订阅内容，community.js 展示报价和适用条件。st
 - [烧饼推广](https://sb.sb/go/promotion/) · [订阅说明](https://sb.sb/pages/feeds/)
 - [D-VPS 超市](https://d-vps.com/) · [DigVPS RackNerd 评测](https://digvps.com/review/racknerd)
 - [不良林文章](https://bulianglin.com/archives/tiktokvps.html) · [原视频](https://youtu.be/du1G5dG1qPQ) · [NodeSeek 查找思路](https://www.nodeseek.com/post-1062104-1)
+
+- [VPSDeer](https://t.me/vpsdeer) · [VPSTS](https://t.me/vpsts) · [VPSUU](https://t.me/vpsuu) · [PoorVPSMsg](https://t.me/PoorVPSMsg)
+- [VPS.TAIPEI 机房与计价](https://vps.taipei/) · [VM 创建](https://vps.taipei/customer/vms/new)

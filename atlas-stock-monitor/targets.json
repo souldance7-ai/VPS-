@@ -30,6 +30,16 @@
   "zone": "LAX"
  },
  {
+  "key": "gc-sg-prem-mini",
+  "sku": "CN Premium Optimized Plan Mini (Singapore)",
+  "zone": "SG"
+ },
+ {
+  "key": "gc-sg-prem-1",
+  "sku": "CN Premium Optimized Plan 1 (Singapore)",
+  "zone": "SG"
+ },
+ {
   "key": "gc-sjc-vds2",
   "sku": "EPYCVDSSJCVF-2",
   "zone": "SJC"

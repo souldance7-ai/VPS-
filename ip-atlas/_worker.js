@@ -1,7 +1,11 @@
-// Two public, fixed feed endpoints. This API exposes titles and permalinks only.
+// Public RSS feeds and Telegram channel previews, fetched only from these fixed endpoints.
 const forumSources = {
   nodeseek: {feed: 'https://rss.nodeseek.com/', hosts: ['www.nodeseek.com', 'nodeseek.com']},
-  sb: {feed: 'https://sb.sb/go/promotion/rss.xml', hosts: ['sb.sb']}
+  sb: {feed: 'https://sb.sb/go/promotion/rss.xml', hosts: ['sb.sb']},
+  vpsdeer: {channel:'vpsdeer',feed:'https://t.me/s/vpsdeer'},
+  vpsts: {channel:'vpsts',feed:'https://t.me/s/vpsts'},
+  vpsuu: {channel:'vpsuu',feed:'https://t.me/s/vpsuu'},
+  poorvpsmsg: {channel:'PoorVPSMsg',feed:'https://t.me/s/PoorVPSMsg'}
 };
 const forumFreshSeconds = 300;
 const forumStaleSeconds = 86400;
@@ -150,23 +154,132 @@ function forumResponse(data, status = 200, seconds = 0) {
     'X-Content-Type-Options':'nosniff'
   }});
 }
+// Telegram optional text previews. Only message text and the post's own time field are used.
+function telegramPostLink(url, channel) {
+  try {
+    const u = new URL(url);
+    const parts = u.pathname.split('/');
+    if (u.protocol !== 'https:' || u.host !== 't.me' || u.username || u.password || u.search || u.hash ||
+        parts.length !== 3 || parts[1].toLowerCase() !== channel.toLowerCase() || !/^[1-9]\d{0,14}$/.test(parts[2])) return '';
+    return 'https://t.me/' + channel + '/' + parts[2];
+  } catch { return ''; }
+}
+function telegramPreview(html, channel) {
+  if (html.length > forumByteLimit) throw Error('oversize');
+  const stack = [], posts = new Map(), lower = html.toLowerCase();
+  const voidTags = new Set('area base br col embed hr img input link meta param source track wbr'.split(' '));
+  const rawTags = new Set(['script','style','textarea','title','noscript','template']);
+  const attr = /([^\s=\/>"'<>]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>]+)))?/g;
+  const tagName = /<(\/?)([a-z][\w:-]*)/iy;
+  let i = 0, current = null, textDepth = 0, dateDepth = 0, shell = false, wrappers = 0;
+  function collect(s) {
+    if (current && textDepth && current.text.length < 2200) current.text += s.slice(0,2200-current.text.length);
+  }
+  function finish(post) {
+    if (!post.link || !post.date || !post.text.trim() || posts.has(post.link)) return;
+    const lines = post.text.split(/\n+/).map(s=>s.replace(/https?:\/\/\S+/gi,'').replace(/[\s\u0000-\u001f\u007f]+/g,' ').trim()).filter(s=>s && !/^[\s\p{S}\p{P}]+$/u.test(s));
+    if (!lines.length || !(forumKeywords.test(post.text) || /补货|補貨|库存|庫存|售罄|缺货|有货|現貨|restock|sold out|data changes|LET offers|vCPU|NVMe|云服务器|雲伺服器|V\.PS/i.test(post.text))) return;
+    const title = lines.shift().slice(0,105);
+    const snippet = lines.filter(s=>!/^([#@]|[🛒🛍]|购买链接|購買連結|立即搶購|立即抢购)/u.test(s)).join(' · ').slice(0,110);
+    posts.set(post.link,{title,...(snippet ? {snippet} : {}),link:post.link,date:post.date});
+  }
+  function close(depth) {
+    while (stack.length > depth) {
+      const d = stack.length;
+      if (textDepth === d) textDepth = 0;
+      if (dateDepth === d) dateDepth = 0;
+      if (current?.depth === d) { finish(current); current = null; }
+      stack.pop();
+    }
+  }
+  while (i < html.length) {
+    const open = html.indexOf('<',i);
+    if (open < 0) { collect(forumDecode(html.slice(i))); break; }
+    if (open > i) collect(forumDecode(html.slice(i,open)).replace(/&nbsp;/gi,' '));
+    if (html.startsWith('<!--',open)) {
+      const end = html.indexOf('-->',open+4);
+      if (end === -1) throw Error('incomplete HTML comment');
+      i = end+3; continue;
+    }
+    tagName.lastIndex=open;
+    const tag=tagName.exec(html);
+    if (!tag) { i=open+1;continue; }
+    const name=tag[2].toLowerCase(), first=tagName.lastIndex;
+    let pos=first, quote='';
+    for (;pos<html.length && pos-first<=65536;pos++) {
+      const ch=html[pos];
+      if (quote) { if (ch===quote) quote=''; }
+      else if (ch==='"' || ch==="'") quote=ch;
+      else if (ch==='>') break;
+    }
+    if (pos===html.length || pos-first>65536) throw Error('invalid HTML tag');
+    i=pos+1;
+    if (tag[1]) {
+      const index=stack.lastIndexOf(name);
+      if (index!==-1) close(index);
+      continue;
+    }
+    if (rawTags.has(name)) {
+      const stop=lower.indexOf('</'+name+'>',i);
+      if (stop===-1) throw Error('unclosed raw tag');
+      i=stop+name.length+3;continue;
+    }
+    const attributes=Object.create(null);
+    for (const m of html.slice(first,pos).matchAll(attr)) {
+      if (['class','data-post','href','datetime'].includes(m[1].toLowerCase())) attributes[m[1].toLowerCase()]=forumDecode(m[2]??m[3]??m[4]??'');
+    }
+    const classes=(attributes.class || '').split(/\s+/);
+    if (classes.some(c=>['tgme_page_wrap','tgme_page','tgme_channel_info','tgme_page_action','tgme_channel_history'].includes(c))) shell=true;
+    if (voidTags.has(name)) { if (name==='br') collect('\n'); continue; }
+    stack.push(name);
+    if (stack.length>128) throw Error('HTML too deep');
+    if (classes.includes('tgme_widget_message') && attributes['data-post'] && !current) {
+      const link=telegramPostLink('https://t.me/'+attributes['data-post'],channel);
+      if (link) { wrappers++;current={depth:stack.length,text:'',link,date:''}; }
+    }
+    if (!current) continue;
+    if (classes.includes('tgme_widget_message_text') && !textDepth) textDepth=stack.length;
+    if (name==='a' && classes.includes('tgme_widget_message_date') && telegramPostLink(attributes.href,channel)===current.link) dateDepth=stack.length;
+    if (dateDepth && name==='time' && /^\d{4}-\d{2}-\d{2}T.+(?:Z|[+-]\d{2}:?\d{2})$/i.test(attributes.datetime || '')) {
+      const stamp=Date.parse(attributes.datetime);
+      if (Number.isFinite(stamp)) current.date=new Date(stamp).toISOString();
+    }
+  }
+  // Unrelated HTML, including challenge pages, is a failed read. A genuine channel landing page can be link-only.
+  if (!wrappers && !shell) throw Error('unexpected Telegram page');
+  return {items:Array.from(posts.values()).sort((a,b)=>Date.parse(b.date)-Date.parse(a.date)).slice(0,12),...(wrappers?{}:{visibility:'link-only'})};
+}
+async function forumFetchPayload(source, signal) {
+  const config=forumSources[source];
+  const isTelegram=!!config.channel;
+  const response=await fetch(config.feed,{method:'GET',signal,redirect:isTelegram?'manual':'error',
+    headers:{Accept:isTelegram?'text/html':'application/rss+xml, application/atom+xml, application/xml, text/xml'}});
+  if (isTelegram && response.status>=300 && response.status<400) {
+    const redirect=new URL(response.headers.get('Location') || '',config.feed);
+    if (redirect.protocol==='https:' && redirect.host==='t.me' && !redirect.username && !redirect.password && !redirect.search && !redirect.hash &&
+        redirect.pathname.toLowerCase()==='/'+config.channel.toLowerCase()) return {items:[],visibility:'link-only'};
+    throw Error('redirect');
+  }
+  if (isTelegram && [404,410].includes(response.status)) return {items:[],visibility:'link-only'};
+  if (!response.ok || (!isTelegram && response.headers.get('content-type')?.includes('text/html'))) throw Error('upstream');
+  const document = await forumReadBody(response);
+  return isTelegram ? telegramPreview(document,config.channel) : {items:forumHeadlines(document,source)};
+}
 async function serveForumFeed(req, ctx) {
   const path = new URL(req.url).pathname;
-  const source = path.match(/^\/api\/deal-feed\/(nodeseek|sb)$/)?.[1];
-  if (!source) return forumResponse({error:'unknown feed'},404);
+  const source = path.match(/^\/api\/deal-feed\/([a-z]+)$/)?.[1];
+  if (!source || !Object.hasOwn(forumSources,source)) return forumResponse({error:'unknown feed'},404);
   if (req.method !== 'GET') return new Response(null,{status:405,headers:{Allow:'GET','Cache-Control':'no-store'}});
   const cache = globalThis.caches?.default;
-  const key = new Request(new URL('/api/deal-feed/' + source + '?format=2',req.url));
+  const key = new Request(new URL('/api/deal-feed/' + source + '?format=3',req.url));
   let cached = null;
   try { cached = await (await cache?.match(key))?.json(); } catch {}
   const age = cached ? (Date.now() - Date.parse(cached.observed)) / 1000 : Infinity;
   if (cached?.source === source && age >= 0 && age < forumFreshSeconds) return forumResponse(cached,200,Math.max(1,Math.floor(forumFreshSeconds - age)));
   const ctl = new AbortController(), timeout = setTimeout(() => ctl.abort(),7000);
   try {
-    const reply = await fetch(forumSources[source].feed,{method:'GET',signal:ctl.signal,redirect:'error',headers:{Accept:'application/rss+xml, application/atom+xml, application/xml, text/xml'}});
-    if (!reply.ok || reply.headers.get('content-type')?.includes('text/html')) throw Error('upstream');
-    const xml = await forumReadBody(reply);
-    const body = {source,observed:new Date().toISOString(),stale:false,items:forumHeadlines(xml,source)};
+    const payload = await forumFetchPayload(source,ctl.signal);
+    const body = {source,observed:new Date().toISOString(),stale:false,...payload};
     if (cache) {
       const write = cache.put(key,forumResponse(body,200,forumStaleSeconds)).catch(()=>{});
       if (ctx?.waitUntil) ctx.waitUntil(write); else await write;
@@ -177,7 +290,6 @@ async function serveForumFeed(req, ctx) {
     return forumResponse({source,error:'upstream unavailable'},503);
   } finally { clearTimeout(timeout); }
 }
-
 const stockCities={
  LAX:['LAX','los-angeles-usa'],SEA:['SEA','seattle-usa'],TOR:['CA','toronto-canada'],
  AMS:['NL','amsterdam-netherlands'],FRA:['DE','frankfurt-germany'],LON:['GB','london-uk'],PAR:['FR','paris-france'],
@@ -227,6 +339,8 @@ function stockTarget(key){
  const jpSkus={'boil-kddi':'1區 - 靜態 KDDI/au 1000Mbps VPS','boil-softbank':'2區 - SoftBank 100Mbps VPS'};
  if(Object.hasOwn(jpSkus,key))return {family:'boil',sku:jpSkus[key],zone:'JP',url:'https://cloud.boil.network/store/japan-shared-bandwidth'};
  if(key==='gc-sjc-vds2')return {family:'greencloud',sku:'EPYCVDSSJCVF-2',zone:'SJC',url:'https://www.greencloudvps.com/billing/store/epyc-nvme-kvm-vds/?language=english'};
+ const singaporePlans={'gc-sg-prem-mini':'CN Premium Optimized Plan Mini (Singapore)','gc-sg-prem-1':'CN Premium Optimized Plan 1 (Singapore)'};
+ if(Object.hasOwn(singaporePlans,key))return {family:'greencloud',sku:singaporePlans[key],zone:'SG',productId:key==='gc-sg-prem-mini'?'2305':'2307',url:'https://greencloudvps.com/billing/store/cn-premium-optimized'};
  if(key==='wn-9754s')return {family:'webnx',sku:'EPYC 9754S · 256 GB / 25G',zone:'LAX',url:'https://clients.webnx.com/index.php?rp=/store/instant-provisioning-la'};
  if(key==='ph-argent')return {family:'pingheberg',sku:'VPS Argent',zone:'FR',url:'https://store.pingheberg.com/products/vps/vps-argent'};
  return null;
@@ -263,6 +377,17 @@ function pinghebergStatus(heading,product){
  return 'unreported';
 }
 function quantityStatus(values){if(!values.length||new Set(values).size!==1)return 'unreported';return Number(values[0])>0?'in-stock':'sold-out'}
+function greenPremiumStatus(headers,target){
+ const amounts=[];
+ for(const header of headers){
+  const text=header.replace(/\s+/g,' ').trim();
+  if(text!==target.sku&&!text.startsWith(target.sku+' '))continue;
+  const qty=text.slice(target.sku.length).trim().match(/^(\d{1,6}) Available$/i);
+  if(!qty)return 'unreported';
+  amounts.push(qty[1]);
+ }
+ return quantityStatus(amounts);
+}
 function stockQuantityCards(cards,t){
  const prefix=new RegExp('^'+t.sku+'(?: DYN)?\\s+(\\d+)\\s*(?:可用|Available)');
  return quantityStatus(cards.map(s=>s.replace(/\s+/g,' ').trim().match(prefix)?.[1]).filter(Boolean));
@@ -290,13 +415,30 @@ function dediStatus(cards,target){
 }
 async function htmlStatus(response,t){
  // Stream only human-visible text. A price, checkout link or success status alone never establishes stock.
- const cards=[],active=new Set();let intro='';let heading='',product='',inTitle=false,inProduct=false,suppress=0;
+ const cards=[],greenHeaders=[],active=new Set();let intro='';let heading='',product='',inTitle=false,inProduct=false,suppress=0;
  const ignored={element(e){suppress++;e.onEndTag(()=>suppress--)}};
  const rows={element(e){const row={text:''};active.add(row);e.onEndTag(()=>{active.delete(row);if(row.text.length<11000)cards.push(row.text)})}};
+ let greenHeader=null,greenField=null;
+ const greenSelector='#product'+(t.productId || 'unused')+' > header';
+ const greenSection={element(e){
+  if(t.family!=='greencloud'||t.zone!=='SG')return;
+  const header={name:[],qty:[]};greenHeader=header;
+  e.onEndTag(()=>{
+   greenHeader=null;greenField=null;
+   if(!header.name.length)return;
+   if(header.name.length!==1||header.qty.length!==1){greenHeaders.push(t.sku);return}
+   greenHeaders.push(header.name[0].text+' '+header.qty[0].text);
+  });
+ }};
+ function readGreenField(e,key){
+  if(!greenHeader)return;
+  const field={text:''};greenHeader[key].push(field);greenField=field;e.onEndTag(()=>greenField=null);
+ }
  const panels=[];let panel=null,readingHeading=false;
  const couponHeading={element(e){if(t.family!=='boil')return;panel={name:'',body:''};panels.push(panel);readingHeading=true;e.onEndTag(()=>readingHeading=false)}};
  const collector={text(chunk){
   if(suppress)return;
+  if(greenField&&greenField.text.length<180)greenField.text+=chunk.text+(chunk.lastInTextNode?' ':'');
   if(t.family==='ava'&&intro.length<1800)intro+=chunk.text+(chunk.lastInTextNode?' ':'');
   if(panel){const part=readingHeading?'name':'body';if(panel[part].length<14000)panel[part]+=chunk.text+(chunk.lastInTextNode?' ':'')}
   for(const row of active)if(row.text.length<11000)row.text+=chunk.text+(chunk.lastInTextNode?' ':'');
@@ -304,6 +446,9 @@ async function htmlStatus(response,t){
   if(inProduct&&product.length<25000)product+=chunk.text+(chunk.lastInTextNode?' ':'');
  }};
  const reader=new HTMLRewriter().on('script',ignored).on('style',ignored).on('li',rows).on('tr',rows).on('header',rows).on('.product',rows).on('.package',rows).on('.product-item',rows).on('[id^="product"]',rows)
+  .on(greenSelector,greenSection)
+  .on(greenSelector+' > span[id]',{element(e){if(e.getAttribute('id')==='product'+t.productId+'-name')readGreenField(e,'name')}})
+  .on(greenSelector+' > span.qty',{element(e){readGreenField(e,'qty')}})
   .on('h3',couponHeading).on('h4',couponHeading).on('h5',couponHeading).on('h6',couponHeading)
   .on('h1',{element(e){inTitle=true;inProduct=true;e.onEndTag(()=>inTitle=false)}})
   .on('h2',{element(){inProduct=false}}).onDocument(collector).transform(response).body.getReader();
@@ -312,6 +457,7 @@ async function htmlStatus(response,t){
  if(t.family==='ava')return avaStatus(intro);
  if(t.family==='dedione')return dediStatus(cards,t);
  if(t.family==='webnx')return webnxStatus(cards);
+ if(t.family==='greencloud'&&t.zone==='SG')return greenPremiumStatus(greenHeaders,t);
  if(t.family==='tcs'||t.family==='greencloud')return stockQuantityCards(cards,t);
  if(t.family==='boil')return boilStatus(panels,t);
  return t.family==='hosthink'?hosthinkStatus(cards,t.sku):pinghebergStatus(heading,product);

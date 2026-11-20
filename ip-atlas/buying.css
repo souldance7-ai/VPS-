@@ -6,3 +6,5 @@
 .stock-list{grid-column:1/-1;grid-row:auto;padding:7px;border:1px solid #786f6a;background:#f3ede4;font-size:13px;display:grid;gap:3px}.stock-list small,.stock-list a{font-size:11px}.stock-list[data-stock-state=in-stock]{background:#ccefd5}.stock-list[data-stock-state=sold-out]{background:#ffd9d0}.stock-list[data-stock-state=low]{background:#fff2a7}.spec-summary a{font-size:12px}.record .datum:empty{display:none}
 
 .offer-condition{display:block;font-weight:650;font-size:12px;color:#68442a;overflow-wrap:anywhere}.purchase-body .offer-condition{margin-bottom:4px}
+
+.price-order{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;font-weight:700}.price-order select{padding:5px 8px;max-width:100%;background:#fffbeb;color:inherit;border:1px solid #655d50;border-radius:4px}.resultbar{flex-wrap:wrap}

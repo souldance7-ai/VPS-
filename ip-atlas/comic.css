@@ -26,3 +26,9 @@ body[data-book=directory] main{background-color:#f2f7e7}body[data-book=verify] m
 .record:has(.pick[aria-pressed=true]){border-color:#265b4d;box-shadow:3px 3px #418f78}
 .record .pick[aria-pressed=true]{background:var(--mint);color:var(--ink)}
 @media(max-width:700px){.ink-transition i:nth-child(3):after{height:19%;background-position:68% center}.radio-ripple{width:45px;height:45px;right:17%}}
+
+.task-doors{display:flex;flex-wrap:wrap;gap:6px 18px;margin:6px 0 14px}.task-doors a{display:inline-flex;align-items:center;gap:8px;padding:6px 0;text-decoration:none;color:var(--ink);font-weight:850;font-size:clamp(.82rem,1.4vw,1.05rem);border-bottom:2px solid currentColor}.task-doors a:after{content:"↗";color:#a54328}.task-doors a:hover{color:#a54328}.procurement-guide{margin:20px 0 24px;border:2px solid var(--ink);background:#fff9e8;box-shadow:4px 4px 0 var(--ink)}.procurement-guide h3{padding:12px 16px;background:#ffdd72;margin:0;color:var(--ink)}.procurement-guide details{padding:9px 16px;border-top:1px solid #c8b899}.procurement-guide summary{font-weight:800;cursor:pointer}.procurement-guide details>div{max-width:78ch}.procurement-guide p{margin:.45em 0}.procurement-guide a{font-weight:750;text-decoration:underline}.task-doors a:focus-visible,.procurement-guide summary:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+
+.procurement-guide .guide-query{display:inline-block;margin-inline-start:16px;color:#694016}
+
+.starter-links{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 15px;margin:14px 0}.starter-links b{font-size:12px;color:#5b5140}.starter-links a{color:inherit;font-size:14px;font-weight:750;text-underline-offset:3px}.starter-links a:hover{color:#843f22}

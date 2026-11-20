@@ -2147,6 +2147,977 @@ const COMMUNITY_OFFERS = [
   "planIds": [
    "racknerd-bf26-976"
   ]
+ },
+ {
+  "provider": "VPS.TAIPEI (Taipei101)",
+  "kind": "vps",
+  "ip": "unknown",
+  "url": "https://vps.taipei/customer/vms/new",
+  "official": "https://vps.taipei/#pricing",
+  "regionProof": "https://vps.taipei/#regions",
+  "status": "catalog",
+  "currency": "USD",
+  "term": "month",
+  "observed": "2026-11-20",
+  "manualCheckout": true,
+  "id": "t101-base-example",
+  "plan": "KVM · 4C / 8 GB / 100 GB",
+  "sku": "4C-8G-100G public calculator example",
+  "markets": [],
+  "source": "VPS.TAIPEI",
+  "thread": "https://vps.taipei/#pricing",
+  "price": "12.80",
+  "priceBasis": "estimate",
+  "cpu": "4 vCPU",
+  "ram": "8 GB",
+  "disk": "100 GB NVMe",
+  "conditions": {
+   "sc": "官网计算器的基础月费示例。CPU 每核 0.85 美元，内存每 GB 0.80 美元，NVMe 每 GB 0.03 美元，合计 12.80 美元。亚洲地区另有区域定价，登录选定节点后可见实际月费。",
+   "tc": "官網計算器的基礎月費範例。CPU 每核心 0.85 美元，記憶體每 GB 0.80 美元，NVMe 每 GB 0.03 美元，合計 12.80 美元。亞洲地區另有區域定價，登入選定節點後可見實際月費。",
+   "en": "The public calculator multiplies each core by USD 0.85, RAM by USD 0.80 per GB and NVMe by USD 0.03 per GB each month. This selection totals USD 12.80 at base rates. Asian regions can have different prices at deployment.",
+   "ja": "公開計算機の基本月額例。vCPU は 1 コア 0.85 米ドル、RAM は 1 GB 0.80 米ドル、NVMe は 1 GB 0.03 米ドルで、合計 12.80 米ドル。アジアは拠点により料金が異なり、選択後に提示されます。"
+  },
+  "checkout": "https://vps.taipei/customer/vms/new",
+  "planIds": []
+ },
+ {
+  "provider": "VPS.TAIPEI (Taipei101)",
+  "kind": "vps",
+  "ip": "unknown",
+  "url": "https://vps.taipei/customer/vms/new",
+  "official": "https://vps.taipei/#pricing",
+  "regionProof": "https://vps.taipei/#regions",
+  "status": "catalog",
+  "currency": "USD",
+  "term": "month",
+  "observed": "2026-11-20",
+  "manualCheckout": true,
+  "id": "t101-tw-touchdown",
+  "plan": "Taipei-Touchdown · 512 MB",
+  "sku": "Taipei-Touchdown 1C / 512 MB / 10 GB",
+  "markets": [
+   "TW"
+  ],
+  "city": "Taipei",
+  "source": "MeowVPS",
+  "thread": "https://meowvps.com/blog/taipei101tw/",
+  "alsoThreads": [
+   {
+    "source": "NodeSuper",
+    "thread": "https://www.nodesuper.com/topic/118"
+   }
+  ],
+  "price": "1.70",
+  "priceBasis": "historical",
+  "cpu": "1 vCPU",
+  "ram": "512 MB",
+  "disk": "10 GB",
+  "traffic": "1.214 TB / mo ↕",
+  "conditions": {
+   "sc": "2026-04-06 的样机记录显示月付 1.70 美元，月流量 1.214 TB、双向计量。评测与商家其后在 NodeSuper 的答复均记载年付 17 美元。样机使用独立双栈地址，地理数据库对台湾与新加坡的定位有分歧。住宅、固定分配及大陆优化均无产品承诺。当前付款金额和余量需登录查询。",
+   "tc": "2026-04-06 的樣機紀錄顯示月付 1.70 美元，月流量 1.214 TB、雙向計量。評測與商家其後在 NodeSuper 的答覆均記載年付 17 美元。樣機使用獨立雙棧位址，地理資料庫對台灣與新加坡的定位有分歧。住宅、固定分配及大陸優化均無產品承諾。當前付款金額和餘量需登入查詢。",
+   "en": "On 6 April the reviewed VM cost USD 1.70 monthly with 1.214 TB of combined transfer. Both the review and a later vendor reply recorded USD 17 annually. The sample had dedicated IPv4 and IPv6, with location databases disagreeing between Taiwan and Singapore. The sources give no residential, static or optimized mainland routing commitment. Sign in for a current quote and capacity.",
+   "ja": "4 月 6 日の実機は月額 1.70 米ドル、双方向合算で月 1.214 TB。レビューと後日の事業者回答は年払い 17 米ドルで一致します。専用の IPv4/IPv6 が割り当てられ、地理データベースの判定は台湾とシンガポールに分かれました。住宅回線、固定割当、中国本土向け最適化の保証は公表されていません。現在の価格と在庫はログインして確認できます。"
+  },
+  "checkout": "https://vps.taipei/customer/vms/new",
+  "quotedAt": "2026-04-06",
+  "planIds": [
+   "t101-tw-touchdown"
+  ]
+ },
+ {
+  "provider": "VPS.TAIPEI (Taipei101)",
+  "kind": "vps",
+  "ip": "unknown",
+  "url": "https://vps.taipei/customer/vms/new",
+  "official": "https://vps.taipei/#pricing",
+  "regionProof": "https://vps.taipei/#regions",
+  "status": "catalog",
+  "currency": "USD",
+  "term": "year",
+  "observed": "2026-11-20",
+  "manualCheckout": true,
+  "id": "t101-us-hou4",
+  "plan": "HOU4 · 512 MB",
+  "sku": "HOU4 1C / 512 MB / 10 GB",
+  "markets": [
+   "US"
+  ],
+  "city": "Houston",
+  "source": "NodeSuper",
+  "thread": "https://www.nodesuper.com/topic/118",
+  "price": "9.50",
+  "priceBasis": "historical",
+  "cpu": "1 vCPU",
+  "ram": "512 MB",
+  "disk": "10 GB",
+  "traffic": "35 TB / yr",
+  "conditions": {
+   "sc": "商家在 NodeSuper 公布的休斯敦 HOU4 入门档，当时年付低至 9.50 美元，35 TB 流量按年重置。年费仅对应这个美国节点。登录后查看当前金额、端口速率与余量。",
+   "tc": "商家在 NodeSuper 公布的休士頓 HOU4 入門方案，當時年付低至 9.50 美元，35 TB 流量按年重置。年費僅對應這個美國節點。登入後查看當前金額、連接埠速率與餘量。",
+   "en": "The vendor previously advertised this Houston HOU4 configuration from USD 9.50 per year. Its 35 TB allowance resets yearly. That quote covered this US node. Sign in for the current charge, port speed and capacity.",
+   "ja": "事業者が以前告知したヒューストン HOU4 の構成は年 9.50 米ドルから。35 TB の転送量は年ごとに更新されます。この価格は当該米国拠点のものです。現在の価格・ポート速度・空き枠はログイン後に確認できます。"
+  },
+  "checkout": "https://vps.taipei/customer/vms/new",
+  "planIds": []
+ },
+ {
+  "provider": "VPS.TAIPEI (Taipei101)",
+  "kind": "vps",
+  "ip": "unknown",
+  "url": "https://vps.taipei/customer/vms/new",
+  "official": "https://vps.taipei/#pricing",
+  "regionProof": "https://vps.taipei/#regions",
+  "status": "catalog",
+  "currency": "USD",
+  "term": "month",
+  "observed": "2026-11-20",
+  "manualCheckout": true,
+  "id": "t101-config-tpe1",
+  "plan": "TPE1 · KVM",
+  "sku": "TPE1 · configurable KVM",
+  "markets": [
+   "TW"
+  ],
+  "city": "Taipei",
+  "source": "VPS.TAIPEI",
+  "thread": "https://vps.taipei/#regions",
+  "price": null,
+  "priceBasis": "portal",
+  "cpu": "1–16 vCPU",
+  "ram": "0.5–32 GB",
+  "disk": "10–500 GB NVMe",
+  "conditions": {
+   "sc": "官网列出的区域代码为 TPE1。展示的 CPU、内存与磁盘范围来自平台计算器，登录创建页后可见所选节点的实际可配资源、价格和库存。标准 VPS 不含企业 IEPL。官网未为这组节点承诺住宅 IP、固定 IP、大陆三网优化或每台虚机的端口速率。",
+   "tc": "官網列出的區域代碼為 TPE1。顯示的 CPU、記憶體與磁碟範圍來自平台計算器，登入建立頁後可見所選節點的實際可選資源、價格和庫存。標準 VPS 不含企業 IEPL。官網未為這組節點承諾住宅 IP、固定 IP、大陸三網優化或每台虛擬機的連接埠速率。",
+   "en": "The provider lists TPE1. These resource ranges are from the platform calculator. Sign in to see the options, price and available capacity for a selected node. Standard VPS service excludes enterprise IEPL. The public product page gives no residential or static IP, mainland route or per-VM port-speed guarantee.",
+   "ja": "公式拠点コードは TPE1。CPU・RAM・ディスクの範囲はプラットフォーム共通の計算機の値です。各拠点の選択肢・価格・空き容量はログイン後に表示されます。企業向け IEPL は標準 VPS に含まれません。住宅・固定 IP、中国本土の 3 社向け最適化、VM ごとのポート速度は保証されていません。"
+  },
+  "checkout": "https://vps.taipei/customer/vms/new",
+  "planIds": [
+   "t101-config-tpe1"
+  ]
+ },
+ {
+  "provider": "VPS.TAIPEI (Taipei101)",
+  "kind": "vps",
+  "ip": "unknown",
+  "url": "https://vps.taipei/customer/vms/new",
+  "official": "https://vps.taipei/#pricing",
+  "regionProof": "https://vps.taipei/#regions",
+  "status": "catalog",
+  "currency": "USD",
+  "term": "month",
+  "observed": "2026-11-20",
+  "manualCheckout": true,
+  "id": "t101-config-hkg1",
+  "plan": "HKG1 · KVM",
+  "sku": "HKG1 · configurable KVM",
+  "markets": [
+   "HK"
+  ],
+  "city": "Hong Kong",
+  "source": "VPS.TAIPEI",
+  "thread": "https://vps.taipei/#regions",
+  "price": null,
+  "priceBasis": "portal",
+  "cpu": "1–16 vCPU",
+  "ram": "0.5–32 GB",
+  "disk": "10–500 GB NVMe",
+  "conditions": {
+   "sc": "官网列出的区域代码为 HKG1。展示的 CPU、内存与磁盘范围来自平台计算器，登录创建页后可见所选节点的实际可配资源、价格和库存。标准 VPS 不含企业 IEPL。官网未为这组节点承诺住宅 IP、固定 IP、大陆三网优化或每台虚机的端口速率。",
+   "tc": "官網列出的區域代碼為 HKG1。顯示的 CPU、記憶體與磁碟範圍來自平台計算器，登入建立頁後可見所選節點的實際可選資源、價格和庫存。標準 VPS 不含企業 IEPL。官網未為這組節點承諾住宅 IP、固定 IP、大陸三網優化或每台虛擬機的連接埠速率。",
+   "en": "The provider lists HKG1. These resource ranges are from the platform calculator. Sign in to see the options, price and available capacity for a selected node. Standard VPS service excludes enterprise IEPL. The public product page gives no residential or static IP, mainland route or per-VM port-speed guarantee.",
+   "ja": "公式拠点コードは HKG1。CPU・RAM・ディスクの範囲はプラットフォーム共通の計算機の値です。各拠点の選択肢・価格・空き容量はログイン後に表示されます。企業向け IEPL は標準 VPS に含まれません。住宅・固定 IP、中国本土の 3 社向け最適化、VM ごとのポート速度は保証されていません。"
+  },
+  "checkout": "https://vps.taipei/customer/vms/new",
+  "planIds": [
+   "t101-config-hkg1"
+  ]
+ },
+ {
+  "provider": "VPS.TAIPEI (Taipei101)",
+  "kind": "vps",
+  "ip": "unknown",
+  "url": "https://vps.taipei/customer/vms/new",
+  "official": "https://vps.taipei/#pricing",
+  "regionProof": "https://vps.taipei/#regions",
+  "status": "catalog",
+  "currency": "USD",
+  "term": "month",
+  "observed": "2026-11-20",
+  "manualCheckout": true,
+  "id": "t101-config-sin1",
+  "plan": "SIN1 · KVM",
+  "sku": "SIN1 · configurable KVM",
+  "markets": [
+   "SG"
+  ],
+  "city": "Singapore",
+  "source": "VPS.TAIPEI",
+  "thread": "https://vps.taipei/#regions",
+  "price": null,
+  "priceBasis": "portal",
+  "cpu": "1–16 vCPU",
+  "ram": "0.5–32 GB",
+  "disk": "10–500 GB NVMe",
+  "conditions": {
+   "sc": "官网列出的区域代码为 SIN1。展示的 CPU、内存与磁盘范围来自平台计算器，登录创建页后可见所选节点的实际可配资源、价格和库存。标准 VPS 不含企业 IEPL。官网未为这组节点承诺住宅 IP、固定 IP、大陆三网优化或每台虚机的端口速率。",
+   "tc": "官網列出的區域代碼為 SIN1。顯示的 CPU、記憶體與磁碟範圍來自平台計算器，登入建立頁後可見所選節點的實際可選資源、價格和庫存。標準 VPS 不含企業 IEPL。官網未為這組節點承諾住宅 IP、固定 IP、大陸三網優化或每台虛擬機的連接埠速率。",
+   "en": "The provider lists SIN1. These resource ranges are from the platform calculator. Sign in to see the options, price and available capacity for a selected node. Standard VPS service excludes enterprise IEPL. The public product page gives no residential or static IP, mainland route or per-VM port-speed guarantee.",
+   "ja": "公式拠点コードは SIN1。CPU・RAM・ディスクの範囲はプラットフォーム共通の計算機の値です。各拠点の選択肢・価格・空き容量はログイン後に表示されます。企業向け IEPL は標準 VPS に含まれません。住宅・固定 IP、中国本土の 3 社向け最適化、VM ごとのポート速度は保証されていません。"
+  },
+  "checkout": "https://vps.taipei/customer/vms/new",
+  "planIds": [
+   "t101-config-sin1"
+  ]
+ },
+ {
+  "provider": "VPS.TAIPEI (Taipei101)",
+  "kind": "vps",
+  "ip": "unknown",
+  "url": "https://vps.taipei/customer/vms/new",
+  "official": "https://vps.taipei/#pricing",
+  "regionProof": "https://vps.taipei/#regions",
+  "status": "catalog",
+  "currency": "USD",
+  "term": "month",
+  "observed": "2026-11-20",
+  "manualCheckout": true,
+  "id": "t101-config-tyo",
+  "plan": "TYO1 / TYO2 · KVM",
+  "sku": "TYO1 / TYO2 · configurable KVM",
+  "markets": [
+   "JP"
+  ],
+  "city": "Tokyo",
+  "source": "VPS.TAIPEI",
+  "thread": "https://vps.taipei/#regions",
+  "price": null,
+  "priceBasis": "portal",
+  "cpu": "1–16 vCPU",
+  "ram": "0.5–32 GB",
+  "disk": "10–500 GB NVMe",
+  "conditions": {
+   "sc": "官网列出的区域代码为 TYO1 / TYO2。展示的 CPU、内存与磁盘范围来自平台计算器，登录创建页后可见所选节点的实际可配资源、价格和库存。标准 VPS 不含企业 IEPL。官网未为这组节点承诺住宅 IP、固定 IP、大陆三网优化或每台虚机的端口速率。",
+   "tc": "官網列出的區域代碼為 TYO1 / TYO2。顯示的 CPU、記憶體與磁碟範圍來自平台計算器，登入建立頁後可見所選節點的實際可選資源、價格和庫存。標準 VPS 不含企業 IEPL。官網未為這組節點承諾住宅 IP、固定 IP、大陸三網優化或每台虛擬機的連接埠速率。",
+   "en": "The provider lists TYO1 / TYO2. These resource ranges are from the platform calculator. Sign in to see the options, price and available capacity for a selected node. Standard VPS service excludes enterprise IEPL. The public product page gives no residential or static IP, mainland route or per-VM port-speed guarantee.",
+   "ja": "公式拠点コードは TYO1 / TYO2。CPU・RAM・ディスクの範囲はプラットフォーム共通の計算機の値です。各拠点の選択肢・価格・空き容量はログイン後に表示されます。企業向け IEPL は標準 VPS に含まれません。住宅・固定 IP、中国本土の 3 社向け最適化、VM ごとのポート速度は保証されていません。"
+  },
+  "checkout": "https://vps.taipei/customer/vms/new",
+  "planIds": [
+   "t101-config-tyo"
+  ]
+ },
+ {
+  "provider": "VPS.TAIPEI (Taipei101)",
+  "kind": "vps",
+  "ip": "unknown",
+  "url": "https://vps.taipei/customer/vms/new",
+  "official": "https://vps.taipei/#pricing",
+  "regionProof": "https://vps.taipei/#regions",
+  "status": "catalog",
+  "currency": "USD",
+  "term": "month",
+  "observed": "2026-11-20",
+  "manualCheckout": true,
+  "id": "t101-config-lax",
+  "plan": "LAX1 / LAX2 / LAX4 / LAX5 · KVM",
+  "sku": "LAX1 / LAX2 / LAX4 / LAX5 · configurable KVM",
+  "markets": [
+   "LAX"
+  ],
+  "city": "Los Angeles",
+  "source": "VPS.TAIPEI",
+  "thread": "https://vps.taipei/#regions",
+  "price": null,
+  "priceBasis": "portal",
+  "cpu": "1–16 vCPU",
+  "ram": "0.5–32 GB",
+  "disk": "10–500 GB NVMe",
+  "conditions": {
+   "sc": "官网列出的区域代码为 LAX1 / LAX2 / LAX4 / LAX5。展示的 CPU、内存与磁盘范围来自平台计算器，登录创建页后可见所选节点的实际可配资源、价格和库存。标准 VPS 不含企业 IEPL。官网未为这组节点承诺住宅 IP、固定 IP、大陆三网优化或每台虚机的端口速率。",
+   "tc": "官網列出的區域代碼為 LAX1 / LAX2 / LAX4 / LAX5。顯示的 CPU、記憶體與磁碟範圍來自平台計算器，登入建立頁後可見所選節點的實際可選資源、價格和庫存。標準 VPS 不含企業 IEPL。官網未為這組節點承諾住宅 IP、固定 IP、大陸三網優化或每台虛擬機的連接埠速率。",
+   "en": "The provider lists LAX1 / LAX2 / LAX4 / LAX5. These resource ranges are from the platform calculator. Sign in to see the options, price and available capacity for a selected node. Standard VPS service excludes enterprise IEPL. The public product page gives no residential or static IP, mainland route or per-VM port-speed guarantee.",
+   "ja": "公式拠点コードは LAX1 / LAX2 / LAX4 / LAX5。CPU・RAM・ディスクの範囲はプラットフォーム共通の計算機の値です。各拠点の選択肢・価格・空き容量はログイン後に表示されます。企業向け IEPL は標準 VPS に含まれません。住宅・固定 IP、中国本土の 3 社向け最適化、VM ごとのポート速度は保証されていません。"
+  },
+  "checkout": "https://vps.taipei/customer/vms/new",
+  "planIds": [
+   "t101-config-lax"
+  ]
+ },
+ {
+  "id": "v7-vms-hk-usip",
+  "provider": "VmShell",
+  "plan": "CMIN2-US.IP",
+  "sku": "CMIN2-US.IP",
+  "markets": [
+   "HK"
+  ],
+  "city": "Hong Kong",
+  "kind": "vps",
+  "url": "https://vmshell.com/index.php?rp=%2Fstore%2Fcmin2hk",
+  "official": "https://vmshell.com/index.php?rp=%2Fstore%2Fcmin2hk",
+  "regionProof": "https://vmshell.com/index.php?rp=%2Fstore%2Fcmin2hk",
+  "thread": "https://vmshell.com/index.php?rp=%2Fannouncements%2F5%2FChristmas-and-New-Year--CMI-Servers.html",
+  "source": "VmShell",
+  "sourceScope": "architecture",
+  "price": "12",
+  "currency": "USD",
+  "term": "month",
+  "priceBasis": "official",
+  "status": "catalog",
+  "cpu": "1 vCPU · Intel Xeon",
+  "ram": "512 MB",
+  "disk": "8 GB SSD",
+  "port": "500 Mbps",
+  "traffic": "2 TB / mo",
+  "routeName": "CMI",
+  "routeClass": "unknown",
+  "conditions": {
+   "sc": "香港机房，商家标配 1 个美国归属的独享地址。每月 12 美元起。SKU 描述标明端口为香港 CMI；产品名中的 CMIN2 不能说明三网回程。本次查看的英文商品索引显示售罄，实时库存请到官网查看。",
+   "tc": "香港機房，商家標配 1 個美國歸屬的獨享位址。每月 12 美元起。SKU 描述標明連接埠為香港 CMI；產品名中的 CMIN2 不能說明三網回程。本次查看的英文商品索引顯示售罄，實際庫存請至官網確認。",
+   "en": "The server is in Hong Kong and the vendor includes a dedicated US address. Monthly price starts at USD 12. The SKU lists Hong Kong CMI transport. Its product name does not establish carrier-specific mainland return routes. The English store listing showed sold out on the observation date. Check the shop for current stock.",
+   "ja": "香港設置のサーバーに米国割当の専用 IP を 1 個付属。月 12 米ドルから。SKU の接続は香港 CMI と明記され、商品名から中国 3 社の帰り経路は判断できません。確認日の英語商品一覧は在庫切れで、現在の在庫は店舗で確認できます。"
+  },
+  "observed": "2026-11-20",
+  "planIds": [
+   "v7-vms-hk-usip"
+  ]
+ },
+ {
+  "id": "v7-vms-hk-moip",
+  "provider": "VmShell",
+  "plan": "CMIN2.HK-MO.IP",
+  "sku": "CMIN2.HK-MO.IP",
+  "markets": [
+   "HK"
+  ],
+  "city": "Hong Kong",
+  "kind": "vps",
+  "url": "https://vmshell.com/index.php?rp=%2Fstore%2Fcmin2hk",
+  "official": "https://vmshell.com/index.php?rp=%2Fstore%2Fcmin2hk",
+  "regionProof": "https://vmshell.com/index.php?rp=%2Fstore%2Fcmin2hk",
+  "thread": "https://vmshell.com/index.php?rp=%2Fannouncements%2F5%2FChristmas-and-New-Year--CMI-Servers.html",
+  "source": "VmShell",
+  "sourceScope": "architecture",
+  "price": "7",
+  "currency": "USD",
+  "term": "month",
+  "priceBasis": "official",
+  "status": "catalog",
+  "cpu": "1 vCPU · Intel Xeon",
+  "ram": "512 MB",
+  "disk": "8 GB SSD",
+  "port": "500 Mbps",
+  "traffic": "1 TB / mo",
+  "routeName": "CMI",
+  "routeClass": "unknown",
+  "conditions": {
+   "sc": "香港机房，商家提供 1 个澳门归属的独享地址。每月 7 美元起。公开列表有购买入口，页面未给出具体剩余台数；带宽说明为香港 CMI 500 Mbps。",
+   "tc": "香港機房，商家提供 1 個澳門歸屬的獨享位址。每月 7 美元起。公開清單有購買入口，頁面未列出剩餘台數；頻寬說明為香港 CMI 500 Mbps。",
+   "en": "The server is in Hong Kong and comes with one dedicated Macau address. It starts at USD 7 monthly on a 500 Mbps Hong Kong CMI port. The listing links to ordering without giving a number of units available.",
+   "ja": "香港のデータセンターにマカオ割当の専用 IP を 1 個付属。香港 CMI 500 Mbps で月 7 米ドルから。注文リンクはありますが、残り台数は表示されていません。"
+  },
+  "observed": "2026-11-20",
+  "planIds": [
+   "v7-vms-hk-moip"
+  ]
+ },
+ {
+  "id": "tg-vpsts-green-sg-mini",
+  "source": "VPSTS",
+  "thread": "https://t.me/vpsts/4414",
+  "provider": "GreenCloud",
+  "markets": [
+   "SG"
+  ],
+  "city": "Singapore",
+  "kind": "vps",
+  "plan": "CN Premium Optimized Plan Mini (Singapore)",
+  "sku": "CN Premium Optimized Plan Mini (Singapore)",
+  "url": "https://greencloudvps.com/billing/store/cn-premium-optimized/cn-premium-optimized-plan-mini-singapore",
+  "official": "https://greencloudvps.com/billing/store/cn-premium-optimized",
+  "price": "25.00",
+  "currency": "USD",
+  "term": "month",
+  "cpu": "1 vCPU · EPYC Milan",
+  "ram": "2 GB",
+  "disk": "20 GB NVMe RAID 10",
+  "port": "500 Mbps",
+  "traffic": "500 GB / month",
+  "conditions": {
+   "sc": "商店复核时该新加坡套餐显示 0 台。频道的补货消息记录了当时的变化。含独立 IPv4、IPv6 /64 与每日备份，促销系列不接受退款。",
+   "tc": "商店複核時該新加坡方案顯示 0 台。頻道的補貨消息記錄了當時的變化。含獨立 IPv4、IPv6 /64 與每日備份，促銷系列不接受退款。",
+   "en": "The store showed zero units for this Singapore SKU at review. The channel records an earlier restock. Includes one IPv4, an IPv6 /64 and daily backups. The seller excludes refunds.",
+   "ja": "確認時の公式ストアでは、このシンガポール SKU は残数0でした。チャンネルの入荷報告はその時点の情報です。IPv4 1個、IPv6 /64、毎日のバックアップ付き。返金対象外です。"
+  },
+  "observed": "2026-11-20",
+  "status": "catalog",
+  "stockKey": "gc-sg-prem-mini",
+  "routeName": "CN2 GIA / CU Premium / CMI",
+  "regionProof": "https://greencloudvps.com/billing/store/cn-premium-optimized",
+  "priceBasis": "official",
+  "planIds": [
+   "tg-vpsts-green-sg-mini"
+  ]
+ },
+ {
+  "id": "tg-vpsts-green-sg-one",
+  "source": "VPSTS",
+  "thread": "https://t.me/vpsts/4413",
+  "provider": "GreenCloud",
+  "markets": [
+   "SG"
+  ],
+  "city": "Singapore",
+  "kind": "vps",
+  "plan": "CN Premium Optimized Plan 1 (Singapore)",
+  "sku": "CN Premium Optimized Plan 1 (Singapore)",
+  "url": "https://greencloudvps.com/billing/store/cn-premium-optimized/cn-premium-optimized-plan-1-singapore",
+  "official": "https://greencloudvps.com/billing/store/cn-premium-optimized",
+  "price": "45.00",
+  "currency": "USD",
+  "term": "month",
+  "cpu": "2 vCPU · EPYC Milan",
+  "ram": "4 GB",
+  "disk": "40 GB NVMe RAID 10",
+  "port": "1 Gbps",
+  "traffic": "1 TB / month",
+  "conditions": {
+   "sc": "商店复核时该新加坡套餐显示 0 台。频道的补货消息记录了当时的变化。含独立 IPv4、IPv6 /64 与每日备份，促销系列不接受退款。",
+   "tc": "商店複核時該新加坡方案顯示 0 台。頻道的補貨消息記錄了當時的變化。含獨立 IPv4、IPv6 /64 與每日備份，促銷系列不接受退款。",
+   "en": "The store showed zero units for this Singapore SKU at review. The channel records an earlier restock. Includes one IPv4, an IPv6 /64 and daily backups. The seller excludes refunds.",
+   "ja": "確認時の公式ストアでは、このシンガポール SKU は残数0でした。チャンネルの入荷報告はその時点の情報です。IPv4 1個、IPv6 /64、毎日のバックアップ付き。返金対象外です。"
+  },
+  "observed": "2026-11-20",
+  "status": "catalog",
+  "stockKey": "gc-sg-prem-1",
+  "routeName": "CN2 GIA / CU Premium / CMI",
+  "regionProof": "https://greencloudvps.com/billing/store/cn-premium-optimized",
+  "priceBasis": "official",
+  "planIds": [
+   "tg-vpsts-green-sg-one"
+  ]
+ },
+ {
+  "id": "tg-vpsuu-khan-ca",
+  "source": "VPSUU",
+  "thread": "https://t.me/vpsuu/6002",
+  "provider": "KhanWebHost",
+  "markets": [
+   "CA"
+  ],
+  "city": "Canada",
+  "kind": "vps",
+  "plan": "Canada - KVM2GB",
+  "sku": "Canada - KVM2GB",
+  "url": "https://khanwebhost.com/store/canada-kvm-vps/vps-kvm2gb-promo",
+  "official": "https://khanwebhost.com/blackfriday/",
+  "price": "5.00",
+  "currency": "USD",
+  "term": "month",
+  "cpu": "2 vCPU · AMD EPYC",
+  "ram": "2 GB",
+  "disk": "50 GB NVMe",
+  "port": "1 Gbps",
+  "traffic": "∞",
+  "conditions": {
+   "sc": "黑五活动页列出此档价格。KVM 套餐含一个独立 IPv4 与 IPv6，公开活动页没有标示本档续费金额。",
+   "tc": "黑五活動頁列出此檔價格。KVM 方案含一個獨立 IPv4 與 IPv6，公開活動頁沒有標示這一檔的續費金額。",
+   "en": "The merchant lists this Black Friday rate with one dedicated IPv4 and IPv6. The campaign page does not specify a renewal price for the tier.",
+   "ja": "公式セールに掲載された価格です。KVM には専用 IPv4 1個と IPv6 が含まれます。このプランの更新額は告知されていません。"
+  },
+  "observed": "2026-11-20",
+  "status": "offer",
+  "regular": "10.00",
+  "priceBasis": "official",
+  "planIds": [
+   "tg-vpsuu-khan-ca"
+  ]
+ },
+ {
+  "id": "tg-vpsuu-khan-sg",
+  "source": "VPSUU",
+  "thread": "https://t.me/vpsuu/6002",
+  "provider": "KhanWebHost",
+  "markets": [
+   "SG"
+  ],
+  "city": "Singapore",
+  "kind": "vps",
+  "plan": "Singapore-KVM8GB",
+  "sku": "Singapore-KVM8GB",
+  "url": "https://khanwebhost.com/store/singapore-kvm-vps/vps-sg8-bf2026",
+  "official": "https://khanwebhost.com/blackfriday/",
+  "price": "10.00",
+  "currency": "USD",
+  "term": "month",
+  "cpu": "4 vCPU",
+  "ram": "8 GB",
+  "disk": "30 GB NVMe",
+  "port": "1 Gbps",
+  "traffic": "1 TB / month",
+  "conditions": {
+   "sc": "黑五活动页列出此档价格。KVM 套餐含一个独立 IPv4 与 IPv6，公开活动页没有标示本档续费金额。",
+   "tc": "黑五活動頁列出此檔價格。KVM 方案含一個獨立 IPv4 與 IPv6，公開活動頁沒有標示這一檔的續費金額。",
+   "en": "The merchant lists this Black Friday rate with one dedicated IPv4 and IPv6. The campaign page does not specify a renewal price for the tier.",
+   "ja": "公式セールに掲載された価格です。KVM には専用 IPv4 1個と IPv6 が含まれます。このプランの更新額は告知されていません。"
+  },
+  "observed": "2026-11-20",
+  "status": "offer",
+  "regular": "22.00",
+  "priceBasis": "official",
+  "planIds": [
+   "tg-vpsuu-khan-sg"
+  ]
+ },
+ {
+  "id": "tg-vpsuu-khan-fr",
+  "source": "VPSUU",
+  "thread": "https://t.me/vpsuu/6002",
+  "provider": "KhanWebHost",
+  "markets": [
+   "FR"
+  ],
+  "city": "France",
+  "kind": "vps",
+  "plan": "France - KVM1GB NAT",
+  "sku": "France - KVM1GB NAT",
+  "url": "https://khanwebhost.com/blackfriday/",
+  "official": "https://khanwebhost.com/blackfriday/",
+  "price": "7.00",
+  "currency": "USD",
+  "term": "year",
+  "cpu": "1 vCPU",
+  "ram": "1 GB",
+  "disk": "10 GB NVMe",
+  "port": "1 Gbps",
+  "traffic": "∞",
+  "conditions": {
+   "sc": "法国 NAT 节点共用公网 IPv4，分配 20 个映射端口和独立 IPv6。原价为 14 美元/年，黑五活动页标价 7 美元/年。",
+   "tc": "法國 NAT 節點共用公網 IPv4，分配 20 個映射連接埠和獨立 IPv6。原價為 14 美元/年，黑五活動頁標價 7 美元/年。",
+   "en": "The France NAT VPS shares an IPv4 and includes 20 forwarded ports and dedicated IPv6. The Black Friday page lists $7 for the year against a $14 rate.",
+   "ja": "フランスの NAT プランでは IPv4 を共有し、転送ポート20個と専用 IPv6 が付きます。公式セールの年額は7ドル、通常額は14ドルです。"
+  },
+  "observed": "2026-11-20",
+  "status": "offer",
+  "regular": "14.00",
+  "priceBasis": "official",
+  "planIds": [
+   "tg-vpsuu-khan-fr"
+  ]
+ },
+ {
+  "id": "tg-deer-noez-hdd",
+  "source": "VPSDEER",
+  "thread": "https://t.me/vpsdeer/2647",
+  "provider": "noez.de",
+  "markets": [
+   "DE"
+  ],
+  "city": "Frankfurt",
+  "kind": "vps",
+  "plan": "VPS 1 KVM HDD",
+  "sku": "VPS 1 KVM HDD",
+  "url": "https://noez.de/en/order/product/528/1",
+  "official": "https://lowendtalk.com/discussion/223518/noez-de-prepaid-hosting-from-frankfurt-since-2012",
+  "price": "4.74",
+  "currency": "EUR",
+  "term": "month",
+  "cpu": "1 vCPU",
+  "ram": "2 GB",
+  "disk": "40 GB HDD",
+  "port": "2.5 Gbps burst",
+  "traffic": "1000 GB / month",
+  "conditions": {
+   "sc": "商家公开的法兰克福预付费价格。2.5 Gbps 为网卡突发上限，基础套餐每月含 1,000 GB、一个 IPv4 和 IPv6。超出基础流量可选购附加包。",
+   "tc": "商家公開的法蘭克福預付費價格。2.5 Gbps 為網卡突發上限，基本方案每月含 1,000 GB、一個 IPv4 和 IPv6。超過基本流量可選購附加包。",
+   "en": "Frankfurt prepaid rate from the seller. The interface can burst to 2.5 Gbps. Base transfer is 1,000 GB a month with one IPv4 and IPv6. Additional transfer options cost extra.",
+   "ja": "販売元のフランクフルト前払い料金です。NIC のバースト上限は2.5 Gbps。基本枠は月1,000 GB、IPv4 1個と IPv6 付きです。転送量追加は有料です。"
+  },
+  "observed": "2026-11-20",
+  "status": "catalog",
+  "regionProof": "https://noez.de/en/vserver",
+  "merchantPublished": "2026-11-19",
+  "priceBasis": "official",
+  "planIds": [
+   "tg-deer-noez-hdd"
+  ]
+ },
+ {
+  "id": "tg-deer-noez-ssd",
+  "source": "VPSDEER",
+  "thread": "https://t.me/vpsdeer/2647",
+  "provider": "noez.de",
+  "markets": [
+   "DE"
+  ],
+  "city": "Frankfurt",
+  "kind": "vps",
+  "plan": "VPS 1 KVM SSD",
+  "sku": "VPS 1 KVM SSD",
+  "url": "https://noez.de/en/order/product/522/1",
+  "official": "https://lowendtalk.com/discussion/223518/noez-de-prepaid-hosting-from-frankfurt-since-2012",
+  "price": "5.44",
+  "currency": "EUR",
+  "term": "month",
+  "cpu": "1 vCPU",
+  "ram": "2 GB",
+  "disk": "20 GB SSD",
+  "port": "2.5 Gbps burst",
+  "traffic": "1000 GB / month",
+  "conditions": {
+   "sc": "商家公开的法兰克福预付费价格。2.5 Gbps 为网卡突发上限，基础套餐每月含 1,000 GB、一个 IPv4 和 IPv6。超出基础流量可选购附加包。",
+   "tc": "商家公開的法蘭克福預付費價格。2.5 Gbps 為網卡突發上限，基本方案每月含 1,000 GB、一個 IPv4 和 IPv6。超過基本流量可選購附加包。",
+   "en": "Frankfurt prepaid rate from the seller. The interface can burst to 2.5 Gbps. Base transfer is 1,000 GB a month with one IPv4 and IPv6. Additional transfer options cost extra.",
+   "ja": "販売元のフランクフルト前払い料金です。NIC のバースト上限は2.5 Gbps。基本枠は月1,000 GB、IPv4 1個と IPv6 付きです。転送量追加は有料です。"
+  },
+  "observed": "2026-11-20",
+  "status": "catalog",
+  "regionProof": "https://noez.de/en/vserver",
+  "merchantPublished": "2026-11-19",
+  "priceBasis": "official",
+  "planIds": [
+   "tg-deer-noez-ssd"
+  ]
+ },
+ {
+  "id": "tg-deer-moon-hgc",
+  "source": "VPSDEER",
+  "thread": "https://t.me/vpsdeer/2652",
+  "provider": "MoonVM",
+  "markets": [
+   "HK"
+  ],
+  "city": "Hong Kong",
+  "kind": "vps",
+  "plan": "HGC - 100Mbps",
+  "sku": "HGC - 100Mbps",
+  "url": "https://store.moonvm.com/index.php?rp=/store/hong-kong-vps",
+  "official": "https://store.moonvm.com/index.php?rp=/store/hong-kong-vps",
+  "price": "12.00",
+  "currency": "USD",
+  "term": "month",
+  "cpu": "1 vCPU · EPYC 7402P",
+  "ram": "1 GB",
+  "disk": "10 GB SSD RAID 10",
+  "port": "100 Mbps",
+  "traffic": "5 TB / month",
+  "conditions": {
+   "sc": "商家列出静态 IPv4，流量按入站和出站之和计算，手工开通约 2–12 小时。商店给出的测试地址是 218.188.154.1。",
+   "tc": "商家列出靜態 IPv4，流量按入站和出站之和計算，人工開通約 2–12 小時。商店公布的測試位址為 218.188.154.1。",
+   "en": "Includes a static IPv4. The 5 TB allowance counts incoming and outgoing traffic. Manual activation takes an estimated 2–12 hours. The store publishes 218.188.154.1 as its sample IP.",
+   "ja": "静的 IPv4 が付きます。月5 TB は送受信を合算し、手動開通は約2～12時間です。ストアの公開テスト IP は218.188.154.1です。"
+  },
+  "observed": "2026-11-20",
+  "status": "catalog",
+  "ip": "isp",
+  "regionProof": "https://store.moonvm.com/index.php?rp=/store/hong-kong-vps",
+  "priceBasis": "official",
+  "planIds": [
+   "tg-deer-moon-hgc"
+  ]
+ },
+ {
+  "id": "tg-deer-riven-jp",
+  "source": "VPSDEER",
+  "thread": "https://t.me/vpsdeer/2636",
+  "provider": "Riven Cloud",
+  "markets": [
+   "JP"
+  ],
+  "city": "Tokyo",
+  "kind": "vps",
+  "plan": "Premium VPS · Tokyo · 1 Gbps",
+  "sku": "Premium VPS · Tokyo · 1 Gbps",
+  "url": "https://sa.net/pricing/",
+  "official": "https://sa.net/",
+  "price": "99.95",
+  "currency": "USD",
+  "term": "month",
+  "cpu": "2 vCPU · Ryzen 9950X",
+  "ram": "4 GB",
+  "disk": "40 GB NVMe",
+  "port": "1 Gbps",
+  "traffic": "1 TB / month",
+  "conditions": {
+   "sc": "商家标价为带流量限额的 1 Gbps 档，含每日备份。VPSDEER 将东京这一批次标为售罄。商家公布电信 CTGNet、联通 CUP、移动 CMIN2 的线路说明。",
+   "tc": "商家標價為帶流量上限的 1 Gbps 檔，含每日備份。VPSDEER 將東京這一批次標為售罄。商家公布電信 CTGNet、聯通 CUP、移動 CMIN2 的線路說明。",
+   "en": "Rate for the metered 1 Gbps tier with daily backups. VPSDEER marked the Tokyo batch sold out. The seller documents Telecom CTGNet, Unicom CUP and Mobile CMIN2 routes.",
+   "ja": "転送量制の1 Gbps プランで、毎日のバックアップ付きです。東京の当該ロットは VPSDEER で売り切れと記載されています。販売元は CTGNet、CUP、CMIN2 の経路を公開しています。"
+  },
+  "observed": "2026-11-20",
+  "status": "catalog",
+  "routeName": "CTGNet / CUP AS9929 / CMIN2",
+  "regionProof": "https://sa.net/",
+  "priceBasis": "official",
+  "planIds": [
+   "tg-deer-riven-jp"
+  ]
+ },
+ {
+  "id": "tg-deer-blossom-xs",
+  "source": "VPSDEER",
+  "thread": "https://t.me/vpsdeer/2645",
+  "provider": "Blossom Host",
+  "markets": [
+   "SEA"
+  ],
+  "city": "Seattle",
+  "kind": "vps",
+  "plan": "ISP-XS · Seattle",
+  "sku": "ISP-XS · Seattle",
+  "url": "https://blossomhost.us/isp-vps/",
+  "official": "https://blossomhost.us/isp-vps/",
+  "price": "19.00",
+  "currency": "USD",
+  "term": "month",
+  "cpu": "2 vCPU",
+  "ram": "2 GB",
+  "disk": "20 GB SSD",
+  "port": "10 Gbps shared",
+  "traffic": "1 TB / month",
+  "conditions": {
+   "sc": "商家公布 Astound/Wave AS11404 独立固定 IPv4，主机共享 10 Gbps 对称接入。频道报 3 TB 流量与首期折扣，官网现列 1 TB，以官网额度和公开月费展示。",
+   "tc": "商家公布 Astound/Wave AS11404 獨立固定位址，主機共享 10 Gbps 對稱接取。頻道報 3 TB 流量與首期折扣，官網現列 1 TB，此處顯示官網額度及月費。",
+   "en": "The seller identifies a dedicated Astound/Wave AS11404 IPv4 on a shared symmetrical 10 Gbps host link. The channel listed 3 TB and a first-term discount. The seller's catalog lists 1 TB at the monthly rate shown.",
+   "ja": "専用 IPv4 は Astound/Wave AS11404、ホスト回線は共有の上下10 Gbps です。チャンネルでは3 TB と初回割引の記載がありますが、ここでは公式の1 TB と月額を掲載しています。"
+  },
+  "observed": "2026-11-20",
+  "status": "catalog",
+  "ip": "isp",
+  "regionProof": "https://blossomhost.us/seattle-vps/",
+  "priceBasis": "official",
+  "planIds": [
+   "tg-deer-blossom-xs"
+  ]
+ },
+ {
+  "id": "tg-poor-dr-core",
+  "source": "PoorVPSMsg",
+  "thread": "https://t.me/PoorVPSMsg/4799",
+  "provider": "DediRock",
+  "markets": [
+   "US"
+  ],
+  "city": "Buffalo, New York",
+  "kind": "vps",
+  "plan": "High-RAM VPS NY Core",
+  "sku": "High-RAM VPS NY Core",
+  "url": "https://billing.dedirock.com/index.php/store/the-dedirock-high-ram-vps/dedirock-high-ram-vps-core",
+  "official": "https://lowendtalk.com/discussion/223259/the-future-arrives-early-the-4k-write-sensation-the-dedirock-high-ram-vps",
+  "price": "24.99",
+  "currency": "USD",
+  "term": "year",
+  "cpu": "1 vCPU",
+  "ram": "8 GB",
+  "disk": "20 GB HDD",
+  "port": "1 Gbps",
+  "traffic": "2 TB / month",
+  "conditions": {
+   "sc": "频道记录的是纽约州 Buffalo 商品重新上架。DediRock 在商家帖列出年度预付价，适合需要大内存的缓存服务，持续高 CPU 和重磁盘 I/O 不在方案定位内。",
+   "tc": "頻道記錄的是紐約州 Buffalo 商品重新上架。DediRock 在商家帖列出年度預付價，適合需要大記憶體的快取服務，持續高 CPU 與高磁碟 I/O 不在方案定位內。",
+   "en": "The channel records the Buffalo listing reappearing. DediRock quotes the annual prepaid rate for memory-heavy services such as caching. The seller excludes sustained CPU or intensive disk I/O use from the intended workload.",
+   "ja": "ニューヨーク州バッファローでの再掲載通知です。公式投稿の年払いプランはキャッシュなど大容量メモリ用途向けです。持続的な高 CPU 負荷や大量のディスク I/O には向いていません。"
+  },
+  "observed": "2026-11-20",
+  "status": "catalog",
+  "priceBasis": "official",
+  "planIds": []
+ },
+ {
+  "id": "tg-poor-dr-power",
+  "source": "PoorVPSMsg",
+  "thread": "https://t.me/PoorVPSMsg/4790",
+  "provider": "DediRock",
+  "markets": [
+   "US"
+  ],
+  "city": "Buffalo, New York",
+  "kind": "vps",
+  "plan": "High-RAM VPS NY Power",
+  "sku": "High-RAM VPS NY Power",
+  "url": "https://billing.dedirock.com/index.php/store/the-dedirock-high-ram-vps/dedirock-high-ram-vps-power",
+  "official": "https://lowendtalk.com/discussion/223259/the-future-arrives-early-the-4k-write-sensation-the-dedirock-high-ram-vps",
+  "price": "89.99",
+  "currency": "USD",
+  "term": "year",
+  "cpu": "2 vCPU",
+  "ram": "32 GB",
+  "disk": "50 GB HDD",
+  "port": "1 Gbps",
+  "traffic": "4 TB / month",
+  "conditions": {
+   "sc": "频道记录的是纽约州 Buffalo 商品重新上架。DediRock 在商家帖列出年度预付价，适合需要大内存的缓存服务，持续高 CPU 和重磁盘 I/O 不在方案定位内。",
+   "tc": "頻道記錄的是紐約州 Buffalo 商品重新上架。DediRock 在商家帖列出年度預付價，適合需要大記憶體的快取服務，持續高 CPU 與高磁碟 I/O 不在方案定位內。",
+   "en": "The channel records the Buffalo listing reappearing. DediRock quotes the annual prepaid rate for memory-heavy services such as caching. The seller excludes sustained CPU or intensive disk I/O use from the intended workload.",
+   "ja": "ニューヨーク州バッファローでの再掲載通知です。公式投稿の年払いプランはキャッシュなど大容量メモリ用途向けです。持続的な高 CPU 負荷や大量のディスク I/O には向いていません。"
+  },
+  "observed": "2026-11-20",
+  "status": "catalog",
+  "priceBasis": "official",
+  "planIds": []
+ },
+ {
+  "id": "tg-deer-layer-nano",
+  "source": "VPSDEER",
+  "thread": "https://t.me/vpsdeer/2651",
+  "provider": "LayerOne",
+  "markets": [
+   "US"
+  ],
+  "city": "Tampa, Florida",
+  "kind": "vps",
+  "plan": "gc.nano",
+  "sku": "gc.nano",
+  "url": "https://layeronecloud.com/client/order/layerone-nano-bf-2026/?cadence=annual",
+  "official": "https://layeronecloud.com/early-black-friday",
+  "price": "18.72",
+  "currency": "USD",
+  "term": "year",
+  "cpu": "1 vCPU",
+  "ram": "1 GB",
+  "disk": "20 GB NVMe",
+  "port": "1 Gbps",
+  "traffic": "3 TB / month",
+  "conditions": {
+   "sc": "商家说明年付折扣到美国网络星期一，常规黑五档没有台数上限。清单以年度账单计价，机房位于佛罗里达州 Tampa。",
+   "tc": "商家說明年付折扣到美國網路星期一，常規黑五檔沒有台數上限。清單以年度帳單計價，機房位於佛羅里達州 Tampa。",
+   "en": "The seller's annual offer runs through Cyber Monday without a unit cap on these regular sale tiers. The total shown is the annual bill for Tampa, Florida.",
+   "ja": "年払いセールはサイバーマンデーまでで、この通常セール枠に数量制限はありません。掲載額はフロリダ州タンパの年間請求額です。"
+  },
+  "observed": "2026-11-20",
+  "status": "offer",
+  "endDate": "2026-11-30",
+  "regular": "28.80",
+  "regionProof": "https://layeronecloud.com/",
+  "merchantPublished": "2026-11-20",
+  "priceBasis": "official",
+  "planIds": []
+ },
+ {
+  "id": "tg-deer-layer-small",
+  "source": "VPSDEER",
+  "thread": "https://t.me/vpsdeer/2651",
+  "provider": "LayerOne",
+  "markets": [
+   "US"
+  ],
+  "city": "Tampa, Florida",
+  "kind": "vps",
+  "plan": "gc.small",
+  "sku": "gc.small",
+  "url": "https://layeronecloud.com/client/order/layerone-4g-bf-2026/?cadence=annual",
+  "official": "https://layeronecloud.com/early-black-friday",
+  "price": "49.92",
+  "currency": "USD",
+  "term": "year",
+  "cpu": "2 vCPU",
+  "ram": "4 GB",
+  "disk": "60 GB NVMe",
+  "port": "1 Gbps",
+  "traffic": "5 TB / month",
+  "conditions": {
+   "sc": "商家说明年付折扣到美国网络星期一，常规黑五档没有台数上限。清单以年度账单计价，机房位于佛罗里达州 Tampa。",
+   "tc": "商家說明年付折扣到美國網路星期一，常規黑五檔沒有台數上限。清單以年度帳單計價，機房位於佛羅里達州 Tampa。",
+   "en": "The seller's annual offer runs through Cyber Monday without a unit cap on these regular sale tiers. The total shown is the annual bill for Tampa, Florida.",
+   "ja": "年払いセールはサイバーマンデーまでで、この通常セール枠に数量制限はありません。掲載額はフロリダ州タンパの年間請求額です。"
+  },
+  "observed": "2026-11-20",
+  "status": "offer",
+  "endDate": "2026-11-30",
+  "regular": "76.80",
+  "regionProof": "https://layeronecloud.com/",
+  "merchantPublished": "2026-11-20",
+  "priceBasis": "official",
+  "planIds": []
+ },
+ {
+  "id": "tg-vpsuu-edgenat-kr-g1",
+  "source": "VPSUU",
+  "thread": "https://t.me/vpsuu/5990",
+  "provider": "edgeNAT",
+  "markets": [
+   "KR"
+  ],
+  "city": "Seoul",
+  "kind": "vps",
+  "plan": "Korea G1 · Native IP / SK",
+  "sku": "Korea G1 · Native IP / SK",
+  "url": "https://www.edgenat.com/store/krlocal",
+  "official": "https://www.edgenat.com/store/krlocal",
+  "price": "70",
+  "currency": "CNY",
+  "term": "month",
+  "cpu": "1 vCPU",
+  "ram": "1 GB",
+  "disk": "20 GB SSD",
+  "port": "5 Mbps",
+  "traffic": "∞",
+  "conditions": {
+   "sc": "官网列为韩国原生 IP、SK 直连，明确禁止代理翻墙业务。月付优惠按大鸟笔记 11 月 16 日公布的七折码计算；商家方案页可核对常规价，优惠以付款页为准。",
+   "tc": "官網列為韓國原生 IP、SK 直連，明確禁止代理翻牆業務。月付優惠按大鳥筆記 11 月 16 日公布的七折碼計算；商家方案頁可核對常規價，優惠以付款頁為準。",
+   "en": "The seller describes Korean native IP and SK direct routing and prohibits proxy circumvention on this line. Price assumes the 30% code from the publisher's 16 November article. The shop establishes the base rate; checkout confirms the discount.",
+   "ja": "販売元の表記は韓国原生 IP・SK 直結で、規制回避プロキシ用途は禁止されています。月額は11月16日に掲載された30%引きコードで計算した金額です。通常額はストア、割引後の額は決済画面で確認できます。"
+  },
+  "observed": "2026-11-20",
+  "status": "limited",
+  "regular": "100",
+  "code": "NBD71E0D1V",
+  "endDate": "2026-11-30",
+  "routeName": "SK direct",
+  "ip": "local",
+  "regionProof": "https://www.edgenat.com/store/krlocal",
+  "sourceArticle": "https://www.daniao.org/30889.html",
+  "articlePublished": "2026-11-16",
+  "priceBasis": "afterCode",
+  "planIds": [
+   "tg-vpsuu-edgenat-kr-g1"
+  ]
+ },
+ {
+  "id": "tg-vpsuu-edgenat-kr-g2",
+  "source": "VPSUU",
+  "thread": "https://t.me/vpsuu/5990",
+  "provider": "edgeNAT",
+  "markets": [
+   "KR"
+  ],
+  "city": "Seoul",
+  "kind": "vps",
+  "plan": "Korea G2 · Native IP / SK",
+  "sku": "Korea G2 · Native IP / SK",
+  "url": "https://www.edgenat.com/store/krlocal",
+  "official": "https://www.edgenat.com/store/krlocal",
+  "price": "84",
+  "currency": "CNY",
+  "term": "month",
+  "cpu": "2 vCPU",
+  "ram": "2 GB",
+  "disk": "20 GB SSD",
+  "port": "5 Mbps",
+  "traffic": "∞",
+  "conditions": {
+   "sc": "官网列为韩国原生 IP、SK 直连，明确禁止代理翻墙业务。月付优惠按大鸟笔记 11 月 16 日公布的七折码计算；商家方案页可核对常规价，优惠以付款页为准。",
+   "tc": "官網列為韓國原生 IP、SK 直連，明確禁止代理翻牆業務。月付優惠按大鳥筆記 11 月 16 日公布的七折碼計算；商家方案頁可核對常規價，優惠以付款頁為準。",
+   "en": "The seller describes Korean native IP and SK direct routing and prohibits proxy circumvention on this line. Price assumes the 30% code from the publisher's 16 November article. The shop establishes the base rate; checkout confirms the discount.",
+   "ja": "販売元の表記は韓国原生 IP・SK 直結で、規制回避プロキシ用途は禁止されています。月額は11月16日に掲載された30%引きコードで計算した金額です。通常額はストア、割引後の額は決済画面で確認できます。"
+  },
+  "observed": "2026-11-20",
+  "status": "limited",
+  "regular": "120",
+  "code": "NBD71E0D1V",
+  "endDate": "2026-11-30",
+  "routeName": "SK direct",
+  "ip": "local",
+  "regionProof": "https://www.edgenat.com/store/krlocal",
+  "sourceArticle": "https://www.daniao.org/30889.html",
+  "articlePublished": "2026-11-16",
+  "priceBasis": "afterCode",
+  "planIds": [
+   "tg-vpsuu-edgenat-kr-g2"
+  ]
  }
 ];
 (function stockAndDirectory() {
@@ -2162,12 +3133,13 @@ const COMMUNITY_OFFERS = [
       const routeName = row.routeName || '';
       let carriers = [];
       if (row.provider === 'PanstarCloud' || /^sb-rcvps-/.test(row.id) ||
-          /^dedi-cn2/.test(row.id) || row.id === 'lh-de-basic') carriers = ['CT','CU','CM'];
+          /^dedi-cn2/.test(row.id) || row.id === 'lh-de-basic' ||
+          /^tg-vpsts-green-sg-/.test(row.id) || row.id === 'tg-deer-riven-jp') carriers = ['CT','CU','CM'];
       if (/^dedi-cmin/.test(row.id)) carriers = ['CU','CM'];
       const plan = oldPlan || {
         id, market, provider:row.provider, plan:row.plan, kind:row.kind,
         city:row.markets.length > 1 ? datedMarketCities[market] || market : row.city,
-        ip:row.ip || 'unknown', route:routeName && !noOptimization.test(routeName) ? 'claimed' : 'unknown',
+        ip:row.ip || 'unknown', route:row.routeClass || (routeName && !noOptimization.test(routeName) ? 'claimed' : 'unknown'),
         routeName, carriers, url:row.url, proof:row.regionProof || row.official, notes:row.conditions
       };
       const legacyPrice = oldPlan?.spec?.price || '';
@@ -2175,7 +3147,7 @@ const COMMUNITY_OFFERS = [
       // The pricing link is explicitly labelled "provider" in the drawer. A community
       // report can establish a facility location, but belongs under the separate source links.
       const merchantPriceSource = row.provider === 'RackNerd' || row.provider === 'RAKsmart' ? row.official :
-        row.provider === 'CloudCone' ? row.regionProof : row.url;
+        row.provider === 'CloudCone' ? row.regionProof : row.manualCheckout ? row.official : row.url;
       const spec = {...(oldPlan?.spec || {}), currency:row.currency, term:row.term,
         cpu:row.cpu, ram:row.ram, disk:row.disk, port:row.port, traffic:row.traffic,
         sku:row.sku, date:row.observed, proof:merchantPriceSource};
@@ -2189,7 +3161,10 @@ const COMMUNITY_OFFERS = [
       }
       Object.defineProperty(spec, 'price', {
         enumerable:true, configurable:true,
-        get() { return offerWindowClosed() ? regular : row.price; }
+        get() {
+          if (row.priceBasis === 'historical' || row.priceBasis === 'portal') return '';
+          return offerWindowClosed() ? regular : row.price;
+        }
       });
       if (row.status !== 'catalog') {
         Object.defineProperty(spec, 'sourceNote', {

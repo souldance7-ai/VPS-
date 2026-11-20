@@ -13,7 +13,12 @@
 .forum-feed-list a {color:inherit;font-weight:650;text-decoration-thickness:1px;text-underline-offset:.2em;}
 .forum-feed-list time,.forum-feed-foot {font-size:.82em;}
 .forum-feed-list time {white-space:nowrap;}
+.forum-feed-post {min-width:0;}
+.forum-feed-snippet {display:block;margin-block-start:.3rem;line-height:1.45;overflow-wrap:anywhere;font-size:.9em;}
+.forum-feed-sources {min-width:0;}
 .forum-feed-actions {gap:.55rem 1rem;margin-block:.9rem .65rem;}
 .forum-feed-actions a {color:inherit;text-underline-offset:.18em;}
 .forum-feed-foot {justify-content:space-between;}
 @media(max-width:680px) {.forum-feed-list li {display:grid;grid-template-columns:minmax(0,1fr);} .forum-feed-list a {overflow-wrap:anywhere;}}
+
+.forum-feed-post .feed-to-catalog{display:block;width:fit-content;max-width:100%;font-size:12px;color:#744b12;font-weight:750;text-decoration:underline;margin-top:6px}

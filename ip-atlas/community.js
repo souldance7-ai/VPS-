@@ -1,5 +1,7 @@
 'use strict';
 const communityText={
+ configured:['按配置询价','依規格詢價','Configured pricing','構成ごとの料金'],tgSource:['频道原帖','頻道原帖','Original channel post','チャンネル原文'],rateSource:['商家产品资料','商家產品資料','Provider documentation','公式製品情報'],offerIndex:['来源与套餐报价','來源與方案報價','Sourced plan prices','情報源・プラン料金'],
+ historical:['历史参考价','歷史參考價','Historical reference price','過去の参考価格'],estimate:['配置估算价','規格估算價','Configuration estimate','構成の概算料金'],quotedOn:['历史报价日期','歷史報價日期','Original quote date','当時の料金確認日'],newsOn:['消息日期','消息日期','Reported on','投稿の日付'],portal:['商家购买入口','商家購買入口','Provider checkout','公式注文窓口'],
  standalone:['查看套餐库存','查看套餐庫存','Check plan stock','プランの在庫を照会'],shortlist:['商家选集','商家選集','Provider shortlist','事業者一覧記事'],dateOnly:['仅公布日期','僅公布日期','date only','日付のみ公表'],beforeCode:['用码前价格','用碼前價格','Before coupon','コード適用前'],afterCode:['用码后价格','用碼後價格','After coupon','コード適用後'],officialPrice:['商家公布价格','商家公布價格','Provider price','公式表示価格'],title:['论坛与评测报价','論壇與評測報價','Community offer index','フォーラム・レビュー価格表'],
  matches:['这款方案的论坛与评测记录','這款方案的論壇與評測紀錄','Community coverage for this plan','このプランの掲載記録'],
  records:['条记录','筆紀錄','records','件'],sources:['个来源','個來源','sources','出典'],search:['商家、配置、线路或优惠码','商家、配置、線路或優惠碼','Provider, specs, route or code','事業者・仕様・回線・コード'],
@@ -25,7 +27,7 @@ const communityText={
  month:['月','月','mo','月'],year:['年','年','yr','年'],quarter:['季度','季','quarter','四半期'],hour:['小时','小時','hour','時間'],
  codeCopy:['复制优惠码','複製優惠碼','Copy coupon','コードをコピー'],datesUnknown:['截止依商家公告或额度','截止依商家公告或額度','End date subject to provider terms or quota','終了は事業者の条件・配布枠による']
 };
-const communityStates=['offer','limited','checkout','upcoming','catalog','expired'];
+const communityStates=['offer','limited','checkout','upcoming','catalog','configured','estimate','historical','expired'];
 const communityFilters={search:'',region:'',source:'',state:'',kind:'',stock:''};
 const communityOpenRecords=new Set();
 let communityTimer;
@@ -43,6 +45,9 @@ function communityStage(row,now=Date.now()){
  const [uncertain,finished]=communityCalendar(row);
  if(row.status==='expired'||Number.isFinite(ends)&&ends<=now||now>=finished)return 'expired';
  if(Number.isFinite(starts)&&starts>now)return 'upcoming';
+ if(row.priceBasis==='historical')return 'historical';
+ if(row.priceBasis==='estimate')return 'estimate';
+ if(row.manualCheckout&&row.price==null)return 'configured';
  if(row.status==='catalog')return 'catalog';
  if(now>=uncertain)return 'checkout';
  if(row.status==='limited')return 'limited';
@@ -83,11 +88,14 @@ function communitySources(row,node){
   const href=communityHref(item.thread);if(!href)continue;
   const path=new URL(href).pathname;
   let type='sourcePost';
+ if(new URL(href).hostname==='t.me')type='tgSource';
+ else if(new URL(href).hostname==='vps.taipei')type='rateSource';
   if(item.sourceScope==='shortlist'||item.source==='D-VPS'&&path==='/t/694/')type='shortlist';
   else if(path==='/'||/^\/(categories|go)\//.test(path))type='sourceIndex';
   else if(item.source==='DigVPS'||item.source==='D-VPS'&&!/\/(status|t)\//.test(path))type='sourceReview';
   add(communitySourceLabel(item.source)+' · '+communityLabel(type),href);
  }
+ if(row.checkout)add(communityLabel('portal'),row.checkout);
  add(communityLabel('order'),row.url);add(communityLabel('terms'),row.official);add(communityLabel('locationProof'),row.regionProof);
  add(communityLabel('bonusTerms'),row.bonusSource);
 }
@@ -100,6 +108,8 @@ function communityHasProbe(row,region){
  return (row.planIds||[]).some(id=>{const p=PLANS.find(plan=>plan.id===id);return p&&(!region||p.market===region)&&getStockKey(p)});
 }
 function communityPriceLabel(row){
+ if(['historical','estimate'].includes(row.priceBasis))return communityLabel(row.priceBasis);
+ if(row.priceBasis==='portal')return communityLabel('configured');
  const stage=communityStage(row),basis=({beforeCode:'beforeCode',afterCode:'afterCode',official:'officialPrice'})[row.priceBasis];
  const phase=stage==='expired'?'historicalPrice':stage==='upcoming'?'announcedPrice':'';
  if(phase)return communityLabel(phase)+(basis&&basis!=='officialPrice'?' · '+communityLabel(basis):'');
@@ -126,6 +136,7 @@ function communityDetails(row,inDrawer){
  if(row.conditions)body.append(el('p',val(row.conditions)));
  const dates=el('div',null,'community-dates');
  for(const [k,raw] of [['observed',row.observed],['starts',row.start],['ends',row.end]])if(raw){const t=el('time',communityLabel(k)+' · '+communityDate(raw));t.dateTime=raw;dates.append(t)}
+ for(const [name,raw] of [['quotedOn',row.quotedAt||row.quoteDate],['newsOn',row.publishedAt||row.postDate]])if(raw&&raw!==row.observed){const time=el('time',communityLabel(name)+' · '+communityDate(raw));time.dateTime=raw;dates.append(time)}
  if(row.endDate&&!row.end){const t=el('time',communityLabel('ends')+' · '+row.endDate+' ('+communityLabel('dateOnly')+')');t.dateTime=row.endDate;dates.append(t)}
  if(!row.end&&!row.endDate&&row.status!=='catalog'&&row.status!=='expired')dates.append(el('span',communityLabel('datesUnknown')));
  body.append(dates);
@@ -171,7 +182,7 @@ function renderCommunity(out=$('community')){
  out.replaceChildren();
  if(!COMMUNITY_OFFERS.length)return;
  const hub=el('div',null,'community-hub'),head=el('div',null,'community-head'),total=el('output',null,'community-count');
- total.setAttribute('aria-live','polite');head.append(el('h3',communityLabel('title')),total);hub.append(head);
+ total.setAttribute('aria-live','polite');head.append(el('h3',communityLabel('offerIndex')),total);hub.append(head);
  const controls=el('div',null,'community-controls'),listing=el('div',null,'community-list');
  function field(key,control){const label=el('label');label.append(el('span',communityLabel(key)),control);controls.append(label)}
  const search=el('input');search.type='search';search.value=communityFilters.search;

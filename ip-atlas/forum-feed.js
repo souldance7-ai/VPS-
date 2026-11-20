@@ -1,10 +1,14 @@
 'use strict';
 
 const publicForumTitles = {
-  title:['论坛新帖','論壇新帖','Forum dispatches','フォーラムの新着'],
+  title:['论坛与频道新帖','論壇與頻道新帖','Forum and channel dispatches','掲示板・チャンネルの新着'],
   nodeseek:['NodeSeek','NodeSeek','NodeSeek','NodeSeek'],
   sb:['烧饼 · 推广','燒餅 · 推廣','SB · promotions','SB・プロモーション'],
-  intro:['从公开订阅源筛选 VPS、线路和商家相关标题。帖子显示原文，价格与优惠条件请打开商家活动页核对。','從公開訂閱源篩選 VPS、線路與商家相關標題。帖子顯示原文，價格與優惠條件請開啟商家活動頁核對。','Browse original forum headlines about VPS, networks and providers. Check the merchant’s campaign for prices and terms.','公開フィードから VPS、回線、事業者に関する記事の原題を表示します。価格と適用条件は販売元のキャンペーンページで確認してください。'],
+  intro:['查看论坛原帖与 Telegram 公开频道消息。补货、价格和优惠码均按发帖时的消息展示，下单时请查看商家的库存与条款。','查看論壇原帖與 Telegram 公開頻道消息。補貨、價格和優惠碼均按發帖時的消息顯示，下單時請查看商家的庫存與條款。','Read forum threads and public Telegram posts. Restocks, prices and codes are reported at posting time. Check the merchant’s inventory and terms before ordering.','掲示板と Telegram の公開投稿を閲覧できます。入荷、価格、コードは投稿時点の情報です。注文時は販売元の在庫と条件を確認してください。'],
+  openChannel:['在 Telegram 打开频道 ↗','在 Telegram 開啟頻道 ↗','Open channel in Telegram ↗','Telegram でチャンネルを開く ↗'],
+  limited:['本次公开网页只提供频道入口。可在 Telegram 查看消息。','本次公開網頁只提供頻道入口。可在 Telegram 查看消息。','The public page did not provide messages on this read. Open the channel in Telegram.','今回は公開ページからメッセージを取得できませんでした。Telegram でチャンネルを開いてください。'],
+  telegramEmpty:['本次公开预览没有符合条件的文字消息。','本次公開預覽沒有符合條件的文字消息。','No matching text posts in this public preview.','今回の公開プレビューには該当するテキスト投稿がありません。'],
+  telegramFail:['暂时无法读取 Telegram 公开预览。可以刷新或直接打开频道。','暫時無法讀取 Telegram 公開預覽。可以重新整理或直接開啟頻道。','The public Telegram preview could not be reached. Refresh or open the channel.','Telegram の公開プレビューに接続できません。再読み込みするかチャンネルを開いてください。'],
   choose:['订阅来源','訂閱來源','Feed source','配信元'],
   refresh:['刷新','重新整理','Refresh','更新'],
   loading:['正在读取订阅…','正在讀取訂閱…','Reading feed…','フィードを読み込み中…'],
@@ -16,13 +20,21 @@ const publicForumTitles = {
   unavailable:['暂时无法读取订阅。可以重试或打开原论坛。','暫時無法讀取訂閱。可以重試或開啟原論壇。','Could not reach this feed. Retry or open the forum.','フィードに接続できません。再試行するか、掲示板を開いてください。'],
   stale:['当前显示最近一次成功读取的帖子。','目前顯示最近一次成功讀取的帖子。','Showing the last successful feed read.','最後に取得できた記事を表示しています。'],
   offline:['当前处于离线状态。','目前處於離線狀態。','You are offline.','オフラインです。'],
-  preview:['本地预览可直接打开论坛。在线部署后会读取订阅。','本機預覽可直接開啟論壇。線上部署後會讀取訂閱。','Open the forum in local preview. The deployed site can read live feeds.','ローカルプレビューでは掲示板を直接開けます。公開サイトでフィードを取得します。'],
+  preview:['本地预览可直接打开原始来源。在线部署后会读取最新消息。','本機預覽可直接開啟原始來源。線上部署後會讀取最新消息。','Open the source directly in local preview. The deployed site reads live posts.','ローカルプレビューでは配信元を直接開けます。公開サイトで新着を取得します。'],
   cache:['查看本栏时每 5 分钟自动刷新','查看本欄時每 5 分鐘自動重新整理','Updates every 5 min while this panel is visible','この欄の表示中は 5 分ごとに自動更新']
 };
+const publicTGChannels = Object.freeze({vpsdeer:'vpsdeer',vpsts:'vpsts',vpsuu:'vpsuu',poorvpsmsg:'PoorVPSMsg'});
 const publicForumState = {
   active:'nodeseek', inView:false, observer:null, root:null, timer:null,
-  feeds:{nodeseek:{},sb:{}}
+  feeds:Object.fromEntries(['nodeseek','sb',...Object.keys(publicTGChannels)].map(id=>[id,{}]))
 };
+function choosePublicSource(id) {
+  const source = id === 'all' ? 'nodeseek' : id;
+  if (!Object.hasOwn(publicForumState.feeds,source)) return false;
+  publicForumState.active = source;
+  if (publicForumState.root) drawForumFeed();
+  return true;
+}
 const forumRefreshMs = 5 * 60 * 1000;
 function forumVisible() {
   const box = publicForumState.root?.box;
@@ -43,6 +55,7 @@ function scheduleForumRead() {
   },delay);
 }
 function forumUIString(key) {
+  if (Object.hasOwn(publicTGChannels,key)) return '@'+publicTGChannels[key];
   const index = {sc:0,tc:1,en:2,ja:3}[lang] ?? 0;
   return publicForumTitles[key][index];
 }
@@ -56,9 +69,12 @@ function forumDate(value) {
 function forumItemLink(value, id) {
   try {
     const u = new URL(value);
-    const correct = id === 'sb'
-      ? u.hostname === 'sb.sb' && /^\/t\/[1-9]\d{0,14}\/$/.test(u.pathname)
-      : u.hostname === 'www.nodeseek.com' && /^\/post-[1-9]\d{0,14}-1$/.test(u.pathname);
+    let correct = false;
+    if (Object.hasOwn(publicTGChannels,id)) {
+      const parts = u.pathname.split('/');
+      correct = u.hostname === 't.me' && parts.length === 3 && parts[1] === publicTGChannels[id] && /^[1-9]\d{0,14}$/.test(parts[2]);
+    } else if (id === 'sb') correct = u.hostname === 'sb.sb' && /^\/t\/[1-9]\d{0,14}\/$/.test(u.pathname);
+    else if (id === 'nodeseek') correct = u.hostname === 'www.nodeseek.com' && /^\/post-[1-9]\d{0,14}-1$/.test(u.pathname);
     if (correct && u.protocol === 'https:' && !u.username && !u.password && !u.port && !u.search && !u.hash) return u.href;
   } catch {}
   return '';
@@ -70,11 +86,9 @@ function setupForumUI(box) {
   const sources = el('div',null,'forum-feed-sources');
   sources.setAttribute('role','group');
   const sourceButtons = {};
-  for (const id of ['nodeseek','sb']) {
-    const button = btn('',() => {
-      publicForumState.active = id;
-      drawForumFeed();
-    });
+  for (const id of Object.keys(publicForumState.feeds)) {
+    const button = btn('',() => choosePublicSource(id));
+    button.dataset.feedSource = id;
     sources.append(button); sourceButtons[id] = button;
   }
   const refresh = btn('',() => loadForumFeed(publicForumState.active),'forum-feed-refresh');
@@ -103,7 +117,7 @@ function drawForumFeed() {
   if (!box) return;
   if (publicForumState.root?.box !== box) setupForumUI(box);
   const ui = publicForumState.root, id = publicForumState.active, state = publicForumState.feeds[id];
-  const txt = forumUIString;
+  const txt = forumUIString, telegram = Object.hasOwn(publicTGChannels,id);
   ui.title.textContent = txt('title');
   ui.intro.textContent = txt('intro');
   ui.sources.setAttribute('aria-label',txt('choose'));
@@ -117,9 +131,12 @@ function drawForumFeed() {
   if (location.protocol === 'file:') notices.push(txt('preview'));
   else if (navigator.onLine === false) notices.push(txt('offline'));
   else if (state.busy) notices.push(txt('loading'));
-  else if (state.failed) notices.push(txt('unavailable'));
+  else if (state.failed) notices.push(txt(telegram?'telegramFail':'unavailable'));
   if (state.data && (state.failed || state.data.stale || navigator.onLine === false)) notices.push(txt('stale'));
-  if (state.data && !state.data.items.length && !state.busy) notices.push(txt('empty'));
+  if (state.data && !state.data.items.length && !state.busy && !state.failed) {
+    notices.push(txt(state.data.visibility==='link-only'?'limited':telegram?'telegramEmpty':'empty'));
+  }
+  ui.status.dataset.feedStatus = state.failed?'failed':state.busy?'loading':state.data?.visibility==='link-only'?'link-only':state.data && !state.data.items.length?'empty':'ready';
   ui.status.textContent = notices.join(' ');
   ui.status.hidden = !notices.length;
   ui.list.replaceChildren();
@@ -127,18 +144,23 @@ function drawForumFeed() {
     const href = forumItemLink(post.link,id);
     if (!href || !post.title) continue;
     const row = el('li');
-    row.append(link(post.title,href));
+    const copy = el('div',null,'forum-feed-post');
+    copy.append(link(post.title,href));
+    if (telegram && typeof post.snippet === 'string' && post.snippet) copy.append(el('span',post.snippet.slice(0,110),'forum-feed-snippet'));
+    if(typeof feedToCatalog==="function"){const catalog=feedToCatalog(post);if(catalog)copy.append(catalog)}
+    row.append(copy);
     const date = forumDate(post.date);
     if (date) row.append(date);
     ui.list.append(row);
   }
   ui.list.hidden = !ui.list.childElementCount;
   ui.actions.replaceChildren();
-  if (id === 'sb') ui.actions.append(link(txt('forum'),'https://sb.sb/go/promotion/'));
+  if (telegram) ui.actions.append(link(txt('openChannel'),'https://t.me/'+publicTGChannels[id]));
+  else if (id === 'sb') ui.actions.append(link(txt('forum'),'https://sb.sb/go/promotion/'));
   else ui.actions.append(link(txt('nodeForum'),'https://www.nodeseek.com/categories/info'),link(txt('nodePromo'),'https://www.nodeseek.com/categories/promotion'));
   ui.foot.replaceChildren();
   if (state.data) {
-    const stamp = el('span',txt('time') + ' · ');
+    const stamp = el('span',txt(id)+' · '+txt('time') + ' · ');
     stamp.append(forumDate(state.data.observed));
     ui.foot.append(stamp);
   }
@@ -156,7 +178,7 @@ async function loadForumFeed(id = publicForumState.active) {
     if (!response.ok) throw Error('feed');
     const data = await response.json();
     if (data.source !== id || !Array.isArray(data.items) || !Number.isFinite(Date.parse(data.observed))) throw Error('payload');
-    state.data = {source:id,observed:data.observed,stale:data.stale === true,
+    state.data = {source:id,observed:data.observed,stale:data.stale === true,visibility:data.visibility === 'link-only'?'link-only':'public',
       items:data.items.slice(0,12).filter(item=>item && typeof item.title === 'string' && forumItemLink(item.link,id))};
   } catch {
     state.failed = true;

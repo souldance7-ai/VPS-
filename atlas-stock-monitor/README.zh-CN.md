@@ -19,6 +19,6 @@ node install.mjs
 
 每分钟触发一次，每轮最多读取六款，每次最多并行两个请求。每个 SKU 的轮询周期等于套餐数除以六向上取整（分钟），健康接口直接显示 `periodMinutes`。数据库保留最近一次读数、上一次有效状态及 30 天内确认的状态变动。首次采集只建立基线。商家接口失联或取消库存展示时，页面显示失联或无库存字段，保留先前有效读数的时间。后台采集可在无人访问网站时运行。响应受 Cloudflare 账户剩余额度、商家访问策略及服务端缓存影响。
 
-以 34 款为例，6 分钟轮询一遍，每天约 8,160 次商品读取和 1,440 次 Cron 调用。D1 的记录更新另计，共享账户现有资源。查看 Cloudflare 面板的用量及例外记录。调整或暂停时，修改本地 `wrangler.json` 的 `triggers.crons`，空数组会停用 Cron；重新运行 `npx --yes wrangler@4 deploy --config wrangler.json` 生效。调大 Cron 间隔时请同步修改 monitor.mjs 的分片时间单位，以便每个分片均能被访问。
+当前配置共 36 款，6 分钟轮询一遍，每天约 8,640 次商品读取和 1,440 次 Cron 调用。D1 的记录更新另计，共享账户现有资源。查看 Cloudflare 面板的用量及例外记录。调整或暂停时，修改本地 `wrangler.json` 的 `triggers.crons`，空数组会停用 Cron；重新运行 `npx --yes wrangler@4 deploy --config wrangler.json` 生效。调大 Cron 间隔时请同步修改 monitor.mjs 的分片时间单位，以便每个分片均能被访问。
 
 [Cloudflare 定时触发器](https://developers.cloudflare.com/workers/configuration/cron-triggers/) · [Workers 路由](https://developers.cloudflare.com/workers/configuration/routing/routes/) · [D1 限制](https://developers.cloudflare.com/d1/platform/limits/)

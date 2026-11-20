@@ -20,9 +20,9 @@ function findDb(){
  return matches[0]?.uuid;
 }
 async function main(){
- const sample=await fetch(new URL('/api/stock/ava-nano',cfg.vars.PAGES_ORIGIN),{signal:AbortSignal.timeout(15000)});
+ const sample=await fetch(new URL('/api/stock/gc-sg-prem-mini',cfg.vars.PAGES_ORIGIN),{signal:AbortSignal.timeout(15000)});
  const body=await sample.json();
- if(!sample.ok||body.key!=='ava-nano'||body.zone!=='MD')throw Error('请先将网站 ZIP 部署到 pitopone-ip-atlas 的生产环境。');
+ if(!sample.ok||body.key!=='gc-sg-prem-mini'||body.zone!=='SG')throw Error('请先将 V7 网站 ZIP 部署到 pitopone-ip-atlas 的生产环境。');
  console.log('将配置 '+cfg.name+'、历史数据库 '+name+' 及 '+cfg.routes[0].pattern);
  cli(['whoami']);
  let id=findDb();

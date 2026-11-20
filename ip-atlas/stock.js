@@ -47,6 +47,8 @@ function stockTarget(key){
  const jpSkus={'boil-kddi':'1區 - 靜態 KDDI/au 1000Mbps VPS','boil-softbank':'2區 - SoftBank 100Mbps VPS'};
  if(Object.hasOwn(jpSkus,key))return {family:'boil',sku:jpSkus[key],zone:'JP',url:'https://cloud.boil.network/store/japan-shared-bandwidth'};
  if(key==='gc-sjc-vds2')return {family:'greencloud',sku:'EPYCVDSSJCVF-2',zone:'SJC',url:'https://www.greencloudvps.com/billing/store/epyc-nvme-kvm-vds/?language=english'};
+ const singaporePlans={'gc-sg-prem-mini':'CN Premium Optimized Plan Mini (Singapore)','gc-sg-prem-1':'CN Premium Optimized Plan 1 (Singapore)'};
+ if(Object.hasOwn(singaporePlans,key))return {family:'greencloud',sku:singaporePlans[key],zone:'SG',productId:key==='gc-sg-prem-mini'?'2305':'2307',url:'https://greencloudvps.com/billing/store/cn-premium-optimized'};
  if(key==='wn-9754s')return {family:'webnx',sku:'EPYC 9754S · 256 GB / 25G',zone:'LAX',url:'https://clients.webnx.com/index.php?rp=/store/instant-provisioning-la'};
  if(key==='ph-argent')return {family:'pingheberg',sku:'VPS Argent',zone:'FR',url:'https://store.pingheberg.com/products/vps/vps-argent'};
  return null;
@@ -66,6 +68,10 @@ function getStockKey(p){
  if(p.market==='TW'&&provider==='tcscloud'&&['tcs-fh1','tcs-dh1','tcs-ds1'].includes(p.id))return p.id;
  if(p.market==='JP'&&provider==='boilcloud'&&['boil-softbank','boil-kddi'].includes(p.id))return p.id;
  if(provider==='greencloud'&&p.market==='SJC'&&/\bEPYCVDSSJCVF-2\b/.test(label))return 'gc-sjc-vds2';
+ if(provider==='greencloud'&&market==='SG'){
+  const skus=[p.sku,p.spec?.sku,p.specs?.sku,name].filter(s=>typeof s==='string').map(s=>s.trim());
+  for(const key of ['gc-sg-prem-mini','gc-sg-prem-1'])if(skus.includes(stockTarget(key).sku))return key;
+ }
  if(p.id==='field-bef009937f16'&&provider==='webnx'&&p.market==='LAX')return 'wn-9754s';
  if(provider==='pingheberg'&&p.market==='FR'&&p.url?.replace(/\/$/,'')==='https://store.pingheberg.com/products/vps/vps-argent')return 'ph-argent';
  return '';
