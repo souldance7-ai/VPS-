@@ -13,10 +13,19 @@ const buyingLabels={
  cpuSample:['样本实测','樣本實測','Sample measurement','サンプル実測'],
  cpuLive:['本次商家探针','本次商家探針','Live provider observation','事業者の今回の照会結果'],
  localPriceSource:['该报价的原始来源','該報價的原始來源','Source of this price','この料金の掲載元'],
+ diskType:['存储类型','儲存類型','Storage type','ストレージの種類'],
+ downlink:['下行带宽','下行頻寬','Download bandwidth','下り帯域'],
+ uplink:['上行带宽','上行頻寬','Upload bandwidth','上り帯域'],
+ monthlyTraffic:['每月流量上限','每月流量上限','Monthly transfer limit','月間転送量上限'],
+ trafficDirection:['流量计费方向','流量計費方向','Metered direction','転送量の計測方向'],
+ transferBoth:['双向合计','雙向合計','Upload + download','上り・下り合算'],
+ transferOut:['仅出站','僅出站','Outbound only','送信のみ'],
+ transferIn:['仅入站','僅入站','Inbound only','受信のみ'],
+ transferOne:['单向（未注明哪一向）','單向（未註明哪一向）','One way (direction unspecified)','片方向（計測方向不明）'],
  commercial:['报价与配置','報價與配置','Pricing and hardware','料金・構成'],cpu:['处理器','處理器','Processor','CPU'],ram:['内存','記憶體','Memory','メモリ'],disk:['存储','儲存','Storage','ストレージ'],port:['网络端口','網路埠速','Network port','回線速度'],traffic:['流量额度','流量額度','Transfer allowance','転送量'],orderPage:['在商家官网选择配置','在商家官網選擇配置','Configure at the provider','公式サイトで構成を選択'],priceSource:['商家规格与报价','商家規格與報價','Provider specifications and pricing','公式仕様・料金表'],quoteDate:['报价采集','報價採集','Price recorded','料金確認日'],unknown:['未公开','未公開','Not published','非公開'],ipUnknown:['未声明 IP 类型','未聲明 IP 類型','IP class unspecified','IP 種別の公表なし'],routeUnknown:['未声明优化线路','未聲明優化線路','No premium route stated','優先回線の公表なし'],near:['机房位置','機房位置','Facility location','拠点所在地'],month:['月','月','mo','月'],year:['年','年','yr','年'],hour:['小时','小時','hour','時間'],'24 months':['24 个月','24 個月','24 months','24か月'],'36 months':['36 个月','36 個月','36 months','36か月'],'GPU-hour':['GPU 小时','GPU 小時','GPU-hour','GPU時間'],quarter:['季度','季','quarter','四半期'],monthlyEquivalent:['月折算（按小时计费）','月折算（按小時計費）','mo equivalent (hourly billing)','月換算（時間課金）'],publishedPrice:['有公开价格','有公開價格','Published price','公開価格あり'],fullSpec:['有价格、CPU、内存及端口','有價格、CPU、記憶體及埠速','Price, CPU, RAM and port listed','価格・CPU・メモリ・回線速度あり'],probeOnly:['支持库存探针','支援庫存探針','Live stock feed','在庫連携あり'],shoppingFilter:['报价信息','報價資訊','Buying information','購入情報'],tier:['套餐档位','套餐級別','Plan tier','プラン'],customConfig:['具体规格与价格请在商家页面选择配置或询价。','具體規格與價格請在商家頁面選擇配置或詢價。','Choose a configuration in the provider’s order form or request a quote.','公式の構成フォームで選択するか、見積もりを依頼してください。'],specAvailability:['套餐页面未列出','套餐頁面未列出','Not listed for this plan','プランに記載なし'],notesLabel:['报价条件','報價條件','Billing terms','料金の条件']
 };
 for(const [key,labels] of Object.entries(buyingLabels))editionLangs.forEach((l,i)=>WORDS[l][key]=labels[i]);
-const hardware=['cpu','cpuModel','ram','disk','port','traffic'];
+const hardware=['cpu','cpuModel','ram','disk','diskType','port','downlink','uplink','traffic','monthlyTraffic','trafficDirection'];
 const selectedTiers=new Map();
 function activeSpec(p){return billingSpecForDisplay(p)}
 
@@ -72,7 +81,7 @@ function purchaseHardware(spec){
    if(data)appendCpuEvidence(value,data);
    cell.append(el('dt',tr(data?.kind||key)),value);
   }else{
-   const value=val(spec?.[key]);
+   const value=hardwareValue(spec,key);
    cell.append(el('dt',tr(key==='cpu'?cpuCoreLabel(value):key)),el('dd',value||tr('specAvailability')));
   }
   grid.append(cell);
@@ -114,7 +123,26 @@ function purchaseQualifier(p,s=activeSpec(p)){
  return basis.type==='provider'?tr('providerRate'):'';
 }
 function showSku(p){return activeSpec(p)?.sku || val(p.plan)}
-function specValue(p,k){return val(activeSpec(p)?.[k])}
+function hardwareValue(spec,key){
+ if(!spec)return '';
+ if(key==='diskType'){
+  if(spec.diskType)return val(spec.diskType);
+  const text=val(spec.disk);
+  return [...new Set((String(text).match(/NVMe|SATA SSD|SSD|HDD|SAS/gi)||[]).map(value=>value.toUpperCase()))].join(' + ');
+ }
+ const allowance=val(spec.traffic);
+ if(key==='monthlyTraffic')return val(spec.monthlyTraffic)||(/(?:\/\s*(?:月|mo\b|month\b)|\bmonthly\b|\bper month\b|每月|月間)/i.test(allowance)?allowance:'');
+ if(key==='trafficDirection'){
+  const direction=spec.trafficDirection||
+   (/双向|雙向|in\s*\+\s*out|up\s*\+\s*down|two.?way|bidirectional/i.test(allowance)?'both':
+    /\boutbound\b|出站|出方向/.test(allowance)?'outbound':
+    /\binbound\b|入站|入方向/.test(allowance)?'inbound':/单向|單向|one.?way/i.test(allowance)?'one-way':'');
+  const label={both:'transferBoth',outbound:'transferOut',inbound:'transferIn','one-way':'transferOne'}[direction];
+  return label?tr(label):'';
+ }
+ return val(spec[key]);
+}
+function specValue(p,k){return hardwareValue(activeSpec(p),k)}
 function shoppingMatch(p){
  const mode=$('buy-filter').value,s=activeSpec(p);
  if(mode==='price')return published(p);
@@ -132,7 +160,7 @@ function specSummary(p){
   if($('order').value&&cost&&activeSpec(p).term!=='month')line.append(el('small',tr('monthMean')+' · '+cost.currency+' '+cost.monthly.toLocaleString(tags[lang],{minimumFractionDigits:2,maximumFractionDigits:2})));
   const note=purchaseQualifier(p);if(note)line.append(el('small',note,'offer-condition'));
  }
- const specs=['cpu','ram','port'].map(k=>specValue(p,k)).filter(Boolean).join(' · ');
+ const specs=['cpu','ram','disk','port','traffic'].map(k=>specValue(p,k)).filter(Boolean).join(' · ');
  if(specs)line.append(el('span',specs));
  const cpu=el('div',null,'cpu-summary');
  paintCpuSummary(cpu,p);

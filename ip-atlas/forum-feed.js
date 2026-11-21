@@ -53,10 +53,10 @@ const publicForumTitles = {
   preview:['本地预览可直接打开原始来源。在线部署后会读取最新消息。','本機預覽可直接開啟原始來源。線上部署後會讀取最新消息。','Open the source directly in local preview. The deployed site reads live posts.','ローカルプレビューでは配信元を直接開けます。公開サイトで新着を取得します。'],
   cache:['查看本栏时每 5 分钟自动刷新','查看本欄時每 5 分鐘自動重新整理','Updates every 5 min while this panel is visible','この欄の表示中は 5 分ごとに自動更新']
 };
-const publicTGChannels = Object.freeze({vpsdeer:'vpsdeer',vpsts:'vpsts',vpsuu:'vpsuu',poorvpsmsg:'PoorVPSMsg'});
+const publicTGChannels = Object.freeze({vpsdeer:'vpsdeer',vpsts:'vpsts',vpsuu:'vpsuu',poorvpsmsg:'PoorVPSMsg',richvps:'richvps',ovheco:'ovheco',lettelegram:'lowendtalk_offer',bwh:'bwh82'});
 const publicForumState = {
   active:'nodeseek', inView:false, observer:null, root:null, timer:null, hostingOnly:true,
-  feeds:Object.fromEntries(['coupons','lowendtalk','meowoffers','meow','carpool','nodeseek','sb',...Object.keys(publicTGChannels)].map(id=>[id,{}]))
+  feeds:Object.fromEntries(['coupons','lowendtalk','meowoffers','meow','carpool','review','nodeseek','sb',...Object.keys(publicTGChannels)].map(id=>[id,{}]))
 };
 function choosePublicSource(id) {
   const source = id === 'all' ? 'nodeseek' : id;
@@ -144,6 +144,7 @@ function scheduleForumRead() {
 }
 function forumUIString(key) {
   if (Object.hasOwn(publicTGChannels,key)) return '@'+publicTGChannels[key];
+  if (key==='review') return {sc:'NodeSeek · 测评',tc:'NodeSeek · 評測',en:'NodeSeek · reviews',ja:'NodeSeek・レビュー'}[lang];
   const index = {sc:0,tc:1,en:2,ja:3}[lang] ?? 0;
   return publicForumTitles[key][index];
 }
@@ -169,7 +170,7 @@ function forumItemLink(value, id) {
       const parts = u.pathname.split('/');
       correct = u.hostname === 't.me' && parts.length === 3 && parts[1] === publicTGChannels[id] && /^[1-9]\d{0,14}$/.test(parts[2]);
     } else if (id === 'sb') correct = u.hostname === 'sb.sb' && /^\/t\/[1-9]\d{0,14}\/$/.test(u.pathname);
-    else if (id === 'nodeseek' || id === 'carpool') correct = u.hostname === 'www.nodeseek.com' && /^\/post-[1-9]\d{0,14}-1$/.test(u.pathname);
+    else if (['nodeseek','carpool','review'].includes(id)) correct = u.hostname === 'www.nodeseek.com' && /^\/post-[1-9]\d{0,14}-1$/.test(u.pathname);
     else if (id === 'lowendtalk') correct = u.hostname === 'lowendtalk.com' && /^\/discussion\/[1-9]\d{0,12}\/[a-z0-9-]+\/?$/i.test(u.pathname);
     else if (id === 'meow') correct = u.hostname === 'meowvps.com' && /^\/blog\/[\w%-]+\/$/.test(u.pathname);
     if (correct && !u.search && !u.hash) return u.href;
@@ -270,6 +271,7 @@ function drawForumFeed() {
   ui.list.hidden = !ui.list.childElementCount;
   ui.actions.replaceChildren();
   if (telegram) ui.actions.append(link(txt('openChannel'),'https://t.me/'+publicTGChannels[id]));
+  else if (id === 'review') ui.actions.append(link(txt('review')+' ↗','https://www.nodeseek.com/categories/review?sortBy=replyTime'));
   else if (id === 'carpool') ui.actions.append(link(txt('openCarpool'),'https://www.nodeseek.com/categories/carpool'));
   else if (id === 'meow' || id === 'meowoffers') ui.actions.append(link(txt('openTimeline'),'https://meowvps.com/timeline/'+(id==='meowoffers'?'#offers':'')));
   else if (id === 'coupons')ui.actions.append(link('LowEndTalk Offers ↗','https://lowendtalk.com/categories/offers'),link(txt('nodePromo'),'https://www.nodeseek.com/categories/promotion'));
@@ -298,9 +300,11 @@ async function loadForumFeed(id = publicForumState.active) {
     if (data.source !== id || !Array.isArray(data.items) || !Number.isFinite(Date.parse(data.observed))) throw Error('payload');
     state.data = {source:id,observed:data.observed,stale:data.stale === true,editionSnapshot:data.editionSnapshot === true,visibility:data.visibility === 'link-only'?'link-only':'public',
       items:data.items.slice(0,id==='coupons'?30:12).filter(item=>item && typeof item.title === 'string' && (id!=='coupons'||(Object.hasOwn(publicForumState.feeds,item.from)&&item.from!=='coupons'&&/^[A-Za-z0-9][A-Za-z0-9_.-]{1,48}(?:,[A-Za-z0-9][A-Za-z0-9_-]{0,20})?!?$/.test(item.code))) && forumItemLink(item.link,id==='coupons'?item.from:id))};
+    if(id==='review'&&!state.data.items.length)state.data=reviewEditionSnapshot();
   } catch {
     state.data ||= recentPackagedPosts(id);
-    if(state.data?.editionSnapshot&&!recentPackagedPosts(id))state.data=null;
+    if(id==='review')state.data=reviewEditionSnapshot();
+    else if(state.data?.editionSnapshot&&!recentPackagedPosts(id))state.data=null;
     state.failed = true;
   } finally {
     clearTimeout(timeout); state.busy = false;
@@ -315,6 +319,10 @@ async function loadForumFeed(id = publicForumState.active) {
     }
     if (publicForumState.active === id) drawForumFeed(); else if (id === 'meowoffers') drawHomeNews();
   }
+}
+function reviewEditionSnapshot(){
+  const sampleIds=['yt-lax-3c','joysol-77','atmos-nvme-2','evoxt-my-premium-vm-0.5','uzumaru-my','datawave-sg-lite-a1','legend-lax-community-512','regional-zouter-jp-1','regional-sky-sg-1'];
+  return {source:'review',observed:'2026-11-21T06:00:00Z',stale:true,editionSnapshot:true,items:sampleIds.map(id=>PLANS.find(p=>p.id===id)).filter(p=>p?.review).map(p=>({link:p.review,title:p.provider+' · '+val(p.plan)}))};
 }
 function forumConnectivityChanged() {
   if (publicForumState.root) drawForumFeed();

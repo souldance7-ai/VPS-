@@ -484,6 +484,396 @@ const quoteOnlyTargets={
  }
 };
 const catalogStockTargets = {
+/* JoySolData targets */
+  "pc-joysol-35": {
+    "family": "joysol",
+    "sku": "香港优化A-ECS 2H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 35,
+    "group": 3
+  },
+  "pc-joysol-36": {
+    "family": "joysol",
+    "sku": "香港优化A-ECS 2H2G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 36,
+    "group": 3
+  },
+  "pc-joysol-37": {
+    "family": "joysol",
+    "sku": "香港优化A-ECS 4H4G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 37,
+    "group": 3
+  },
+  "pc-joysol-38": {
+    "family": "joysol",
+    "sku": "香港优化A-ECS 8H8G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 38,
+    "group": 3
+  },
+  "joysol-40": {
+    "family": "joysol",
+    "sku": "香港优化A-ECS 16H16G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 40,
+    "group": 3
+  },
+  "joysol-7": {
+    "family": "joysol",
+    "sku": "香港优化A-TCS 2H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 7,
+    "group": 2
+  },
+  "joysol-30": {
+    "family": "joysol",
+    "sku": "香港优化A-TCS 2H2G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 30,
+    "group": 2
+  },
+  "joysol-31": {
+    "family": "joysol",
+    "sku": "香港优化A-TCS 4H4G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 31,
+    "group": 2
+  },
+  "joysol-32": {
+    "family": "joysol",
+    "sku": "香港优化A-TCS 8H8G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 32,
+    "group": 2
+  },
+  "joysol-34": {
+    "family": "joysol",
+    "sku": "香港优化A-TCS 16H16G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 34,
+    "group": 2
+  },
+  "joysol-61": {
+    "family": "joysol",
+    "sku": "香港优化B-ECS 2H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 61,
+    "group": 8
+  },
+  "joysol-62": {
+    "family": "joysol",
+    "sku": "香港优化B-ECS 2H2G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 62,
+    "group": 8
+  },
+  "joysol-63": {
+    "family": "joysol",
+    "sku": "香港优化B-ECS 4H4G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 63,
+    "group": 8
+  },
+  "joysol-64": {
+    "family": "joysol",
+    "sku": "香港优化B-ECS 8H8G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 64,
+    "group": 8
+  },
+  "joysol-65": {
+    "family": "joysol",
+    "sku": "香港优化B-ECS 16H16G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 65,
+    "group": 8
+  },
+  "joysol-70": {
+    "family": "joysol",
+    "sku": "香港优化B-TCS 16H16G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 70,
+    "group": 9
+  },
+  "joysol-69": {
+    "family": "joysol",
+    "sku": "香港优化B-TCS 8H8G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 69,
+    "group": 9
+  },
+  "joysol-68": {
+    "family": "joysol",
+    "sku": "香港优化B-TCS 4H4G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 68,
+    "group": 9
+  },
+  "joysol-67": {
+    "family": "joysol",
+    "sku": "香港优化B-TCS 2H2G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 67,
+    "group": 9
+  },
+  "joysol-66": {
+    "family": "joysol",
+    "sku": "香港优化B-TCS 2H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 66,
+    "group": 9
+  },
+  "joysol-77": {
+    "family": "joysol",
+    "sku": "香港优化C-TCS 1H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 77,
+    "group": 11
+  },
+  "joysol-79": {
+    "family": "joysol",
+    "sku": "香港优化C-TCS 2H2G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 79,
+    "group": 11
+  },
+  "joysol-78": {
+    "family": "joysol",
+    "sku": "香港优化C-TCS 2H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 78,
+    "group": 11
+  },
+  "joysol-41": {
+    "family": "joysol",
+    "sku": "洛杉矶A-ECS 2Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 41,
+    "group": 4
+  },
+  "joysol-43": {
+    "family": "joysol",
+    "sku": "洛杉矶A-ECS 4Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 43,
+    "group": 4
+  },
+  "joysol-44": {
+    "family": "joysol",
+    "sku": "洛杉矶A-ECS 8Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 44,
+    "group": 4
+  },
+  "joysol-46": {
+    "family": "joysol",
+    "sku": "洛杉矶A-ECS 16Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 46,
+    "group": 4
+  },
+  "joysol-53": {
+    "family": "joysol",
+    "sku": "洛杉矶A-TCS 2Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 53,
+    "group": 6
+  },
+  "joysol-54": {
+    "family": "joysol",
+    "sku": "洛杉矶A-TCS 4Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 54,
+    "group": 6
+  },
+  "joysol-55": {
+    "family": "joysol",
+    "sku": "洛杉矶A-TCS 8Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 55,
+    "group": 6
+  },
+  "joysol-56": {
+    "family": "joysol",
+    "sku": "洛杉矶A-TCS 16Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 56,
+    "group": 6
+  },
+  "joysol-50": {
+    "family": "joysol",
+    "sku": "洛杉矶B-ECS 8Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 50,
+    "group": 5
+  },
+  "joysol-52": {
+    "family": "joysol",
+    "sku": "洛杉矶B-ECS 16Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 52,
+    "group": 5
+  },
+  "joysol-47": {
+    "family": "joysol",
+    "sku": "洛杉矶B-ECS 2 Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 47,
+    "group": 5
+  },
+  "joysol-49": {
+    "family": "joysol",
+    "sku": "洛杉矶B-ECS 4Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 49,
+    "group": 5
+  },
+  "joysol-59": {
+    "family": "joysol",
+    "sku": "洛杉矶B-TCS 8Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 59,
+    "group": 7
+  },
+  "joysol-60": {
+    "family": "joysol",
+    "sku": "洛杉矶B-TCS 16Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 60,
+    "group": 7
+  },
+  "joysol-57": {
+    "family": "joysol",
+    "sku": "洛杉矶B-TCS 2Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 57,
+    "group": 7
+  },
+  "joysol-58": {
+    "family": "joysol",
+    "sku": "洛杉矶B-TCS 4Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 58,
+    "group": 7
+  },
+  "joysol-71": {
+    "family": "joysol",
+    "sku": "洛杉矶C-TCS 2Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 71,
+    "group": 10
+  },
+  "joysol-73": {
+    "family": "joysol",
+    "sku": "洛杉矶C-TCS 4Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 73,
+    "group": 10
+  },
+  "joysol-74": {
+    "family": "joysol",
+    "sku": "洛杉矶C-TCS 8Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 74,
+    "group": 10
+  },
+  "joysol-75": {
+    "family": "joysol",
+    "sku": "洛杉矶C-TCS 16Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 75,
+    "group": 10
+  },
+  "atmos-nvme-1": {
+    "family": "atmos",
+    "sku": "VPS NVMe 1",
+    "zone": "FR",
+    "pid": 1,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+  "atmos-nvme-2": {
+    "family": "atmos",
+    "sku": "VPS NVMe 2",
+    "zone": "FR",
+    "pid": 2,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+  "atmos-nvme-3": {
+    "family": "atmos",
+    "sku": "VPS NVMe 3",
+    "zone": "FR",
+    "pid": 3,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+  "atmos-nvme-4": {
+    "family": "atmos",
+    "sku": "VPS NVMe 4",
+    "zone": "FR",
+    "pid": 4,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+  "atmos-nvme-5": {
+    "family": "atmos",
+    "sku": "VPS NVMe 5",
+    "zone": "FR",
+    "pid": 5,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+  "atmos-nvme-6": {
+    "family": "atmos",
+    "sku": "VPS NVMe 6",
+    "zone": "FR",
+    "pid": 6,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+/* End JoySolData targets */
+
+
  "let11-servitro-virtual-servers-usd1-server":{"family":"servitro","sku":"$1 Server","zone":"DE","url":"https://my.servitro.com/store/virtual-servers","slug":"usd1-server"},
  "let11-servitro-virtual-servers-virtual-1":{"family":"servitro","sku":"Virtual-1","zone":"DE","url":"https://my.servitro.com/store/virtual-servers","slug":"virtual-1"},
  "let11-servitro-virtual-servers-ryzen-9-9950x-frankfurt-virtual-1":{"family":"servitro","sku":"Virtual-1","zone":"DE","url":"https://my.servitro.com/store/virtual-servers-ryzen-9-9950x-frankfurt","slug":"virtual-1","previousGroup":"virtual-servers-ryzen-9-7950x3d"},
@@ -3229,7 +3619,7 @@ const offerStrings={
  refresh:['重新读取商家','重新讀取商家','Refresh provider data','事業者データを更新']
 };
 function offerText(k){return offerStrings[k][{sc:0,tc:1,en:2,ja:3}[lang]]}
-function quoteCapable(t){return t&&['nnb','vmsilo','mkcloud','backwaves','wasabi','vultr','tamago','bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer','servitro'].includes(t.family)}
+function quoteCapable(t){return t&&['nnb','vmsilo','mkcloud','backwaves','wasabi','vultr','tamago','bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer','servitro','joysol','atmos'].includes(t.family)}
 function observationKey(p){return greenPlanKey(p)||getStockKey(p)||(Object.hasOwn(catalogStockTargets,p.id)&&catalogStockTargets[p.id].quoteOnly?p.id:'')||(p.provider.toLowerCase()==='vmsilo'&&Object.hasOwn(quoteOnlyTargets,p.id)?p.id:'')}
 function goodQuote(q){
  return q&&typeof q.amount==='string'&&/^\d{1,8}(?:\.\d{1,4})?$/.test(q.amount)&&['CNY','HKD','EUR','USD'].includes(q.currency)&&['month','quarter','halfyear','year'].includes(q.period)&&

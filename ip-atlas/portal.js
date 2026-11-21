@@ -86,7 +86,7 @@ function boardCampaignRows(){
    start:d.start,end:d.end,code:d.code,url:d.url,official:d.url,discount:d.rate||manualRates[id]||'',conditions:terms};
  });
 }
-function boardOffers(now){
+function boardOffers(now,mode=boardMode){
  const qualified=row=>{
   const phase=communityStage(row,now);
   if(!['offer','limited','checkout'].includes(phase)||boardSoldOut(row,now))return false;
@@ -96,15 +96,15 @@ function boardOffers(now){
   const promo=row.code||row.discount||row.event||row.campaign||row.status==='limited'||row.status==='active'||row.regular&&String(row.regular)!==String(row.price);
   return Boolean(promo)&&recent>0&&recent<=now&&now-recent<=30*86400000;
  };
- const plans=COMMUNITY_OFFERS.filter(qualified);
+ const plans=[...COMMUNITY_OFFERS,...[...commerceFeedRows.values()].flat()].filter(qualified);
  const key=r=>r.provider.toLowerCase().replace(/[^a-z0-9]/g,'')+'|'+r.code;
  const exactCodes=new Set(plans.filter(r=>boardCodeInWindow(r,now)).map(key));
  const campaigns=boardCampaignRows().filter(r=>qualified(r)&&!(r.code&&exactCodes.has(key(r))));
  const rows=[...plans,...campaigns];
  const bf=r=>r.event==='black-friday'||/black[ -]?friday|prebf\d/i.test([r.campaign,r.plan?.en||r.plan,r.code,r.official].join(' '));
- const modeRows=rows.filter(r=>boardMode==='coupon'?boardCodeInWindow(r,now):boardMode==='blackfriday'?bf(r):boardMode==='direct'?!r.code&&r.price!=null: true);
+ const modeRows=rows.filter(r=>mode==='coupon'?boardCodeInWindow(r,now):mode==='blackfriday'?bf(r):mode==='direct'?!r.code&&r.price!=null: true);
  const priority=r=>(boardCodeInWindow(r,now)?8:0)+(bf(r)?4:0)+(r.price!=null?2:0)+(communityStage(r,now)==='offer'?1:0);
- modeRows.sort((a,b)=>priority(b)-priority(a)||boardDate(b)-boardDate(a)||a.provider.localeCompare(b.provider));
+ modeRows.sort((a,b)=>(mode==='all'?boardDate(b)-boardDate(a):0)||priority(b)-priority(a)||boardDate(b)-boardDate(a)||a.provider.localeCompare(b.provider));
  const seen=new Set(),first=[],rest=[];
  for(const r of modeRows){const brand=r.provider.toLowerCase();if(seen.has(brand))rest.push(r);else{seen.add(brand);first.push(r)}}
  return [...first,...rest];
@@ -157,13 +157,14 @@ function boardCard(row,now){
 function renderFeaturedOffers(){
  const mount=$('featured-offers');if(!mount)return;
  clearTimeout(featuredOfferTimer);
- const now=Date.now(),rows=boardOffers(now);
- const signature=[lang,boardMode,boardLimit,...rows.map(r=>r.id+':'+communityStage(r,now)+':'+(boardReading(r,now)?.time||''))].join('|');
+ const now=Date.now(),rows=boardOffers(now),blackFriday=boardOffers(now,'blackfriday').slice(0,3);
+ const signature=[lang,boardMode,boardLimit,...[...rows,...blackFriday].map(r=>r.id+':'+communityStage(r,now)+':'+(boardReading(r,now)?.time||''))].join('|');
  if(signature!==boardSignature){
   boardSignature=signature;
   for(const button of document.querySelectorAll('[data-home-filter]'))button.setAttribute('aria-pressed',String(button.dataset.homeFilter===boardMode));
   $('board-count').textContent=rows.length+' '+tr('boardCount');
   mount.replaceChildren(...rows.slice(0,boardLimit).map(r=>boardCard(r,now)));
+  $('featured-black-friday').replaceChildren(...(blackFriday.length?blackFriday.map(r=>boardCard(r,now)):[el('p',tr('boardNoMatches'),'featured-empty')]));
   if(!rows.length){
    const empty=el('div',null,'featured-empty');empty.append(el('p',tr('boardNoMatches')));
    const all=el('a',tr('boardWatch')+' →');all.href='#offers';all.addEventListener('click',()=>activateOfferTab($('tab-feed')));
@@ -172,8 +173,8 @@ function renderFeaturedOffers(){
   $('board-more').hidden=rows.length<=boardLimit;
  }
  if(!document.hidden&&(!document.body.dataset.book||document.body.dataset.book==='top')){
-  refreshBoardStock(rows.slice(0,boardLimit),now);
-  const boundaries=rows.flatMap(r=>[Date.parse(r.end),...communityCalendar(r)]).filter(t=>t>now);
+  refreshBoardStock([...rows.slice(0,boardLimit),...blackFriday],now);
+  const boundaries=[...rows,...blackFriday].flatMap(r=>[Date.parse(r.end),...communityCalendar(r)]).filter(t=>t>now);
   const upcoming=[...COMMUNITY_OFFERS,...Object.values(deals)].map(r=>Date.parse(r.start)).filter(t=>t>now);
   const interval=Math.max(200,Math.min(60000,...boundaries.map(t=>t-now+20),...upcoming.map(t=>t-now+20)));
   featuredOfferTimer=setTimeout(renderFeaturedOffers,interval);

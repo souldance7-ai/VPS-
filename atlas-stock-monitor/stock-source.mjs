@@ -484,6 +484,396 @@ const quoteOnlyTargets={
  }
 };
 const catalogStockTargets = {
+/* JoySolData targets */
+  "pc-joysol-35": {
+    "family": "joysol",
+    "sku": "香港优化A-ECS 2H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 35,
+    "group": 3
+  },
+  "pc-joysol-36": {
+    "family": "joysol",
+    "sku": "香港优化A-ECS 2H2G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 36,
+    "group": 3
+  },
+  "pc-joysol-37": {
+    "family": "joysol",
+    "sku": "香港优化A-ECS 4H4G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 37,
+    "group": 3
+  },
+  "pc-joysol-38": {
+    "family": "joysol",
+    "sku": "香港优化A-ECS 8H8G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 38,
+    "group": 3
+  },
+  "joysol-40": {
+    "family": "joysol",
+    "sku": "香港优化A-ECS 16H16G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 40,
+    "group": 3
+  },
+  "joysol-7": {
+    "family": "joysol",
+    "sku": "香港优化A-TCS 2H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 7,
+    "group": 2
+  },
+  "joysol-30": {
+    "family": "joysol",
+    "sku": "香港优化A-TCS 2H2G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 30,
+    "group": 2
+  },
+  "joysol-31": {
+    "family": "joysol",
+    "sku": "香港优化A-TCS 4H4G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 31,
+    "group": 2
+  },
+  "joysol-32": {
+    "family": "joysol",
+    "sku": "香港优化A-TCS 8H8G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 32,
+    "group": 2
+  },
+  "joysol-34": {
+    "family": "joysol",
+    "sku": "香港优化A-TCS 16H16G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 34,
+    "group": 2
+  },
+  "joysol-61": {
+    "family": "joysol",
+    "sku": "香港优化B-ECS 2H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 61,
+    "group": 8
+  },
+  "joysol-62": {
+    "family": "joysol",
+    "sku": "香港优化B-ECS 2H2G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 62,
+    "group": 8
+  },
+  "joysol-63": {
+    "family": "joysol",
+    "sku": "香港优化B-ECS 4H4G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 63,
+    "group": 8
+  },
+  "joysol-64": {
+    "family": "joysol",
+    "sku": "香港优化B-ECS 8H8G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 64,
+    "group": 8
+  },
+  "joysol-65": {
+    "family": "joysol",
+    "sku": "香港优化B-ECS 16H16G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 65,
+    "group": 8
+  },
+  "joysol-70": {
+    "family": "joysol",
+    "sku": "香港优化B-TCS 16H16G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 70,
+    "group": 9
+  },
+  "joysol-69": {
+    "family": "joysol",
+    "sku": "香港优化B-TCS 8H8G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 69,
+    "group": 9
+  },
+  "joysol-68": {
+    "family": "joysol",
+    "sku": "香港优化B-TCS 4H4G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 68,
+    "group": 9
+  },
+  "joysol-67": {
+    "family": "joysol",
+    "sku": "香港优化B-TCS 2H2G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 67,
+    "group": 9
+  },
+  "joysol-66": {
+    "family": "joysol",
+    "sku": "香港优化B-TCS 2H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 66,
+    "group": 9
+  },
+  "joysol-77": {
+    "family": "joysol",
+    "sku": "香港优化C-TCS 1H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 77,
+    "group": 11
+  },
+  "joysol-79": {
+    "family": "joysol",
+    "sku": "香港优化C-TCS 2H2G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 79,
+    "group": 11
+  },
+  "joysol-78": {
+    "family": "joysol",
+    "sku": "香港优化C-TCS 2H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 78,
+    "group": 11
+  },
+  "joysol-41": {
+    "family": "joysol",
+    "sku": "洛杉矶A-ECS 2Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 41,
+    "group": 4
+  },
+  "joysol-43": {
+    "family": "joysol",
+    "sku": "洛杉矶A-ECS 4Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 43,
+    "group": 4
+  },
+  "joysol-44": {
+    "family": "joysol",
+    "sku": "洛杉矶A-ECS 8Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 44,
+    "group": 4
+  },
+  "joysol-46": {
+    "family": "joysol",
+    "sku": "洛杉矶A-ECS 16Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 46,
+    "group": 4
+  },
+  "joysol-53": {
+    "family": "joysol",
+    "sku": "洛杉矶A-TCS 2Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 53,
+    "group": 6
+  },
+  "joysol-54": {
+    "family": "joysol",
+    "sku": "洛杉矶A-TCS 4Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 54,
+    "group": 6
+  },
+  "joysol-55": {
+    "family": "joysol",
+    "sku": "洛杉矶A-TCS 8Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 55,
+    "group": 6
+  },
+  "joysol-56": {
+    "family": "joysol",
+    "sku": "洛杉矶A-TCS 16Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 56,
+    "group": 6
+  },
+  "joysol-50": {
+    "family": "joysol",
+    "sku": "洛杉矶B-ECS 8Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 50,
+    "group": 5
+  },
+  "joysol-52": {
+    "family": "joysol",
+    "sku": "洛杉矶B-ECS 16Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 52,
+    "group": 5
+  },
+  "joysol-47": {
+    "family": "joysol",
+    "sku": "洛杉矶B-ECS 2 Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 47,
+    "group": 5
+  },
+  "joysol-49": {
+    "family": "joysol",
+    "sku": "洛杉矶B-ECS 4Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 49,
+    "group": 5
+  },
+  "joysol-59": {
+    "family": "joysol",
+    "sku": "洛杉矶B-TCS 8Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 59,
+    "group": 7
+  },
+  "joysol-60": {
+    "family": "joysol",
+    "sku": "洛杉矶B-TCS 16Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 60,
+    "group": 7
+  },
+  "joysol-57": {
+    "family": "joysol",
+    "sku": "洛杉矶B-TCS 2Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 57,
+    "group": 7
+  },
+  "joysol-58": {
+    "family": "joysol",
+    "sku": "洛杉矶B-TCS 4Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 58,
+    "group": 7
+  },
+  "joysol-71": {
+    "family": "joysol",
+    "sku": "洛杉矶C-TCS 2Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 71,
+    "group": 10
+  },
+  "joysol-73": {
+    "family": "joysol",
+    "sku": "洛杉矶C-TCS 4Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 73,
+    "group": 10
+  },
+  "joysol-74": {
+    "family": "joysol",
+    "sku": "洛杉矶C-TCS 8Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 74,
+    "group": 10
+  },
+  "joysol-75": {
+    "family": "joysol",
+    "sku": "洛杉矶C-TCS 16Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 75,
+    "group": 10
+  },
+  "atmos-nvme-1": {
+    "family": "atmos",
+    "sku": "VPS NVMe 1",
+    "zone": "FR",
+    "pid": 1,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+  "atmos-nvme-2": {
+    "family": "atmos",
+    "sku": "VPS NVMe 2",
+    "zone": "FR",
+    "pid": 2,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+  "atmos-nvme-3": {
+    "family": "atmos",
+    "sku": "VPS NVMe 3",
+    "zone": "FR",
+    "pid": 3,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+  "atmos-nvme-4": {
+    "family": "atmos",
+    "sku": "VPS NVMe 4",
+    "zone": "FR",
+    "pid": 4,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+  "atmos-nvme-5": {
+    "family": "atmos",
+    "sku": "VPS NVMe 5",
+    "zone": "FR",
+    "pid": 5,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+  "atmos-nvme-6": {
+    "family": "atmos",
+    "sku": "VPS NVMe 6",
+    "zone": "FR",
+    "pid": 6,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+/* End JoySolData targets */
+
+
  "let11-servitro-virtual-servers-usd1-server":{"family":"servitro","sku":"$1 Server","zone":"DE","url":"https://my.servitro.com/store/virtual-servers","slug":"usd1-server"},
  "let11-servitro-virtual-servers-virtual-1":{"family":"servitro","sku":"Virtual-1","zone":"DE","url":"https://my.servitro.com/store/virtual-servers","slug":"virtual-1"},
  "let11-servitro-virtual-servers-ryzen-9-9950x-frankfurt-virtual-1":{"family":"servitro","sku":"Virtual-1","zone":"DE","url":"https://my.servitro.com/store/virtual-servers-ryzen-9-9950x-frankfurt","slug":"virtual-1","previousGroup":"virtual-servers-ryzen-9-7950x3d"},
@@ -3644,7 +4034,7 @@ function greenObservation(t,catalog,at){
 }
 
 async function fetchProviderCatalog(t,key,now) {
- const jsonFormat=['bwh','akile','isvoro'].includes(t.family);
+ const jsonFormat=['bwh','akile','isvoro','joysol'].includes(t.family);
  const reply=await fetch(t.url,{redirect:'manual',signal:AbortSignal.timeout(11000),
   headers:{Accept:jsonFormat?'application/json':'text/html','Accept-Language':'en'},
   cf:{cacheEverything:true,cacheTtl:25}});
@@ -3805,14 +4195,63 @@ function servitroObservation(t,html,at){
   ...(Number.isSafeInteger(quantity)?{stockQuantity:quantity}:{})}};
 }
 
+function joysolObservation(target,payload,checkedAt){
+ const empty={state:'unreported',offer:null};
+ const parent=target.zone==='HK'?2:target.zone==='LAX'?1:null;
+ if(payload?.status!==200||!parent||!Array.isArray(payload.data?.fgs))return empty;
+ const areas=payload.data.fgs.filter(area=>area.id===parent);
+ const groups=areas.length===1&&Array.isArray(areas[0].group)?areas[0].group.filter(group=>group.id===target.group):[];
+ const group=groups.length===1?groups[0]:null;
+ const products=Array.isArray(group?.products)?group.products.filter(product=>product.id===target.pid&&product.gid===target.group):[];
+ const product=products.length===1?products[0]:null;
+ if(product?.name!==target.sku)return empty;
+ const quantity=product.stock_control===1&&Number.isSafeInteger(product.qty)&&product.qty>=0?product.qty:null;
+ const state=inventoryCount(quantity);
+ const amount=amountFor(product.product_price);
+ if(amount===null||product.billingcycle!=='monthly')return {state,offer:null};
+ const fields=Object.fromEntries([...String(product.description||'').slice(0,16000).matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/gi)]
+  .map(([,value])=>shortText(value).split(/[：:]\s*/,2)));
+ const cores=fields.CPU?.match(/^(\d+)\s*核心/)?.[1];
+ const processors=(String(group.headline||'').match(/8269CY|8255C|6133|8275CL|E5-2682V4/gi)||[]).map(name=>
+  name==='E5-2682V4'?'Intel Xeon E5-2682 v4':'Intel Xeon '+(name==='6133'?'Gold ':'Platinum ')+name);
+ const transfer=fields['流量']?.replace(/\s+with\s+.*$/i,'').replace(/\s*@?\s*\d+(?:\.\d+)?\s*(?:Mbps|Gbps).*/i,'').trim()||'';
+ const port=(fields['流量']||fields['带宽']||'').match(/\d+(?:\.\d+)?\s*(?:Mbps|Gbps)/i)?.[0]||'';
+ return {state,offer:{amount,currency:'CNY',period:'month',basis:'listed',checkedAt,
+  ...publicCpu(cores?cores+' vCPU':'',processors.join(' / ')),ram:fields['内存']||'',disk:fields['系统盘']||'',port,traffic:transfer,
+  ...(quantity!==null?{stockQuantity:quantity}:{})}};
+}
+
+function atmosObservation(target,html,checkedAt){
+ const empty={state:'unreported',offer:null};
+ const card=html.match(new RegExp('<(?:div|article)\\b[^>]*\\bid="product'+target.pid+'"[^>]*>([\\s\\S]*?)</footer>','i'))?.[1];
+ if(!card||shortText(card.match(/class="lz-product-name"[^>]*>([\s\S]*?)<\/span>/i)?.[1])!==target.sku)return empty;
+ const stock=shortText(card.match(/class="qty[^"]*"[^>]*>([\s\S]*?)<\/span>/i)?.[1]);
+ const number=/^(?:Only\s+)?(\d+)\s+(?:left|Available)$/i.exec(stock);
+ const quantity=/^Out of stock$/i.test(stock)?0:number?Number(number[1]):null;
+ const state=quantity!==null&&quantity>0&&quantity<=2?'low':inventoryCount(quantity);
+ const pricing=card.match(/<div class="product-pricing"[^>]*>([\s\S]*?)<\/div>/i)?.[1]||'';
+ const priceText=shortText(pricing.match(/class="lz-price-old"[^>]*>([\s\S]*?)<\/span>/i)?.[1]||pricing.match(/class="price(?: [^"]*)?"[^>]*>([\s\S]*?)<\/span>/i)?.[1]);
+ const amount=amountFor(priceText.match(/^(\d+,\d{2})\s*€$/)?.[1].replace(',','.'));
+ const frequency=shortText(pricing.match(/class="lz-cycle"[^>]*>([\s\S]*?)<\/span>/i)?.[1]);
+ if(amount===null||!/\/ month$/i.test(frequency))return {state,offer:null};
+ const specifications=Object.fromEntries([...card.matchAll(/<small>([^<>]+)<\/small>\s*<strong class="feature-value">([\s\S]*?)<\/strong>/gi)].map(([,key,value])=>[shortText(key),shortText(value)]));
+ const count=specifications.Processor?.match(/^(\d+)\s*vCores?\b/i)?.[1];
+ const model=specifications.Processor?.replace('™','').match(/AMD Ryzen\s+9\s+9950X/i)?.[0];
+ const bandwidth=specifications.Bandwidth?.match(/^(\d+(?:\.\d+)?)\s*Gbit\/s/i)?.[1];
+ return {state,offer:{amount,currency:'EUR',period:'month',basis:'listed',checkedAt,
+  ...publicCpu(count?count+' vCPU':'',model),ram:specifications.Memory||'',disk:specifications.Storage||'',
+  port:bandwidth?bandwidth+' Gbps':'',traffic:/unlimited traffic/i.test(specifications.Bandwidth||'')?'Unlimited':'',
+  ...(quantity!==null?{stockQuantity:quantity}:{})}};
+}
+
 async function catalogObservation(t,requests){
- const table={bagevm:bageObservation,matrix:matrixObservation,prepaid:prepaidObservation,bwh:bwhObservation,akile:akileObservation,isvoro:isvoroObservation,akko:akkoObservation,mhy:mhyObservation,greenwhmcs:greenObservation,jsonldoffer:jsonldObservation,servitro:servitroObservation};
+ const table={bagevm:bageObservation,matrix:matrixObservation,prepaid:prepaidObservation,bwh:bwhObservation,akile:akileObservation,isvoro:isvoroObservation,akko:akkoObservation,mhy:mhyObservation,greenwhmcs:greenObservation,jsonldoffer:jsonldObservation,servitro:servitroObservation,joysol:joysolObservation,atmos:atmosObservation};
  const entry=await loadProviderCatalog(t,requests);
  return table[t.family](t,entry.data,entry.at);
 }
 
 async function observeListing(target,requests){
- if(['bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer','servitro'].includes(target.family))return catalogObservation(target,requests);
+ if(['bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer','servitro','joysol','atmos'].includes(target.family))return catalogObservation(target,requests);
  if(target.family==="tamago")return tamagoObservation(target);
  if(target.family==="vultr")return vultrObservation(target);
  if(["backwaves","wasabi"].includes(target.family))return lagomObservation(target);
@@ -3842,7 +4281,7 @@ async function observeListing(target,requests){
 }
 
 async function observe(t){
- if(["vmsilo","backwaves","wasabi","vultr","tamago","bagevm","matrix","prepaid","bwh","akile","isvoro","akko","mhy","greenwhmcs","jsonldoffer","servitro"].includes(t.family))return (await observeListing(t)).state;
+ if(["vmsilo","backwaves","wasabi","vultr","tamago","bagevm","matrix","prepaid","bwh","akile","isvoro","akko","mhy","greenwhmcs","jsonldoffer","servitro","joysol","atmos"].includes(t.family))return (await observeListing(t)).state;
  if(t.family==="mkcloud"||t.family==="nnb")return classifyStorefront(t,await currentStorefront(t.family));
  const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),7000);
  try{

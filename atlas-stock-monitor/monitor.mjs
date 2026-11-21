@@ -12,7 +12,7 @@ function cadence(key){const family=stockTarget(key)?.family;return family==='gre
 const stable=new Set(['in-stock','sold-out','low']);
 const states=new Set([...stable,'offline','unreported']);
 const stockTargets=targets.filter(t=>!t.quoteOnly);
-const quoteTargets=targets.filter(t=>['mkcloud','nnb','vmsilo','backwaves','wasabi','vultr','tamago','bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer','servitro'].includes(stockTarget(t.key)?.family));
+const quoteTargets=targets.filter(t=>['mkcloud','nnb','vmsilo','backwaves','wasabi','vultr','tamago','bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer','servitro','joysol','atmos'].includes(stockTarget(t.key)?.family));
 const rowsPerResponse=12;
 const retention=30*86400000;
 

@@ -38,6 +38,8 @@ function commerceOfferIndex(plans,rows){
   return index;
 }
 const commerceFeedRows=new Map(),commerceLastReadings=new Map();
+const commerceDispatches=new Map();
+let latestCouponPosts=[],latestChannelCoupons=[],dispatchTimer;
 function commerceRows(p){
   const rows=[...(offersByPlan.get(p.id)||[]),...(commerceFeedRows.get(p.id)||[])];
   const deal=deals[p.deal];
@@ -190,32 +192,44 @@ function directoryPostMatches(post,now){
   const source=forumItemLink(post.link,post.from),time=Date.parse(post.date),deadline=Date.parse(post.endsAt);
   if(!source||post.archived||!Number.isFinite(time)||time>now||time<now-14*86400000||post.endsAt&&(!Number.isFinite(deadline)||deadline<=now))return[];
   if(!/^[a-z0-9][a-z0-9_.-]{1,48}(?:,[a-z0-9][a-z0-9_-]{0,20})?!?$/i.test(post.code||''))return[];
-  const line=typeof post.scopeLine==='string'&&post.scopeLine.length<=220?post.scopeLine:post.title||'';
+  const line=typeof post.scopeLine==='string'&&post.scopeLine.length<=420?post.scopeLine:post.title||'';
   if(!titleHasToken(line,post.code)||/失效|过期|過期|未开始|尚未開始|结束|已結束|无效|無效|expired|no longer|invalid|does(?:n.t| not) work|期限切れ/i.test(line+' '+post.title))return[];
+  const matched=dispatchProduct(post,line);
+  if(!matched)return[];
+  const {p,name}=matched,provider=p.provider;
+  const terms=commerceExplicitTerm(post.termsLine||line);
+  return [{id:'feed-'+source+'-'+post.code,planIds:[p.id],provider,sku:name,plan:name,code:post.code,url:p.url,
+    source:publicTGChannels[post.from]?'@'+publicTGChannels[post.from]:post.from,thread:source,publishedAt:post.date,
+    observed:post.sourceObserved||post.date,end:post.endsAt||'',terms,term:terms[0]||'',status:'checkout'}];
+}
+function dispatchProduct(post,line){
   const provider=providerFromPost({...post,snippet:line});
-  if(!provider)return[];
+  if(!provider)return null;
   const matches=[];
   for(const p of PLANS){
     if(p.provider!==provider)continue;
     const names=p.spec?.tiers?.length?p.spec.tiers.map(t=>t.sku):[p.spec?.sku,p.sku,typeof p.plan==='string'?p.plan:p.plan?.en];
-    const name=[...new Set(names)].find(sku=>typeof sku==='string'&&sku.length>=7&&/[a-z0-9]+[._-][a-z0-9]+[._-][a-z0-9]+/i.test(sku)&&titleHasToken(line,sku));
+    const exact=[...new Set(names)].find(sku=>typeof sku==='string'&&sku.length>=7&&
+      (/[a-z0-9]+[._-][a-z0-9]+[._-][a-z0-9]+/i.test(sku)||sku.length>=10&&/[0-9]/.test(sku))&&titleHasToken(line,sku));
+    const alias=p.feedSkus?.find(sku=>titleHasToken(line,sku));
+    const name=exact||(alias&&names.find(sku=>sku));
     if(name)matches.push({p,name});
   }
   // A shared SKU on other markets or an ambiguous multi-SKU listing stays in the feed.
-  if(matches.length!==1)return[];
-  const {p,name}=matches[0];
-  const terms=commerceExplicitTerm(line);
-  return [{id:'feed-'+source+'-'+post.code,planIds:[p.id],provider,sku:name,plan:name,code:post.code,
-    source:publicTGChannels[post.from]?'@'+publicTGChannels[post.from]:post.from,thread:source,publishedAt:post.date,
-    observed:post.sourceObserved||post.date,end:post.endsAt||'',terms,term:terms[0]||'',status:'checkout'}];
+  return matches.length===1?matches[0]:null;
 }
 function refreshDirectoryCouponFeed(data){
-  const rows=[];
+  latestCouponPosts=[];
   if(data&&!data.editionSnapshot&&!data.stale){
-    const now=Date.now(),counts=new Map();
+    const counts=new Map();
     for(const post of data.items||[])counts.set(post.link,(counts.get(post.link)||0)+1);
-    for(const post of data.items||[])if(counts.get(post.link)===1)rows.push(...directoryPostMatches(post,now));
+    latestCouponPosts=(data.items||[]).filter(post=>counts.get(post.link)===1);
   }
+  updateDirectoryCouponRows();
+}
+function updateDirectoryCouponRows(){
+  const now=Date.now();
+  const rows=[...new Map([...latestCouponPosts,...latestChannelCoupons].flatMap(post=>directoryPostMatches(post,now)).map(row=>[row.id,row])).values()];
   const signature=JSON.stringify(rows);
   if(signature===commerceFeedSignature)return;
   commerceFeedSignature=signature;commerceFeedRows.clear();
@@ -231,15 +245,66 @@ function refreshDirectoryCouponFeed(data){
       if(p)box.replaceWith(commerceCouponLines(p,false));
     }
   }
-  refreshDrawerCommerce();scheduleCommerceExpiry();
+  refreshDrawerCommerce();scheduleCommerceExpiry();renderFeaturedOffers();
 }
+function appendProductDispatches(out,p){
+  const items=commerceDispatches.get(p.id)||[];
+  if(!items.length)return;
+  const box=el('div',null,'product-dispatches');
+  for(const item of items.slice(0,2)){
+    const row=el('div');
+    row.append(link('@'+publicTGChannels[item.from]+' · '+item.title+' ↗',item.link));
+    const date=forumDate(item.date);if(date)row.append(date);
+    box.append(row);
+  }
+  out.append(box);
+}
+async function refreshChannelProducts(){
+  try{
+    const response=await fetch('/api/deal-feed/channel-products',{signal:AbortSignal.timeout(14500)});
+    if(!response.ok)throw Error('channel products');
+    const {items}=await response.json(),now=Date.now(),grouped=new Map(),coupons=[];
+    for(const post of items.slice(0,96)){
+      const date=Date.parse(post.date),line=post.productLine||post.title;
+      if(typeof line!=='string'||line.length>380||!Object.hasOwn(publicTGChannels,post.from)||
+        !forumItemLink(post.link,post.from)||!Number.isFinite(date)||date>now||now-date>7*86400000)continue;
+      const match=dispatchProduct(post,line);
+      if(!match)continue;
+      const existing=grouped.get(match.p.id)||[];
+      existing.push(post);grouped.set(match.p.id,existing);
+      if(post.coupons?.length===1){
+        const entry=post.coupons[0];
+        coupons.push({...post,code:entry.code,endsAt:entry.endsAt,termsLine:entry.scopeLine,scopeLine:line+' · '+entry.code});
+      }
+    }
+    commerceDispatches.clear();
+    for(const [id,items] of grouped)commerceDispatches.set(id,items.sort((a,b)=>Date.parse(b.date)-Date.parse(a.date)));
+    latestChannelCoupons=coupons;
+    updateDirectoryCouponRows();
+    if(document.body.dataset.book==='directory')list();
+  }catch{}
+}
+function scheduleChannelProducts(){
+  clearTimeout(dispatchTimer);
+  if(document.hidden||!couponFeedVisible()||location.protocol==='file:')return;
+  scheduleChannelProducts.next ||= 0;
+  dispatchTimer=setTimeout(async()=>{
+    scheduleChannelProducts.next=Date.now()+300_000;
+    await refreshChannelProducts();
+    scheduleChannelProducts();
+  },Math.max(0,scheduleChannelProducts.next-Date.now()));
+}
+new MutationObserver(scheduleChannelProducts).observe(document.body,{attributes:true,attributeFilter:['data-book']});
+document.addEventListener('visibilitychange',scheduleChannelProducts);
+document.addEventListener('DOMContentLoaded',scheduleChannelProducts);
+function couponFeedVisible(){return ['directory','top'].includes(document.body.dataset.book)}
 function scheduleDirectoryCoupons(){
   clearTimeout(commerceFeedTimer);
-  if(document.hidden||document.body.dataset.book!=='directory'||location.protocol==='file:')return;
+  if(document.hidden||!couponFeedVisible()||location.protocol==='file:')return;
   const state=publicForumState.feeds.coupons;
   const delay=Math.max(0,(state.nextAt||0)-Date.now());
   commerceFeedTimer=setTimeout(async()=>{
-    if(document.hidden||document.body.dataset.book!=='directory')return;
+    if(document.hidden||!couponFeedVisible())return;
     if(!state.busy)await loadForumFeed('coupons');
     if(state.busy)commerceFeedTimer=setTimeout(scheduleDirectoryCoupons,2000);
     else scheduleDirectoryCoupons();

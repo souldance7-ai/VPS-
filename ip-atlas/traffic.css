@@ -1,0 +1,21 @@
+.traffic-panel {
+  display: grid;
+  gap: .8rem;
+  margin-top: 1.6rem;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid rgba(163, 193, 209, .2);
+  border-radius: .65rem;
+  background: radial-gradient(ellipse at top left, rgba(124, 221, 196, .09), transparent 72%), rgba(18, 26, 35, .8);
+}
+.traffic-panel h2 { margin: 0; font-size: 1rem; }
+.traffic-panel dl { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .55rem; margin: 0; }
+.traffic-panel dl > div { padding: .65rem .7rem; background: rgba(135, 159, 189, .08); border-radius: .35rem; }
+.traffic-panel dt, .traffic-panel small { color: #c8d4db; font-size: .75rem; }
+.traffic-panel dd { margin: .18rem 0 0; font-variant-numeric: tabular-nums; font-size: 1.45rem; color: #d3f4e7; }
+.traffic-panel .traffic-notes { display: flex; flex-wrap: wrap; gap: .2rem 1rem; }
+.compare-order { margin: 0 0 .8rem; max-width: 26rem; }
+.black-friday-home { margin-bottom: 1.75rem; }
+.product-dispatches { margin-top: .65rem; padding: .55rem; border-inline-start: 2px solid #7ebaa8; background: rgba(126, 186, 168, .08); font-size: .76rem; }
+.product-dispatches > div + div { margin-top: .4rem; }
+.product-dispatches time { display: block; opacity: .8; }
+@media (max-width: 550px) { .traffic-panel dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

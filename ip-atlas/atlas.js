@@ -60,6 +60,7 @@ Object.assign(cityNames,{"Taipei":["台北","台北","台北"],"Taichung":["台�
 Object.assign(cityNames,{"São Paulo":["圣保罗","聖保羅","サンパウロ"],"Santiago":["圣地亚哥","聖地牙哥","サンティアゴ"],"Johannesburg":["约翰内斯堡","約翰尼斯堡","ヨハネスブルグ"],"Melbourne":["墨尔本","墨爾本","メルボルン"],"Stockholm":["斯德哥尔摩","斯德哥爾摩","ストックホルム"],"Warsaw":["华沙","華沙","ワルシャワ"],"Madrid":["马德里","馬德里","マドリード"],"Mexico City":["墨西哥城","墨西哥城","メキシコシティ"],"Bangalore":["班加罗尔","班加羅爾","ベンガルール"],"Tel Aviv":["特拉维夫","特拉維夫","テルアビブ"],"Bangkok":["曼谷","曼谷","バンコク"],"Dubai":["迪拜","杜拜","ドバイ"],"Zurich":["苏黎世","蘇黎世","チューリッヒ"],"Copenhagen":["哥本哈根","哥本哈根","コペンハーゲン"],"Bucharest":["布加勒斯特","布加勒斯特","ブカレスト"],"Seattle":["西雅图","西雅圖","シアトル"],"Sydney":["悉尼","雪梨","シドニー"],"Istanbul":["伊斯坦布尔","伊斯坦堡","イスタンブール"],"North Carolina":["北卡罗来纳州","北卡羅來納州","ノースカロライナ州"],"Kuala Lumpur":["吉隆坡","吉隆坡","クアラルンプール"]});
 function city(p){if(p.market==='US'&&p.city==='United States')return {sc:'城市未公布',tc:'城市未公布',en:'City undisclosed',ja:'都市非公開'}[lang];return cityNames[p.city]?.[{sc:0,tc:1,ja:2}[lang]]||p.city}
 Object.assign(cityNames,{'United States':['美国','美國','米国'],'South Korea':['韩国','韓國','韓国'],Shanghai:['上海','上海','上海']});
+cityNames.Malaysia=['马来西亚','馬來西亞','マレーシア'];
 const localChoice = ()=>({sc:'原生 IP 候选（含 ISP 与住宅）',tc:'原生 IP 候選（含 ISP 與住宅）',en:'Native IP candidates (local, ISP, residential)',ja:'現地 IP 候補（ISP・住宅回線を含む）'}[lang]);
 function nativeLead(p){return ['isp','local','residential'].includes(p.ip)}
 function monthlyCost(p){
@@ -67,7 +68,22 @@ function monthlyCost(p){
  const numeric=String(s.price).trim();if(!/^(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+)(?:\.[0-9]+)?$/.test(numeric))return null;
  return {currency:s.currency,monthly:Number(numeric.replaceAll(",",""))/periods[s.term]};
 }
-function renderOrder(){const currencyCodes=[...new Set(PLANS.map(p=>monthlyCost(p)?.currency).filter(Boolean))].sort();opt("order",[["",tr("fullestFirst")],...currencyCodes.map(code=>[code,code+" · "+tr("lowestMonthly")])],$("order").value)}
+const priceOrderWords={
+ monthlyAsc:['月均价升序（按币种）','月均價升序（按幣種）','Monthly equivalent low to high (by currency)','月額換算・通貨別に安い順'],
+ monthlyDesc:['月均价降序（按币种）','月均價降序（按幣種）','Monthly equivalent high to low (by currency)','月額換算・通貨別に高い順'],
+ pickedOrder:['选择顺序','選擇順序','Selection order','選択順']
+};
+for(const [key,labels] of Object.entries(priceOrderWords))editionLangs.forEach((l,i)=>WORDS[l][key]=labels[i]);
+const priceDirections=()=>[['asc',tr('monthlyAsc')],['desc',tr('monthlyDesc')]];
+function priceComparator(a,b,direction){
+ const first=monthlyCost(a),second=monthlyCost(b);
+ if(!first||!second)return Number(!first)-Number(!second);
+ return first.currency.localeCompare(second.currency) || (direction==='desc'?-1:1)*(first.monthly-second.monthly);
+}
+function renderOrder(){
+ const currencies=[...new Set(PLANS.map(p=>monthlyCost(p)?.currency).filter(Boolean))].sort();
+ opt('order',[['',tr('fullestFirst')],...priceDirections(),...currencies.flatMap(code=>[[code,code+' · ↑'],[code+'-desc',code+' · ↓']])],$('order').value);
+}
 function renderControls(){
  renderOrder();
  const ids=(groups[zone]||Object.keys(MARKETS)).filter(code=>catalogMarkets.has(code));
@@ -86,6 +102,7 @@ function searchable(p){
  const tokens=[...(merchantAliases.get(p.provider)||[]),...(p.searchTerms||[]),...(p.networkFilters||[]).map(quickLabel),p.market,...Object.values(MARKETS[p.market]),aliases[p.market]||'',p.provider,val(p.plan),p.city,...(cityNames[p.city]||[]),val(p.routeName),tr(p.kind),tr(p.ip)];
  for(const offer of offersByPlan.get(p.id)||[])tokens.push(currentCommerceOffer(offer,commerceTerm())?offer.code||"":"",offer.source,offer.sku||"",offer.routeName||"");
  for(const row of commerceFeedRows.get(p.id)||[])if(currentCommerceOffer(row,''))tokens.push(row.code);
+ for(const post of commerceDispatches.get(p.id)||[])tokens.push('@'+publicTGChannels[post.from],post.title);
  if(nativeLead(p))tokens.push('原生 native');
  tokens.push(showSku(p),...hardware.filter(k=>k!=='cpuModel').map(k=>specValue(p,k)),readCpuModel(activeSpec(p))?.value||'',priceText(p));
  for(const c of routeCarriersFor(p))tokens.push(c,...(carrierNames[c]||[]));
@@ -95,7 +112,8 @@ function searchable(p){
 function matches(p){
  if($('vendor').value&&p.provider!==$('vendor').value)return false;
  if(!matchesBillingTerm(p)||!shoppingMatch(p))return false;
- if($("order").value&&monthlyCost(p)?.currency!==$("order").value)return false;
+ const currency=$('order').value.match(/^([A-Z]{3})(?:-desc)?$/)?.[1];
+ if(currency&&monthlyCost(p)?.currency!==currency)return false;
  if(zone!=='all' && !groups[zone].includes(p.market))return false;
  if($('ip').value==='native' ? !nativeLead(p) : $('ip').value && $('ip').value!==p.ip)return false;
  for(const k of ['market','kind'])if($(k).value && p[k]!==$(k).value)return false;
@@ -137,7 +155,11 @@ function toggle(p){
 }
 function list(){
  renderProviderShortcuts();
- const baseRows=PLANS.filter(matches);const rows=applyQuickPick(baseRows).sort((a,b)=>$("order").value?monthlyCost(a).monthly-monthlyCost(b).monthly||commercialScore(b)-commercialScore(a):commercialScore(b)-commercialScore(a));renderQuickPick($("quick-pick"),baseRows,rows);const visible=currentPageRows(rows);$('total').textContent=vendorCount(rows)+' '+tr('merchants')+' · '+rows.length+' '+tr('results');
+ const order=$('order').value, direction=order.endsWith('desc')?'desc':'asc';
+ const baseRows=PLANS.filter(matches);
+ const rows=applyQuickPick(baseRows).sort((a,b)=>(order?priceComparator(a,b,direction):0)||commercialScore(b)-commercialScore(a));
+ renderQuickPick($('quick-pick'),baseRows,rows);
+ const visible=currentPageRows(rows);$('total').textContent=vendorCount(rows)+' '+tr('merchants')+' · '+rows.length+' '+tr('results');
  $('compare').textContent=tr('compare')+' ('+chosen.length+'/3)';$('compare').disabled=chosen.length<2;$('compare').title=tr('chooseTwo');
  const head=el('div',null,'colheads');for(const s of ['market','product','ip','route','links',''])head.append(el('span',s?tr(s):''));
  const out=$('listing');out.replaceChildren(head);
@@ -148,27 +170,40 @@ function list(){
   if(routeMode!=='unknown'||routeTitle)route.append(el('span',routeTitle||routeStatusLabel(routeMode)),el('small',routeTitle&&routeMode!=='unknown'?routeEvidenceText(p):'','sub'));
   const selected=chosen.includes(p.id),pick=btn(selected?'✓':'+',()=>toggle(p),'pick');
   pick.setAttribute('aria-label',(selected?tr('remove'):tr('add'))+' · '+p.provider+' '+val(p.plan));pick.setAttribute('aria-pressed',selected);pick.dataset.id=p.id;
-  r.append(pair(market(p.market),city(p),'place'),pair(p.provider,val(p.plan),'prod'),ip,route,btn(tr('details'),()=>openDialog(p),'read'),pick,specSummary(p));appendCardCommerce(r,p);out.append(r)
+  r.append(pair(market(p.market),city(p),'place'),pair(p.provider,val(p.plan),'prod'),ip,route,btn(tr('details'),()=>openDialog(p),'read'),pick,specSummary(p));
+  appendCardCommerce(r,p);if((commerceDispatches.get(p.id)||[]).length)appendProductDispatches(r,p);out.append(r)
  }
  paintEdition(rows);if(!rows.length)out.append(el('p',tr('noResults'),'empty'));refreshStockList();
 }
 function attributes(p){return [
  ['market',market(p.market)+' · '+city(p)],['kind',tr(p.kind)],['ip',tr(p.ip==='unknown'?'ipUnknown':p.ip)],
  ['route',[routeEvidenceText(p),val(p.routeName)||routeSummaryFor(p)].filter(Boolean).join(' · ')],['carrier',routeCarriersFor(p).map(carrier).join(' / ')||tr('unknown')],
- ['price',priceText(p)?[priceText(p),purchaseQualifier(p)].filter(Boolean).join(' · '):tr('noPrice')],...hardware.map(k=>[k,specValue(p,k)||tr('specAvailability')])
+ ['price',priceText(p)?[priceText(p),purchaseQualifier(p)].filter(Boolean).join(' · '):tr('noPrice')],
+ ['monthMean',monthlyPriceLabel(p)||tr('noPrice')],...hardware.map(k=>[k,specValue(p,k)||tr('specAvailability')])
 ]}
+function monthlyPriceLabel(p){
+ const cost=monthlyCost(p);
+ return cost?cost.currency+' '+cost.monthly.toLocaleString(tags[lang],{minimumFractionDigits:2,maximumFractionDigits:2}):'';
+}
 function merchantLinks(p){const links=[link(tr('source')+' ↗',p.url)];if(p.review)links.push(link('NodeSeek · '+tr('evidence')+' ↗',p.review));if(p.terms)links.push(link(tr('terms')+' ↗',p.terms));if(p.lg)links.push(link(tr('test')+' ↗',p.lg));if(p.proof && /^https?:\/\//.test(p.proof) && p.proof!==p.url)links.push(link(tr('evidence')+' ↗',p.proof));if(deals[p.deal])links.push(link(tr('terms')+' ↗',deals[p.deal].url));if(communityHref(p.networkSpecSource)&&p.networkSpecSource!==p.proof)links.push(link(commerceWord('networkSource')+' ↗',p.networkSpecSource));return links}
-function openDialog(p){
+function openDialog(p,compareOrder=''){
  modal=p||'compare';const out=$('dialog-body');out.replaceChildren();
  const title=el('h2',p?p.provider+' · '+val(p.plan):tr('comparison'));title.id='dialog-title';out.append(title);$('drawer').setAttribute('aria-labelledby',title.id);
  if(p){
-  showBuying(out,p);renderStock(out,p);appendDrawerCoupons(out,p);displayRouteProof(out,p);renderQuickEvidence(out,p);renderCommunityFor(out,p);renderRelatedReports(out,p);
+  showBuying(out,p);renderStock(out,p);appendDrawerCoupons(out,p);appendProductDispatches(out,p);displayRouteProof(out,p);renderQuickEvidence(out,p);renderCommunityFor(out,p);renderRelatedReports(out,p);
   const grid=el('dl',null,'detailgrid');for(const [k,v] of attributes(p).filter(([k])=>!hardware.includes(k)&&k!=='price')){const d=el('div');d.append(el('dt',tr(k)),el('dd',v));grid.append(d)}
   const actions=el('div',null,'actionrow');actions.append(...merchantLinks(p),btn(tr('ask'),()=>copy(p.provider+' · '+val(p.plan)+'\n'+tr('askText')),'solid'));
   if(val(p.notes))out.append(el('p',val(p.notes),'detail-note'));out.append(grid);
   out.append(actions);appendEvidence(out,p)
  }else{
-  const ps=chosen.map(id=>PLANS.find(p=>p.id===id));const wrap=el('div',null,'matrix-wrap'),table=el('table',null,'matrix');const head=table.createTHead().insertRow();head.append(el('th',tr('product')));ps.forEach(p=>head.append(el('th',p.provider+' · '+showSku(p))));
+  const label=el('label',null,'price-order compare-order'),order=el('select');
+  order.append(...[['',tr('pickedOrder')],...priceDirections()].map(([value,name])=>new Option(name,value)));
+  order.value=compareOrder;
+  order.onchange=()=>{openDialog(null,order.value);document.querySelector('.compare-order select')?.focus()};
+  label.append(el('span',tr('sortPlans')),order);out.append(label);
+  const ps=chosen.map(id=>PLANS.find(p=>p.id===id));
+  if(compareOrder)ps.sort((a,b)=>priceComparator(a,b,compareOrder));
+  const wrap=el('div',null,'matrix-wrap'),table=el('table',null,'matrix');const head=table.createTHead().insertRow();head.append(el('th',tr('product')));ps.forEach(p=>head.append(el('th',p.provider+' · '+showSku(p))));
   const body=table.createTBody();const fields=attributes(ps[0]);
   fields.forEach(([k],i)=>{
    const row=body.insertRow(),label=k==='cpu'&&ps.every(p=>cpuCoreLabel(specValue(p,'cpu'))==='cpuCores')?'cpuCores':k;

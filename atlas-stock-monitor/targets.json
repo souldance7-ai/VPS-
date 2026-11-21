@@ -9786,5 +9786,250 @@
     "key": "servitro-epyc-v4",
     "sku": "Virtual-4",
     "zone": "DE"
+  },
+  {
+    "key": "pc-joysol-35",
+    "sku": "香港优化A-ECS 2H1G",
+    "zone": "HK"
+  },
+  {
+    "key": "pc-joysol-36",
+    "sku": "香港优化A-ECS 2H2G",
+    "zone": "HK"
+  },
+  {
+    "key": "pc-joysol-37",
+    "sku": "香港优化A-ECS 4H4G",
+    "zone": "HK"
+  },
+  {
+    "key": "pc-joysol-38",
+    "sku": "香港优化A-ECS 8H8G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-40",
+    "sku": "香港优化A-ECS 16H16G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-7",
+    "sku": "香港优化A-TCS 2H1G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-30",
+    "sku": "香港优化A-TCS 2H2G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-31",
+    "sku": "香港优化A-TCS 4H4G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-32",
+    "sku": "香港优化A-TCS 8H8G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-34",
+    "sku": "香港优化A-TCS 16H16G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-61",
+    "sku": "香港优化B-ECS 2H1G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-62",
+    "sku": "香港优化B-ECS 2H2G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-63",
+    "sku": "香港优化B-ECS 4H4G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-64",
+    "sku": "香港优化B-ECS 8H8G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-65",
+    "sku": "香港优化B-ECS 16H16G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-70",
+    "sku": "香港优化B-TCS 16H16G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-69",
+    "sku": "香港优化B-TCS 8H8G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-68",
+    "sku": "香港优化B-TCS 4H4G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-67",
+    "sku": "香港优化B-TCS 2H2G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-66",
+    "sku": "香港优化B-TCS 2H1G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-77",
+    "sku": "香港优化C-TCS 1H1G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-79",
+    "sku": "香港优化C-TCS 2H2G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-78",
+    "sku": "香港优化C-TCS 2H1G",
+    "zone": "HK"
+  },
+  {
+    "key": "joysol-41",
+    "sku": "洛杉矶A-ECS 2Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-43",
+    "sku": "洛杉矶A-ECS 4Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-44",
+    "sku": "洛杉矶A-ECS 8Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-46",
+    "sku": "洛杉矶A-ECS 16Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-53",
+    "sku": "洛杉矶A-TCS 2Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-54",
+    "sku": "洛杉矶A-TCS 4Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-55",
+    "sku": "洛杉矶A-TCS 8Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-56",
+    "sku": "洛杉矶A-TCS 16Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-50",
+    "sku": "洛杉矶B-ECS 8Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-52",
+    "sku": "洛杉矶B-ECS 16Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-47",
+    "sku": "洛杉矶B-ECS 2 Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-49",
+    "sku": "洛杉矶B-ECS 4Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-59",
+    "sku": "洛杉矶B-TCS 8Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-60",
+    "sku": "洛杉矶B-TCS 16Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-57",
+    "sku": "洛杉矶B-TCS 2Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-58",
+    "sku": "洛杉矶B-TCS 4Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-71",
+    "sku": "洛杉矶C-TCS 2Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-73",
+    "sku": "洛杉矶C-TCS 4Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-74",
+    "sku": "洛杉矶C-TCS 8Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "joysol-75",
+    "sku": "洛杉矶C-TCS 16Cores",
+    "zone": "LAX"
+  },
+  {
+    "key": "atmos-nvme-1",
+    "sku": "VPS NVMe 1",
+    "zone": "FR"
+  },
+  {
+    "key": "atmos-nvme-2",
+    "sku": "VPS NVMe 2",
+    "zone": "FR"
+  },
+  {
+    "key": "atmos-nvme-3",
+    "sku": "VPS NVMe 3",
+    "zone": "FR"
+  },
+  {
+    "key": "atmos-nvme-4",
+    "sku": "VPS NVMe 4",
+    "zone": "FR"
+  },
+  {
+    "key": "atmos-nvme-5",
+    "sku": "VPS NVMe 5",
+    "zone": "FR"
+  },
+  {
+    "key": "atmos-nvme-6",
+    "sku": "VPS NVMe 6",
+    "zone": "FR"
   }
 ]

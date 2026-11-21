@@ -2,6 +2,7 @@
 const forumSources = {
   lowendtalk: {feed:'https://lowendtalk.com/categories/offers/feed.rss',hosts:['lowendtalk.com'],maxBytes:1_500_000},
   nodeseek: {feed: 'https://rss.nodeseek.com/', hosts: ['www.nodeseek.com', 'nodeseek.com']},
+  review: {feed: 'https://rss.nodeseek.com/', hosts: ['www.nodeseek.com', 'nodeseek.com']},
   carpool: {feed: 'https://rss.nodeseek.com/', hosts: ['www.nodeseek.com', 'nodeseek.com']},
   meow: {feed: 'https://meowvps.com/rss.xml', hosts: ['meowvps.com'], maxBytes: 4_000_000},
   meowoffers: {feed: 'https://meowvps.com/api/offers.json', maxBytes: 4_000_000},
@@ -9,14 +10,18 @@ const forumSources = {
   vpsdeer: {channel:'vpsdeer',feed:'https://t.me/s/vpsdeer'},
   vpsts: {channel:'vpsts',feed:'https://t.me/s/vpsts'},
   vpsuu: {channel:'vpsuu',feed:'https://t.me/s/vpsuu'},
-  poorvpsmsg: {channel:'PoorVPSMsg',feed:'https://t.me/s/PoorVPSMsg'}
+  poorvpsmsg: {channel:'PoorVPSMsg',feed:'https://t.me/s/PoorVPSMsg'},
+  richvps: {channel:'richvps',feed:'https://t.me/s/richvps'},
+  ovheco: {channel:'ovheco',feed:'https://t.me/s/ovheco'},
+  lettelegram: {channel:'lowendtalk_offer',feed:'https://t.me/s/lowendtalk_offer'},
+  bwh: {channel:'bwh82',feed:'https://t.me/s/bwh82'}
 };
 const packagedForumPosts={"nodeseek":{"source":"nodeseek","observed":"2026-11-20T06:33:00.142Z","stale":true,"editionSnapshot":true,"items":[{"title":"【收】剩余价值收Vmiss tri basic 4.5cad/月","link":"https://www.nodeseek.com/post-1067683-1","date":"2026-11-20T06:29:27.000Z"},{"title":"帮收两台，共溢价2500，ovh杜甫独服，sys-stor-le-1，4x12t硬盘的","link":"https://www.nodeseek.com/post-1067676-1","date":"2026-11-20T06:26:53.000Z"},{"title":"130收68段VMISS 4.5 TRI","link":"https://www.nodeseek.com/post-1067673-1","date":"2026-11-20T06:26:04.000Z"},{"title":"【交易中】【杀鸡】十块改油，RN racknerd，2025黑五10刀","link":"https://www.nodeseek.com/post-1067669-1","date":"2026-11-20T06:25:44.000Z"}]},"carpool":{"source":"carpool","observed":"2026-11-20T06:33:00.142Z","stale":true,"editionSnapshot":true,"items":[{"title":"gemini 20x 独享或两人700 独享 350 拼车","link":"https://www.nodeseek.com/post-1067686-1","hostingTitle":false,"date":"2026-11-20T06:30:00.000Z"}]},"meow":{"source":"meow","observed":"2026-11-20T06:34:01.784Z","stale":true,"editionSnapshot":true,"items":[{"title":"新商家GoldCloud 德国DC1产品 新品测评","link":"https://meowvps.com/blog/goldcloudde/","coupons":[{"code":"GCFWZDB75BUM"}],"date":"2026-11-18T23:00:00.000Z"},{"title":"PPFlight 美国洛杉矶LAX LIFT产品 测评","link":"https://meowvps.com/blog/ppflightlift/","date":"2026-11-17T23:00:00.000Z"},{"title":"Gomami 德国FRA Pulse产品 新品测评","link":"https://meowvps.com/blog/gomamide/","coupons":[{"code":"Hi,FRA"}],"date":"2026-11-15T23:00:00.000Z"},{"title":"新商家Bocchi 日本东京Tokyo高性能 新品首发测评","link":"https://meowvps.com/blog/bocchijp/","coupons":[{"code":"MeowVPS"}],"date":"2026-11-13T23:00:00.000Z"},{"title":"六六云 菲律宾双ISP产品 测评","link":"https://meowvps.com/blog/666cloudsph/","coupons":[{"code":"DOUBLE11"}],"date":"2026-11-12T23:00:00.000Z"},{"title":"新商家干杯云 AT&T商业宽带PRO美国家宽 产品测评","link":"https://meowvps.com/blog/usvps24proup/","coupons":[{"code":"MeowVPS"}],"date":"2026-11-11T23:00:00.000Z"},{"title":"商家NexKr 韩国SKB家宽产品 测评","link":"https://meowvps.com/blog/nexkrskb/","coupons":[{"code":"WELCOME"},{"code":"SMSVERIFYFEE"}],"date":"2026-11-10T23:00:00.000Z"},{"title":"新商家Tamago 香港WTT商宽 新品测评","link":"https://meowvps.com/blog/tamagowtt/","coupons":[{"code":"1111W3R3PM"}],"date":"2026-11-08T23:00:00.000Z"},{"title":"新商家ATTVPS AT&T美国家宽产品 复测","link":"https://meowvps.com/blog/attvpsre/","coupons":[{"code":"MeowVPS"}],"date":"2026-11-07T23:00:00.000Z"},{"title":"JCloudHosting 西班牙产品 测评","link":"https://meowvps.com/blog/jcloudhosting/","coupons":[{"code":"79FHTOS7JL"}],"date":"2026-11-05T23:00:00.000Z"},{"title":"新商家PanstarCloud 美国LAX Premium DC2 新品测评","link":"https://meowvps.com/blog/panstarusdc2/","coupons":[{"code":"USPre75DC2"}],"date":"2026-11-03T23:00:00.000Z"}]},"meowoffers":{"source":"meowoffers","observed":"2026-11-20T06:34:01.885Z","stale":true,"editionSnapshot":true,"items":[{"title":"LayerOne 提供 VPS，地区未注明，限量入门款为 1 vCPU、1 GB 内存、15 GB NVMe，7 美元/年。另一…","sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223566/layerone-black-friday-limited-time-offers-7-yr-flash-sale","date":"2026-11-19T21:12:36.000Z"},{"title":"VPSNerds 提供独立服务器，称覆盖 32 个以上地点，但未列出本次套餐具体地区；起步配置为 Xeon D-1531（6 核…","sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223563/99-9-uptime-high-powered-dedicated-servers-32-locations-world-wide","date":"2026-11-19T19:38:06.000Z"},{"title":"1GB 套餐 1 GB 内存 1 CPU 核心 20 GB SSD 存储 3000 GB 月流量 1 Gbps 带宽 1个 IP…","sourceName":"RackNerd","link":"https://meowvps.com/timeline/?merchant=racknerd_promo#offers","date":"2026-11-19T17:53:58.000Z"},{"title":"RackNerd 提供多地区 KVM VPS、达拉斯共享及分销主机和独服，VPS 可选地区以订单页库存为准。VPS 起步为 1…","sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223558/racknerd-s-black-friday-takeover-new-deals-new-tech-adminbolt-hosting-hundreds-of-giveaways","date":"2026-11-19T17:48:20.000Z"},{"title":"AvaHosting 提供共享主机、VPS 和独服，机房地区未注明；Nano VPS 配备 1 vCPU、512MB 内存、20…","coupons":[{"code":"BFAVA"}],"sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223492/ava-hosting-black-friday-deals-big-restock-vps-nano-giveaways","date":"2026-11-18T17:14:12.000Z"}]},"sb":{"source":"sb","observed":"2026-11-20T06:34:01.026Z","stale":true,"editionSnapshot":true,"items":[{"title":"PQS 双十一优惠活动即将开跑!","link":"https://sb.sb/t/18494/","date":"2026-11-09T07:47:39.000Z"},{"title":"🔥海沫云｜双十一特惠年付｜香港 / 美国 / 大陆","link":"https://sb.sb/t/18177/","date":"2026-11-08T07:38:19.000Z"}]},"lowendtalk":{"source":"lowendtalk","observed":"2026-11-20T06:33:06.265Z","stale":true,"editionSnapshot":true,"items":[{"title":"LayerOne - BLACK FRIDAY! Limited time offers! - $7/yr FLASH SALE","link":"https://lowendtalk.com/discussion/223566/layerone-black-friday-limited-time-offers-7-yr-flash-sale","date":"2026-11-19T21:12:36.000Z"},{"title":"RackNerd’s BLACK FRIDAY TAKEOVER! NEW DEALS, NEW TECH, AdminBolt HOSTING + HUNDREDS OF GIVEAWAYS!","link":"https://lowendtalk.com/discussion/223558/racknerd-s-black-friday-takeover-new-deals-new-tech-adminbolt-hosting-hundreds-of-giveaways","date":"2026-11-19T17:48:20.000Z"},{"title":"noez.de – Prepaid Hosting from Frankfurt, since 2012","link":"https://lowendtalk.com/discussion/223518/noez-de-prepaid-hosting-from-frankfurt-since-2012","date":"2026-11-19T11:17:21.000Z"},{"title":"Looking for a cPanel alternative? Get aaPanel Pro for $98 for one year and save $190","link":"https://lowendtalk.com/discussion/223509/looking-for-a-cpanel-alternative-get-aapanel-pro-for-98-for-one-year-and-save-190","date":"2026-11-19T04:12:18.000Z"},{"title":"Ava.hosting - Black Friday Deals + BIG Restock VPS Nano! + Giveaways!","link":"https://lowendtalk.com/discussion/223492/ava-hosting-black-friday-deals-big-restock-vps-nano-giveaways","coupons":[{"code":"BFAVA"}],"date":"2026-11-18T17:14:12.000Z"},{"title":"Streamline-Servers.com - Sydney Dedicated Servers - Early-Black Friday","link":"https://lowendtalk.com/discussion/223393/streamline-servers-com-sydney-dedicated-servers-early-black-friday","coupons":[{"code":"BLACKFRIDAY26SERVER"}],"date":"2026-11-16T23:08:54.000Z"},{"title":"PetroSky Black Friday Sale | 30% OFF KVM VPS in Canada & France | From €4.89/mo","link":"https://lowendtalk.com/discussion/223377/petrosky-black-friday-sale-30-off-kvm-vps-in-canada-france-from-4-89-mo","coupons":[{"code":"BLACKFRIDAY"}],"date":"2026-11-16T16:05:24.000Z"}]},"vpsdeer":{"source":"vpsdeer","observed":"2026-11-20T06:34:02.206Z","stale":true,"editionSnapshot":true,"items":[{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2657","date":"2026-11-20T05:14:24.000Z"},{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2656","date":"2026-11-20T05:14:17.000Z"},{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2655","date":"2026-11-20T05:13:52.000Z"},{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2654","date":"2026-11-20T03:02:44.000Z"}]},"vpsts":{"source":"vpsts","observed":"2026-11-20T06:34:02.187Z","stale":true,"editionSnapshot":true,"items":[{"title":"ZgoCloud - DE Frankfurt AMD VPS - Specials - Starter","link":"https://t.me/vpsts/4425","date":"2026-11-20T06:08:54.000Z"},{"title":"PPFlight库存监控补货通知专属频道","link":"https://t.me/vpsts/4424","date":"2026-11-20T02:54:42.000Z"},{"title":"RackNerd - 2026黑五促销","link":"https://t.me/vpsts/4423","date":"2026-11-19T19:00:55.000Z"},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano - 补货","coupons":[{"code":"Hi,FRA"}],"link":"https://t.me/vpsts/4421","date":"2026-11-18T08:06:49.000Z"},{"title":"❌ GoMami - 🗻LAX.Pulse.Nano - 已售罄","coupons":[{"code":"Hi,LAX"}],"link":"https://t.me/vpsts/4420","date":"2026-11-18T08:06:45.000Z"},{"title":"PPFlight - [US.LAX02] Glide M1","coupons":[{"code":"glideyyds"}],"link":"https://t.me/vpsts/4410","date":"2026-11-17T09:46:40.000Z"},{"title":"PPFlight - [US.LAX02] Glide S1","coupons":[{"code":"glideyyds"}],"link":"https://t.me/vpsts/4409","date":"2026-11-17T09:46:28.000Z"}]},"vpsuu":{"source":"vpsuu","observed":"2026-11-20T06:34:02.173Z","stale":true,"editionSnapshot":true,"items":[{"title":"LayerOne 黑五促销 🖥","link":"https://t.me/vpsuu/6008","date":"2026-11-20T02:11:35.000Z"},{"title":"RackNerd 2026黑五促销 🛒","link":"https://t.me/vpsuu/6007","date":"2026-11-20T00:29:16.000Z"},{"title":"RAKsmart 黑五：香港物理机秒杀$29.99/月，VPS秒杀$2.99/月起，可选国际BGP/大陆优化/精品CN2","link":"https://t.me/vpsuu/6005","date":"2026-11-19T12:15:44.000Z"},{"title":"AVA Host 黑五 8折：VPS 月付 €4 起，Nano €11/年，摩尔多瓦机房/不限流量","link":"https://t.me/vpsuu/6004","date":"2026-11-19T08:58:00.000Z"},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano 补货","coupons":[{"code":"Hi,FRA"}],"link":"https://t.me/vpsuu/6000","date":"2026-11-18T10:07:02.000Z"},{"title":"✅ GoMami - 🗻LAX.Pulse.Nano 补货","coupons":[{"code":"Hi,LAX"}],"link":"https://t.me/vpsuu/5999","date":"2026-11-18T10:06:33.000Z"},{"title":"PPFlight [US.LAX02] Glide S1 补货 🚀","coupons":[{"code":"glideyyds"}],"link":"https://t.me/vpsuu/5995","date":"2026-11-17T10:17:32.000Z"}]},"poorvpsmsg":{"source":"poorvpsmsg","observed":"2026-11-20T06:34:02.165Z","stale":true,"editionSnapshot":true,"items":[{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4807","date":"2026-11-20T06:26:20.000Z"},{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4806","date":"2026-11-20T01:56:22.000Z"},{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4805","date":"2026-11-19T22:56:22.000Z"},{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4804","date":"2026-11-19T22:26:19.000Z"}]},"coupons":{"source":"coupons","observed":"2026-11-20T06:34:02.206Z","items":[{"title":"Ava.hosting - Black Friday Deals + BIG Restock VPS Nano! + Giveaways!","code":"BFAVA","link":"https://lowendtalk.com/discussion/223492/ava-hosting-black-friday-deals-big-restock-vps-nano-giveaways","date":"2026-11-18T17:14:12.000Z","from":"lowendtalk","sourceName":"","sourceObserved":"2026-11-20T06:33:06.265Z","archived":true},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano 补货","code":"Hi,FRA","link":"https://t.me/vpsuu/6000","date":"2026-11-18T10:07:02.000Z","from":"vpsuu","sourceName":"","sourceObserved":"2026-11-20T06:34:02.173Z","archived":true},{"title":"✅ GoMami - 🗻LAX.Pulse.Nano 补货","code":"Hi,LAX","link":"https://t.me/vpsuu/5999","date":"2026-11-18T10:06:33.000Z","from":"vpsuu","sourceName":"","sourceObserved":"2026-11-20T06:34:02.173Z","archived":true},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano - 补货","code":"Hi,FRA","link":"https://t.me/vpsts/4421","date":"2026-11-18T08:06:49.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"❌ GoMami - 🗻LAX.Pulse.Nano - 已售罄","code":"Hi,LAX","link":"https://t.me/vpsts/4420","date":"2026-11-18T08:06:45.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"PPFlight [US.LAX02] Glide S1 补货 🚀","code":"glideyyds","link":"https://t.me/vpsuu/5995","date":"2026-11-17T10:17:32.000Z","from":"vpsuu","sourceName":"","sourceObserved":"2026-11-20T06:34:02.173Z","archived":true},{"title":"PPFlight - [US.LAX02] Glide M1","code":"glideyyds","link":"https://t.me/vpsts/4410","date":"2026-11-17T09:46:40.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"PPFlight - [US.LAX02] Glide S1","code":"glideyyds","link":"https://t.me/vpsts/4409","date":"2026-11-17T09:46:28.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"Streamline-Servers.com - Sydney Dedicated Servers - Early-Black Friday","code":"BLACKFRIDAY26SERVER","link":"https://lowendtalk.com/discussion/223393/streamline-servers-com-sydney-dedicated-servers-early-black-friday","date":"2026-11-16T23:08:54.000Z","from":"lowendtalk","sourceName":"","sourceObserved":"2026-11-20T06:33:06.265Z","archived":true},{"title":"PetroSky Black Friday Sale | 30% OFF KVM VPS in Canada & France | From €4.89/mo","code":"BLACKFRIDAY","link":"https://lowendtalk.com/discussion/223377/petrosky-black-friday-sale-30-off-kvm-vps-in-canada-france-from-4-89-mo","date":"2026-11-16T16:05:24.000Z","from":"lowendtalk","sourceName":"","sourceObserved":"2026-11-20T06:33:06.265Z","archived":true}],"sources":[{"source":"lowendtalk","observed":"2026-11-20T06:33:06.265Z","stale":true,"editionSnapshot":true},{"source":"nodeseek","observed":"2026-11-20T06:33:00.142Z","stale":true,"editionSnapshot":true},{"source":"meowoffers","observed":"2026-11-20T06:34:01.885Z","stale":true,"editionSnapshot":true},{"source":"sb","observed":"2026-11-20T06:34:01.026Z","stale":true,"editionSnapshot":true},{"source":"vpsdeer","observed":"2026-11-20T06:34:02.206Z","stale":true,"editionSnapshot":true},{"source":"vpsts","observed":"2026-11-20T06:34:02.187Z","stale":true,"editionSnapshot":true},{"source":"vpsuu","observed":"2026-11-20T06:34:02.173Z","stale":true,"editionSnapshot":true},{"source":"poorvpsmsg","observed":"2026-11-20T06:34:02.165Z","stale":true,"editionSnapshot":true}],"stale":true,"editionSnapshot":true}};
 function recentPackagedPosts(id){
  const item=packagedForumPosts[id],age=Date.now()-Date.parse(item?.observed);
  return age>=0&&age<14*86400000?item:null;
 }
-const couponFeedSources=['lowendtalk','nodeseek','meowoffers','sb','vpsdeer','vpsts','vpsuu','poorvpsmsg'];
+const couponFeedSources=['lowendtalk','nodeseek','meowoffers','sb','vpsdeer','vpsts','vpsuu','poorvpsmsg','richvps','ovheco','lettelegram','bwh'];
 function publishedCouponCodes(raw){
  if(typeof raw!=='string')return [];
  const text=forumDecode(raw.slice(0,16000)).replace(/<(?:br\s*\/?|\/p|\/li|\/div)>/gi,'\n').replace(/<[^<>]{0,1000}>/g,' ')
@@ -140,7 +145,7 @@ function forumHeadlines(xml, source = 'nodeseek') {
     if (!current || current.depth !== depth) return;
     const title = current.title.replace(/<[^<>]{1,250}>/g, ' ').replace(/[\u0000-\u0020\u007f]+/g, ' ').trim().slice(0, 230);
     const url = forumPostURL(current.alternate || current.link || current.guid || current.id, source);
-    const matches = source === 'carpool' ? current.category.trim().toLowerCase() === 'carpool'
+    const matches = source === 'carpool' || source === 'review' ? current.category.trim().toLowerCase() === source
       : source === 'meow' || source === 'lowendtalk' || forumKeywords.test(title);
     if (url && title && matches && !posts.has(url)) {
       const time = Date.parse(current.pubdate || current.published || current.date || current.updated);
@@ -256,7 +261,8 @@ function telegramPreview(html, channel) {
     const title = lines.shift().slice(0,105);
     const snippet = lines.filter(s=>!/^([#@]|[🛒🛍]|购买链接|購買連結|立即搶購|立即抢购)/u.test(s)).join(' · ').slice(0,110);
     const coupons=publishedCouponCodes(post.text);
-    posts.set(post.link,{title,...(coupons.length?{coupons}:{}),...(snippet ? {snippet} : {}),link:post.link,date:post.date});
+    const productLine=[title,...lines.slice(0,6)].join(' · ').slice(0,380);
+    posts.set(post.link,{title,productLine,...(coupons.length?{coupons}:{}),...(snippet ? {snippet} : {}),link:post.link,date:post.date});
   }
   function close(depth) {
     while (stack.length > depth) {
@@ -900,6 +906,396 @@ const quoteOnlyTargets={
  }
 };
 const catalogStockTargets = {
+/* JoySolData targets */
+  "pc-joysol-35": {
+    "family": "joysol",
+    "sku": "香港优化A-ECS 2H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 35,
+    "group": 3
+  },
+  "pc-joysol-36": {
+    "family": "joysol",
+    "sku": "香港优化A-ECS 2H2G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 36,
+    "group": 3
+  },
+  "pc-joysol-37": {
+    "family": "joysol",
+    "sku": "香港优化A-ECS 4H4G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 37,
+    "group": 3
+  },
+  "pc-joysol-38": {
+    "family": "joysol",
+    "sku": "香港优化A-ECS 8H8G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 38,
+    "group": 3
+  },
+  "joysol-40": {
+    "family": "joysol",
+    "sku": "香港优化A-ECS 16H16G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 40,
+    "group": 3
+  },
+  "joysol-7": {
+    "family": "joysol",
+    "sku": "香港优化A-TCS 2H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 7,
+    "group": 2
+  },
+  "joysol-30": {
+    "family": "joysol",
+    "sku": "香港优化A-TCS 2H2G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 30,
+    "group": 2
+  },
+  "joysol-31": {
+    "family": "joysol",
+    "sku": "香港优化A-TCS 4H4G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 31,
+    "group": 2
+  },
+  "joysol-32": {
+    "family": "joysol",
+    "sku": "香港优化A-TCS 8H8G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 32,
+    "group": 2
+  },
+  "joysol-34": {
+    "family": "joysol",
+    "sku": "香港优化A-TCS 16H16G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 34,
+    "group": 2
+  },
+  "joysol-61": {
+    "family": "joysol",
+    "sku": "香港优化B-ECS 2H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 61,
+    "group": 8
+  },
+  "joysol-62": {
+    "family": "joysol",
+    "sku": "香港优化B-ECS 2H2G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 62,
+    "group": 8
+  },
+  "joysol-63": {
+    "family": "joysol",
+    "sku": "香港优化B-ECS 4H4G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 63,
+    "group": 8
+  },
+  "joysol-64": {
+    "family": "joysol",
+    "sku": "香港优化B-ECS 8H8G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 64,
+    "group": 8
+  },
+  "joysol-65": {
+    "family": "joysol",
+    "sku": "香港优化B-ECS 16H16G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 65,
+    "group": 8
+  },
+  "joysol-70": {
+    "family": "joysol",
+    "sku": "香港优化B-TCS 16H16G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 70,
+    "group": 9
+  },
+  "joysol-69": {
+    "family": "joysol",
+    "sku": "香港优化B-TCS 8H8G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 69,
+    "group": 9
+  },
+  "joysol-68": {
+    "family": "joysol",
+    "sku": "香港优化B-TCS 4H4G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 68,
+    "group": 9
+  },
+  "joysol-67": {
+    "family": "joysol",
+    "sku": "香港优化B-TCS 2H2G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 67,
+    "group": 9
+  },
+  "joysol-66": {
+    "family": "joysol",
+    "sku": "香港优化B-TCS 2H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 66,
+    "group": 9
+  },
+  "joysol-77": {
+    "family": "joysol",
+    "sku": "香港优化C-TCS 1H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 77,
+    "group": 11
+  },
+  "joysol-79": {
+    "family": "joysol",
+    "sku": "香港优化C-TCS 2H2G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 79,
+    "group": 11
+  },
+  "joysol-78": {
+    "family": "joysol",
+    "sku": "香港优化C-TCS 2H1G",
+    "zone": "HK",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 78,
+    "group": 11
+  },
+  "joysol-41": {
+    "family": "joysol",
+    "sku": "洛杉矶A-ECS 2Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 41,
+    "group": 4
+  },
+  "joysol-43": {
+    "family": "joysol",
+    "sku": "洛杉矶A-ECS 4Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 43,
+    "group": 4
+  },
+  "joysol-44": {
+    "family": "joysol",
+    "sku": "洛杉矶A-ECS 8Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 44,
+    "group": 4
+  },
+  "joysol-46": {
+    "family": "joysol",
+    "sku": "洛杉矶A-ECS 16Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 46,
+    "group": 4
+  },
+  "joysol-53": {
+    "family": "joysol",
+    "sku": "洛杉矶A-TCS 2Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 53,
+    "group": 6
+  },
+  "joysol-54": {
+    "family": "joysol",
+    "sku": "洛杉矶A-TCS 4Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 54,
+    "group": 6
+  },
+  "joysol-55": {
+    "family": "joysol",
+    "sku": "洛杉矶A-TCS 8Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 55,
+    "group": 6
+  },
+  "joysol-56": {
+    "family": "joysol",
+    "sku": "洛杉矶A-TCS 16Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 56,
+    "group": 6
+  },
+  "joysol-50": {
+    "family": "joysol",
+    "sku": "洛杉矶B-ECS 8Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 50,
+    "group": 5
+  },
+  "joysol-52": {
+    "family": "joysol",
+    "sku": "洛杉矶B-ECS 16Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 52,
+    "group": 5
+  },
+  "joysol-47": {
+    "family": "joysol",
+    "sku": "洛杉矶B-ECS 2 Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 47,
+    "group": 5
+  },
+  "joysol-49": {
+    "family": "joysol",
+    "sku": "洛杉矶B-ECS 4Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 49,
+    "group": 5
+  },
+  "joysol-59": {
+    "family": "joysol",
+    "sku": "洛杉矶B-TCS 8Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 59,
+    "group": 7
+  },
+  "joysol-60": {
+    "family": "joysol",
+    "sku": "洛杉矶B-TCS 16Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 60,
+    "group": 7
+  },
+  "joysol-57": {
+    "family": "joysol",
+    "sku": "洛杉矶B-TCS 2Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 57,
+    "group": 7
+  },
+  "joysol-58": {
+    "family": "joysol",
+    "sku": "洛杉矶B-TCS 4Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 58,
+    "group": 7
+  },
+  "joysol-71": {
+    "family": "joysol",
+    "sku": "洛杉矶C-TCS 2Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 71,
+    "group": 10
+  },
+  "joysol-73": {
+    "family": "joysol",
+    "sku": "洛杉矶C-TCS 4Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 73,
+    "group": 10
+  },
+  "joysol-74": {
+    "family": "joysol",
+    "sku": "洛杉矶C-TCS 8Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 74,
+    "group": 10
+  },
+  "joysol-75": {
+    "family": "joysol",
+    "sku": "洛杉矶C-TCS 16Cores",
+    "zone": "LAX",
+    "url": "https://www.joysol.net/api/common/prolist-proxy.php",
+    "pid": 75,
+    "group": 10
+  },
+  "atmos-nvme-1": {
+    "family": "atmos",
+    "sku": "VPS NVMe 1",
+    "zone": "FR",
+    "pid": 1,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+  "atmos-nvme-2": {
+    "family": "atmos",
+    "sku": "VPS NVMe 2",
+    "zone": "FR",
+    "pid": 2,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+  "atmos-nvme-3": {
+    "family": "atmos",
+    "sku": "VPS NVMe 3",
+    "zone": "FR",
+    "pid": 3,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+  "atmos-nvme-4": {
+    "family": "atmos",
+    "sku": "VPS NVMe 4",
+    "zone": "FR",
+    "pid": 4,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+  "atmos-nvme-5": {
+    "family": "atmos",
+    "sku": "VPS NVMe 5",
+    "zone": "FR",
+    "pid": 5,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+  "atmos-nvme-6": {
+    "family": "atmos",
+    "sku": "VPS NVMe 6",
+    "zone": "FR",
+    "pid": 6,
+    "url": "https://atmosnode.com/dashboard/index.php?rp=/store/vps-2026"
+  },
+/* End JoySolData targets */
+
+
  "let11-servitro-virtual-servers-usd1-server":{"family":"servitro","sku":"$1 Server","zone":"DE","url":"https://my.servitro.com/store/virtual-servers","slug":"usd1-server"},
  "let11-servitro-virtual-servers-virtual-1":{"family":"servitro","sku":"Virtual-1","zone":"DE","url":"https://my.servitro.com/store/virtual-servers","slug":"virtual-1"},
  "let11-servitro-virtual-servers-ryzen-9-9950x-frankfurt-virtual-1":{"family":"servitro","sku":"Virtual-1","zone":"DE","url":"https://my.servitro.com/store/virtual-servers-ryzen-9-9950x-frankfurt","slug":"virtual-1","previousGroup":"virtual-servers-ryzen-9-7950x3d"},
@@ -4060,7 +4456,7 @@ function greenObservation(t,catalog,at){
 }
 
 async function fetchProviderCatalog(t,key,now) {
- const jsonFormat=['bwh','akile','isvoro'].includes(t.family);
+ const jsonFormat=['bwh','akile','isvoro','joysol'].includes(t.family);
  const reply=await fetch(t.url,{redirect:'manual',signal:AbortSignal.timeout(11000),
   headers:{Accept:jsonFormat?'application/json':'text/html','Accept-Language':'en'},
   cf:{cacheEverything:true,cacheTtl:25}});
@@ -4221,14 +4617,63 @@ function servitroObservation(t,html,at){
   ...(Number.isSafeInteger(quantity)?{stockQuantity:quantity}:{})}};
 }
 
+function joysolObservation(target,payload,checkedAt){
+ const empty={state:'unreported',offer:null};
+ const parent=target.zone==='HK'?2:target.zone==='LAX'?1:null;
+ if(payload?.status!==200||!parent||!Array.isArray(payload.data?.fgs))return empty;
+ const areas=payload.data.fgs.filter(area=>area.id===parent);
+ const groups=areas.length===1&&Array.isArray(areas[0].group)?areas[0].group.filter(group=>group.id===target.group):[];
+ const group=groups.length===1?groups[0]:null;
+ const products=Array.isArray(group?.products)?group.products.filter(product=>product.id===target.pid&&product.gid===target.group):[];
+ const product=products.length===1?products[0]:null;
+ if(product?.name!==target.sku)return empty;
+ const quantity=product.stock_control===1&&Number.isSafeInteger(product.qty)&&product.qty>=0?product.qty:null;
+ const state=inventoryCount(quantity);
+ const amount=amountFor(product.product_price);
+ if(amount===null||product.billingcycle!=='monthly')return {state,offer:null};
+ const fields=Object.fromEntries([...String(product.description||'').slice(0,16000).matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/gi)]
+  .map(([,value])=>shortText(value).split(/[：:]\s*/,2)));
+ const cores=fields.CPU?.match(/^(\d+)\s*核心/)?.[1];
+ const processors=(String(group.headline||'').match(/8269CY|8255C|6133|8275CL|E5-2682V4/gi)||[]).map(name=>
+  name==='E5-2682V4'?'Intel Xeon E5-2682 v4':'Intel Xeon '+(name==='6133'?'Gold ':'Platinum ')+name);
+ const transfer=fields['流量']?.replace(/\s+with\s+.*$/i,'').replace(/\s*@?\s*\d+(?:\.\d+)?\s*(?:Mbps|Gbps).*/i,'').trim()||'';
+ const port=(fields['流量']||fields['带宽']||'').match(/\d+(?:\.\d+)?\s*(?:Mbps|Gbps)/i)?.[0]||'';
+ return {state,offer:{amount,currency:'CNY',period:'month',basis:'listed',checkedAt,
+  ...publicCpu(cores?cores+' vCPU':'',processors.join(' / ')),ram:fields['内存']||'',disk:fields['系统盘']||'',port,traffic:transfer,
+  ...(quantity!==null?{stockQuantity:quantity}:{})}};
+}
+
+function atmosObservation(target,html,checkedAt){
+ const empty={state:'unreported',offer:null};
+ const card=html.match(new RegExp('<(?:div|article)\\b[^>]*\\bid="product'+target.pid+'"[^>]*>([\\s\\S]*?)</footer>','i'))?.[1];
+ if(!card||shortText(card.match(/class="lz-product-name"[^>]*>([\s\S]*?)<\/span>/i)?.[1])!==target.sku)return empty;
+ const stock=shortText(card.match(/class="qty[^"]*"[^>]*>([\s\S]*?)<\/span>/i)?.[1]);
+ const number=/^(?:Only\s+)?(\d+)\s+(?:left|Available)$/i.exec(stock);
+ const quantity=/^Out of stock$/i.test(stock)?0:number?Number(number[1]):null;
+ const state=quantity!==null&&quantity>0&&quantity<=2?'low':inventoryCount(quantity);
+ const pricing=card.match(/<div class="product-pricing"[^>]*>([\s\S]*?)<\/div>/i)?.[1]||'';
+ const priceText=shortText(pricing.match(/class="lz-price-old"[^>]*>([\s\S]*?)<\/span>/i)?.[1]||pricing.match(/class="price(?: [^"]*)?"[^>]*>([\s\S]*?)<\/span>/i)?.[1]);
+ const amount=amountFor(priceText.match(/^(\d+,\d{2})\s*€$/)?.[1].replace(',','.'));
+ const frequency=shortText(pricing.match(/class="lz-cycle"[^>]*>([\s\S]*?)<\/span>/i)?.[1]);
+ if(amount===null||!/\/ month$/i.test(frequency))return {state,offer:null};
+ const specifications=Object.fromEntries([...card.matchAll(/<small>([^<>]+)<\/small>\s*<strong class="feature-value">([\s\S]*?)<\/strong>/gi)].map(([,key,value])=>[shortText(key),shortText(value)]));
+ const count=specifications.Processor?.match(/^(\d+)\s*vCores?\b/i)?.[1];
+ const model=specifications.Processor?.replace('™','').match(/AMD Ryzen\s+9\s+9950X/i)?.[0];
+ const bandwidth=specifications.Bandwidth?.match(/^(\d+(?:\.\d+)?)\s*Gbit\/s/i)?.[1];
+ return {state,offer:{amount,currency:'EUR',period:'month',basis:'listed',checkedAt,
+  ...publicCpu(count?count+' vCPU':'',model),ram:specifications.Memory||'',disk:specifications.Storage||'',
+  port:bandwidth?bandwidth+' Gbps':'',traffic:/unlimited traffic/i.test(specifications.Bandwidth||'')?'Unlimited':'',
+  ...(quantity!==null?{stockQuantity:quantity}:{})}};
+}
+
 async function catalogObservation(t,requests){
- const table={bagevm:bageObservation,matrix:matrixObservation,prepaid:prepaidObservation,bwh:bwhObservation,akile:akileObservation,isvoro:isvoroObservation,akko:akkoObservation,mhy:mhyObservation,greenwhmcs:greenObservation,jsonldoffer:jsonldObservation,servitro:servitroObservation};
+ const table={bagevm:bageObservation,matrix:matrixObservation,prepaid:prepaidObservation,bwh:bwhObservation,akile:akileObservation,isvoro:isvoroObservation,akko:akkoObservation,mhy:mhyObservation,greenwhmcs:greenObservation,jsonldoffer:jsonldObservation,servitro:servitroObservation,joysol:joysolObservation,atmos:atmosObservation};
  const entry=await loadProviderCatalog(t,requests);
  return table[t.family](t,entry.data,entry.at);
 }
 
 async function observeListing(target,requests){
- if(['bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer','servitro'].includes(target.family))return catalogObservation(target,requests);
+ if(['bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer','servitro','joysol','atmos'].includes(target.family))return catalogObservation(target,requests);
  if(target.family==="tamago")return tamagoObservation(target);
  if(target.family==="vultr")return vultrObservation(target);
  if(["backwaves","wasabi"].includes(target.family))return lagomObservation(target);
@@ -4258,7 +4703,7 @@ async function observeListing(target,requests){
 }
 
 async function observe(t){
- if(["vmsilo","backwaves","wasabi","vultr","tamago","bagevm","matrix","prepaid","bwh","akile","isvoro","akko","mhy","greenwhmcs","jsonldoffer","servitro"].includes(t.family))return (await observeListing(t)).state;
+ if(["vmsilo","backwaves","wasabi","vultr","tamago","bagevm","matrix","prepaid","bwh","akile","isvoro","akko","mhy","greenwhmcs","jsonldoffer","servitro","joysol","atmos"].includes(t.family))return (await observeListing(t)).state;
  if(t.family==="mkcloud"||t.family==="nnb")return classifyStorefront(t,await currentStorefront(t.family));
  const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),7000);
  try{
@@ -4337,6 +4782,22 @@ async function serveGreenCloudRates(req, ctx) {
 export default {async fetch(req,env,ctx){
  const url=new URL(req.url);
  if(url.pathname.startsWith('/api/greencloud-prices/'))return serveGreenCloudRates(req,ctx);
+ if(url.pathname==='/api/deal-feed/channel-products'){
+  if(req.method!=='GET')return forumResponse({error:'method'},405);
+  const sources=Object.entries(forumSources).filter(([,source])=>source.channel).map(([name])=>name);
+  const feeds=await Promise.all(sources.map(async from=>{
+   try{
+    const response=await serveForumFeed(new Request(new URL('/api/deal-feed/'+from,url)),ctx);
+    if(!response.ok)return null;
+    const result=await response.json();
+    if(result.stale||result.editionSnapshot||result.visibility==='link-only')return null;
+    return {from,items:result.items.map(post=>({...post,from,sourceObserved:result.observed}))};
+   }catch{return null}
+  }));
+  const reads=feeds.filter(Boolean);
+  if(!reads.length)return forumResponse({error:'sources unavailable'},503);
+  return forumResponse({source:'channel-products',sources:reads.map(source=>source.from),items:reads.flatMap(source=>source.items)},200,120);
+ }
  if(url.pathname.startsWith('/api/deal-feed/'))return serveForumFeed(req,ctx);
  if(url.pathname.startsWith('/api/stock-history/'))return json({installed:false},200,60);
  if(!url.pathname.startsWith('/api/stock/'))return env.ASSETS.fetch(req);

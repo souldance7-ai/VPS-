@@ -1,0 +1,16 @@
+{
+  "name": "pitopone-atlas-traffic",
+  "main": "traffic.mjs",
+  "compatibility_date": "2025-11-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {"pattern": "ip-guide.pitopone.com/api/traffic/*", "zone_name": "pitopone.com"}
+  ],
+  "durable_objects": {
+    "bindings": [{"name": "TRAFFIC", "class_name": "TrafficCounter"}]
+  },
+  "migrations": [
+    {"tag": "v1", "new_sqlite_classes": ["TrafficCounter"]}
+  ]
+}
