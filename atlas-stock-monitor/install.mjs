@@ -56,6 +56,7 @@ async function main(){
  if(!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(id||''))throw Error('无法读取数据库标识，请确认账户。');
  cfg.d1_databases[0].database_id=id;
  fs.writeFileSync('wrangler.json',JSON.stringify(cfg,null,2));
+ cli(['d1','execute',name,'--remote','--file','schema.sql','--config','wrangler.json']);
  cli(['deploy','--config','wrangler.json']);
  await confirmPublicMonitor();
  console.log('部署成功。打开 https://ip-guide.pitopone.com/api/stock-history/health 查看采集进度。');

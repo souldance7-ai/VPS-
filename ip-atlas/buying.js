@@ -117,6 +117,7 @@ function priceEvidence(p,s=activeSpec(p)){
  return snapshot;
 }
 function purchaseQualifier(p,s=activeSpec(p)){
+ if(p.officialCatalog?.stale&&s?.proof===p.officialCatalog.source)return catalogueCopy[lang].stale;
  if(s?.priceType==='base-estimate')return ({sc:'官网计算器 · 基础估算',tc:'官網計算器 · 基礎估算',en:'Official calculator · base estimate',ja:'公式計算機・基本料金の試算'})[lang];
  const basis=priceEvidence(p,s);
  if(basis.qualifier)return basis.qualifier;
@@ -150,7 +151,7 @@ function shoppingMatch(p){
  if(mode==='provider'||mode==='review')return published(p)&&priceEvidence(p,s).type===mode;
  if(mode==='spec')return Boolean(published(p)&&s?.cpu&&s?.ram&&s?.port);
  if(mode==='probe')return hasStockProbe(p);
- if(mode==='live-rate'){const key=observationKey(p);return Boolean(key&&quoteCapable(stockTarget(key)))}
+ if(mode==='live-rate'){const key=observationKey(p);return Boolean(p.officialCatalog&&!p.officialCatalog.stale&&s?.price||key&&quoteCapable(stockTarget(key)))}
  return true;
 }
 function commercialScore(p){return (published(p)?6:0)+(p.spec?.cpu?2:0)+(p.spec?.ram?2:0)+(p.spec?.port?1:0)}

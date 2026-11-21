@@ -46,7 +46,7 @@ function quickEvidenceFeatures(plan){
   if(typeof allowance==='string'&&/\d\s*(?:TB|GB)\b/i.test(allowance))values.add('quota-transfer');
  }
  if(plan.kind==='bare')values.add('bare');
- if(typeof getStockKey==='function'&&getStockKey(plan))values.add('probe');
+ if((plan.officialCatalog&&plan.officialCatalog.stock!=='unreported')||(typeof getStockKey==='function'&&getStockKey(plan)))values.add('probe');
  quickFeatures.set(plan,values);return values;
 }
 function quickMatcher(selected){

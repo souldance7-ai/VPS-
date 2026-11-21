@@ -25,6 +25,7 @@ const merchantIndex = [
  {"keys":["Lamhosting"],"names":["LAM","Lam Hosting"]},
  {"keys":["RFCHOST"],"names":["RFC","RFCHost"]},
  {"keys":["UQIDC"],"names":["UQ","uqidc.com"]},
+ {"keys":["YunYoo"],"names":["YUNYOO","云悠","雲悠","yunyoo.cc"]},
  {"keys":["ACCK","ACCK Cloud"],"names":["ACCKCloud","ACCK"]},
  {"keys":["Hytron"],"names":["Hytron"]},
  {"keys":["JustG"],"names":["JustG","justg.com"]},
@@ -66,8 +67,14 @@ const merchantMenuCopy={
  en:{label:'All merchants',choose:'Find a merchant',search:'Merchant or alias, e.g. GreenCloud',all:'All plans from this merchant',category:'Store and public sources',market:'See this region only',empty:'No merchant matches that name.',scope:'Route and other filters also narrow these results.',global:'All locations',read:'Public sources read',unread:'Merchant product pages were unavailable on this check',matched:'Promotion posts',queried:'Public promotion search completed',source:'Source',website:'Merchant site'},
  ja:{label:'全事業者',choose:'事業者を検索',search:'会社名・別名で検索（例 GreenCloud）',all:'この事業者の全プラン',category:'商品ページ・公開情報源',market:'この地域だけで検索',empty:'一致する事業者がありません。',scope:'経路などの条件でも結果を絞り込んでいます。',global:'全地域',read:'確認できた公開資料',unread:'今回の確認では商品ページを取得できませんでした',matched:'割引の原文',queried:'公開割引を検索済み',source:'出典',website:'公式サイト'}
 };
-const allMerchantNames=[...new Set(PLANS.map(p=>p.provider))].sort((a,b)=>a.localeCompare(b,'en'));
-const merchantPlanCounts=new Map();for(const p of PLANS)merchantPlanCounts.set(p.provider,(merchantPlanCounts.get(p.provider)||0)+1);
+let allMerchantNames=[];
+const merchantPlanCounts=new Map();
+function refreshMerchantIndex(){
+ merchantPlanCounts.clear();
+ for(const p of PLANS)merchantPlanCounts.set(p.provider,(merchantPlanCounts.get(p.provider)||0)+1);
+ allMerchantNames=[...merchantPlanCounts.keys()].sort((a,b)=>a.localeCompare(b,'en'));
+}
+refreshMerchantIndex();
 function merchantLink(name,label,marketCode=''){
  const a=el('a',label),q=new URLSearchParams();
  if(name)q.set('q-vendor',name);if(marketCode)q.set('q-market',marketCode);
@@ -86,12 +93,15 @@ function merchantCoverageWord(key){return merchantCoverageLabels[key]?.[{tc:0,sc
 function directoryMerchantPanel(name){
  const audit=typeof MERCHANT_AUDIT==='undefined'?null:MERCHANT_AUDIT.merchants?.[name];
  const deals=typeof MERCHANT_PROMOTION_SEARCH==='undefined'?null:MERCHANT_PROMOTION_SEARCH[name];
- if(!audit&&!deals)return null;
+ if(!audit&&!deals&&!Object.hasOwn(merchantCatalogMeta,name))return null;
  const t=merchantMenuCopy[lang],details=el('details',null,'merchant-source-panel'),summary=el('summary',name+' · '+t.category);details.append(summary);
  details.addEventListener('toggle',()=>{
   if(!details.open||details.children.length>1)return;
   const body=el('div',null,'merchant-evidence'),used=new Set();
   const add=(url,title,box=body)=>{let parsed;try{parsed=new URL(url)}catch{return}if(!['https:','http:'].includes(parsed.protocol)||used.has(parsed.href))return;used.add(parsed.href);box.append(link((title||parsed.hostname)+' ↗',parsed.href))};
+  appendMerchantCatalogStatus(body,name);
+  const fresh=Object.hasOwn(merchantCatalogMeta,name)?merchantCatalogMeta[name].source:null;
+  if(fresh)add(fresh,t.website);
   if(audit){
    const at=audit.checkedAt||MERCHANT_AUDIT.checkedAt;
    body.append(el('small',(merchantCoverageWord(audit.status)||t.read)+(at?' · '+String(at).slice(0,10):'')));
@@ -108,7 +118,7 @@ function directoryMerchantPanel(name){
 function fillMerchantMenu(){
  const nav=$('provider-shortcuts');if(!nav)return;
  const vendor=$('vendor').value,area=$('market').value,query=$('search').value.trim(),active=quickDirectoryUrl().search;
- const state=JSON.stringify([lang,vendor,area,query,active]);if(nav.dataset.rendered===state)return;
+ const state=JSON.stringify([lang,vendor,area,query,active,merchantCatalogRevision]);if(nav.dataset.rendered===state)return;
  nav.dataset.rendered=state;
  const t=merchantMenuCopy[lang],open=nav.querySelector('details.merchant-picker')?.open||false;
  const previous=nav.querySelector('input.merchant-find')?.value||'';

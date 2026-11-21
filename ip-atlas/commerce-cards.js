@@ -136,6 +136,7 @@ function commerceStamp(box,time,source){
 function paintCommerceStock(box,p,probe,target){
   if(!box)return;
   const snapshot=commerceSnapshot(p),direct=probe&&['in-stock','sold-out','low'].includes(probe.state)&&!target?.quoteOnly;
+  if(!direct&&p.officialCatalog){paintOfficialCatalogueStock(box,p.officialCatalog);return}
   const dated=snapshot&&!direct&&(!probe||['loading','local'].includes(probe.state));
   box.replaceChildren();
   const state=direct?probe.state:dated?snapshot.state:probe?.state==='offline'?'offline':probe?.state==='loading'&&!target?.quoteOnly?'loading':probe?.state==='unreported'||target?.quoteOnly?'unreported':'untracked';

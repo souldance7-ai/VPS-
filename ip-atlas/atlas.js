@@ -340,3 +340,4 @@ document.querySelector("[data-open-feed]").addEventListener("click",()=>activate
 document.querySelector("[data-open-offers]").addEventListener("click",()=>activateOfferTab($("tab-index")));
 startComic();
 startPortal();
+startMerchantCatalog();

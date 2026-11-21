@@ -20,3 +20,18 @@ CREATE TABLE IF NOT EXISTS offer_latest (
  observed_at INTEGER NOT NULL,
  payload TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS merchant_catalog_pages (
+ vendor TEXT NOT NULL,
+ url TEXT NOT NULL,
+ depth INTEGER NOT NULL,
+ priority INTEGER NOT NULL,
+ due_at INTEGER NOT NULL,
+ status TEXT NOT NULL,
+ checked_at INTEGER NOT NULL DEFAULT 0,
+ observed_at INTEGER NOT NULL DEFAULT 0,
+ failures INTEGER NOT NULL DEFAULT 0,
+ payload TEXT,
+ PRIMARY KEY (vendor,url)
+);
+CREATE INDEX IF NOT EXISTS merchant_catalog_due ON merchant_catalog_pages(priority,due_at);

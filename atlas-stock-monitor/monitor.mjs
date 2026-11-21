@@ -1,5 +1,6 @@
 import targets from './targets.json' with { type: 'json' };
 import {stockTarget,observeListing} from './stock-source.mjs';
+import {collectMerchantCatalog,readMerchantCatalog} from './merchant-catalog.mjs';
 
 const mkTargets=targets.filter(t=>stockTarget(t.key)?.family==='mkcloud');
 const legacyTargets=targets.filter(t=>!['greenwhmcs','mkcloud','jsonldoffer'].includes(stockTarget(t.key)?.family));
@@ -218,6 +219,7 @@ async function readPublicFeed(url,env){
 export async function read(req,env) {
  const path=new URL(req.url).pathname;
  if(req.method!=='GET')return json({error:'GET required'},405);
+ if(path==='/api/stock-history/catalog'||path==='/api/stock-history/catalog/health')return readMerchantCatalog(req,env);
  if(path==='/api/stock-history/feed')return readPublicFeed(new URL(req.url),env);
  if(path==='/api/stock-history/health'){
   const row=await env.DB.prepare("SELECT COUNT(*) AS sampled, SUM(current_state IN ('in-stock','sold-out','low')) AS verified, SUM(current_state = 'offline') AS offline, SUM(current_state = 'unreported') AS unreported, MAX(checked_at) AS last, MIN(checked_at) AS oldest FROM stock_latest").first();
@@ -253,6 +255,6 @@ export async function read(req,env) {
   events:events.results.map(e=>({at:iso(e.at),from:e.from_state,to:e.to_state}))});
 }
 export default {
- async scheduled(job,env){await Promise.all([collect(job.scheduledTime,env),collectFacilities(job.scheduledTime,env),collectPublicFeed(job.scheduledTime,env)])},
+ async scheduled(job,env){await Promise.all([collect(job.scheduledTime,env),collectFacilities(job.scheduledTime,env),collectPublicFeed(job.scheduledTime,env),collectMerchantCatalog(job.scheduledTime,env).catch(error=>console.error('Merchant catalogue:',error.message))])},
  async fetch(req,env){try{return await read(req,env)}catch{return json({error:'History unavailable'},503)}}
 };
