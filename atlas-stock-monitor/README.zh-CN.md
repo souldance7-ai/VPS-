@@ -38,3 +38,5 @@ V12 共轮询 1,917 款商品，1,744 款提供库存探针，1,884 款提供报
 部署前运行 `schema.sql` 的幂等迁移，新增 `merchant_catalog_pages`。每分钟从已核对的 `merchant-storefronts.json` 入口取出到期页面，从同一商家的公开分类继续发现源页面，并写入有商品依据的快照。优先目录成功读到商品后的目标重查间隔为 20 分钟，普通目录为 12 小时。实际间隔取决于待读页面数量和读取结果。失败时保留上次有效快照，空分类和未识别的格式保留状态。后台不会使用登录会话。
 
 `GET /api/stock-history/catalog` 返回可索引的商品及访问覆盖，支持 `?vendor=YunYoo`。 `GET /api/stock-history/catalog/health` 只返回覆盖信息。现有库存与报价历史仍使用各自原有接口。
+
+懒猫云从创建实例页发现系列，并读取系列页提供的公开配置和价格。HostYun 使用其首页公开的商品接口。HostUS、Friendhosting 与 edgeNAT 读取公开商店的产品列表。公开目录响应在边缘缓存一分钟。

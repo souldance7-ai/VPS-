@@ -33,6 +33,14 @@ const hosting=/\b(?:vps|vds|cvm|tcvm|kvm|vpsssd|vserver|bare[ -]?metal|dedicated
 const otherProduct=/shared[ -]?(?:web[ -]?)?hosting|reseller[ -]?hosting|wordpress|domain[ -]?registration|email[ -]?hosting|virtualizor[ -]license|\bssl certificates?\b|backup storage|object storage|域名注册|虚拟空间|虛擬空間|共享主机|共享主機|网站空间|流量包|充值卡/i;
 const commercePath=/(?:^|\/)(?:cart(?:\.php)?|store|shop|pricing|products?|vps(?:-hosting)?|vds|vserver|dedicated(?:-servers)?|bare-metal(?:-servers)?|cloud(?:-servers|-hosting|-compute)?|servers?|compute|[\w-]+-(?:vps|vds)(?:-[\w-]+)?|virtual-servers)(?:\/|$)/i;
 const privatePath=/(?:^|\/)(?:account|dashboard|admin|login|signup|register|members|clientarea(?:\.php)?|checkout|invoice|payment|affiliate|logout|contact|ticket|api|status|metrics|telemetry|analytics|tracking|auth|oauth|news|blog|kb|docs|support|terms|privacy)(?:[./-]|$)/i;
+const lazyCatFamily=/^\/instances\/create\/([a-z]{2})\/(\d+)\/?$/;
+const lazyCatStore=url=>url.hostname==='dash.lazycat.wiki'&&
+ (url.pathname==='/instances/create'||lazyCatFamily.test(url.pathname));
+const hostYunFeed='https://my.hostyun.com/process.aspx?c=jsapi&action=product&groupid=';
+const hostYunGroup=url=>{
+ const match=/^https:\/\/my\.hostyun\.com\/process\.aspx\?c=jsapi&action=product&groupid=(\d{1,6})$/.exec(url.href);
+ return match?.[1]||'';
+};
 
 function decode(text){
  const named={amp:'&',quot:'"',apos:"'",nbsp:' ',yen:'¥',euro:'€',pound:'£',lt:'<',gt:'>',ndash:'–',mdash:'—'};
@@ -56,13 +64,14 @@ export function storefrontUrl(raw,base,hosts,{seed=false}={}){
    !hosts.some(host=>hostKey(host)===hostKey(url.hostname))||privatePath.test(url.pathname))return '';
   if(/\.(?:xml|rss|json|js|css|zip|pdf|png|jpe?g|svg|mp4|woff2?)$/i.test(url.pathname))return '';
   url.hash='';
+  if(hostYunGroup(url))return url.href;
   for(const key of [...url.searchParams.keys()]){
    if(/^(?:utm_.*|aff(?:id)?|ref(?:errer)?|gclid|fbclid|language|lang|currency)$/i.test(key)){url.searchParams.delete(key);continue}
    const value=url.searchParams.get(key);
    if(!cartQuery.includes(key)||url.searchParams.getAll(key).length!==1||
     (key==='rp'?!/^\/store(?:\/[a-z0-9_-]+){0,4}\/?$/i.test(value):!/^\d{1,6}$/.test(value)))return '';
   }
-  if(!seed&&url.pathname!=='/'&&!commercePath.test(url.pathname)&&!url.searchParams.has('rp'))return '';
+  if(!seed&&url.pathname!=='/'&&!commercePath.test(url.pathname)&&!lazyCatStore(url)&&!url.searchParams.has('rp'))return '';
   if(url.searchParams.has('fid')||url.searchParams.has('gid')){
    if(!/(?:^|\/)(?:cart(?:\.php)?|index\.php)\/?$/.test(url.pathname))return '';
    const ordered=new URLSearchParams();
@@ -185,6 +194,89 @@ function whmcs(html,url,title,currency){
  }
  return {complete:items.length>0&&items.length===matched.length,items,adapter:'whmcs'};
 }
+function whmcsPackages(html,url,title,entry){
+ const packages=[...html.matchAll(/<div\b[^>]*\bclass=["']package["'][^>]*\bid=["']product(\d+)["'][^>]*>/gi)];
+ const items=[];
+ for(const [index,pkg] of packages.entries()){
+  const card=html.slice(pkg.index,Math.min(packages[index+1]?.index??html.length,pkg.index+20_000));
+  const name=classText(card,'package-title','h3');
+  const description=classText(card,'package-content','div');
+  if(!name||!hosting.test(name+' '+title+' '+url))continue;
+  const details=specs(description);
+  details.traffic||=plain(description).match(/\d+(?:\.\d+)?\s*(?:GB|TB)\s+Bandwidth\b/i)?.[0].replace(/\s+Bandwidth$/i,'')||'';
+  details.disk||=plain(description).match(/\d+(?:\.\d+)?\s*(?:GB|TB)\s+Disk Space\b/i)?.[0].replace(/\s+Disk Space$/i,'')||'';
+  if(/\bKVM\b/i.test(name+' '+plain(description)))details.virtualization='KVM';
+  const order=card.match(/<a\b([^>]*\bid=["']product\d+-order-button["'][^>]*)>/i);
+  const orderUrl=order?storefrontUrl(attributes(order[1]).href,url,entry.hosts):'';
+  const price=classText(card,'price-amount','div'),cycle=classText(card,'price-cycle','div');
+  const item=result(name,url,title,details,priceFrom(price,cycle,entry.currency),
+   availability(plain(card).match(/\b\d+\s+Available\b|Out of stock|Sold out/i)?.[0]),'pid:'+pkg[1]);
+  if(item)items.push(orderUrl?{...item,orderUrl}:item);
+ }
+ return items.length?{complete:items.length===packages.length,items,adapter:'whmcs'}:null;
+}
+function edgeNat(html,url,title){
+ const cards=[...html.matchAll(/<div\b[^>]*\bclass=["']boxe["'][^>]*>/gi)];
+ const items=[];
+ for(const [index,match] of cards.entries()){
+  const card=html.slice(match.index,Math.min(cards[index+1]?.index??html.length,match.index+14_000));
+  const sku=classText(card,'name','em'),list=card.match(/<dl\b[^>]*>([\s\S]*?)<\/dl>/i)?.[1];
+  if(!sku||!list)continue;
+  const fields=Object.fromEntries([...list.matchAll(/<dt>([\s\S]*?)<\/dt>\s*<dd>([\s\S]*?)<\/dd>/gi)].map(([,key,value])=>[plain(key),plain(value)]));
+  const rate=priceFrom(classText(card,'big','span'),classText(card,'won','span'),'CNY');
+  const cores=fields['核心數']?.match(/^\d+/)?.[0];
+  if(!cores||!rate.term)continue;
+  const specs={cpu:cores+' vCPU',ram:fields['記憶體']||'',disk:fields['儲存']||'',port:fields['寬帶']||'',
+   traffic:/不限制|不限量/.test(fields['流量'])?'Unmetered':fields['流量']?.replace(/^(\d+(?:\.\d+)?)([GT])$/,'$1 $2B')||'',
+   virtualization:/KVM/i.test(fields['架構'])?'KVM':'',ipv4:Boolean(fields['IPv4地址'])};
+  const badge=plain(classText(card,'qty','span')||classText(card,'badge','span'));
+  const stock=availability(badge.replace(/^(\d+)\s*可用$/,'$1 Available').replace(/^缺貨中$/,'缺貨'));
+  const pid=card.match(/(?:[?&])pid=(\d{1,8})\b/)?.[1];
+  const item=result(sku,url,title,specs,rate,stock,pid?'pid:'+pid:'','vps');
+  if(item)items.push({...item,routeName:fields['線路']||item.routeName});
+ }
+ return items.length?{complete:items.length===cards.length,items,adapter:'edgenat'}:null;
+}
+function friendHosting(html,url,title){
+ const cards=[...html.matchAll(/<div\b[^>]*\bclass=["']tariff js-tariff-item[^"']*["'][^>]*\bdata-id=["'](\d+)["'][^>]*>/gi)];
+ const items=[];
+ for(const [index,match] of cards.entries()){
+  const card=html.slice(match.index,Math.min(cards[index+1]?.index??html.length,match.index+22_000));
+  const sku=classText(card,'tariff__title','div'),options=classText(card,'tariff__options','ul');
+  const val=card.match(/<span\b[^>]*\bclass=["']tariff__cost-sum[^"']*["'][^>]*>\s*<strong>(\d+)<\/strong>(\.\d+)?\s*€/i);
+  if(!sku||!options||!val)continue;
+  const fields=specs(options);
+  const item=result(sku,url,title,{...fields,family:title.split('|')[0].trim()},
+   {price:val[1]+(val[2]||''),currency:'EUR',term:'month',from:true},{stock:'unreported'},'tariff:'+match[1],'vps');
+  if(item)items.push(item);
+ }
+ return items.length?{complete:items.length===cards.length,items,adapter:'friendhosting'}:null;
+}
+function hostYunProducts(body,url){
+ const group=hostYunGroup(new URL(url)),raw=JSON.parse(body);
+ if(!group||!Array.isArray(raw))throw Error('unsupported-url');
+ const names={'45':'香港 CLD','60':'香港 EPYC','59':'日本東京 EQ','42':'美国洛杉矶','31':'韩国数据中心'};
+ const cycleTerms={'1':'month','3':'quarter','6':'halfyear','12':'year'};
+ const items=[];
+ for(const product of raw.slice(0,120)){
+  if(String(product?.phidden)!=='0'||String(product.pgid)!==group||!/^\d{1,8}$/.test(product.pid))continue;
+  const sku=short(product.pname),config=product.pconfig||{};
+  const cycles=String(product.pprice?.cycle||'').split(','),amounts=String(product.pprice?.cprice||'').split(',');
+  const billingRates=cycles.flatMap((cycle,index)=>Object.hasOwn(cycleTerms,cycle)&&/^\d+(?:\.\d+)?$/.test(amounts[index]||'')?
+   [{term:cycleTerms[cycle],price:amounts[index],currency:'CNY'}]:[]);
+  const monthly=billingRates.find(rate=>rate.term==='month');
+  const quantity=/^\d{1,8}$/.test(product.pstock)?Number(product.pstock):null;
+  const number=(key,unit)=>/^\d+(?:\.\d+)?$/.test(config[key])?config[key]+' '+unit:'';
+  const incoming=number('netupbandwidth','Mbps'),outgoing=number('netdownbandwidth','Mbps');
+  const port=incoming&&outgoing&&incoming===outgoing?incoming:[incoming&&'In '+incoming,outgoing&&'Out '+outgoing].filter(Boolean).join(' / ');
+  const details={cpu:number('cpu','vCPU'),ram:number('mem','MB'),disk:number('hdd','GB SSD'),port,
+   traffic:number('plantraffic','GB'),billingRates,family:names[group]||'',cpuFamily:group==='60'?'AMD EPYC':''};
+  const state=quantity===null?{stock:'unreported'}:{stock:quantity?'in-stock':'sold-out',stockQuantity:quantity};
+  const item=result(sku,url,names[group]||'',details,monthly||{},state,'pid:'+product.pid,'vps');
+  if(item)items.push({...item,orderUrl:'https://my.hostyun.com/idcSystem.aspx?c=order&ptype=6&pg='+group+'&pid='+product.pid});
+ }
+ return {links:[],canonical:url,items,complete:items.length>0,adapter:'hostyun'};
+}
 function idcsmart(html,url,title,currency){
  const matches=[...html.matchAll(/<div\b[^>]*\bclass=["'][^"']*\bcartitem\b[^"']*["'][^>]*>[\s\S]{0,650}?<h[345][^>]*>([\s\S]{1,250}?)<\/h[345]>/gi)];
  if(!matches.length)return null;
@@ -242,6 +334,39 @@ function jsonLd(html,url,title){
  return items.length?{complete:true,items,adapter:'jsonld'}:null;
 }
 
+function lazyCat(html,url,entry,title){
+ const fallback=html.match(/<noscript\b[^>]*>([\s\S]*?)<\/noscript>/i)?.[1]||'';
+ const links=storefrontLinks(fallback,url,entry.hosts);
+ const family=new URL(url).pathname.match(lazyCatFamily);
+ if(!family)return {links,items:[],complete:false,adapter:'lazycat'};
+ const market=family[1].toUpperCase();
+ const summary=short(fallback.match(/<p\b[^>]*>([\s\S]*?)<\/p>/i)?.[1],380);
+ const virtualization=/\bLXC\b/i.test(summary)?'LXC':/\bKVM\b/i.test(summary)?'KVM':'';
+ const ipAttribute=/\bNAT\b/i.test(summary)?'nat':'';
+ const products=[...fallback.matchAll(/<li\b[^>]*>([\s\S]{1,1200}?)<\/li>/gi)];
+ const items=[];
+ for(const [,raw] of products){
+  const parts=plain(raw).match(/^(.{2,170}?)[：:]\s*(.+?)\s*[，,]\s*([¥￥]\s*[\d.]+\s*\/\s*月)(?:\s*(?:[（(]([^）)]+)[）)]))?$/);
+  if(!parts)continue;
+  const [,sku,configuration,amount,stockText]=parts;
+  const fields=configuration.split(/\s*·\s*/);
+  const number=configuration.match(countPattern);
+  const memory=fields.find(field=>/内存|內存/.test(field))?.replace(/\s*(?:内存|內存).*$/,'')||'';
+  const disk=fields.find(field=>/硬盘|硬碟/.test(field))?.replace(/\s*(?:硬盘|硬碟).*$/,'')||'';
+  const {port,traffic,trafficDirection}=specs(fields.join('<br>'));
+  const ipText=sku+' '+summary;
+  const product=result(sku,url,title,{cpu:number?(number[1]||number[2])+' vCPU':'',ram:memory,disk,port,
+   traffic:traffic.replace(/\s*流量$/,''),trafficDirection,virtualization,ipAttribute,
+   residentialClaim:/家宽|家寬|residential/i.test(ipText),ipv4:/IPv4/i.test(summary),ipv6:/IPv6/i.test(summary)},
+   priceFrom(amount,'month','CNY'),availability(stockText));
+  if(product){
+   const located=market==='US'&&['LAX','SJC','SEA'].includes(product.market)?product.market:market;
+   items.push({...product,market:located,family:title.split('|')[0].trim()});
+  }
+ }
+ return {links,items,complete:items.length>0&&items.length===products.length,adapter:'lazycat'};
+}
+
 function storefrontLinks(html,url,hosts){
  const links=new Set();
  for(const [,tag,body] of html.matchAll(/<a\b([^>]*)>([\s\S]{0,1600}?)<\/a>/gi)){
@@ -252,7 +377,7 @@ function storefrontLinks(html,url,hosts){
   const parsed=new URL(href);
   if(parsed.pathname==='/'&&!parsed.search)continue;
   const isCartCategory=parsed.searchParams.has('fid')||parsed.searchParams.has('gid')||parsed.searchParams.has('rp');
-  if(!isCartCategory&&!commercePath.test(parsed.pathname)&&!hosting.test(short(body)))continue;
+  if(!isCartCategory&&!commercePath.test(parsed.pathname)&&!lazyCatStore(parsed)&&!hosting.test(short(body)))continue;
   links.add(href);
   if(links.size===100)break;
  }
@@ -265,7 +390,16 @@ export function parseStorefront(html,url,entry){
  const headings=[...markup.matchAll(/<h[12]\b[^>]*>([\s\S]{0,280}?)<\/h[12]>/gi)].map(x=>short(x[1])).filter(x=>x&&!/^Shopping Cart$/i.test(x)).slice(0,4);
  const context=[title,...headings].join(' · ');
  const links=storefrontLinks(markup,url,entry.hosts);
- const parsed=(entry.adapter==='yunyoo'?yunYoo(markup,url):null)||whmcs(markup,url,context,entry.currency)||
+ if(entry.adapter==='hostyun'&&new URL(url).hostname==='www.hostyun.com'){
+  const configured=html.match(/const\s+productGroups\s*=\s*\[([^\]]{1,5000})\]/)?.[1]||'';
+  for(const [,id] of configured.matchAll(/\bid:\s*(\d{1,6})\b/g))links.push(hostYunFeed+id);
+ }
+ const parsed=(entry.adapter==='lazycat'?lazyCat(html,url,entry,context):null)||
+  (entry.adapter==='yunyoo'?yunYoo(markup,url):null)||
+  (entry.adapter==='edgenat'?edgeNat(markup,url,context):null)||
+  (entry.adapter==='whmcs-packages'?whmcsPackages(markup,url,context,entry):null)||
+  (entry.adapter==='friendhosting'?friendHosting(markup,url,context):null)||
+  whmcs(markup,url,context,entry.currency)||
   idcsmart(markup,url,context,entry.currency)||jsonLd(html,url,context);
  return {links,title,canonical:url,items:[],complete:false,...parsed};
 }
@@ -273,13 +407,15 @@ export async function readStorefront(url,entry,fetcher=fetch){
  let current=storefrontUrl(url,undefined,entry.hosts,{seed:true});if(!current)throw Error('unsupported-url');
  const signal=AbortSignal.timeout(9000);
  for(let step=0;step<4;step++){
-  const response=await fetcher(current,{signal,redirect:'manual',headers:{Accept:'text/html','Accept-Language':'zh-CN, en;q=0.8'}});
+  const feedsHostYun=entry.adapter==='hostyun'&&hostYunGroup(new URL(current));
+  const response=await fetcher(current,{signal,redirect:'manual',headers:{Accept:feedsHostYun?'application/json':'text/html','Accept-Language':'zh-CN, en;q=0.8'}});
   if(response.status>=300&&response.status<400){
    const destination=response.headers.get('location');await response.body?.cancel();
    const next=destination&&storefrontUrl(destination,current,entry.hosts,{seed:true});if(!next||next===current)throw Error('redirect');
    current=next;continue;
   }
-  if(!response.ok||!/^text\/html\b/i.test(response.headers.get('content-type')||'')){
+  const type=response.headers.get('content-type')||'';
+  if(!response.ok||!(feedsHostYun?/^(?:application\/json|text\/(?:plain|html))\b/i:/^text\/html\b/i).test(type)){
    await response.body?.cancel();
    throw Error(response.status===403||response.status===429?'blocked':'http-'+response.status);
   }
@@ -291,7 +427,8 @@ export async function readStorefront(url,entry,fetcher=fetch){
     size+=value.byteLength;if(size>maxPageBytes){await reader.cancel();throw Error('large-page')}
     text+=decoder.decode(value,{stream:true});
    }
-   return parseStorefront(text+decoder.decode(),current,entry);
+   text+=decoder.decode();
+   return feedsHostYun?hostYunProducts(text,current):parseStorefront(text,current,entry);
   }finally{reader.releaseLock()}
  }
  throw Error('redirect');

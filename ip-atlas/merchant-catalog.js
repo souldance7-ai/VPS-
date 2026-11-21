@@ -1,6 +1,10 @@
 'use strict';
 
 MARKETS.ZZ={sc:'机房未公布',tc:'機房未公布',en:'Location undisclosed',ja:'拠点未公開'};
+MARKETS.IS={sc:'冰岛',tc:'冰島',en:'Iceland',ja:'アイスランド'};
+MARKETS.IE={sc:'爱尔兰',tc:'愛爾蘭',en:'Ireland',ja:'アイルランド'};
+MARKETS.NO={sc:'挪威',tc:'挪威',en:'Norway',ja:'ノルウェー'};
+MARKETS.KP={sc:'朝鲜',tc:'北韓',en:'North Korea',ja:'北朝鮮'};
 const curatedCatalog=PLANS.slice();
 const catalogueCopy={
  sc:{official:'商家目录',tracked:'复查目标间隔',stale:'上次成功读取',known:'可查询商品',pages:'个目录页已读取商品',unparsed:'部分分类暂未能解析',blocked:'部分页面读取受限或暂不可用',noData:'已发现商家页面，等待商品读取',outside:'目前尚无可核对的商家公开目录'},
@@ -25,8 +29,17 @@ function catalogueMatchKey(provider,market,sku){return provider+'\n'+market+'\n'
 function normalizedYunSku(sku){
  return cleanCatalogSku(sku).replace(/^法[兰蘭]克福/,'frankfurt');
 }
+function catalogProductKey(plan){
+ const sku=plan.spec?.sku||plan.sku||plan.plan;
+ if(plan.provider==='YunYoo'&&plan.market==='DE')return catalogueMatchKey(plan.provider,plan.market,normalizedYunSku(sku));
+ if(plan.provider==='edgeNAT'&&plan.market==='KR'){
+  const koreanSku=/^(?:Korea |韓國 )(G[1-4])(?:\b|\s|$)/i.exec(sku)?.[1];
+  if(koreanSku)return catalogueMatchKey(plan.provider,plan.market,koreanSku);
+ }
+ return catalogueMatchKey(plan.provider,plan.market,sku);
+}
 function recordOfficialPlan(row,old){
- const date=row.observedAt.slice(0,10),hardwareFields=['cpu','ram','disk','port','traffic','trafficDirection','cpuModel','cpuModels','cpuFamily'];
+ const date=row.observedAt.slice(0,10),hardwareFields=['cpu','ram','disk','port','traffic','trafficDirection','cpuModel','cpuModels','cpuFamily','virtualization'];
  const spec={...old?.spec,sku:row.sku,proof:row.source,date};
  for(const field of hardwareFields)if(row[field])spec[field]=row[field];
  if(row.cpuModel||row.cpuModels||row.cpuFamily){
@@ -44,24 +57,34 @@ function recordOfficialPlan(row,old){
  }else if(old?.spec?.price){
   for(const field of ['date','proof'])if(old.spec[field])spec[field]=old.spec[field];
  }
+ if(Array.isArray(row.billingRates)){
+  spec.billingRates=row.billingRates.filter(rate=>rate&&/^\d+(?:\.\d+)?$/.test(rate.price)&&
+   /^[A-Z]{3}$/.test(rate.currency)&&['month','quarter','halfyear','year'].includes(rate.term));
+ }
  const catalog={stock:['in-stock','sold-out','low'].includes(row.stock)?row.stock:'unreported',
   quantity:Number.isSafeInteger(row.stockQuantity)&&row.stockQuantity>=0?row.stockQuantity:null,
   stale:row.stale===true,observedAt:row.observedAt,source:row.source};
- const aliases=[row.sku,row.routeName,new URL(row.source).hostname,old?.spec?.sku,old?.sku].filter(Boolean);
- return {...old,id:old?.id||row.id,provider:row.provider,sku:row.sku,plan:old?.plan||row.sku,market:row.market,
-  city:row.city||old?.city||'',kind:row.kind==='bare'?'bare':'vps',ip:old?.ip||'unknown',
+ const order=normalStoreLink(row.orderUrl),sameStore=order&&new URL(order).hostname===new URL(row.source).hostname;
+ const aliases=[row.sku,row.family,row.routeName,row.virtualization,row.ipAttribute,new URL(row.source).hostname,old?.spec?.sku,old?.sku].filter(Boolean);
+ const nat=row.ipAttribute==='nat'?(row.ipv6?'IPv4 + IPv6 NAT':'IPv4 NAT'):'';
+ const notes=old?.notes||(nat?{
+  sc:row.virtualization+' · '+nat+'。库存以商家创建实例页面为准。',
+  tc:row.virtualization+' · '+nat+'。庫存以商家建立實例頁面為準。',
+  en:row.virtualization+' · '+nat+'. Check the merchant’s ordering page for availability.',
+  ja:row.virtualization+' · '+nat+'。在庫は公式注文ページで確認できます。'
+ }:undefined);
+ const name=row.provider==='HostYun'&&row.family?row.family+' · '+row.sku:row.sku;
+ return {...old,id:old?.id||row.id,provider:row.provider,sku:row.sku,plan:old?.plan||name,market:row.market,
+  city:row.city||old?.city||'',kind:row.kind==='bare'?'bare':'vps',ip:old?.ip||(row.residentialClaim?'residential':'unknown'),notes,
   route:old?.route&&old.route!=='unknown'?old.route:row.routeName?'claimed':'unknown',
   routeName:old?.routeName||row.routeName||'',carriers:old?.carriers||[],
-  url:row.source,proof:old?.proof||row.source,spec,officialCatalog:catalog,ipv4:row.ipv4,ipv6:row.ipv6,
+  url:sameStore?order:row.source,proof:old?.proof||row.source,spec,officialCatalog:catalog,ipv4:row.ipv4,ipv6:row.ipv6,
   searchTerms:[...new Set([...(old?.searchTerms||[]),...aliases])]};
 }
 function applyMerchantCatalog(batch){
  const records=batch.plans.map(normalStoreRow).filter(Boolean);
  const skus=new Map(),unlocated=new Map(),officialClaims=new Map(),byId=new Map(curatedCatalog.map(p=>[p.id,p]));
- const key=p=>{
-  if(p.provider==='YunYoo'&&p.market==='DE')return catalogueMatchKey(p.provider,p.market,normalizedYunSku(p.spec?.sku||p.sku||p.plan));
-  return catalogueMatchKey(p.provider,p.market,p.spec?.sku||p.sku||p.plan);
- };
+ const key=catalogProductKey;
  for(const p of curatedCatalog){
   const k=key(p);if(!skus.has(k))skus.set(k,[]);skus.get(k).push(p);
   const alt=catalogueMatchKey(p.provider,'ZZ',p.spec?.sku||p.sku||p.plan);
@@ -120,9 +143,13 @@ async function refreshMerchantCatalog(){
   if(!answer.ok)return;
   const batch=await answer.json();
   if(batch.schemaVersion!==1||!Array.isArray(batch.plans)||!batch.providers||(!batch.plans.length&&typeof ATLAS_MERCHANT_SEED!=='undefined'))return;
-  if(typeof ATLAS_MERCHANT_SEED!=='undefined'&&!batch.plans.some(row=>row.provider==='YunYoo')){
-   batch.plans.push(...ATLAS_MERCHANT_SEED.plans);
-   batch.providers.YunYoo=ATLAS_MERCHANT_SEED.providers.YunYoo;
+  if(typeof ATLAS_MERCHANT_SEED!=='undefined'){
+   const liveProviders=new Set(batch.plans.map(row=>row.provider));
+   for(const [provider,info] of Object.entries(ATLAS_MERCHANT_SEED.providers)){
+    if(liveProviders.has(provider))continue;
+    batch.plans.push(...ATLAS_MERCHANT_SEED.plans.filter(row=>row.provider===provider));
+    batch.providers[provider]=info;
+   }
   }
   const signature=JSON.stringify([batch.plans,batch.providers]);
   if(signature===merchantCatalogSignature)return;
