@@ -46,7 +46,7 @@ function publishedCouponCodes(raw){
  const text=forumDecode(raw.slice(0,16000)).replace(/<(?:br\s*\/?|\/p|\/li|\/div)>/gi,'\n').replace(/<[^<>]{0,1000}>/g,' ')
    .replace(/https?:\/\/[^\s<>]+/gi,' ').replace(/&nbsp;/gi,' ');
  const labels=/(?:優惠(?:券)?碼|优惠(?:券)?码|折扣[码碼]|促[销銷][码碼]|(?:\b(?:coupon|promo(?:tional)?|discount|voucher)(?:\s+code)?|\buse\s+(?:the\s+)?code))(\s*[:：=]\s*|\s+(?:is\s+)?)(?:[“"'\x60*]{0,3})([A-Za-z0-9][A-Za-z0-9_.-]{1,48}(?:,[A-Za-z0-9][A-Za-z0-9_-]{0,20})?)/gi;
- const stop=/^(?:code|codes|here|this|does|only|where|with|not|none|unknown|expired|for|the|while|will|works|discount|expires|available|until|applied|auto|automatic|included|please|details|terms|using|notapplicable|undefined|null|offer|off|valid|new|https?|www|click|needed|applies|use|needed|removed|codeword|already|can|cannot|required|after|before|now|special|black|back|any|said|useful|hidden|was|has|that|last|free|all|more|from|credit|checkout|range|start|ends|and|thru|sent|worth|see|released|stock|time|end|summary)$/i;
+ const stop=/^(?:code|codes|here|this|does|only|where|with|not|none|unknown|expired|for|the|while|will|works|discount|expires|available|until|applied|auto|automatic|included|please|details|terms|using|notapplicable|undefined|null|offer|off|valid|new|https?|www|click|needed|applies|use|needed|removed|codeword|already|can|cannot|required|after|before|now|special|black|back|any|said|useful|hidden|sku|was|has|that|last|free|all|more|from|credit|checkout|range|start|ends|and|thru|sent|worth|see|released|stock|time|end|summary)$/i;
  const out=new Map();
  for(const m of text.matchAll(labels)){
   let code=m[2].replace(/[.-]+$/,'');
@@ -407,7 +407,7 @@ async function serveForumFeed(req, ctx) {
   if (!source || !Object.hasOwn(forumSources,source)) return forumResponse({error:'unknown feed'},404);
   if (req.method !== 'GET') return new Response(null,{status:405,headers:{Allow:'GET','Cache-Control':'no-store'}});
   const cache = globalThis.caches?.default;
-  const key = new Request(new URL('/api/deal-feed/' + source + '?format=6',req.url));
+  const key = new Request(new URL('/api/deal-feed/' + source + (source==='sbdiscounts'?'?format=7':'?format=6'),req.url));
   let cached = null;
   try { cached = await (await cache?.match(key))?.json(); } catch {}
   const age = cached ? (Date.now() - Date.parse(cached.observed)) / 1000 : Infinity;
