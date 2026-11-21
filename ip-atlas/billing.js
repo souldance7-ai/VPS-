@@ -52,12 +52,19 @@ function matchesBillingTerm(plan, term = billingSelection()) {
   return !term || billingTiers(plan).some(spec => spec && billingSupports(plan, spec, term));
 }
 
+function selectableBillingTiers(plan, term) {
+  const supported = billingTiers(plan).filter(spec => spec && (!term || billingSupports(plan, spec, term)));
+  const matching = supported.filter(spec => matchesDirectoryHardware(spec));
+  return matching.length ? matching : supported;
+}
+
 function billingTierForDisplay(plan) {
   const tiers = billingTiers(plan);
   const selected = tiers[selectedTiers.get(plan.id) || 0] || tiers[0];
   const term = billingSelection();
-  if (!term || !selected || billingSupports(plan, selected, term)) return selected;
-  return tiers.find(spec => spec && billingSupports(plan, spec, term)) || selected;
+  if ((!term || !selected || billingSupports(plan, selected, term)) && matchesDirectoryHardware(selected)) return selected;
+  const choices = selectableBillingTiers(plan, term);
+  return choices.includes(selected) ? selected : choices[0] || selected;
 }
 
 function billingSpecForDisplay(plan) {

@@ -191,6 +191,12 @@ function showBuying(out,p){
   body.append(link((rate||s?.cpu?sourceLabel:tr('orderPage'))+' ↗',basis.proof||p.url));
   if(rate&&basis.date)body.append(el('small',tr('quoteDate')+' · '+basis.date,'spec-date'));
  }
- if(choices.length>1){const select=el('select');select.setAttribute('aria-label',tr('tier'));choices.forEach((s,i)=>{if(!billingSelection()||billingSupports(p,s,billingSelection()))select.add(new Option(s.sku,String(i)))});select.value=String(choices.indexOf(billingTierForDisplay(p)));select.onchange=()=>{selectedTiers.set(p.id,+select.value);draw(activeSpec(p));list();document.dispatchEvent(new CustomEvent('atlas:billing-change',{detail:{planId:p.id,term:activeSpec(p)?.term}}))};head.append(select)}
+ if(choices.length>1){
+  const select=el('select');select.setAttribute('aria-label',tr('tier'));
+  for(const spec of selectableBillingTiers(p,billingSelection()))select.add(new Option(spec.sku,String(choices.indexOf(spec))));
+  select.value=String(choices.indexOf(billingTierForDisplay(p)));
+  select.onchange=()=>{selectedTiers.set(p.id,+select.value);draw(activeSpec(p));list();document.dispatchEvent(new CustomEvent('atlas:billing-change',{detail:{planId:p.id,term:activeSpec(p)?.term}}))};
+  head.append(select);
+ }
  section.append(body);draw(activeSpec(p));const deal=deals[p.deal];if(deal&&!deal.code&&stateOf(deal)==='active'){const note=el('div',null,'active-coupon');note.append(el('b',tr('offers')+' · '+(deal.rate||'−20%')),el('p',tr(p.deal+'Terms')),el('small',tr('deadline')+' · '+new Intl.DateTimeFormat(tags[lang],{timeZone:deal.zone,dateStyle:'medium',timeStyle:'short'}).format(new Date(deal.end))+' ('+deal.zone+')'),link(tr('terms')+' ↗',deal.url));if(deal.code)note.append(btn(deal.code+' ⧉',()=>copy(deal.code),'inline'));section.append(note)}out.append(section);
 }

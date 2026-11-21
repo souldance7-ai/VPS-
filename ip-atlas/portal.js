@@ -31,7 +31,11 @@ const boardWords={
 for (const [key,variants] of Object.entries(boardWords)) editionLangs.forEach((language,i)=>WORDS[language][key]=variants[i]);
 
 const boardPageSize=6;
-let boardMode='all',boardLimit=boardPageSize,boardSignature='',featuredOfferTimer;
+const boardSampleLifetime=10*60_000;
+const boardSamples=new Map(),boardSignatures=new Map();
+const recentOfferBoard={id:'featured-offers',more:'board-more',limit:boardPageSize};
+const blackFridayBoard={id:'featured-black-friday',more:'black-friday-more',limit:boardPageSize};
+let boardMode='all',featuredOfferTimer;
 const boardReadings=new Map();
 let activeBoardReads=0;
 function boardReading(row,now){
@@ -109,6 +113,43 @@ function boardOffers(now,mode=boardMode){
  for(const r of modeRows){const brand=r.provider.toLowerCase();if(seen.has(brand))rest.push(r);else{seen.add(brand);first.push(r)}}
  return [...first,...rest];
 }
+function orderOfferBoard(rows,key,now,skip=new Set()){
+ const newest=[...new Map(rows.map(row=>[row.id,row])).values()].sort((a,b)=>boardDate(b)-boardDate(a));
+ const available=newest.filter(row=>!skip.has(row.id));
+ const source=available.length>=boardPageSize?available:newest;
+ const merchants=new Set();
+ const pool=[];
+ for(const row of source){
+  const merchant=row.provider.toLowerCase();
+  if(merchants.has(merchant))continue;
+  merchants.add(merchant);
+  pool.push(row);
+  if(pool.length>=boardPageSize*2)break;
+ }
+ if(pool.length<boardPageSize){
+  const distinct=new Set(pool.map(row=>row.id));
+  pool.push(...source.filter(row=>!distinct.has(row.id)).slice(0,boardPageSize-pool.length));
+ }
+ const ids=pool.map(row=>row.id),count=Math.min(boardPageSize,ids.length);
+ const version=JSON.stringify(pool.map(row=>[row.id,boardDate(row)]));
+ const storageKey='home-offers.'+key;
+ let sample=boardSamples.get(key);
+ if(sample?.version!==version){
+  try{sample=JSON.parse(saved(storageKey))}catch{sample=null}
+  if(sample?.version!==version||!(sample.expiresAt>now)||!Array.isArray(sample.ids)||
+   sample.ids.length!==count||new Set(sample.ids).size!==count||sample.ids.some(id=>!ids.includes(id))){
+   for(let i=0;i<count;i++){
+    const j=i+Math.floor(Math.random()*(ids.length-i));
+    [ids[i],ids[j]]=[ids[j],ids[i]];
+   }
+   sample={version,ids:ids.slice(0,count),expiresAt:now+boardSampleLifetime};
+   if(count)save(storageKey,JSON.stringify(sample));
+  }
+  boardSamples.set(key,sample);
+ }
+ const selected=new Set(sample.ids);
+ return [...newest.filter(row=>selected.has(row.id)),...newest.filter(row=>!selected.has(row.id))];
+}
 function boardDateText(row){
  if(row.end)return tr('boardEnd')+' · '+communityDate(row.end);
  if(row.endDate)return tr('boardEnd')+' · '+row.endDate+' ('+tr('boardDateOnly')+')';
@@ -155,26 +196,39 @@ function boardCard(row,now){
  card.append(actions);
  return card;
 }
-function renderFeaturedOffers(){
- const mount=$('featured-offers');if(!mount)return;
- clearTimeout(featuredOfferTimer);
- const now=Date.now(),rows=boardOffers(now),blackFriday=boardOffers(now,'blackfriday').slice(0,3);
- const signature=[lang,boardMode,boardLimit,...[...rows,...blackFriday].map(r=>r.id+':'+communityStage(r,now)+':'+(boardReading(r,now)?.time||''))].join('|');
- if(signature!==boardSignature){
-  boardSignature=signature;
-  for(const button of document.querySelectorAll('[data-home-filter]'))button.setAttribute('aria-pressed',String(button.dataset.homeFilter===boardMode));
-  $('board-count').textContent=rows.length+' '+tr('boardCount');
-  mount.replaceChildren(...rows.slice(0,boardLimit).map(r=>boardCard(r,now)));
-  $('featured-black-friday').replaceChildren(...(blackFriday.length?blackFriday.map(r=>boardCard(r,now)):[el('p',tr('boardNoMatches'),'featured-empty')]));
-  if(!rows.length){
-   const empty=el('div',null,'featured-empty');empty.append(el('p',tr('boardNoMatches')));
-   const all=el('a',tr('boardWatch')+' →');all.href='#offers';all.addEventListener('click',()=>activateOfferTab($('tab-feed')));
-   empty.append(all,link('LowEndTalk · Offers ↗','https://lowendtalk.com/categories/offers'));mount.append(empty);
+function renderOfferBoard(board,rows,now){
+ const visible=rows.slice(0,board.limit);
+ const signature=JSON.stringify([lang,...visible.map(row=>[row,communityStage(row,now),boardReading(row,now)?.time])]);
+ if(signature!==boardSignatures.get(board.id)){
+  boardSignatures.set(board.id,signature);
+  const mount=$(board.id);
+  if(visible.length)mount.replaceChildren(...visible.map(row=>boardCard(row,now)));
+  else{
+   const empty=el('div',null,'featured-empty');
+   empty.append(el('p',tr('boardNoMatches')));
+   if(board===recentOfferBoard){
+    const all=el('a',tr('boardWatch')+' →');all.href='#offers';all.addEventListener('click',()=>activateOfferTab($('tab-feed')));
+    empty.append(all,link('LowEndTalk · Offers ↗','https://lowendtalk.com/categories/offers'));
+   }
+   mount.replaceChildren(empty);
   }
-  $('board-more').hidden=rows.length<=boardLimit;
  }
+ $(board.more).hidden=rows.length<=board.limit;
+ return visible;
+}
+function renderFeaturedOffers(){
+ if(!$('featured-offers'))return;
+ clearTimeout(featuredOfferTimer);
+ const now=Date.now(),blackFriday=orderOfferBoard(boardOffers(now,'blackfriday'),'black-friday',now);
+ const above=new Set(blackFriday.slice(0,boardPageSize).map(row=>row.id));
+ const rows=orderOfferBoard(boardOffers(now),'recent-'+boardMode,now,above);
+ const displayedBlackFriday=renderOfferBoard(blackFridayBoard,blackFriday,now);
+ const displayedRecent=renderOfferBoard(recentOfferBoard,rows,now);
+ for(const button of document.querySelectorAll('[data-home-filter]'))button.setAttribute('aria-pressed',String(button.dataset.homeFilter===boardMode));
+ const count=$('board-count'),label=rows.length+' '+tr('boardCount');
+ if(count.textContent!==label)count.textContent=label;
  if(!document.hidden&&(!document.body.dataset.book||document.body.dataset.book==='top')){
-  refreshBoardStock([...rows.slice(0,boardLimit),...blackFriday],now);
+  refreshBoardStock([...displayedRecent,...displayedBlackFriday],now);
   const boundaries=[...rows,...blackFriday].flatMap(r=>[Date.parse(r.end),...communityCalendar(r)]).filter(t=>t>now);
   const upcoming=[...COMMUNITY_OFFERS,...Object.values(deals)].map(r=>Date.parse(r.start)).filter(t=>t>now);
   const interval=Math.max(200,Math.min(60000,...boundaries.map(t=>t-now+20),...upcoming.map(t=>t-now+20)));
@@ -182,12 +236,16 @@ function renderFeaturedOffers(){
  }
 }
 for(const button of document.querySelectorAll('[data-home-filter]')){
- button.addEventListener('click',()=>{boardMode=button.dataset.homeFilter;boardLimit=boardPageSize;renderFeaturedOffers()});
+ button.addEventListener('click',()=>{boardMode=button.dataset.homeFilter;recentOfferBoard.limit=boardPageSize;renderFeaturedOffers()});
 }
-document.getElementById('board-more').addEventListener('click',()=>{
- const from=boardLimit;boardLimit+=boardPageSize;renderFeaturedOffers();
- $('featured-offers').children[from]?.querySelector('button,a')?.focus({preventScroll:true});
-});
+for(const board of [recentOfferBoard,blackFridayBoard]){
+ document.getElementById(board.more).addEventListener('click',()=>{
+  const from=board.limit;
+  board.limit+=boardPageSize;
+  renderFeaturedOffers();
+  $(board.id).children[from]?.querySelector('button,a')?.focus({preventScroll:true});
+ });
+}
 document.addEventListener('DOMContentLoaded',renderFeaturedOffers);
 document.addEventListener('visibilitychange',renderFeaturedOffers);
 new MutationObserver(renderFeaturedOffers).observe(document.body,{attributes:true,attributeFilter:['data-book']});

@@ -25,7 +25,7 @@ const quickWords={
 Object.assign(quickWords,ROUTE_LABELS);
 function quickWord(key){return quickWords[key][{sc:0,tc:1,en:2,ja:3}[lang]]}
 const quickActive=new Set(),quickFeatures=new WeakMap();
-const quickFields=['search','vendor','market','kind','ip','route','carrier','buy-filter','term','order'];
+const quickFields=['search','vendor','market','kind','ip','route','carrier','buy-filter','term',...hardwareFilterFields,'order'];
 let quickInitialized=false,quickRestoring=false,quickFeedback=false;
 function quickGroups(){
  const groups=Object.entries(IP_EVIDENCE_OPTIONS).map(([id,values])=>({id,values}));

@@ -132,5 +132,5 @@ export async function readMerchantCatalog(req,env){
   if(info.observedAt)info.observedAt=new Date(info.observedAt).toISOString();
  }
  const body={schemaVersion:1,generatedAt:new Date(now).toISOString(),vendor,providers,...(metaOnly?{}:{plans:[...plans.values()]})};
- return Response.json(body,{headers:{'Cache-Control':'public, max-age=60','X-Content-Type-Options':'nosniff'}});
+ return Response.json(body,{headers:{'Cache-Control':'no-store','Cloudflare-CDN-Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 }

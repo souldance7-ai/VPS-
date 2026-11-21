@@ -139,7 +139,7 @@ async function refreshMerchantCatalog(){
  if(merchantCatalogPending||document.hidden||location.protocol==='file:')return;
  merchantCatalogPending=true;
  try{
-  const answer=await fetch('/api/stock-history/catalog',{signal:AbortSignal.timeout(15000)});
+  const answer=await fetch('/api/stock-history/catalog',{cache:'no-store',signal:AbortSignal.timeout(15000)});
   if(!answer.ok)return;
   const batch=await answer.json();
   if(batch.schemaVersion!==1||!Array.isArray(batch.plans)||!batch.providers||(!batch.plans.length&&typeof ATLAS_MERCHANT_SEED!=='undefined'))return;

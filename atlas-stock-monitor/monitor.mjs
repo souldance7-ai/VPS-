@@ -256,19 +256,7 @@ export async function read(req,env) {
 }
 export default {
  async scheduled(job,env){await Promise.all([collect(job.scheduledTime,env),collectFacilities(job.scheduledTime,env),collectPublicFeed(job.scheduledTime,env),collectMerchantCatalog(job.scheduledTime,env).catch(error=>console.error('Merchant catalogue:',error.message))])},
- async fetch(req,env,ctx){
-  try{
-   const url=new URL(req.url);
-   const catalog=req.method==='GET'&&url.pathname==='/api/stock-history/catalog';
-   if(!catalog||!globalThis.caches?.default||!ctx)return await read(req,env);
-   const vendor=url.searchParams.get('vendor');
-   url.search='';
-   if(vendor)url.searchParams.set('vendor',vendor);
-   const cached=await caches.default.match(url.href).catch(()=>undefined);
-   if(cached)return cached;
-   const response=await read(req,env);
-   if(response.ok)ctx.waitUntil(caches.default.put(url.href,response.clone()).catch(()=>{}));
-   return response;
-  }catch{return json({error:'History unavailable'},503)}
+ async fetch(req,env){
+  try{return await read(req,env)}catch{return json({error:'History unavailable'},503)}
  }
 };

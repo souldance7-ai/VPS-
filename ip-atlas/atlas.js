@@ -84,7 +84,7 @@ for(const [key,labels] of Object.entries(priceOrderWords))editionLangs.forEach((
 const defaultPriceOrder='cny-asc';
 const priceDirections=()=>[['cny-asc',tr('cnyAsc')],['cny-desc',tr('cnyDesc')],['usd-asc',tr('usdAsc')],['usd-desc',tr('usdDesc')]];
 function restorePriceOrder(value){
- if(['details','cny-asc','cny-desc','usd-asc','usd-desc'].includes(value))return value;
+ if(['details','cny-asc','cny-desc','usd-asc','usd-desc',...hardwareOrderKeys].includes(value))return value;
  if(/^(?:[A-Z]{3}(?:-desc)?|asc|desc)$/.test(value)){
   return (value.startsWith('USD')?'usd':'cny')+'-'+(value.endsWith('desc')?'desc':'asc');
  }
@@ -114,10 +114,20 @@ function paintPriceOrderHint(node,order,comparison=false){
   (comparison?'compareOrderUnavailable':'priceOrderUnavailable'):'priceOrderWaiting');
 }
 function renderOrder(){
- opt('order',[...priceDirections(),['details',tr('fullestFirst')]],restorePriceOrder($('order').value));
+ const select=$('order'),current=restorePriceOrder(select.value);
+ const price=el('optgroup'),hardwareGroup=el('optgroup');
+ price.label=tr('priceOrder');hardwareGroup.label=tr('hardwareOrder');
+ price.append(...priceDirections().map(([value,label])=>new Option(label,value)));
+ for(const key of hardwareOrderKeys){
+  const [metric,direction]=key.split('-');
+  hardwareGroup.append(new Option(tr(metric+(direction==='asc'?'Asc':'Desc')),key));
+ }
+ select.replaceChildren(price,hardwareGroup,new Option(tr('fullestFirst'),'details'));
+ select.value=current;
 }
 function renderControls(){
  renderOrder();
+ renderCpuModelChoices();
  const ids=(groups[zone]||Object.keys(MARKETS)).filter(code=>catalogMarkets.has(code));
  const vendors=[...new Set(PLANS.map(p=>p.provider))].sort((a,b)=>a.localeCompare(b,tags[lang]));
  opt('vendor',[['',tr('all')],...vendors.map(name=>[name,name])],$('vendor').value);
@@ -143,6 +153,7 @@ function searchable(p){
 }
 function matches(p){
  if($('vendor').value&&p.provider!==$('vendor').value)return false;
+ if(directoryHardwareQuery&&!matchesDirectoryHardware(billingTierForDisplay(p)))return false;
  if(!matchesBillingTerm(p)||!shoppingMatch(p))return false;
  if(zone!=='all' && !groups[zone].includes(p.market))return false;
  if($('ip').value==='native' ? !nativeLead(p) : $('ip').value && $('ip').value!==p.ip)return false;
@@ -184,11 +195,14 @@ function toggle(p){
  list();const focusButton=Array.from($('listing').querySelectorAll('.pick')).find(b=>b.dataset.id===p.id);focusButton?.focus({preventScroll:true});
 }
 function list(){
+ directoryHardwareQuery=readHardwareQuery();
  renderProviderShortcuts();
- const order=$('order').value, comparePrice=priceComparator(order);
- paintPriceOrderHint($('order-note'),order);
+ const order=$('order').value, hardwareSort=compareHardware(order);
+ const compare=hardwareSort||priceComparator(order), hint=$('order-note');
+ if(hardwareSort){hint.hidden=false;hint.textContent=hardwareOrderNote(order)}
+ else paintPriceOrderHint(hint,order);
  const baseRows=PLANS.filter(matches);
- const rows=applyQuickPick(baseRows).sort((a,b)=>comparePrice?.(a,b)||commercialScore(b)-commercialScore(a));
+ const rows=applyQuickPick(baseRows).sort((a,b)=>compare?.(a,b)||commercialScore(b)-commercialScore(a));
  renderQuickPick($('quick-pick'),baseRows,rows);
  const visible=currentPageRows(rows);$('total').textContent=vendorCount(rows)+' '+tr('merchants')+' · '+rows.length+' '+tr('results');
  $('compare').textContent=tr('compare')+' ('+chosen.length+'/3)';$('compare').disabled=chosen.length<2;$('compare').title=tr('chooseTwo');
@@ -309,6 +323,7 @@ function motion(){document.body.classList.toggle('paused',paused);$('portal-moti
 function render(){
  document.documentElement.lang=tags[lang];document.title=tr('title')+' · PITOPONE';$('language').value=lang;$('language').setAttribute('aria-label',tr('selectLang'));
  document.querySelectorAll('[data-t]').forEach(n=>n.textContent=tr(n.dataset.t));
+ $('cpu-query').placeholder=tr('cpuQueryHint');
  $('search').placeholder=tr('searchHint');$('close').setAttribute('aria-label',tr('back'));$('zones').setAttribute('aria-label',tr('region'));
  const names=new Intl.DisplayNames([tags[lang]],{type:'region'});const options=iso.map(c=>[c,names.of(c)+' · '+c]).sort((a,b)=>a[1].localeCompare(b[1],tags[lang]));
  opt('country',options,$('country').value||'PH');renderControls();restoreQuickPickOnce();list();offers();renderJournal();paintHealth();countryLinks();showIP();motion();localizeEdition()
@@ -318,7 +333,7 @@ $('portal-motion').onclick=()=>{paused=!paused;save('motion',paused?'paused':'pl
 $('filters').onsubmit=e=>e.preventDefault();$('filters').oninput=e=>{if(e.target.id==='term')return;pageIndex=0;list()};
 $('term').onchange=()=>{pageIndex=0;const u=quickDirectoryUrl();if(location.hash==='#directory'&&u.href!==location.href)history.pushState(null,'',u);list()};$('promo').onchange=()=>{pageIndex=0;list()};
 $('order').onchange=()=>{pageIndex=0;list()};
-$('reset').onclick=()=>{clearQuickPick();$('order').value='';zone='all';pageIndex=0;for(const k of ['search','vendor','kind','market','route','ip','carrier','buy-filter','term'])$(k).value='';$('promo').checked=false;renderControls();list()};
+$('reset').onclick=()=>{clearQuickPick();zone='all';pageIndex=0;for(const k of quickFields)$(k).value='';$('promo').checked=false;renderControls();list()};
 $('compare').onclick=()=>openDialog(null);$('close').onclick=()=>closeComicDialog();$('drawer').onclose=()=>{modal=null};$('drawer').onclick=e=>{if(e.target===$('drawer')){const r=$('drawer').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeComicDialog()}};
 $('country').onchange=countryLinks;$('ipform').onsubmit=lookup;
 document.addEventListener('atlas:fx-update',()=>{

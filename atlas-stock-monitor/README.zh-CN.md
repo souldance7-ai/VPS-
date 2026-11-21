@@ -39,4 +39,4 @@ V12 共轮询 1,917 款商品，1,744 款提供库存探针，1,884 款提供报
 
 `GET /api/stock-history/catalog` 返回可索引的商品及访问覆盖，支持 `?vendor=YunYoo`。 `GET /api/stock-history/catalog/health` 只返回覆盖信息。现有库存与报价历史仍使用各自原有接口。
 
-懒猫云从创建实例页发现系列，并读取系列页提供的公开配置和价格。HostYun 使用其首页公开的商品接口。HostUS、Friendhosting 与 edgeNAT 读取公开商店的产品列表。公开目录响应在边缘缓存一分钟。
+懒猫云从创建实例页发现系列，并读取系列页提供的公开配置和价格。HostYun 使用其首页公开的商品接口。HostUS、Friendhosting 与 edgeNAT 读取公开商店的产品列表。公开目录请求直接查询 D1 最新采集结果，响应使用 no-store。
