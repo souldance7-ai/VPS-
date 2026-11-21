@@ -13,4 +13,5 @@
 .fx-conversion[hidden] { display: none }
 .fx-date { color: var(--muted); font-size: .67rem; font-weight: 400 }
 .fx-status { color: var(--muted); font-size: .75rem; margin-block: .8rem }
+#order-note, .compare-order-note { margin-block: .25rem .65rem }
 .matrix td .fx-conversion { margin-block-start: .25rem }

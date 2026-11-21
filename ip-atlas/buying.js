@@ -117,6 +117,7 @@ function priceEvidence(p,s=activeSpec(p)){
  return snapshot;
 }
 function purchaseQualifier(p,s=activeSpec(p)){
+ if(s?.priceType==='base-estimate')return ({sc:'官网计算器 · 基础估算',tc:'官網計算器 · 基礎估算',en:'Official calculator · base estimate',ja:'公式計算機・基本料金の試算'})[lang];
  const basis=priceEvidence(p,s);
  if(basis.qualifier)return basis.qualifier;
  if(basis.type==='review')return quickWord('reviewPrice');
@@ -159,7 +160,12 @@ function specSummary(p){
   const spec=activeSpec(p),cost=monthlyCost(p);
   line.append(el('b',priceText(p)));
   appendFx(line,spec?.price,spec?.currency);
-  if($('order').value&&cost&&activeSpec(p).term!=='month')line.append(el('small',tr('monthMean')+' · '+cost.currency+' '+cost.monthly.toLocaleString(tags[lang],{minimumFractionDigits:2,maximumFractionDigits:2})));
+  if(cost&&['quarter','halfyear','year'].includes(spec.term)){
+   const monthly=el('div',null,'spec-monthly');
+   monthly.append(el('small',tr('monthMean')+' · '+monthlyPriceLabel(p)));
+   appendFx(monthly,cost.monthly,cost.currency);
+   line.append(monthly);
+  }
   const note=purchaseQualifier(p);if(note)line.append(el('small',note,'offer-condition'));
  }
  const specs=['cpu','ram','disk','port','traffic'].map(k=>specValue(p,k)).filter(Boolean).join(' · ');

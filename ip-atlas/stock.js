@@ -3619,7 +3619,7 @@ const offerStrings={
  refresh:['重新读取商家','重新讀取商家','Refresh provider data','事業者データを更新']
 };
 function offerText(k){return offerStrings[k][{sc:0,tc:1,en:2,ja:3}[lang]]}
-function quoteCapable(t){return t&&['nnb','vmsilo','mkcloud','backwaves','wasabi','vultr','tamago','bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer','servitro','joysol','atmos'].includes(t.family)}
+function quoteCapable(t){return t&&['nnb','vmsilo','mkcloud','backwaves','wasabi','vultr','tamago','bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer','servitro','joysol','atmos','lightcone'].includes(t.family)}
 function observationKey(p){return greenPlanKey(p)||getStockKey(p)||(Object.hasOwn(catalogStockTargets,p.id)&&catalogStockTargets[p.id].quoteOnly?p.id:'')||(p.provider.toLowerCase()==='vmsilo'&&Object.hasOwn(quoteOnlyTargets,p.id)?p.id:'')}
 function goodQuote(q){
  return q&&typeof q.amount==='string'&&/^\d{1,8}(?:\.\d{1,4})?$/.test(q.amount)&&['CNY','HKD','EUR','USD'].includes(q.currency)&&['month','quarter','halfyear','year'].includes(q.period)&&

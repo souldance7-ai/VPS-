@@ -64,25 +64,57 @@ cityNames.Malaysia=['马来西亚','馬來西亞','マレーシア'];
 const localChoice = ()=>({sc:'原生 IP 候选（含 ISP 与住宅）',tc:'原生 IP 候選（含 ISP 與住宅）',en:'Native IP candidates (local, ISP, residential)',ja:'現地 IP 候補（ISP・住宅回線を含む）'}[lang]);
 function nativeLead(p){return ['isp','local','residential'].includes(p.ip)}
 function monthlyCost(p){
- const s=activeSpec(p),periods={month:1,quarter:3,halfyear:6,year:12};if(!s||!Object.hasOwn(periods,s.term)||!s.currency||!s.price)return null;
- const numeric=String(s.price).trim();if(!/^(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+)(?:\.[0-9]+)?$/.test(numeric))return null;
- return {currency:s.currency,monthly:Number(numeric.replaceAll(",",""))/periods[s.term]};
+ const spec=activeSpec(p),periods={month:1,monthlyEquivalent:1,quarter:3,halfyear:6,year:12};
+ if(!spec||!Object.hasOwn(periods,spec.term)||!spec.currency)return null;
+ const amount=fxAmount(spec.price);
+ return amount===null?null:{currency:spec.currency,monthly:amount/periods[spec.term]};
 }
 const priceOrderWords={
- monthlyAsc:['月均价升序（按币种）','月均價升序（按幣種）','Monthly equivalent low to high (by currency)','月額換算・通貨別に安い順'],
- monthlyDesc:['月均价降序（按币种）','月均價降序（按幣種）','Monthly equivalent high to low (by currency)','月額換算・通貨別に高い順'],
+ cnyAsc:['人民币月均价 ↑','人民幣月均價 ↑','CNY monthly equivalent ↑','人民元換算月額 ↑'],
+ cnyDesc:['人民币月均价 ↓','人民幣月均價 ↓','CNY monthly equivalent ↓','人民元換算月額 ↓'],
+ usdAsc:['美元月均价 ↑','美元月均價 ↑','USD monthly equivalent ↑','米ドル換算月額 ↑'],
+ usdDesc:['美元月均价 ↓','美元月均價 ↓','USD monthly equivalent ↓','米ドル換算月額 ↓'],
+ priceOrderHelp:['按月均价跨币种排序，无法折算的方案排在末尾。','依月均價跨幣別排序，無法換算的方案排在最後。','Plans are ranked across currencies by monthly cost. Plans without a convertible price appear last.','通貨をまたいで月額順に表示します。換算できないプランは末尾に表示します。'],
+ priceOrderWaiting:['正在读取汇率…','正在讀取匯率…','Loading exchange rates…','為替レートを取得中…'],
+ priceOrderUnavailable:['当前汇率未取得，暂按详细配置排序。','目前尚未取得匯率，暫依配置完整度排序。','Exchange rates are unavailable. Plans are ranked by specification detail for now.','為替レートを取得できないため、現在は仕様の充実順です。'],
+ compareOrderUnavailable:['当前汇率未取得，暂按选择顺序显示。','目前尚未取得匯率，暫依選擇順序顯示。','Exchange rates are unavailable. Plans are shown in selection order for now.','為替レートを取得できないため、現在は選択順です。'],
  pickedOrder:['选择顺序','選擇順序','Selection order','選択順']
 };
 for(const [key,labels] of Object.entries(priceOrderWords))editionLangs.forEach((l,i)=>WORDS[l][key]=labels[i]);
-const priceDirections=()=>[['asc',tr('monthlyAsc')],['desc',tr('monthlyDesc')]];
-function priceComparator(a,b,direction){
- const first=monthlyCost(a),second=monthlyCost(b);
- if(!first||!second)return Number(!first)-Number(!second);
- return first.currency.localeCompare(second.currency) || (direction==='desc'?-1:1)*(first.monthly-second.monthly);
+const defaultPriceOrder='cny-asc';
+const priceDirections=()=>[['cny-asc',tr('cnyAsc')],['cny-desc',tr('cnyDesc')],['usd-asc',tr('usdAsc')],['usd-desc',tr('usdDesc')]];
+function restorePriceOrder(value){
+ if(['details','cny-asc','cny-desc','usd-asc','usd-desc'].includes(value))return value;
+ if(/^(?:[A-Z]{3}(?:-desc)?|asc|desc)$/.test(value)){
+  return (value.startsWith('USD')?'usd':'cny')+'-'+(value.endsWith('desc')?'desc':'asc');
+ }
+ return defaultPriceOrder;
+}
+function priceComparator(order){
+ if(!fxData||!/^(cny|usd)-(asc|desc)$/.test(order))return null;
+ const [currency,direction]=order.split('-'),factor=direction==='desc'?-1:1;
+ const values=new Map();
+ function value(plan){
+  if(!values.has(plan)){
+   const cost=monthlyCost(plan);
+   values.set(plan,cost?convertFx(cost.monthly,cost.currency,currency):null);
+  }
+  return values.get(plan);
+ }
+ return (a,b)=>{
+  const first=value(a),second=value(b);
+  if(first===null||second===null)return Number(first===null)-Number(second===null);
+  return factor*(first-second);
+ };
+}
+function paintPriceOrderHint(node,order,comparison=false){
+ node.hidden=!order||order==='details';
+ if(node.hidden)return;
+ node.textContent=tr(fxData?'priceOrderHelp':fxFailed||location.protocol==='file:'?
+  (comparison?'compareOrderUnavailable':'priceOrderUnavailable'):'priceOrderWaiting');
 }
 function renderOrder(){
- const currencies=[...new Set(PLANS.map(p=>monthlyCost(p)?.currency).filter(Boolean))].sort();
- opt('order',[['',tr('fullestFirst')],...priceDirections(),...currencies.flatMap(code=>[[code,code+' · ↑'],[code+'-desc',code+' · ↓']])],$('order').value);
+ opt('order',[...priceDirections(),['details',tr('fullestFirst')]],restorePriceOrder($('order').value));
 }
 function renderControls(){
  renderOrder();
@@ -112,8 +144,6 @@ function searchable(p){
 function matches(p){
  if($('vendor').value&&p.provider!==$('vendor').value)return false;
  if(!matchesBillingTerm(p)||!shoppingMatch(p))return false;
- const currency=$('order').value.match(/^([A-Z]{3})(?:-desc)?$/)?.[1];
- if(currency&&monthlyCost(p)?.currency!==currency)return false;
  if(zone!=='all' && !groups[zone].includes(p.market))return false;
  if($('ip').value==='native' ? !nativeLead(p) : $('ip').value && $('ip').value!==p.ip)return false;
  for(const k of ['market','kind'])if($(k).value && p[k]!==$(k).value)return false;
@@ -155,9 +185,10 @@ function toggle(p){
 }
 function list(){
  renderProviderShortcuts();
- const order=$('order').value, direction=order.endsWith('desc')?'desc':'asc';
+ const order=$('order').value, comparePrice=priceComparator(order);
+ paintPriceOrderHint($('order-note'),order);
  const baseRows=PLANS.filter(matches);
- const rows=applyQuickPick(baseRows).sort((a,b)=>(order?priceComparator(a,b,direction):0)||commercialScore(b)-commercialScore(a));
+ const rows=applyQuickPick(baseRows).sort((a,b)=>comparePrice?.(a,b)||commercialScore(b)-commercialScore(a));
  renderQuickPick($('quick-pick'),baseRows,rows);
  const visible=currentPageRows(rows);$('total').textContent=vendorCount(rows)+' '+tr('merchants')+' · '+rows.length+' '+tr('results');
  $('compare').textContent=tr('compare')+' ('+chosen.length+'/3)';$('compare').disabled=chosen.length<2;$('compare').title=tr('chooseTwo');
@@ -186,7 +217,7 @@ function monthlyPriceLabel(p){
  return cost?cost.currency+' '+cost.monthly.toLocaleString(tags[lang],{minimumFractionDigits:2,maximumFractionDigits:2}):'';
 }
 function merchantLinks(p){const links=[link(tr('source')+' ↗',p.url)];if(p.review)links.push(link('NodeSeek · '+tr('evidence')+' ↗',p.review));if(p.terms)links.push(link(tr('terms')+' ↗',p.terms));if(p.lg)links.push(link(tr('test')+' ↗',p.lg));if(p.proof && /^https?:\/\//.test(p.proof) && p.proof!==p.url)links.push(link(tr('evidence')+' ↗',p.proof));if(deals[p.deal])links.push(link(tr('terms')+' ↗',deals[p.deal].url));if(communityHref(p.networkSpecSource)&&p.networkSpecSource!==p.proof)links.push(link(commerceWord('networkSource')+' ↗',p.networkSpecSource));return links}
-function openDialog(p,compareOrder=''){
+function openDialog(p,compareOrder=defaultPriceOrder){
  modal=p||'compare';const out=$('dialog-body');out.replaceChildren();
  const title=el('h2',p?p.provider+' · '+val(p.plan):tr('comparison'));title.id='dialog-title';out.append(title);$('drawer').setAttribute('aria-labelledby',title.id);
  if(p){
@@ -201,12 +232,15 @@ function openDialog(p,compareOrder=''){
   out.append(actions);appendEvidence(out,p)
  }else{
   const label=el('label',null,'price-order compare-order'),order=el('select');
-  order.append(...[['',tr('pickedOrder')],...priceDirections()].map(([value,name])=>new Option(name,value)));
+  order.append(...[...priceDirections(),['',tr('pickedOrder')]].map(([value,name])=>new Option(name,value)));
   order.value=compareOrder;
   order.onchange=()=>{openDialog(null,order.value);document.querySelector('.compare-order select')?.focus()};
   label.append(el('span',tr('sortPlans')),order);out.append(label);
+  const note=el('p',null,'fx-status compare-order-note');
+  paintPriceOrderHint(note,compareOrder,true);out.append(note);
   const ps=chosen.map(id=>PLANS.find(p=>p.id===id));
-  if(compareOrder)ps.sort((a,b)=>priceComparator(a,b,compareOrder));
+  const comparePrice=priceComparator(compareOrder);
+  if(comparePrice)ps.sort(comparePrice);
   const wrap=el('div',null,'matrix-wrap'),table=el('table',null,'matrix');const head=table.createTHead().insertRow();head.append(el('th',tr('product')));ps.forEach(p=>head.append(el('th',p.provider+' · '+showSku(p))));
   const body=table.createTBody();const fields=attributes(ps[0]);
   fields.forEach(([k],i)=>{
@@ -287,6 +321,18 @@ $('order').onchange=()=>{pageIndex=0;list()};
 $('reset').onclick=()=>{clearQuickPick();$('order').value='';zone='all';pageIndex=0;for(const k of ['search','vendor','kind','market','route','ip','carrier','buy-filter','term'])$(k).value='';$('promo').checked=false;renderControls();list()};
 $('compare').onclick=()=>openDialog(null);$('close').onclick=()=>closeComicDialog();$('drawer').onclose=()=>{modal=null};$('drawer').onclick=e=>{if(e.target===$('drawer')){const r=$('drawer').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeComicDialog()}};
 $('country').onchange=countryLinks;$('ipform').onsubmit=lookup;
+document.addEventListener('atlas:fx-update',()=>{
+ const order=$('order').value, scroller=document.querySelector('.matrix-wrap');
+ if(order!=='details')list();
+ if(modal==='compare'&&$('drawer').open){
+  const select=document.querySelector('.compare-order select');
+  if(!select?.value)return;
+  const focused=document.activeElement===select,offset=scroller?.scrollLeft||0;
+  openDialog(null,select.value);
+  document.querySelector('.matrix-wrap').scrollLeft=offset;
+  if(focused)document.querySelector('.compare-order select').focus({preventScroll:true});
+ }
+});
 render();
 const incomingFeed=new URLSearchParams(location.search).get("feed");
 if(location.hash==="#offers"&&incomingFeed){activateOfferTab($("tab-feed"));if(typeof choosePublicSource==="function")choosePublicSource(incomingFeed)}

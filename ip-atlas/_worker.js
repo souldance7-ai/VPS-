@@ -7,6 +7,9 @@ const forumSources = {
   meow: {feed: 'https://meowvps.com/rss.xml', hosts: ['meowvps.com'], maxBytes: 4_000_000},
   meowoffers: {feed: 'https://meowvps.com/api/offers.json', maxBytes: 4_000_000},
   sb: {feed: 'https://sb.sb/go/promotion/rss.xml', hosts: ['sb.sb']},
+  sbdiscounts: {feed:'https://sb.sb/go/discounts/rss.xml',hosts:['sb.sb']},
+  idcfreview: {feed:'https://idcflare.com/c/review/11.rss',hosts:['idcflare.com']},
+  idcfnews: {feed:'https://idcflare.com/c/news/7.rss',hosts:['idcflare.com']},
   vpsdeer: {channel:'vpsdeer',feed:'https://t.me/s/vpsdeer'},
   vpsts: {channel:'vpsts',feed:'https://t.me/s/vpsts'},
   vpsuu: {channel:'vpsuu',feed:'https://t.me/s/vpsuu'},
@@ -14,14 +17,30 @@ const forumSources = {
   richvps: {channel:'richvps',feed:'https://t.me/s/richvps'},
   ovheco: {channel:'ovheco',feed:'https://t.me/s/ovheco'},
   lettelegram: {channel:'lowendtalk_offer',feed:'https://t.me/s/lowendtalk_offer'},
-  bwh: {channel:'bwh82',feed:'https://t.me/s/bwh82'}
+  bwh: {channel:'bwh82',feed:'https://t.me/s/bwh82'},
+  lightcone: {channel:'lightconecloud',feed:'https://t.me/s/lightconecloud'},
+  uqidc: {channel:'UQIDC_CHAT',linkOnly:true}
 };
 const packagedForumPosts={"nodeseek":{"source":"nodeseek","observed":"2026-11-20T06:33:00.142Z","stale":true,"editionSnapshot":true,"items":[{"title":"【收】剩余价值收Vmiss tri basic 4.5cad/月","link":"https://www.nodeseek.com/post-1067683-1","date":"2026-11-20T06:29:27.000Z"},{"title":"帮收两台，共溢价2500，ovh杜甫独服，sys-stor-le-1，4x12t硬盘的","link":"https://www.nodeseek.com/post-1067676-1","date":"2026-11-20T06:26:53.000Z"},{"title":"130收68段VMISS 4.5 TRI","link":"https://www.nodeseek.com/post-1067673-1","date":"2026-11-20T06:26:04.000Z"},{"title":"【交易中】【杀鸡】十块改油，RN racknerd，2025黑五10刀","link":"https://www.nodeseek.com/post-1067669-1","date":"2026-11-20T06:25:44.000Z"}]},"carpool":{"source":"carpool","observed":"2026-11-20T06:33:00.142Z","stale":true,"editionSnapshot":true,"items":[{"title":"gemini 20x 独享或两人700 独享 350 拼车","link":"https://www.nodeseek.com/post-1067686-1","hostingTitle":false,"date":"2026-11-20T06:30:00.000Z"}]},"meow":{"source":"meow","observed":"2026-11-20T06:34:01.784Z","stale":true,"editionSnapshot":true,"items":[{"title":"新商家GoldCloud 德国DC1产品 新品测评","link":"https://meowvps.com/blog/goldcloudde/","coupons":[{"code":"GCFWZDB75BUM"}],"date":"2026-11-18T23:00:00.000Z"},{"title":"PPFlight 美国洛杉矶LAX LIFT产品 测评","link":"https://meowvps.com/blog/ppflightlift/","date":"2026-11-17T23:00:00.000Z"},{"title":"Gomami 德国FRA Pulse产品 新品测评","link":"https://meowvps.com/blog/gomamide/","coupons":[{"code":"Hi,FRA"}],"date":"2026-11-15T23:00:00.000Z"},{"title":"新商家Bocchi 日本东京Tokyo高性能 新品首发测评","link":"https://meowvps.com/blog/bocchijp/","coupons":[{"code":"MeowVPS"}],"date":"2026-11-13T23:00:00.000Z"},{"title":"六六云 菲律宾双ISP产品 测评","link":"https://meowvps.com/blog/666cloudsph/","coupons":[{"code":"DOUBLE11"}],"date":"2026-11-12T23:00:00.000Z"},{"title":"新商家干杯云 AT&T商业宽带PRO美国家宽 产品测评","link":"https://meowvps.com/blog/usvps24proup/","coupons":[{"code":"MeowVPS"}],"date":"2026-11-11T23:00:00.000Z"},{"title":"商家NexKr 韩国SKB家宽产品 测评","link":"https://meowvps.com/blog/nexkrskb/","coupons":[{"code":"WELCOME"},{"code":"SMSVERIFYFEE"}],"date":"2026-11-10T23:00:00.000Z"},{"title":"新商家Tamago 香港WTT商宽 新品测评","link":"https://meowvps.com/blog/tamagowtt/","coupons":[{"code":"1111W3R3PM"}],"date":"2026-11-08T23:00:00.000Z"},{"title":"新商家ATTVPS AT&T美国家宽产品 复测","link":"https://meowvps.com/blog/attvpsre/","coupons":[{"code":"MeowVPS"}],"date":"2026-11-07T23:00:00.000Z"},{"title":"JCloudHosting 西班牙产品 测评","link":"https://meowvps.com/blog/jcloudhosting/","coupons":[{"code":"79FHTOS7JL"}],"date":"2026-11-05T23:00:00.000Z"},{"title":"新商家PanstarCloud 美国LAX Premium DC2 新品测评","link":"https://meowvps.com/blog/panstarusdc2/","coupons":[{"code":"USPre75DC2"}],"date":"2026-11-03T23:00:00.000Z"}]},"meowoffers":{"source":"meowoffers","observed":"2026-11-20T06:34:01.885Z","stale":true,"editionSnapshot":true,"items":[{"title":"LayerOne 提供 VPS，地区未注明，限量入门款为 1 vCPU、1 GB 内存、15 GB NVMe，7 美元/年。另一…","sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223566/layerone-black-friday-limited-time-offers-7-yr-flash-sale","date":"2026-11-19T21:12:36.000Z"},{"title":"VPSNerds 提供独立服务器，称覆盖 32 个以上地点，但未列出本次套餐具体地区；起步配置为 Xeon D-1531（6 核…","sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223563/99-9-uptime-high-powered-dedicated-servers-32-locations-world-wide","date":"2026-11-19T19:38:06.000Z"},{"title":"1GB 套餐 1 GB 内存 1 CPU 核心 20 GB SSD 存储 3000 GB 月流量 1 Gbps 带宽 1个 IP…","sourceName":"RackNerd","link":"https://meowvps.com/timeline/?merchant=racknerd_promo#offers","date":"2026-11-19T17:53:58.000Z"},{"title":"RackNerd 提供多地区 KVM VPS、达拉斯共享及分销主机和独服，VPS 可选地区以订单页库存为准。VPS 起步为 1…","sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223558/racknerd-s-black-friday-takeover-new-deals-new-tech-adminbolt-hosting-hundreds-of-giveaways","date":"2026-11-19T17:48:20.000Z"},{"title":"AvaHosting 提供共享主机、VPS 和独服，机房地区未注明；Nano VPS 配备 1 vCPU、512MB 内存、20…","coupons":[{"code":"BFAVA"}],"sourceName":"LowEndTalkのoffer","link":"https://lowendtalk.com/discussion/223492/ava-hosting-black-friday-deals-big-restock-vps-nano-giveaways","date":"2026-11-18T17:14:12.000Z"}]},"sb":{"source":"sb","observed":"2026-11-20T06:34:01.026Z","stale":true,"editionSnapshot":true,"items":[{"title":"PQS 双十一优惠活动即将开跑!","link":"https://sb.sb/t/18494/","date":"2026-11-09T07:47:39.000Z"},{"title":"🔥海沫云｜双十一特惠年付｜香港 / 美国 / 大陆","link":"https://sb.sb/t/18177/","date":"2026-11-08T07:38:19.000Z"}]},"lowendtalk":{"source":"lowendtalk","observed":"2026-11-20T06:33:06.265Z","stale":true,"editionSnapshot":true,"items":[{"title":"LayerOne - BLACK FRIDAY! Limited time offers! - $7/yr FLASH SALE","link":"https://lowendtalk.com/discussion/223566/layerone-black-friday-limited-time-offers-7-yr-flash-sale","date":"2026-11-19T21:12:36.000Z"},{"title":"RackNerd’s BLACK FRIDAY TAKEOVER! NEW DEALS, NEW TECH, AdminBolt HOSTING + HUNDREDS OF GIVEAWAYS!","link":"https://lowendtalk.com/discussion/223558/racknerd-s-black-friday-takeover-new-deals-new-tech-adminbolt-hosting-hundreds-of-giveaways","date":"2026-11-19T17:48:20.000Z"},{"title":"noez.de – Prepaid Hosting from Frankfurt, since 2012","link":"https://lowendtalk.com/discussion/223518/noez-de-prepaid-hosting-from-frankfurt-since-2012","date":"2026-11-19T11:17:21.000Z"},{"title":"Looking for a cPanel alternative? Get aaPanel Pro for $98 for one year and save $190","link":"https://lowendtalk.com/discussion/223509/looking-for-a-cpanel-alternative-get-aapanel-pro-for-98-for-one-year-and-save-190","date":"2026-11-19T04:12:18.000Z"},{"title":"Ava.hosting - Black Friday Deals + BIG Restock VPS Nano! + Giveaways!","link":"https://lowendtalk.com/discussion/223492/ava-hosting-black-friday-deals-big-restock-vps-nano-giveaways","coupons":[{"code":"BFAVA"}],"date":"2026-11-18T17:14:12.000Z"},{"title":"Streamline-Servers.com - Sydney Dedicated Servers - Early-Black Friday","link":"https://lowendtalk.com/discussion/223393/streamline-servers-com-sydney-dedicated-servers-early-black-friday","coupons":[{"code":"BLACKFRIDAY26SERVER"}],"date":"2026-11-16T23:08:54.000Z"},{"title":"PetroSky Black Friday Sale | 30% OFF KVM VPS in Canada & France | From €4.89/mo","link":"https://lowendtalk.com/discussion/223377/petrosky-black-friday-sale-30-off-kvm-vps-in-canada-france-from-4-89-mo","coupons":[{"code":"BLACKFRIDAY"}],"date":"2026-11-16T16:05:24.000Z"}]},"vpsdeer":{"source":"vpsdeer","observed":"2026-11-20T06:34:02.206Z","stale":true,"editionSnapshot":true,"items":[{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2657","date":"2026-11-20T05:14:24.000Z"},{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2656","date":"2026-11-20T05:14:17.000Z"},{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2655","date":"2026-11-20T05:13:52.000Z"},{"title":"🔴 售罄","link":"https://t.me/vpsdeer/2654","date":"2026-11-20T03:02:44.000Z"}]},"vpsts":{"source":"vpsts","observed":"2026-11-20T06:34:02.187Z","stale":true,"editionSnapshot":true,"items":[{"title":"ZgoCloud - DE Frankfurt AMD VPS - Specials - Starter","link":"https://t.me/vpsts/4425","date":"2026-11-20T06:08:54.000Z"},{"title":"PPFlight库存监控补货通知专属频道","link":"https://t.me/vpsts/4424","date":"2026-11-20T02:54:42.000Z"},{"title":"RackNerd - 2026黑五促销","link":"https://t.me/vpsts/4423","date":"2026-11-19T19:00:55.000Z"},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano - 补货","coupons":[{"code":"Hi,FRA"}],"link":"https://t.me/vpsts/4421","date":"2026-11-18T08:06:49.000Z"},{"title":"❌ GoMami - 🗻LAX.Pulse.Nano - 已售罄","coupons":[{"code":"Hi,LAX"}],"link":"https://t.me/vpsts/4420","date":"2026-11-18T08:06:45.000Z"},{"title":"PPFlight - [US.LAX02] Glide M1","coupons":[{"code":"glideyyds"}],"link":"https://t.me/vpsts/4410","date":"2026-11-17T09:46:40.000Z"},{"title":"PPFlight - [US.LAX02] Glide S1","coupons":[{"code":"glideyyds"}],"link":"https://t.me/vpsts/4409","date":"2026-11-17T09:46:28.000Z"}]},"vpsuu":{"source":"vpsuu","observed":"2026-11-20T06:34:02.173Z","stale":true,"editionSnapshot":true,"items":[{"title":"LayerOne 黑五促销 🖥","link":"https://t.me/vpsuu/6008","date":"2026-11-20T02:11:35.000Z"},{"title":"RackNerd 2026黑五促销 🛒","link":"https://t.me/vpsuu/6007","date":"2026-11-20T00:29:16.000Z"},{"title":"RAKsmart 黑五：香港物理机秒杀$29.99/月，VPS秒杀$2.99/月起，可选国际BGP/大陆优化/精品CN2","link":"https://t.me/vpsuu/6005","date":"2026-11-19T12:15:44.000Z"},{"title":"AVA Host 黑五 8折：VPS 月付 €4 起，Nano €11/年，摩尔多瓦机房/不限流量","link":"https://t.me/vpsuu/6004","date":"2026-11-19T08:58:00.000Z"},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano 补货","coupons":[{"code":"Hi,FRA"}],"link":"https://t.me/vpsuu/6000","date":"2026-11-18T10:07:02.000Z"},{"title":"✅ GoMami - 🗻LAX.Pulse.Nano 补货","coupons":[{"code":"Hi,LAX"}],"link":"https://t.me/vpsuu/5999","date":"2026-11-18T10:06:33.000Z"},{"title":"PPFlight [US.LAX02] Glide S1 补货 🚀","coupons":[{"code":"glideyyds"}],"link":"https://t.me/vpsuu/5995","date":"2026-11-17T10:17:32.000Z"}]},"poorvpsmsg":{"source":"poorvpsmsg","observed":"2026-11-20T06:34:02.165Z","stale":true,"editionSnapshot":true,"items":[{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4807","date":"2026-11-20T06:26:20.000Z"},{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4806","date":"2026-11-20T01:56:22.000Z"},{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4805","date":"2026-11-19T22:56:22.000Z"},{"title":"📊 Data Changes","link":"https://t.me/PoorVPSMsg/4804","date":"2026-11-19T22:26:19.000Z"}]},"coupons":{"source":"coupons","observed":"2026-11-20T06:34:02.206Z","items":[{"title":"Ava.hosting - Black Friday Deals + BIG Restock VPS Nano! + Giveaways!","code":"BFAVA","link":"https://lowendtalk.com/discussion/223492/ava-hosting-black-friday-deals-big-restock-vps-nano-giveaways","date":"2026-11-18T17:14:12.000Z","from":"lowendtalk","sourceName":"","sourceObserved":"2026-11-20T06:33:06.265Z","archived":true},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano 补货","code":"Hi,FRA","link":"https://t.me/vpsuu/6000","date":"2026-11-18T10:07:02.000Z","from":"vpsuu","sourceName":"","sourceObserved":"2026-11-20T06:34:02.173Z","archived":true},{"title":"✅ GoMami - 🗻LAX.Pulse.Nano 补货","code":"Hi,LAX","link":"https://t.me/vpsuu/5999","date":"2026-11-18T10:06:33.000Z","from":"vpsuu","sourceName":"","sourceObserved":"2026-11-20T06:34:02.173Z","archived":true},{"title":"✅ GoMami - 🗻FRA.Pulse.Nano - 补货","code":"Hi,FRA","link":"https://t.me/vpsts/4421","date":"2026-11-18T08:06:49.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"❌ GoMami - 🗻LAX.Pulse.Nano - 已售罄","code":"Hi,LAX","link":"https://t.me/vpsts/4420","date":"2026-11-18T08:06:45.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"PPFlight [US.LAX02] Glide S1 补货 🚀","code":"glideyyds","link":"https://t.me/vpsuu/5995","date":"2026-11-17T10:17:32.000Z","from":"vpsuu","sourceName":"","sourceObserved":"2026-11-20T06:34:02.173Z","archived":true},{"title":"PPFlight - [US.LAX02] Glide M1","code":"glideyyds","link":"https://t.me/vpsts/4410","date":"2026-11-17T09:46:40.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"PPFlight - [US.LAX02] Glide S1","code":"glideyyds","link":"https://t.me/vpsts/4409","date":"2026-11-17T09:46:28.000Z","from":"vpsts","sourceName":"","sourceObserved":"2026-11-20T06:34:02.187Z","archived":true},{"title":"Streamline-Servers.com - Sydney Dedicated Servers - Early-Black Friday","code":"BLACKFRIDAY26SERVER","link":"https://lowendtalk.com/discussion/223393/streamline-servers-com-sydney-dedicated-servers-early-black-friday","date":"2026-11-16T23:08:54.000Z","from":"lowendtalk","sourceName":"","sourceObserved":"2026-11-20T06:33:06.265Z","archived":true},{"title":"PetroSky Black Friday Sale | 30% OFF KVM VPS in Canada & France | From €4.89/mo","code":"BLACKFRIDAY","link":"https://lowendtalk.com/discussion/223377/petrosky-black-friday-sale-30-off-kvm-vps-in-canada-france-from-4-89-mo","date":"2026-11-16T16:05:24.000Z","from":"lowendtalk","sourceName":"","sourceObserved":"2026-11-20T06:33:06.265Z","archived":true}],"sources":[{"source":"lowendtalk","observed":"2026-11-20T06:33:06.265Z","stale":true,"editionSnapshot":true},{"source":"nodeseek","observed":"2026-11-20T06:33:00.142Z","stale":true,"editionSnapshot":true},{"source":"meowoffers","observed":"2026-11-20T06:34:01.885Z","stale":true,"editionSnapshot":true},{"source":"sb","observed":"2026-11-20T06:34:01.026Z","stale":true,"editionSnapshot":true},{"source":"vpsdeer","observed":"2026-11-20T06:34:02.206Z","stale":true,"editionSnapshot":true},{"source":"vpsts","observed":"2026-11-20T06:34:02.187Z","stale":true,"editionSnapshot":true},{"source":"vpsuu","observed":"2026-11-20T06:34:02.173Z","stale":true,"editionSnapshot":true},{"source":"poorvpsmsg","observed":"2026-11-20T06:34:02.165Z","stale":true,"editionSnapshot":true}],"stale":true,"editionSnapshot":true}};
+const idcFlareRead='2026-11-21T13:10:00Z';
+const idcFlareSnapshots={
+ idcfreview:[
+  {title:'RackNerd 2026 黑五机型与机房测评参考',link:'https://idcflare.com/t/topic/146940'},
+  {title:'AVAHosting 摩尔多瓦 VPS Nano 测评',link:'https://idcflare.com/t/topic/146789'}
+ ],
+ idcfnews:[
+  {title:'IDC Flare 2026 黑五情报汇总',link:'https://idcflare.com/t/topic/146380',date:'2026-11-18'},
+  {title:'CloudCone 黑五预热活动与优惠码',link:'https://idcflare.com/t/topic/146139',date:'2026-11-17',coupons:[{code:'PREBF26'}]}
+ ]
+};
+for(const [source,items] of Object.entries(idcFlareSnapshots)){
+ packagedForumPosts[source]={source,observed:idcFlareRead,stale:true,editionSnapshot:true,items};
+}
 function recentPackagedPosts(id){
  const item=packagedForumPosts[id],age=Date.now()-Date.parse(item?.observed);
  return age>=0&&age<14*86400000?item:null;
 }
-const couponFeedSources=['lowendtalk','nodeseek','meowoffers','sb','vpsdeer','vpsts','vpsuu','poorvpsmsg','richvps','ovheco','lettelegram','bwh'];
+const couponFeedSources=['lowendtalk','nodeseek','meowoffers','sb','sbdiscounts','idcfnews','vpsdeer','vpsts','vpsuu','poorvpsmsg','richvps','ovheco','lettelegram','bwh','lightcone'];
 function publishedCouponCodes(raw){
  if(typeof raw!=='string')return [];
  const text=forumDecode(raw.slice(0,16000)).replace(/<(?:br\s*\/?|\/p|\/li|\/div)>/gi,'\n').replace(/<[^<>]{0,1000}>/g,' ')
@@ -99,9 +118,13 @@ function forumPostURL(raw, source) {
     if (u.protocol !== 'https:' || u.username || u.password || u.port || !forumSources[source].hosts.includes(u.hostname)) return null;
     if (source === 'lowendtalk') return /^\/discussion\/[1-9]\d{0,12}\/[a-z0-9-]+\/?$/i.test(u.pathname) && !u.search ? u.origin+u.pathname : null;
     if (source === 'meow') return /^\/blog\/[\w%-]+\/$/.test(u.pathname) ? u.origin + u.pathname : null;
-    if (source === 'sb') {
+    if (source === 'sb' || source === 'sbdiscounts') {
       const match = u.pathname.match(/^\/t\/([1-9]\d{0,14})\/?$/);
       return match ? 'https://sb.sb/t/' + match[1] + '/' : null;
+    }
+    if (source === 'idcfreview' || source === 'idcfnews') {
+      const match = u.pathname.match(/^\/t\/(?:(?!\d+\/)[^/]{1,400}\/)?([1-9]\d{0,14})(?:\/[1-9]\d{0,8})?\/?$/);
+      return match ? 'https://idcflare.com/t/topic/' + match[1] : null;
     }
     const match = u.pathname.match(/^\/post-([1-9]\d{0,14})-[1-9]\d{0,5}\/?$/);
     return match ? 'https://www.nodeseek.com/post-' + match[1] + '-1' : null;
@@ -146,7 +169,7 @@ function forumHeadlines(xml, source = 'nodeseek') {
     const title = current.title.replace(/<[^<>]{1,250}>/g, ' ').replace(/[\u0000-\u0020\u007f]+/g, ' ').trim().slice(0, 230);
     const url = forumPostURL(current.alternate || current.link || current.guid || current.id, source);
     const matches = source === 'carpool' || source === 'review' ? current.category.trim().toLowerCase() === source
-      : source === 'meow' || source === 'lowendtalk' || forumKeywords.test(title);
+      : ['meow','lowendtalk','sbdiscounts','idcfreview','idcfnews'].includes(source) || forumKeywords.test(title);
     if (url && title && matches && !posts.has(url)) {
       const time = Date.parse(current.pubdate || current.published || current.date || current.updated);
       const coupons=publishedCouponCodes([current.title,current.encoded||current.content||current.description||current.summary].join('\n'));
@@ -361,6 +384,7 @@ function meowMerchantEvents(document) {
 }
 async function forumFetchPayload(source, signal) {
   const config=forumSources[source];
+  if(config.linkOnly)return {items:[],visibility:'link-only'};
   const isTelegram=!!config.channel;
   const response=await fetch(config.feed,{method:'GET',signal,redirect:'manual',
     headers:{Accept:isTelegram?'text/html':source==='meowoffers'?'application/json':'application/rss+xml, application/atom+xml, application/xml, text/xml'}});
@@ -3932,6 +3956,28 @@ for(const [slug,rows] of Object.entries(greenCatalogGroups)){
   catalogStockTargets[key]={family:'greenwhmcs',pid,sku,zone,url,quoteOnly:Boolean(quoteOnly)};
  }
 }
+Object.assign(catalogStockTargets,{
+  "lightcone-218": {"family":"lightcone","pid":218,"sku":"香港Light-AMD-A","zone":"HK","url":"https://www.lightcone.hk/cart?fid=1&gid=29&language=chinese_tw"},
+  "lightcone-219": {"family":"lightcone","pid":219,"sku":"香港Light-AMD-B","zone":"HK","url":"https://www.lightcone.hk/cart?fid=1&gid=29&language=chinese_tw"},
+  "lightcone-220": {"family":"lightcone","pid":220,"sku":"香港Light-AMD-C","zone":"HK","url":"https://www.lightcone.hk/cart?fid=1&gid=29&language=chinese_tw"},
+  "lightcone-221": {"family":"lightcone","pid":221,"sku":"香港Light-AMD-D","zone":"HK","url":"https://www.lightcone.hk/cart?fid=1&gid=29&language=chinese_tw"},
+  "lightcone-276": {"family":"lightcone","pid":276,"sku":"德国9929 2核 2GB 1G带宽 A型","zone":"DE","url":"https://www.lightcone.hk/cart?fid=14&language=chinese_tw"},
+  "lightcone-275": {"family":"lightcone","pid":275,"sku":"德国9929 2核 4GB 1G带宽 B型","zone":"DE","url":"https://www.lightcone.hk/cart?fid=14&language=chinese_tw"},
+  "lightcone-277": {"family":"lightcone","pid":277,"sku":"德国9929 4核 4GB 1G带宽 C型","zone":"DE","url":"https://www.lightcone.hk/cart?fid=14&language=chinese_tw"},
+  "lightcone-279": {"family":"lightcone","pid":279,"sku":"德国9929 4核 8GB 1G带宽 D型","zone":"DE","url":"https://www.lightcone.hk/cart?fid=14&language=chinese_tw"},
+  "lightcone-278": {"family":"lightcone","pid":278,"sku":"德国9929 8核 8GB 1G带宽 E型","zone":"DE","url":"https://www.lightcone.hk/cart?fid=14&language=chinese_tw"},
+  "lightcone-280": {"family":"lightcone","pid":280,"sku":"德国9929 8核 16GB 1G带宽 F型","zone":"DE","url":"https://www.lightcone.hk/cart?fid=14&language=chinese_tw"},
+  "lightcone-282": {"family":"lightcone","pid":282,"sku":"德国9929 16核 16GB 1G带宽 G型","zone":"DE","url":"https://www.lightcone.hk/cart?fid=14&language=chinese_tw"},
+  "lightcone-281": {"family":"lightcone","pid":281,"sku":"德国9929 16核 32GB 1G带宽 H型","zone":"DE","url":"https://www.lightcone.hk/cart?fid=14&language=chinese_tw"},
+  "lightcone-316": {"family":"lightcone","pid":316,"sku":"英国双ISP住宅云主机 2核 2GB 500Mbps","zone":"GB","url":"https://www.lightcone.hk/cart?fid=15&language=chinese_tw"},
+  "lightcone-317": {"family":"lightcone","pid":317,"sku":"英国双ISP住宅云主机 2核 4GB 500Mbps","zone":"GB","url":"https://www.lightcone.hk/cart?fid=15&language=chinese_tw"},
+  "lightcone-315": {"family":"lightcone","pid":315,"sku":"英国双ISP住宅云主机 4核 4GB 500Mbps","zone":"GB","url":"https://www.lightcone.hk/cart?fid=15&language=chinese_tw"},
+  "lightcone-318": {"family":"lightcone","pid":318,"sku":"英国双ISP住宅云主机 4核 8GB 500Mbps","zone":"GB","url":"https://www.lightcone.hk/cart?fid=15&language=chinese_tw"},
+  "lightcone-319": {"family":"lightcone","pid":319,"sku":"英国双ISP住宅云主机 8核 8GB 500Mbps","zone":"GB","url":"https://www.lightcone.hk/cart?fid=15&language=chinese_tw"},
+  "lightcone-320": {"family":"lightcone","pid":320,"sku":"英国双ISP住宅云主机 8核 16GB 500Mbps","zone":"GB","url":"https://www.lightcone.hk/cart?fid=15&language=chinese_tw"},
+  "lightcone-321": {"family":"lightcone","pid":321,"sku":"英国双ISP住宅云主机 16核 16GB 500Mbps","zone":"GB","url":"https://www.lightcone.hk/cart?fid=15&language=chinese_tw"},
+  "lightcone-322": {"family":"lightcone","pid":322,"sku":"英国双ISP住宅云主机 16核 32GB 500Mbps","zone":"GB","url":"https://www.lightcone.hk/cart?fid=15&language=chinese_tw"}
+});
 Object.assign(networkStockTargets,catalogStockTargets);
 function stockTarget(key){
  if(Object.hasOwn(quoteOnlyTargets,key))return quoteOnlyTargets[key];
@@ -4666,14 +4712,29 @@ function atmosObservation(target,html,checkedAt){
   ...(quantity!==null?{stockQuantity:quantity}:{})}};
 }
 
+function lightConeObservation(target,html,checkedAt){
+ const cards=[...html.matchAll(/<h4\b[^>]*>([^<>]+)<\/h4>([\s\S]*?)(?=<h4\b|$)/gi)];
+ const matches=cards.filter(([,sku])=>forumDecode(sku).trim()===target.sku);
+ if(matches.length!==1)return {state:'unreported',offer:null};
+ const fullCard=matches[0][2],card=fullCard.split('class="mt-4 card-footer')[0];
+ const pid=fullCard.match(/\/cart\?action=configureproduct(?:&amp;|&)pid=(\d+)/)?.[1];
+ if(pid&&Number(pid)!==target.pid)return {state:'unreported',offer:null};
+ const stock=card.match(/<p[^>]*>\s*(?:庫存|库存)\s*[：:]\s*(\d{1,8})\s*<\/p>/)?.[1];
+ const quantity=stock===undefined?null:Number(stock);
+ const amount=amountFor(card.match(/[¥￥]\s*<a class="cart-num[^"]*"[^>]*>\s*([\d.]+)\s*<\/a>\s*元\s*\/\s*(?:月|MONTHLY)/i)?.[1]);
+ return {state:inventoryCount(quantity),offer:amount===null?null:{
+  amount,currency:'CNY',period:'month',basis:'listed',checkedAt,...(quantity===null?{}:{stockQuantity:quantity})
+ }};
+}
+
 async function catalogObservation(t,requests){
- const table={bagevm:bageObservation,matrix:matrixObservation,prepaid:prepaidObservation,bwh:bwhObservation,akile:akileObservation,isvoro:isvoroObservation,akko:akkoObservation,mhy:mhyObservation,greenwhmcs:greenObservation,jsonldoffer:jsonldObservation,servitro:servitroObservation,joysol:joysolObservation,atmos:atmosObservation};
+ const table={bagevm:bageObservation,matrix:matrixObservation,prepaid:prepaidObservation,bwh:bwhObservation,akile:akileObservation,isvoro:isvoroObservation,akko:akkoObservation,mhy:mhyObservation,greenwhmcs:greenObservation,jsonldoffer:jsonldObservation,servitro:servitroObservation,joysol:joysolObservation,atmos:atmosObservation,lightcone:lightConeObservation};
  const entry=await loadProviderCatalog(t,requests);
  return table[t.family](t,entry.data,entry.at);
 }
 
 async function observeListing(target,requests){
- if(['bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer','servitro','joysol','atmos'].includes(target.family))return catalogObservation(target,requests);
+ if(['bagevm','matrix','prepaid','bwh','akile','isvoro','akko','mhy','greenwhmcs','jsonldoffer','servitro','joysol','atmos','lightcone'].includes(target.family))return catalogObservation(target,requests);
  if(target.family==="tamago")return tamagoObservation(target);
  if(target.family==="vultr")return vultrObservation(target);
  if(["backwaves","wasabi"].includes(target.family))return lagomObservation(target);
@@ -4703,7 +4764,7 @@ async function observeListing(target,requests){
 }
 
 async function observe(t){
- if(["vmsilo","backwaves","wasabi","vultr","tamago","bagevm","matrix","prepaid","bwh","akile","isvoro","akko","mhy","greenwhmcs","jsonldoffer","servitro","joysol","atmos"].includes(t.family))return (await observeListing(t)).state;
+ if(["vmsilo","backwaves","wasabi","vultr","tamago","bagevm","matrix","prepaid","bwh","akile","isvoro","akko","mhy","greenwhmcs","jsonldoffer","servitro","joysol","atmos","lightcone"].includes(t.family))return (await observeListing(t)).state;
  if(t.family==="mkcloud"||t.family==="nnb")return classifyStorefront(t,await currentStorefront(t.family));
  const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),7000);
  try{

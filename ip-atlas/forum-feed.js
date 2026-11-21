@@ -34,6 +34,9 @@ const publicForumTitles = {
   noMerchant:['本次读取没有商家快讯。','本次讀取沒有商家快訊。','No merchant announcements in this read.','今回の取得分にお知らせはありません。'],
   homeFailure:['目前无法读取商家快讯。','目前無法讀取商家快訊。','Merchant news is currently unavailable.','販売元のお知らせを現在取得できません。'],
   sb:['烧饼 · 推广','燒餅 · 推廣','SB · promotions','SB・プロモーション'],
+  sbdiscounts:['烧饼 · 优惠','燒餅 · 優惠','SB · discounts','SB・割引'],
+  idcfreview:['IDC Flare · 测评','IDC Flare · 評測','IDC Flare · reviews','IDC Flare・レビュー'],
+  idcfnews:['IDC Flare · 情报','IDC Flare · 情報','IDC Flare · news','IDC Flare・ニュース'],
   intro:['查看论坛原帖与 Telegram 公开频道消息。补货、价格和优惠码均按发帖时的消息展示，下单时请查看商家的库存与条款。','查看論壇原帖與 Telegram 公開頻道消息。補貨、價格和優惠碼均按發帖時的消息顯示，下單時請查看商家的庫存與條款。','Read forum threads and public Telegram posts. Restocks, prices and codes are reported at posting time. Check the merchant’s inventory and terms before ordering.','掲示板と Telegram の公開投稿を閲覧できます。入荷、価格、コードは投稿時点の情報です。注文時は販売元の在庫と条件を確認してください。'],
   openChannel:['在 Telegram 打开频道 ↗','在 Telegram 開啟頻道 ↗','Open channel in Telegram ↗','Telegram でチャンネルを開く ↗'],
   limited:['本次公开网页只提供频道入口。可在 Telegram 查看消息。','本次公開網頁只提供頻道入口。可在 Telegram 查看消息。','The public page did not provide messages on this read. Open the channel in Telegram.','今回は公開ページからメッセージを取得できませんでした。Telegram でチャンネルを開いてください。'],
@@ -53,10 +56,16 @@ const publicForumTitles = {
   preview:['本地预览可直接打开原始来源。在线部署后会读取最新消息。','本機預覽可直接開啟原始來源。線上部署後會讀取最新消息。','Open the source directly in local preview. The deployed site reads live posts.','ローカルプレビューでは配信元を直接開けます。公開サイトで新着を取得します。'],
   cache:['查看本栏时每 5 分钟自动刷新','查看本欄時每 5 分鐘自動重新整理','Updates every 5 min while this panel is visible','この欄の表示中は 5 分ごとに自動更新']
 };
-const publicTGChannels = Object.freeze({vpsdeer:'vpsdeer',vpsts:'vpsts',vpsuu:'vpsuu',poorvpsmsg:'PoorVPSMsg',richvps:'richvps',ovheco:'ovheco',lettelegram:'lowendtalk_offer',bwh:'bwh82'});
+const publicTGChannels = Object.freeze({vpsdeer:'vpsdeer',vpsts:'vpsts',vpsuu:'vpsuu',poorvpsmsg:'PoorVPSMsg',richvps:'richvps',ovheco:'ovheco',lettelegram:'lowendtalk_offer',bwh:'bwh82',lightcone:'lightconecloud',uqidc:'UQIDC_CHAT'});
+const forumBoards=Object.freeze({
+  sb:'https://sb.sb/go/promotion/',
+  sbdiscounts:'https://sb.sb/go/discounts/',
+  idcfreview:'https://idcflare.com/c/review/11',
+  idcfnews:'https://idcflare.com/c/news/7'
+});
 const publicForumState = {
   active:'nodeseek', inView:false, observer:null, root:null, timer:null, hostingOnly:true,
-  feeds:Object.fromEntries(['coupons','lowendtalk','meowoffers','meow','carpool','review','nodeseek','sb',...Object.keys(publicTGChannels)].map(id=>[id,{}]))
+  feeds:Object.fromEntries(['coupons','lowendtalk','meowoffers','meow','carpool','review','nodeseek',...Object.keys(forumBoards),...Object.keys(publicTGChannels)].map(id=>[id,{}]))
 };
 function choosePublicSource(id) {
   const source = id === 'all' ? 'nodeseek' : id;
@@ -168,8 +177,9 @@ function forumItemLink(value, id) {
     let correct = false;
     if (Object.hasOwn(publicTGChannels,id)) {
       const parts = u.pathname.split('/');
-      correct = u.hostname === 't.me' && parts.length === 3 && parts[1] === publicTGChannels[id] && /^[1-9]\d{0,14}$/.test(parts[2]);
-    } else if (id === 'sb') correct = u.hostname === 'sb.sb' && /^\/t\/[1-9]\d{0,14}\/$/.test(u.pathname);
+      correct = u.hostname === 't.me' && parts.length === 3 && parts[1].toLowerCase() === publicTGChannels[id].toLowerCase() && /^[1-9]\d{0,14}$/.test(parts[2]);
+    } else if (id === 'sb' || id === 'sbdiscounts') correct = u.hostname === 'sb.sb' && /^\/t\/[1-9]\d{0,14}\/$/.test(u.pathname);
+    else if (id === 'idcfreview' || id === 'idcfnews') correct = u.hostname === 'idcflare.com' && /^\/t\/topic\/[1-9]\d{0,14}$/.test(u.pathname);
     else if (['nodeseek','carpool','review'].includes(id)) correct = u.hostname === 'www.nodeseek.com' && /^\/post-[1-9]\d{0,14}-1$/.test(u.pathname);
     else if (id === 'lowendtalk') correct = u.hostname === 'lowendtalk.com' && /^\/discussion\/[1-9]\d{0,12}\/[a-z0-9-]+\/?$/i.test(u.pathname);
     else if (id === 'meow') correct = u.hostname === 'meowvps.com' && /^\/blog\/[\w%-]+\/$/.test(u.pathname);
@@ -276,7 +286,7 @@ function drawForumFeed() {
   else if (id === 'meow' || id === 'meowoffers') ui.actions.append(link(txt('openTimeline'),'https://meowvps.com/timeline/'+(id==='meowoffers'?'#offers':'')));
   else if (id === 'coupons')ui.actions.append(link('LowEndTalk Offers ↗','https://lowendtalk.com/categories/offers'),link(txt('nodePromo'),'https://www.nodeseek.com/categories/promotion'));
   else if (id === 'lowendtalk') ui.actions.append(link(txt('forum'),'https://lowendtalk.com/categories/offers'));
-  else if (id === 'sb') ui.actions.append(link(txt('forum'),'https://sb.sb/go/promotion/'));
+  else if (Object.hasOwn(forumBoards,id)) ui.actions.append(link(txt('forum'),forumBoards[id]));
   else ui.actions.append(link(txt('nodeForum'),'https://www.nodeseek.com/categories/info'),link(txt('nodePromo'),'https://www.nodeseek.com/categories/promotion'));
   ui.foot.replaceChildren();
   if (state.data) {

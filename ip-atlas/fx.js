@@ -34,6 +34,12 @@ function fxRateDate(){
 function fxFormat(amount){
  return amount.toLocaleString(tags[lang],{minimumFractionDigits:2,maximumFractionDigits:amount>0&&amount<0.1?4:2});
 }
+function convertFx(amount,currency,target){
+ const rate=fxData?.rates[currency]?.[target];
+ if(currency.toLowerCase()===target)return amount;
+ const value=amount*rate;
+ return Number.isFinite(value)?value:null;
+}
 function paintFxAmount(node){
  const currency=node.dataset.fxCurrency, amount=Number(node.dataset.fxAmount);
  const rate=fxData?.rates[currency];
@@ -41,8 +47,8 @@ function paintFxAmount(node){
  node.replaceChildren();
  if(!rate)return;
  const parts=[];
- if(currency!=='CNY')parts.push('CNY '+fxFormat(amount*rate.cny));
- if(currency!=='USD')parts.push('USD '+fxFormat(amount*rate.usd));
+ if(currency!=='CNY')parts.push('CNY '+fxFormat(convertFx(amount,currency,'cny')));
+ if(currency!=='USD')parts.push('USD '+fxFormat(convertFx(amount,currency,'usd')));
  const date=el('time',fxWord('date')+' '+rate.date,'fx-date');
  date.dateTime=rate.date;
  node.append(el('span','≈ '+parts.join(' · '),'fx-values'),date);
@@ -66,6 +72,7 @@ function paintFx(){
 async function fetchFx(){
  if(fxPending||location.protocol==='file:')return;
  fxPending=true;
+ const previous=JSON.stringify(fxData),hadFailed=fxFailed;
  clearTimeout(fxTimer);
  try{
   const response=await fetch('/api/fx',{cache:'no-store',signal:AbortSignal.timeout(9000)});
@@ -83,6 +90,7 @@ async function fetchFx(){
  }finally{
   fxPending=false;
   paintFx();
+  if(hadFailed!==fxFailed||previous!==JSON.stringify(fxData))document.dispatchEvent(new Event('atlas:fx-update'));
   const midnight=86_400_000-(Date.now()+8*3_600_000)%86_400_000;
   fxTimer=setTimeout(fetchFx,Math.min(midnight,fxFailed?180_000:900_000));
  }

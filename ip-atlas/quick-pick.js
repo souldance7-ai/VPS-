@@ -97,7 +97,7 @@ function quickRestoreLocation(){
   for(const field of quickFields){
    const input=$(field);if(!input)continue;
    const rawValue=params.get('q-'+field)||'';
-   const value=field==='vendor'&&rawValue==='ColossusCloud'?'ServerPoint':rawValue;
+   const value=field==='order'?restorePriceOrder(rawValue):field==='vendor'&&rawValue==='ColossusCloud'?'ServerPoint':rawValue;
    if(input.tagName==='SELECT')input.value=[...input.options].some(o=>o.value===value)?value:input.options[0]?.value||'';
    else input.value=value;
   }

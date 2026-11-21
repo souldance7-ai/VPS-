@@ -155,6 +155,10 @@ for(const [sku,cpu,ram,disk,traffic,port,price] of [
  for(const p of PLANS.filter(p=>p.provider==='AkileCloud'&&Number(p.officialNode)===30)){
   shop([p],{[returning]:[cu169,cu169,cu169]});
  }
+ for(const p of PLANS.filter(p=>p.provider==='LightCone')){
+  if(p.market==='DE')shop([p],{[returning]:[cuii,cuii,cuii]});
+  if(p.market==='HK')shop([p],{[anyDirection]:[cmi,cmi,cmi]});
+ }
  for(const p of PLANS.filter(p=>p.provider==='AkileCloud'&&Number(p.officialNode)===46)){
   shop([p],{[anyDirection]:[[],[],[]]});
   routeMerchantNetworks.get(p.id).push({direction:returning,carrier:'',paths:routePaths(['9929']),source:p.url,evidence:'sourceOfficial',date:reviewedOn,scope:''});
