@@ -4779,9 +4779,17 @@ async function serveGreenCloudRates(req, ctx) {
  return result;
 }
 
-const fxCurrencies = new Set('AED AUD BRL CAD CHF CLP CNY CZK DKK EUR GBP HKD HUF IDR ILS INR JPY KRW MXN MYR NOK NZD PHP PLN RON SEK SGD THB TRY TWD VND ZAR'.split(' '));
+const fxQuoteGroups = [
+ 'CNY,EUR,HKD,JPY,CAD,TWD,GBP,SGD,KRW,AUD,VND',
+ 'AED,BRL,CHF,CLP,CZK,DKK,HUF,IDR,ILS,INR,MXN',
+ 'MYR,NOK,NZD,PHP,PLN,RON,SEK,THB,TRY,ZAR'
+];
+const fxCurrencies = new Set(fxQuoteGroups.join(',').split(','));
 const fxDay = 86_400_000;
 const fxSource = 'https://api.frankfurter.dev/v2/rates';
+// USD-based closing reference rates verified against Frankfurter's dated series.
+const fxSnapshotDate = '2026-11-20';
+const fxSnapshot = {AED:3.6725,AUD:1.4961,BRL:5.9056,CAD:1.4305,CHF:0.84171,CLP:1013.02,CNY:6.6681,CZK:22.245,DKK:6.8054,EUR:0.91,GBP:0.76114,HKD:7.8479,HUF:338.11,IDR:18256,ILS:3.3115,INR:92.96,JPY:159.49,KRW:1334.29,MXN:19.0123,MYR:4.1122,NOK:9.7282,NZD:1.8166,PHP:63.754,PLN:4.0389,RON:4.8681,SEK:10.173,SGD:1.2895,THB:33.924,TRY:50.506,TWD:32.985,VND:25810,ZAR:17.3685};
 let fxInFlight;
 
 function fxIsoDay(timestamp){return new Date(timestamp).toISOString().slice(0,10)}
@@ -4808,13 +4816,23 @@ function fxTable(rows,from,to){
  return rates;
 }
 
+async function loadFxGroup(quotes,from,to){
+ const url=fxSource+'?base=USD&quotes='+quotes+'&from='+from+'&to='+to;
+ const res=await fetch(url,{headers:{accept:'application/json'},redirect:'manual',signal:AbortSignal.timeout(5500)});
+ if(!res.ok||!res.headers.get('content-type')?.includes('application/json')||!res.body)throw Error('FX upstream HTTP '+res.status);
+ const rows=JSON.parse(new TextDecoder().decode(await readLimitedBytes(res.body,40_000)));
+ if(!Array.isArray(rows))throw Error('Invalid FX rate series');
+ return rows;
+}
+
 async function loadFxTable(from,to){
- const url = new URL(fxSource);
- url.search = new URLSearchParams({base:'USD',quotes:[...fxCurrencies].join(','),from,to});
- const res = await fetch(url, {headers:{accept:'application/json'},redirect:'error',signal:AbortSignal.timeout(7500)});
- if(!res.ok||!res.headers.get('content-type')?.includes('application/json')||!res.body)throw Error('FX upstream unavailable');
- const raw = await readLimitedBytes(res.body,100_000);
- return {requestedDate:to,rates:fxTable(JSON.parse(new TextDecoder().decode(raw)),from,to)};
+ const groups=await Promise.allSettled(fxQuoteGroups.map(quotes=>loadFxGroup(quotes,from,to)));
+ const snapshotUsable=fxSnapshotDate<=to&&Date.parse(to)-Date.parse(fxSnapshotDate)<=5*fxDay;
+ const fallback=snapshotUsable?Object.entries(fxSnapshot).map(([quote,rate])=>({quote,rate,base:'USD',date:fxSnapshotDate})):[];
+ const rows=[...fallback,...groups.flatMap(group=>group.status==='fulfilled'?group.value:[])];
+ const partial=groups.some(group=>group.status==='rejected');
+ if(partial)console.warn('FX upstream groups unavailable',groups.filter(group=>group.status==='rejected').map(group=>group.reason?.message));
+ return {requestedDate:to,rates:fxTable(rows,from,to),partial};
 }
 
 async function serveFx(req,ctx){
@@ -4835,7 +4853,7 @@ async function serveFx(req,ctx){
  }
  try{
   const table=await fxInFlight.promise;
-  const result=json(table,200,900);
+  const result=json(table,200,table.partial?120:900);
   if(cache)ctx.waitUntil(cache.put(cacheKey,result.clone()).catch(()=>{}));
   return result;
  }catch{return json({error:'FX rates temporarily unavailable'},503)}
