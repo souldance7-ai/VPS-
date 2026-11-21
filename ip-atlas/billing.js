@@ -78,6 +78,7 @@ function appendBillingRates(out, plan, rates = billingOptionsForPlan(plan), incl
     if (rate.term === billingSelection()) row.className = 'selected-term';
     const amount = el('dd');
     amount.append(el('strong', rate.currency + ' ' + rate.price));
+    appendFx(amount,rate.price,rate.currency);
     if (rate.proof) amount.append(link(tr('rateSource') + ' ↗', rate.proof));
     if (rate.url && rate.url !== rate.proof) amount.append(link(tr('termOrder') + ' ↗', rate.url));
     if (rate.date) amount.append(el('time', String(rate.date).slice(0, 10)));

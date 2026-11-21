@@ -156,7 +156,9 @@ function commercialScore(p){return (published(p)?6:0)+(p.spec?.cpu?2:0)+(p.spec?
 function specSummary(p){
  const line=el('div',null,'spec-summary');
  if(published(p)){
-  line.append(el('b',priceText(p)));const cost=monthlyCost(p);
+  const spec=activeSpec(p),cost=monthlyCost(p);
+  line.append(el('b',priceText(p)));
+  appendFx(line,spec?.price,spec?.currency);
   if($('order').value&&cost&&activeSpec(p).term!=='month')line.append(el('small',tr('monthMean')+' · '+cost.currency+' '+cost.monthly.toLocaleString(tags[lang],{minimumFractionDigits:2,maximumFractionDigits:2})));
   const note=purchaseQualifier(p);if(note)line.append(el('small',note,'offer-condition'));
  }
@@ -172,7 +174,7 @@ function showBuying(out,p){
  const section=el('section',null,'purchase'),head=el('div',null,'purchase-heading');head.append(el('h3',tr('commercial')));section.append(head);
  const choices=p.spec?.tiers||[],body=el('div',null,'purchase-body');
  function draw(s){
-  body.replaceChildren();const rate=priceText(p,s),basis=priceEvidence(p,s);if(rate){body.append(el('strong',rate,'purchase-rate'));const note=purchaseQualifier(p,s);if(note)body.append(el('small',note,'offer-condition'))}
+  body.replaceChildren();const rate=priceText(p,s),basis=priceEvidence(p,s);if(rate){body.append(el('strong',rate,'purchase-rate'));appendFx(body,s?.price,s?.currency);const note=purchaseQualifier(p,s);if(note)body.append(el('small',note,'offer-condition'))}
   if(s?.sku)body.append(el('span',s.sku,'sku-name'));
   if(s&&(hardware.some(k=>s[k])||readCpuModel(s)))body.append(purchaseHardware(s));
   else body.append(el('p',tr('customConfig')));

@@ -96,11 +96,13 @@ function commerceCouponLines(p,detailed){
     const ends=ending?communityLabel('ends')+' '+communityDate(ending)+(dateOnly?' · '+communityLabel('dateOnly'):''):commerceWord('endUnknown');
     if(detailed){
       if(row.discount)block.append(el('b',val(row.discount)));
-      const fees=[];
-      if(row.price!=null)fees.push(communityPriceLabel(row)+' '+communityAmount(row.price,row));
-      if(row.regular!=null&&String(row.regular)!==String(row.price))fees.push(communityLabel('regular')+' '+communityAmount(row.regular,row));
-      if(row.renewal!=null)fees.push(communityLabel('renewal')+' '+communityAmount(row.renewal,row));
-      if(fees.length)block.append(el('p',fees.join(' · ')));
+      const fees=[[communityPriceLabel(row),row.price],[communityLabel('renewal'),row.renewal]];
+      if(String(row.regular)!==String(row.price))fees.splice(1,0,[communityLabel('regular'),row.regular]);
+      for(const [label,amount] of fees){
+       if(amount==null)continue;
+       const fee=el('p',label+' '+communityAmount(amount,row));
+       appendFx(fee,amount,row.currency);block.append(fee);
+      }
       block.append(el('small',ends));
       const info=el('details',null,'commerce-conditions');info.append(el('summary',commerceWord('conditions')));
       if(row.conditions)info.append(el('p',val(row.conditions)));
@@ -110,7 +112,10 @@ function commerceCouponLines(p,detailed){
       info.append(evidence);block.append(info);
     }else{
       const stage=communityStage(row);
-      if(row.priceBasis==='afterCode'&&row.price!=null)block.append(el('small',communityLabel('afterCode')+' '+communityAmount(row.price,row),'commerce-net-price'));
+      if(row.priceBasis==='afterCode'&&row.price!=null){
+       block.append(el('small',communityLabel('afterCode')+' '+communityAmount(row.price,row),'commerce-net-price'));
+       appendFx(block,row.price,row.currency);
+      }
       block.append(el('small',ending&&stage==='offer'?communityLabel('ends')+' '+(row.endDate||communityDate(row.end)):commerceWord('uncertain'),'commerce-deadline'));
     }
     box.append(block);

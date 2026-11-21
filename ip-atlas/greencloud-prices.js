@@ -65,8 +65,16 @@ function appendGreenCloudQuotePanel(body,plan,shownSpec) {
   table.replaceChildren();
   appendBillingRates(table,plan,billingTerms.map(name=>byTerm.get(name)).filter(Boolean),true);
   const headline=body.querySelector('.purchase-rate');
-  if(headline && data.rates[term]?.state==='not-offered'){headline.textContent=greenCloudPriceWord('removed');body.querySelector('.offer-condition')?.remove();}
-  else if(headline && data.rates[term]?.state==='priced' && byTerm.has(term))headline.textContent=priceText(plan,{...shownSpec,...byTerm.get(term)});
+  if(headline && data.rates[term]?.state==='not-offered'){
+   headline.textContent=greenCloudPriceWord('removed');body.querySelector('.offer-condition')?.remove();
+   if(headline.nextElementSibling?.classList.contains('fx-conversion'))headline.nextElementSibling.remove();
+  }else if(headline && data.rates[term]?.state==='priced' && byTerm.has(term)){
+   const rate=byTerm.get(term);
+   headline.textContent=priceText(plan,{...shownSpec,...rate});
+   if(headline.nextElementSibling?.classList.contains('fx-conversion'))headline.nextElementSibling.remove();
+   const conversion=appendFx(body,rate.price,rate.currency);
+   if(conversion)headline.after(conversion);
+  }
   status.textContent=greenCloudPriceWord(checked===billingTerms.length?'live':'partial')+' · '+new Intl.DateTimeFormat(tags[lang],{dateStyle:'short',timeStyle:'short'}).format(new Date(data.checkedAt));
  });
  return true;

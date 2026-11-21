@@ -4,7 +4,8 @@
     "/api/stock/*",
     "/api/stock-history/*",
     "/api/deal-feed/*",
-    "/api/greencloud-prices/*"
+    "/api/greencloud-prices/*",
+    "/api/fx"
   ],
   "exclude": []
 }

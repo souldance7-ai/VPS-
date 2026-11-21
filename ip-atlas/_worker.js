@@ -4779,8 +4779,71 @@ async function serveGreenCloudRates(req, ctx) {
  return result;
 }
 
+const fxCurrencies = new Set('AED AUD BRL CAD CHF CLP CNY CZK DKK EUR GBP HKD HUF IDR ILS INR JPY KRW MXN MYR NOK NZD PHP PLN RON SEK SGD THB TRY TWD VND ZAR'.split(' '));
+const fxDay = 86_400_000;
+const fxSource = 'https://api.frankfurter.dev/v2/rates';
+let fxInFlight;
+
+function fxIsoDay(timestamp){return new Date(timestamp).toISOString().slice(0,10)}
+
+function fxTable(rows,from,to){
+ if(!Array.isArray(rows))throw Error('Invalid rate series');
+ const days = new Map();
+ for(const row of rows){
+  if(!row||row.base!=='USD'||!fxCurrencies.has(row.quote)||!Number.isFinite(row.rate)||row.rate<=0||
+    !/^\d{4}-\d{2}-\d{2}$/.test(row.date)||row.date<from||row.date>to)continue;
+  if(!days.has(row.date))days.set(row.date,new Map());
+  days.get(row.date).set(row.quote,row.rate);
+ }
+ const rates = {};
+ for(const date of [...days.keys()].sort().reverse()){
+  const day = days.get(date), yuan = day.get('CNY');
+  if(!yuan)continue;
+  rates.USD ??= {date,usd:1,cny:yuan};
+  for(const [currency,rate] of day){
+   rates[currency] ??= {date,usd:1/rate,cny:yuan/rate};
+  }
+ }
+ if(!rates.USD||!rates.CNY)throw Error('Missing USD/CNY rate');
+ return rates;
+}
+
+async function loadFxTable(from,to){
+ const url = new URL(fxSource);
+ url.search = new URLSearchParams({base:'USD',quotes:[...fxCurrencies].join(','),from,to});
+ const res = await fetch(url, {headers:{accept:'application/json'},redirect:'error',signal:AbortSignal.timeout(7500)});
+ if(!res.ok||!res.headers.get('content-type')?.includes('application/json')||!res.body)throw Error('FX upstream unavailable');
+ const raw = await readLimitedBytes(res.body,100_000);
+ return {requestedDate:to,rates:fxTable(JSON.parse(new TextDecoder().decode(raw)),from,to)};
+}
+
+async function serveFx(req,ctx){
+ if(req.method!=='GET')return json({error:'GET required'},405);
+ const url = new URL(req.url);
+ if(url.search)return json({error:'Unexpected parameters'},400);
+ const yesterday = Date.now()+8*3_600_000-fxDay;
+ const to = fxIsoDay(yesterday), from = fxIsoDay(yesterday-10*fxDay);
+ const cache = globalThis.caches?.default;
+ const cacheKey = new Request(url.origin+url.pathname+'?day='+to);
+ try{
+  const hit=await cache?.match(cacheKey);
+  if(hit)return hit;
+ }catch{}
+ if(fxInFlight?.day!==to){
+  const request = loadFxTable(from,to).finally(()=>{if(fxInFlight?.promise===request)fxInFlight=null});
+  fxInFlight={day:to,promise:request};
+ }
+ try{
+  const table=await fxInFlight.promise;
+  const result=json(table,200,900);
+  if(cache)ctx.waitUntil(cache.put(cacheKey,result.clone()).catch(()=>{}));
+  return result;
+ }catch{return json({error:'FX rates temporarily unavailable'},503)}
+}
+
 export default {async fetch(req,env,ctx){
  const url=new URL(req.url);
+ if(url.pathname==='/api/fx')return serveFx(req,ctx);
  if(url.pathname.startsWith('/api/greencloud-prices/'))return serveGreenCloudRates(req,ctx);
  if(url.pathname==='/api/deal-feed/channel-products'){
   if(req.method!=='GET')return forumResponse({error:'method'},405);

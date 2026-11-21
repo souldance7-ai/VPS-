@@ -3642,7 +3642,9 @@ function renderOffer(container,q,t,archived=false){
  container.replaceChildren();
  if(!goodQuote(q)){container.append(el('small',offerText('unavailable')));return}
  const price=el('strong',offerPrice(q)),time=new Date(q.checkedAt).toLocaleString(document.documentElement.lang,{hour12:false});
- container.append(el('h4',offerText(archived?'archived':'live')),price,el('p',stockText('observed')+' '+time));
+ container.append(el('h4',offerText(archived?'archived':'live')),price);
+ appendFx(container,q.amount,q.currency);
+ container.append(el('p',stockText('observed')+' '+time));
  if(q.basis==='base')container.append(el('p',offerText('config')));
  const list=el('dl',null,'stock-offer-specs');
  if(Number.isSafeInteger(q.stockQuantity)&&q.stockQuantity>=0)list.append(el('dt',offerText('stockQuantity')),el('dd',String(q.stockQuantity)));

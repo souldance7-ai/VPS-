@@ -191,7 +191,11 @@ function openDialog(p,compareOrder=''){
  const title=el('h2',p?p.provider+' · '+val(p.plan):tr('comparison'));title.id='dialog-title';out.append(title);$('drawer').setAttribute('aria-labelledby',title.id);
  if(p){
   showBuying(out,p);renderStock(out,p);appendDrawerCoupons(out,p);appendProductDispatches(out,p);displayRouteProof(out,p);renderQuickEvidence(out,p);renderCommunityFor(out,p);renderRelatedReports(out,p);
-  const grid=el('dl',null,'detailgrid');for(const [k,v] of attributes(p).filter(([k])=>!hardware.includes(k)&&k!=='price')){const d=el('div');d.append(el('dt',tr(k)),el('dd',v));grid.append(d)}
+  const grid=el('dl',null,'detailgrid');for(const [k,v] of attributes(p).filter(([k])=>!hardware.includes(k)&&k!=='price')){
+   const d=el('div'),value=el('dd',v);
+   if(k==='monthMean'){const cost=monthlyCost(p);appendFx(value,cost?.monthly,cost?.currency)}
+   d.append(el('dt',tr(k)),value);grid.append(d);
+  }
   const actions=el('div',null,'actionrow');actions.append(...merchantLinks(p),btn(tr('ask'),()=>copy(p.provider+' · '+val(p.plan)+'\n'+tr('askText')),'solid'));
   if(val(p.notes))out.append(el('p',val(p.notes),'detail-note'));out.append(grid);
   out.append(actions);appendEvidence(out,p)
@@ -210,7 +214,12 @@ function openDialog(p,compareOrder=''){
    row.append(el('th',tr(label)));
    for(const plan of ps){
     const cell=row.insertCell();
-    if(k!=='cpuModel'){cell.textContent=attributes(plan)[i][1];continue}
+    if(k!=='cpuModel'){
+     cell.textContent=attributes(plan)[i][1];
+     if(k==='price'){const spec=activeSpec(plan);appendFx(cell,spec?.price,spec?.currency)}
+     if(k==='monthMean'){const cost=monthlyCost(plan);appendFx(cell,cost?.monthly,cost?.currency)}
+     continue;
+    }
     const model=readCpuModel(activeSpec(plan));
     if(!model){cell.textContent=tr('cpuUnknown');continue}
     if(model.kind!=='cpuModel')cell.append(el('small',tr(model.kind),'cpu-caption'));

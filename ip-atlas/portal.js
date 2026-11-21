@@ -125,6 +125,7 @@ function boardCard(row,now){
  const spec=[val(row.cpu),val(row.ram),val(row.disk),val(row.port)].filter(Boolean).join(' · ');
  const pricing=el('div',null,'featured-price'),quote=el('div',null,'featured-quote');
  quote.append(el('small',row.price!=null?communityPriceLabel(row):tr('boardDirectRate')),el('b',row.price!=null?communityAmount(row.price,row):val(row.discount)||tr('boardMinimum')));
+ appendFx(quote,row.price,row.currency);
  pricing.append(quote);
  if(valid||boardCheckoutCode(row,now)){
   const code=btn(row.code+' ⧉',()=>{

@@ -1,0 +1,16 @@
+.fx-conversion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .12rem .45rem;
+  align-items: baseline;
+  margin-block: .12rem .25rem;
+  color: #aadacd;
+  font-size: .75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+}
+.fx-conversion[hidden] { display: none }
+.fx-date { color: var(--muted); font-size: .67rem; font-weight: 400 }
+.fx-status { color: var(--muted); font-size: .75rem; margin-block: .8rem }
+.matrix td .fx-conversion { margin-block-start: .25rem }

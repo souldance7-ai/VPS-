@@ -125,13 +125,18 @@ function communityDetails(row,inDrawer){
  const body=el('div',null,'community-detail'),specs=el('dl',null,'community-specs');
  const fields=[
   [communityLabel('kind'),row.kind&&communityLabel(row.kind)],
-  [communityPriceLabel(row),communityAmount(row.price,row)],
-  [communityLabel('regular'),String(row.regular)!==String(row.price)&&communityAmount(row.regular,row)],
-  [communityLabel('renewal'),communityAmount(row.renewal,row)||communityLabel('notRenewal')],
+  [communityPriceLabel(row),communityAmount(row.price,row),row.price],
+  [communityLabel('regular'),String(row.regular)!==String(row.price)&&communityAmount(row.regular,row),row.regular],
+  [communityLabel('renewal'),communityAmount(row.renewal,row)||communityLabel('notRenewal'),row.renewal],
   ...['cpu','ram','disk','port','traffic'].map(k=>[tr(k),val(row[k])]),
   [tr('route'),val(row.routeName)]
  ];
- for(const [label,value] of fields){if(!value)continue;const entry=el('div');entry.append(el('dt',label),el('dd',value));specs.append(entry)}
+ for(const [label,value,amount] of fields){
+  if(!value)continue;
+  const entry=el('div'),detail=el('dd',value);
+  appendFx(detail,amount,row.currency);
+  entry.append(el('dt',label),detail);specs.append(entry);
+ }
  body.append(specs);
  if(row.conditions)body.append(el('p',val(row.conditions)));
  const dates=el('div',null,'community-dates');
@@ -162,7 +167,11 @@ function communityCard(row,inDrawer=false){
  name.append(el('b',row.provider),el('small',val(row.plan)));
  const stage=communityStage(row),badge=el('span',communityLabel(stage),'community-badge');badge.dataset.stage=stage;
  meta.append(badge,el('small',[row.kind&&communityLabel(row.kind),communityCities(row)].filter(Boolean).join(' · ')));
- const price=el('span',null,'community-price');if(row.price!==undefined&&(row.priceBasis||stage==='expired'||stage==='upcoming'))price.append(el('small',communityPriceLabel(row)));price.append(el('strong',communityAmount(row.price,row)||communityLabel('reference')));summary.append(name,meta,price);
+ const price=el('span',null,'community-price');
+ if(row.price!==undefined&&(row.priceBasis||stage==='expired'||stage==='upcoming'))price.append(el('small',communityPriceLabel(row)));
+ price.append(el('strong',communityAmount(row.price,row)||communityLabel('reference')));
+ appendFx(price,row.price,row.currency);
+ summary.append(name,meta,price);
  card.append(summary,communityDetails(row,inDrawer));
  if(!inDrawer){
   card.open=communityOpenRecords.has(id);

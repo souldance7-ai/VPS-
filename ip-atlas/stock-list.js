@@ -21,7 +21,9 @@ function refreshStockList(){
   }
   const rate=stockQuoteForTerm(offer,commerceTerm());
   if(rate){
-   row.output.dataset.commerceQuote='';row.output.append(el('strong',offerPrice(rate)),link(offerText('source'),row.target.priceUrl||row.target.url));
+   row.output.dataset.commerceQuote='';row.output.append(el('strong',offerPrice(rate)));
+   appendFx(row.output,rate.amount,rate.currency);
+   row.output.append(link(offerText('source'),row.target.priceUrl||row.target.url));
   }
  }
  for(const card of listing.querySelectorAll('.record')){
