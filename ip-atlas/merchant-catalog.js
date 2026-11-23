@@ -6,6 +6,8 @@ MARKETS.IE={sc:'爱尔兰',tc:'愛爾蘭',en:'Ireland',ja:'アイルランド'};
 MARKETS.NO={sc:'挪威',tc:'挪威',en:'Norway',ja:'ノルウェー'};
 MARKETS.KP={sc:'朝鲜',tc:'北韓',en:'North Korea',ja:'北朝鮮'};
 const curatedCatalog=PLANS.slice();
+const hasExpandedVps=curatedCatalog.some(p=>p.id.startsWith('vps-market-'));
+const hasExpandedLazco=curatedCatalog.some(p=>p.id.startsWith('lazco-compute-'));
 const catalogueCopy={
  sc:{official:'商家目录',tracked:'复查目标间隔',stale:'上次成功读取',known:'可查询商品',pages:'个目录页已读取商品',unparsed:'部分分类暂未能解析',blocked:'部分页面读取受限或暂不可用',noData:'已发现商家页面，等待商品读取',outside:'目前尚无可核对的商家公开目录'},
  tc:{official:'商家目錄',tracked:'複查目標間隔',stale:'上次成功讀取',known:'可查商品',pages:'個目錄頁已讀取商品',unparsed:'部分分類暫未能解析',blocked:'部分頁面讀取受限或暫不可用',noData:'已發現商家頁面，等待商品讀取',outside:'目前尚無可核對的商家公開目錄'},
@@ -24,6 +26,16 @@ function normalStoreRow(row){
  const source=normalStoreLink(row.source);
  if(!source||Date.parse(row.observedAt)>Date.now()+60_000)return null;
  return {...row,source,market:Object.hasOwn(MARKETS,row.market)?row.market:'ZZ'};
+}
+function supersededStoreSummary(row){
+ if(row.market!=='ZZ'||row.city)return false;
+ const url=new URL(row.source);
+ if(hasExpandedVps&&row.provider==='V.PS'&&url.hostname==='v.ps'){
+  return /^V\.PS (Storage|Nano|Mini|Performance|Edge|Cloud) KVM VPS$/i.test(row.sku)&&
+   /^\/products\/(storage|nano|mini|performance|edge|cloud)-kvm-vps\/$/.test(url.pathname);
+ }
+ return hasExpandedLazco&&row.provider==='Lazco Cloud'&&url.hostname==='cloud.lazco.tw'&&
+  /^\/(?:en\/)?pricing\/?$/.test(url.pathname)&&/^Lazco Cloud VPS — \d+c-\d+g-\d+g$/i.test(row.sku);
 }
 function catalogueMatchKey(provider,market,sku){return provider+'\n'+market+'\n'+cleanCatalogSku(sku)}
 function normalizedYunSku(sku){
@@ -82,7 +94,7 @@ function recordOfficialPlan(row,old){
   searchTerms:[...new Set([...(old?.searchTerms||[]),...aliases])]};
 }
 function applyMerchantCatalog(batch){
- const records=batch.plans.map(normalStoreRow).filter(Boolean);
+ const records=batch.plans.map(normalStoreRow).filter(row=>row&&!supersededStoreSummary(row));
  const skus=new Map(),unlocated=new Map(),officialClaims=new Map(),byId=new Map(curatedCatalog.map(p=>[p.id,p]));
  const key=catalogProductKey;
  for(const p of curatedCatalog){

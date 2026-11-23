@@ -29,15 +29,19 @@ const quickFields=['search','vendor','market','kind','ip','route','carrier','buy
 let quickInitialized=false,quickRestoring=false,quickFeedback=false;
 function quickGroups(){
  const groups=Object.entries(IP_EVIDENCE_OPTIONS).map(([id,values])=>({id,values}));
- groups.push({id:'lineClass',values:['iepl','iplc','ixp','private-route','optimized-transit']},{id:'usageClass',values:['hourly','quota-transfer','dedicated-port']},...Object.entries(ROUTE_CHOICES).map(([id,values])=>({id,values})),{id:'hosting',values:['bare','probe']});
+ groups.push({id:'residentialType',values:residentialTypes},{id:'residentialSample',values:['home-sample']},
+  {id:'lineClass',values:['iepl','iplc','ixp','private-route','optimized-transit']},{id:'usageClass',values:['hourly','quota-transfer','dedicated-port']},...Object.entries(ROUTE_CHOICES).map(([id,values])=>({id,values})),{id:'hosting',values:['bare','probe']});
  return groups;
 }
-function quickLabel(value){return Object.hasOwn(quickWords,value)?quickWord(value):ipEvidenceLabel(value,lang)}
+function quickLabel(value){return Object.hasOwn(residentialWords,value)?residentialWord(value):Object.hasOwn(quickWords,value)?quickWord(value):ipEvidenceLabel(value,lang)}
 function quickClass(value){return quickGroups().find(g=>g.values.includes(value))?.id||''}
 function quickExclusive(group){return group!=='hosting'&&group!=='route'}
 function quickEvidenceFeatures(plan){
  let values=quickFeatures.get(plan);if(values)return values;
  values=new Set([...getIpEvidence(plan).map(e=>e.value),...(plan.networkFilters||[])]);
+ const residential=residentialProfile(plan);
+ if(residential.feature)values.add(residential.feature);
+ if(residential.reviews.length)values.add('home-sample');
  if(plan.spec?.term==='hour')values.add('hourly');
  if(!plan.networkFilters){
   const line=typeof plan.routeName==='object'?plan.routeName.en:plan.routeName||'';
@@ -138,7 +142,9 @@ function renderQuickPick(out,baseRows,rows){
  placeLabel.append(el('span',quickWord('location')),place);
  heading.append(title,el('p',quickWord('intro')));head.append(heading,placeLabel);
  const matrix=el('div',null,'quick-matrix'),counts=quickCandidateCounts(baseRows);
+ renderResidentialGuide($('residential-guide'),counts);
  for(const group of quickGroups()){
+  if(group.id==='residentialType'||group.id==='residentialSample')continue;
   const lane=el('fieldset',null,'quick-lane');lane.dataset.dimension=group.id;lane.append(el('legend',quickLabel(group.id)));
   const buttons=el('div',null,'quick-buttons');
   for(const value of group.values){

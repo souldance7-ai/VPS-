@@ -1,0 +1,45 @@
+.residential-guide,.residential-evidence {
+  margin: 16px 0;
+  padding: 14px 16px;
+  border: 1px solid #567483;
+  border-inline-start: 3px solid #8dd1b9;
+  border-radius: 10px;
+  background: #18262f;
+  color: #e6f3f0;
+}
+
+.residential-guide h3,.residential-evidence h3 { margin: 0 0 4px; color: inherit; }
+.residential-guide p,.residential-evidence p { margin: 4px 0 10px; line-height: 1.5; font-size: 13px; }
+.residential-options { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; }
+.residential-option {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid #537180;
+  border-radius: 6px;
+  color: #e8f3f3;
+  background: #243641;
+  text-align: start;
+}
+.residential-option:hover,.residential-option[aria-pressed=true] { background: #305751; border-color: #a7e5ce; }
+.residential-option:focus-visible,.residential-links a:focus-visible,.residential-evidence a:focus-visible { outline: 2px solid #d7f5ce; outline-offset: 2px; }
+.residential-option-label { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px; }
+.residential-option-label b { font-size: 14px; }
+.residential-option-label small { color: #b6e9d6; font-variant-numeric: tabular-nums; }
+.residential-option-note { font-size: 12px; line-height: 1.4; color: #d1e2e5; }
+.residential-links { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; }
+.residential-links a,.residential-evidence a { color: #b8e9d8; font-size: 13px; text-decoration: underline; }
+.residential-card-label { display: block; margin-top: 4px; color: #beead7; }
+.residential-sample { margin-block: 9px; padding: 10px 0 0; border-top: 1px solid #4b6871; }
+.residential-sample h4,.residential-sample time { display: inline; margin-inline-end: 8px; }
+.residential-sample time,.residential-sample small { color: #d3e1e7; font-size: 12px; }
+.residential-sample small { display: block; margin-block: 4px; }
+.residential-evidence .residential-mixed-note { color: #ffdf9b; }
+.residential-evidence .residential-evidence-note { color: #c0d8db; margin-block-end: 0; }
+
+@media(max-width: 710px) {
+  .residential-options { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}

@@ -141,7 +141,7 @@ function renderControls(){
 const norm = s => String(s).normalize('NFKC').toLowerCase().replace(/[\s·/_–-]/g,'');
 function searchable(p){
  const aliases={SJC:'San Jose San José 圣河西 聖河西 圣何塞 聖荷西 圣荷西 硅谷 矽谷',SEA:'Seattle 西雅图 西雅圖',LAX:'Los Angeles 洛城 洛杉矶 洛杉磯',TW:'Taiwan 臺灣 台灣 台湾',CA:'Canada 加拿大'};
- const tokens=[...(merchantAliases.get(p.provider)||[]),...(p.searchTerms||[]),...(p.networkFilters||[]).map(quickLabel),p.market,...Object.values(MARKETS[p.market]),aliases[p.market]||'',p.provider,val(p.plan),p.city,...(cityNames[p.city]||[]),val(p.routeName),tr(p.kind),tr(p.ip)];
+ const tokens=[...(merchantAliases.get(p.provider)||[]),...(p.searchTerms||[]),...(p.networkFilters||[]).map(quickLabel),...residentialSearchTerms(p),p.market,...Object.values(MARKETS[p.market]),aliases[p.market]||'',p.provider,val(p.plan),p.city,...(cityNames[p.city]||[]),val(p.routeName),tr(p.kind),tr(p.ip)];
  for(const offer of offersByPlan.get(p.id)||[])tokens.push(currentCommerceOffer(offer,commerceTerm())?offer.code||"":"",offer.source,offer.sku||"",offer.routeName||"");
  for(const row of commerceFeedRows.get(p.id)||[])if(currentCommerceOffer(row,''))tokens.push(row.code);
  for(const post of commerceDispatches.get(p.id)||[])tokens.push('@'+publicTGChannels[post.from],post.title);
@@ -211,6 +211,8 @@ function list(){
  for(const p of visible){
   const r=el('article',null,'record'),ip=el('div',null,'datum'),route=el('div',null,'datum');
   if(p.ip!=='unknown')ip.append(el('span',tr(p.ip),'tag'));ip.append(el('small',tr(p.kind),'sub'));
+  const residential=residentialProfile(p);
+  if(residential.feature||residential.reviews.length)ip.append(el('small',residentialWord(residential.feature||'home-sample'),'residential-card-label'));
   const routeTitle=val(p.routeName)||routeSummaryFor(p),routeMode=routeStatusFor(p);
   if(routeMode!=='unknown'||routeTitle)route.append(el('span',routeTitle||routeStatusLabel(routeMode)),el('small',routeTitle&&routeMode!=='unknown'?routeEvidenceText(p):'','sub'));
   const selected=chosen.includes(p.id),pick=btn(selected?'✓':'+',()=>toggle(p),'pick');
@@ -235,7 +237,7 @@ function openDialog(p,compareOrder=defaultPriceOrder){
  modal=p||'compare';const out=$('dialog-body');out.replaceChildren();
  const title=el('h2',p?p.provider+' · '+val(p.plan):tr('comparison'));title.id='dialog-title';out.append(title);$('drawer').setAttribute('aria-labelledby',title.id);
  if(p){
-  showBuying(out,p);renderStock(out,p);appendDrawerCoupons(out,p);appendProductDispatches(out,p);displayRouteProof(out,p);renderQuickEvidence(out,p);renderCommunityFor(out,p);renderRelatedReports(out,p);
+  showBuying(out,p);renderStock(out,p);appendDrawerCoupons(out,p);appendProductDispatches(out,p);displayRouteProof(out,p);renderQuickEvidence(out,p);renderResidentialEvidence(out,p);renderCommunityFor(out,p);renderRelatedReports(out,p);
   const grid=el('dl',null,'detailgrid');for(const [k,v] of attributes(p).filter(([k])=>!hardware.includes(k)&&k!=='price')){
    const d=el('div'),value=el('dd',v);
    if(k==='monthMean'){const cost=monthlyCost(p);appendFx(value,cost?.monthly,cost?.currency)}

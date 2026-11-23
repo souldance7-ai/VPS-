@@ -24,6 +24,12 @@ const merchantIndex = [
  {"keys":["YT.NET"],"names":["YunTu","云途","雲途","CNIX"]},
  {"keys":["Lamhosting"],"names":["LAM","Lam Hosting"]},
  {"keys":["RFCHOST"],"names":["RFC","RFCHost"]},
+ {"keys":["KFCHost"],"names":["KFC Host"]},
+ {"keys":["PortChannel"],"names":["PO0","PortChannel Zero"]},
+ {"keys":["V.PS"],"names":["vps.hosting","小秘书","小秘書","xtom"]},
+ {"keys":["Lazco Cloud"],"names":["Lazco","Lazco Compute","lazco.tw"]},
+ {"keys":["VPS.Taxi"],"names":["VPSTaxi","VPS Taxi"]},
+ {"keys":["ZoroCloud"],"names":["Zoro Cloud","Zoro"]},
  {"keys":["UQIDC"],"names":["UQ","uqidc.com"]},
  {"keys":["YunYoo"],"names":["YUNYOO","云悠","雲悠","yunyoo.cc"]},
  {"keys":["LazyCat"],"names":["懒猫云","懶貓雲","懒猫","懶貓","LazyCatCloud","LazyCat Cloud","lazycat.wiki","dash.lazycat.wiki"]},
@@ -96,7 +102,13 @@ function merchantCoverageWord(key){return merchantCoverageLabels[key]?.[{tc:0,sc
 function directoryMerchantPanel(name){
  const audit=typeof MERCHANT_AUDIT==='undefined'?null:MERCHANT_AUDIT.merchants?.[name];
  const deals=typeof MERCHANT_PROMOTION_SEARCH==='undefined'?null:MERCHANT_PROMOTION_SEARCH[name];
- if(!audit&&!deals&&!Object.hasOwn(merchantCatalogMeta,name))return null;
+ const expanded={
+  'Lazco Cloud':[['Compute · T4 Object Storage · Networking','https://cloud.lazco.tw/pricing']],
+  'V.PS':[['KVM VPS','https://v.ps/products/'],['Shared Hosting','https://v.ps/hosting/'],['Domains','https://v.ps/domains/'],['SSL Certificates','https://v.ps/ssl/']],
+  Linode:[['Compute Pricing','https://www.linode.com/pricing/'],['Linode Types API','https://techdocs.akamai.com/linode-api/reference/get-linode-types']]
+ };
+ const official=expanded[name]||(typeof EXPANDED_MERCHANT_SOURCES==='undefined'?null:EXPANDED_MERCHANT_SOURCES[name]);
+ if(!audit&&!deals&&!official&&!Object.hasOwn(merchantCatalogMeta,name))return null;
  const t=merchantMenuCopy[lang],details=el('details',null,'merchant-source-panel'),summary=el('summary',name+' · '+t.category);details.append(summary);
  details.addEventListener('toggle',()=>{
   if(!details.open||details.children.length>1)return;
@@ -105,6 +117,7 @@ function directoryMerchantPanel(name){
   appendMerchantCatalogStatus(body,name);
   const fresh=Object.hasOwn(merchantCatalogMeta,name)?merchantCatalogMeta[name].source:null;
   if(fresh)add(fresh,t.website);
+  for(const [title,url] of official||[])add(url,title);
   if(audit){
    const at=audit.checkedAt||MERCHANT_AUDIT.checkedAt;
    body.append(el('small',(merchantCoverageWord(audit.status)||t.read)+(at?' · '+String(at).slice(0,10):'')));
