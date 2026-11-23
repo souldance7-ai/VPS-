@@ -270,7 +270,7 @@ async function refreshChannelProducts(){
     const response=await fetch('/api/deal-feed/channel-products',{signal:AbortSignal.timeout(14500)});
     if(!response.ok)throw Error('channel products');
     const {items}=await response.json(),now=Date.now(),grouped=new Map(),coupons=[];
-    for(const post of items.slice(0,96)){
+    for(const post of items.slice(0,Object.keys(publicTGChannels).length*12)){
       const date=Date.parse(post.date),line=post.productLine||post.title;
       if(typeof line!=='string'||line.length>380||!Object.hasOwn(publicTGChannels,post.from)||
         !forumItemLink(post.link,post.from)||!Number.isFinite(date)||date>now||now-date>7*86400000)continue;

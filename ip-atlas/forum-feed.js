@@ -37,6 +37,7 @@ const publicForumTitles = {
   sbdiscounts:['烧饼 · 优惠','燒餅 · 優惠','SB · discounts','SB・割引'],
   idcfreview:['IDC Flare · 测评','IDC Flare · 評測','IDC Flare · reviews','IDC Flare・レビュー'],
   idcfnews:['IDC Flare · 情报','IDC Flare · 情報','IDC Flare · news','IDC Flare・ニュース'],
+  ibsgss:['@ibsgss · 特价补货','@ibsgss · 特價補貨','@ibsgss · VPS deals and restocks','@ibsgss・VPS セール・再入荷'],
   intro:['查看论坛原帖与 Telegram 公开频道消息。补货、价格和优惠码均按发帖时的消息展示，下单时请查看商家的库存与条款。','查看論壇原帖與 Telegram 公開頻道消息。補貨、價格和優惠碼均按發帖時的消息顯示，下單時請查看商家的庫存與條款。','Read forum threads and public Telegram posts. Restocks, prices and codes are reported at posting time. Check the merchant’s inventory and terms before ordering.','掲示板と Telegram の公開投稿を閲覧できます。入荷、価格、コードは投稿時点の情報です。注文時は販売元の在庫と条件を確認してください。'],
   openChannel:['在 Telegram 打开频道 ↗','在 Telegram 開啟頻道 ↗','Open channel in Telegram ↗','Telegram でチャンネルを開く ↗'],
   limited:['本次公开网页只提供频道入口。可在 Telegram 查看消息。','本次公開網頁只提供頻道入口。可在 Telegram 查看消息。','The public page did not provide messages on this read. Open the channel in Telegram.','今回は公開ページからメッセージを取得できませんでした。Telegram でチャンネルを開いてください。'],
@@ -56,7 +57,7 @@ const publicForumTitles = {
   preview:['本地预览可直接打开原始来源。在线部署后会读取最新消息。','本機預覽可直接開啟原始來源。線上部署後會讀取最新消息。','Open the source directly in local preview. The deployed site reads live posts.','ローカルプレビューでは配信元を直接開けます。公開サイトで新着を取得します。'],
   cache:['查看本栏时每 5 分钟自动刷新','查看本欄時每 5 分鐘自動重新整理','Updates every 5 min while this panel is visible','この欄の表示中は 5 分ごとに自動更新']
 };
-const publicTGChannels = Object.freeze({vpsdeer:'vpsdeer',vpsts:'vpsts',vpsuu:'vpsuu',poorvpsmsg:'PoorVPSMsg',richvps:'richvps',ovheco:'ovheco',lettelegram:'lowendtalk_offer',bwh:'bwh82',lightcone:'lightconecloud',uqidc:'UQIDC_CHAT'});
+const publicTGChannels = Object.freeze({vpsdeer:'vpsdeer',vpsts:'vpsts',vpsuu:'vpsuu',poorvpsmsg:'PoorVPSMsg',richvps:'richvps',ovheco:'ovheco',lettelegram:'lowendtalk_offer',bwh:'bwh82',lightcone:'lightconecloud',ibsgss:'ibsgss',uqidc:'UQIDC_CHAT'});
 const forumBoards=Object.freeze({
   sb:'https://sb.sb/go/promotion/',
   sbdiscounts:'https://sb.sb/go/discounts/',
@@ -271,6 +272,14 @@ function drawForumFeed() {
       const period=el('small',post.endsAt?txt('couponEnds')+' ':txt('couponPeriod'));if(post.endsAt)period.append(forumDate(post.endsAt));if(post.archived){period.append(' · '+txt('couponSnapshot')+' ',forumDate(post.sourceObserved))}copy.append(period);
     }
     copy.append(link(post.title,href));
+    if(['review','idcfreview','meow'].includes(id)&&Array.isArray(post.reports)){
+      const actions=el('div',null,'journal-actions'),seen=new Set();
+      for(const raw of post.reports.slice(0,8)){
+        const report=benchmarkLink(raw);if(!report||seen.has(report.url))continue;
+        seen.add(report.url);actions.append(link(benchmarkReportName(report.type)+' ↗',report.url));
+      }
+      if(seen.size)copy.append(actions);
+    }
     if (telegram && typeof post.snippet === 'string' && post.snippet) copy.append(el('span',post.snippet.slice(0,110),'forum-feed-snippet'));
     if(typeof feedToCatalog==="function"){const catalog=feedToCatalog(post);if(catalog)copy.append(catalog)}
     row.append(copy);

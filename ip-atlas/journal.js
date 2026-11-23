@@ -20,6 +20,11 @@ const journalLabels={
  journalEmpty:['没有符合这些条件的测评。','沒有符合這些條件的測評。','No reviews match these filters.','条件に一致するレビューはありません。'],
  journalOther:['该商家的其他实测','該商家的其他實測','Other reviews of this merchant','この事業者の他の実測'],
  journalRelated:['同商家、同地区的实测','同商家、同地區的實測','Reviews of this merchant in this region','同じ事業者・地域の実測'],
+ journalBench:['NQ / TQ 实测报告','NQ／TQ 實測報告','NQ / TQ benchmark reports','NQ / TQ 実測レポート'],
+ journalBenchSample:['实测样机','實測樣機','Tested sample','測定機'],
+ journalBenchReference:['同机房或系列参考，具体档位未确认','同機房或系列參考，未確認為此方案檔位','Same site or series; exact tier not confirmed','同じ拠点・シリーズの参考（構成未確認）'],
+ journalBenchNote:['这是发帖者的历史测试，结果随时间、运营商及线路变化。','這是發文者的歷史實測，結果會隨時間、電信商及線路而變。','Historical measurements from the author; results vary by time, carrier and route.','投稿者の過去の測定です。時刻・通信事業者・経路により結果は変動します。'],
+ journalForumSample:['本方案的历史论坛实测','本方案的歷史論壇實測','Past forum benchmarks for this plan','このプランの過去のフォーラム実測'],
  journalVendor:['商家','商家','Merchant','事業者'],
  journalReviewers:['作者的公开主题','作者的公開主題','Authors’ public discussions','著者の公開投稿']
 };
@@ -71,6 +76,7 @@ function renderJournalList(){
   const heading=el('h4');heading.append(link(r.provider+' · '+r.sku,r.url));
   const meta=el('p',[journalMarket(r.market),r.by].filter(Boolean).join('  /  '),'journal-meta');
   const actions=el('div',null,'journal-actions');actions.append(link(tr(journalIsIndex?'journalIndexLink':'journalPost')+' ↗',r.url));
+  if(!journalIsIndex)appendBenchmarksForReview(actions,r.url);
   actions.append(...journalPlanLinks(r.provider));
   if(r.official&&r.official!==r.url)actions.append(link(tr('journalShop')+' ↗',r.official));
   body.append(meta,heading,el('p',val(r.summary),'journal-summary'),actions);row.append(time,body);parts.append(row);
@@ -101,7 +107,44 @@ function journalRegionMatches(r,p){
  const cities={LAX:/Los Angeles|LAX|洛杉[矶磯]/i,SJC:/San Jose|SJC|圣何塞|聖荷西/i,SEA:/Seattle|西雅[图圖]/i};
  return cities[p.market]?.test(r.sku+' '+val(r.summary))||false;
 }
+function renderPlanBenchmarkEvidence(out,p){
+ const evidence=benchmarkForPlan(p);
+ const samples=[],sections=[];
+ for(const record of evidence){
+  if(!record.reports)continue;
+  const sample=el('div',null,'benchmark-sample');
+  sample.append(el('p',tr(record.reference?'journalBenchReference':'journalBenchSample')+' · '+record.sample,'journal-meta'));
+  let hasReports=false;
+  for(const [type,id,source,date] of record.reports){
+   const url=benchmarkReportURL(type,id);if(!url)continue;
+   const links=el('div',null,'journal-actions');
+   links.append(link(benchmarkReportName(type)+' ↗',url),link(tr('journalPost')+' ↗',source));
+   if(date){const when=el('time',date,'journal-meta');when.dateTime=date;links.append(when)}
+   sample.append(links);
+   hasReports=true;
+  }
+  if(hasReports)samples.push(sample);
+ }
+ if(samples.length){
+  const section=el('section',null,'journal-related benchmark-evidence');
+  section.append(el('h3',tr('journalBench')),...samples,el('p',tr('journalBenchNote'),'journal-meta'));
+  sections.push(section);
+ }
+ const forumSamples=evidence.filter(record=>record.forumReview);
+ if(forumSamples.length){
+  const section=el('section',null,'journal-related');section.append(el('h3',tr('journalForumSample')));
+  for(const {sample,forumReview:[name,url,date]} of forumSamples){
+   const label=[name,sample,date].filter(Boolean).join(' · ');
+   section.append(link(label+' ↗',url));
+  }
+  sections.push(section);
+ }
+ out.replaceChildren(...sections);
+ out.hidden=!sections.length;
+}
 function renderRelatedReports(out,p){
+ const benchmark=el('div');benchmark.dataset.planBenchmark=p.id;
+ renderPlanBenchmarkEvidence(benchmark,p);out.append(benchmark);
  const rows=journalRows.filter(r=>journalMatchesVendor(r,p));
  const local=rows.filter(r=>journalRegionMatches(r,p)),others=rows.filter(r=>!journalRegionMatches(r,p));
  for(const [label,reports,limit] of [['journalRelated',local,4],['journalOther',others,2]]){
@@ -111,6 +154,11 @@ function renderRelatedReports(out,p){
   out.append(section);
  }
 }
+document.addEventListener('atlas:billing-change',event=>{
+ const id=event.detail?.planId;if(!id||modal?.id!==id)return;
+ const out=$('dialog-body')?.querySelector('[data-plan-benchmark]');
+ if(out?.dataset.planBenchmark===id)renderPlanBenchmarkEvidence(out,modal);
+});
 document.getElementById('journal-clear').addEventListener('click',()=>{
  $('journal-author').value='';$('journal-market').value='';$('journal-search').value='';journalLimit=18;renderJournalList();
 });

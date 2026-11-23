@@ -14,6 +14,8 @@
 .journal-actions,.journal-profiles {display:flex;gap:.6rem 1.25rem;flex-wrap:wrap;align-items:center}
 .journal-actions a,.journal-profiles a,.journal-related a {color:#a1e0f0;text-underline-offset:.2em;font-size:.86rem}
 .journal-profiles {margin:2rem 0;color:#c8d2e3}.journal-related {margin-block:1.35rem}.journal-related a {display:block;margin-top:.5rem}
+.benchmark-sample {padding:.65rem .85rem;margin:.55rem 0;background:#122637;border:1px solid #426278;border-radius:.55rem}
+.benchmark-sample .journal-actions {margin:0;align-items:center}.benchmark-sample .journal-meta {margin:.2rem 0}.benchmark-sample a {margin:.18rem 0}
 #journal-more {min-height:42px;padding:.5rem 1rem;border-radius:6px;background:#bdc5fc;color:#141628;font-weight:700}
 @media(max-width:650px){#journal-controls {grid-template-columns:1fr 1fr;gap:.6rem}#journal-controls label:first-child {grid-column:span 2}.journal-entry {grid-template-columns:2.1rem minmax(0,1fr);column-gap:.5rem}.journal-entry-body {padding-inline-start:.65rem}.journal-day {font-size:1.1rem}}
 
