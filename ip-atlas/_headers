@@ -3,8 +3,16 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' https://stat.ripe.net; base-uri 'none'; object-src 'none'; form-action 'none'; frame-ancestors 'none'
-  X-Pitopone-Edition: atlas-2026.11-market-v14.9
+  X-Pitopone-Edition: atlas-2026.11-market-v14.10
 /
   Cache-Control: no-cache, must-revalidate
 /index.html
+  Cache-Control: no-cache, must-revalidate
+/speed
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self' https://speed.cloudflare.com https://speed4.pitopone.com https://speed6.pitopone.com; base-uri 'none'; object-src 'none'; form-action 'none'; frame-ancestors 'none'
+  Cache-Control: no-cache, must-revalidate
+/speed/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self' https://speed.cloudflare.com https://speed4.pitopone.com https://speed6.pitopone.com; base-uri 'none'; object-src 'none'; form-action 'none'; frame-ancestors 'none'
   Cache-Control: no-cache, must-revalidate

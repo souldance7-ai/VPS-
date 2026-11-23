@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0a0d19">
+  <meta name="description" content="PITOPONE 网络质量检测站。测量浏览器 HTTP 延迟、抖动、单请求与 16 路并行上传下载，并检查 IPv4／IPv6。">
+  <title>网络质量检测站 · PITOPONE</title>
+  <link rel="preconnect" href="https://speed.cloudflare.com" crossorigin>
+  <link rel="stylesheet" href="/speed/station.css?v=22a-f815cde35e">
+  <script defer src="/speed/station.js?v=22a-be242cd73a"></script>
+</head>
+<body>
+<a class="skip" href="#test">跳到测速</a>
+<header class="mast">
+  <div class="wrap mast-inner">
+    <a class="brand" href="/speed/"><i aria-hidden="true"></i>PITOPONE <span>/ SPEED</span></a>
+    <nav aria-label="工具导航"><a href="#test" aria-current="page">网络测速</a><a href="#readings">测量明细</a><a class="atlas-link" href="https://ip-guide.pitopone.com/">IP 选址图鉴 <span aria-hidden="true">↗</span></a></nav>
+  </div>
+</header>
+<main class="wrap" id="test">
+  <section class="intro" aria-labelledby="test-heading">
+    <div><h1 id="test-heading">网络质量检测站</h1><p>用浏览器查看延迟、抖动，以及单请求与 16 路并行的上下行表现。</p></div>
+    <div class="edge-readout"><span>Cloudflare 边缘机房</span><strong id="topColo">检测中</strong></div>
+  </section>
+  <section class="panel readings shared-report" id="sharedReport" aria-labelledby="shared-heading" hidden><div class="section-head"><h2 id="shared-heading">分享的测量结果</h2><button class="secondary" id="copySharedSummaryBtn" type="button">复制摘要</button></div><pre id="sharedSummary"></pre><p class="caption">分享者生成的测试摘要</p></section>
+  <div class="layout">
+    <div class="test-column">
+      <section class="panel instrument" aria-labelledby="controls-heading">
+        <div class="command">
+          <div class="command-text"><h2 id="controls-heading">选择测试方式</h2><p>延迟快测约 5 秒。完整测速约 90 秒，会消耗较多流量。</p></div>
+          <div class="protocol-selector" id="protocolSelector" data-mode="auto" role="group" aria-label="测速入口" hidden>
+            <button type="button" data-family="auto" aria-pressed="true">自动</button><button type="button" data-family="ipv4" aria-pressed="false">IPv4</button><button type="button" data-family="ipv6" aria-pressed="false">IPv6</button>
+          </div>
+          <div class="start-actions"><button class="secondary" id="quickBtn" type="button">延迟快测</button><button class="start" id="startBtn" type="button">开始完整测速 <span aria-hidden="true">→</span></button></div>
+        </div>
+        <div class="progress" role="progressbar" aria-label="测试进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="progress"></i></div>
+        <div class="test-state"><span class="state-dot" aria-hidden="true"></span><strong id="testStatus" role="status">准备就绪</strong><span id="serviceText">Cloudflare 边缘网络</span></div>
+        <div class="error" id="errorBox" role="status"></div>
+        <div class="gauges">
+          <article class="gauge-card download"><div class="gauge-head"><h3>下载速度</h3><span>图表量程 1 Gbps</span></div>
+            <div class="gauge-display"><svg class="gauge" viewBox="0 0 240 170" aria-hidden="true"><path class="track" d="M24 148 A96 96 0 0 1 216 148" pathLength="301.59"/><path id="dlArcPath" class="arc" d="M24 148 A96 96 0 0 1 216 148" pathLength="301.59"/><line id="dlNeedle" class="needle" x1="120" y1="148" x2="120" y2="72" transform="rotate(-90 120 148)"/><circle class="hub" cx="120" cy="148" r="4"/><text x="20" y="166">0</text><text x="105" y="38">250M</text><text x="208" y="166">1G</text></svg><div class="value"><span id="dlValue">—</span><small>Mbps</small></div></div>
+            <div class="state" id="dlState">等待完整测速</div>
+          </article>
+          <article class="gauge-card upload"><div class="gauge-head"><h3>上传速度</h3><span>图表量程 500 Mbps</span></div>
+            <div class="gauge-display"><svg class="gauge" viewBox="0 0 240 170" aria-hidden="true"><path class="track" d="M24 148 A96 96 0 0 1 216 148" pathLength="301.59"/><path id="ulArcPath" class="arc" d="M24 148 A96 96 0 0 1 216 148" pathLength="301.59"/><line id="ulNeedle" class="needle" x1="120" y1="148" x2="120" y2="72" transform="rotate(-90 120 148)"/><circle class="hub" cx="120" cy="148" r="4"/><text x="20" y="166">0</text><text x="105" y="38">125M</text><text x="201" y="166">500M</text></svg><div class="value"><span id="ulValue">—</span><small>Mbps</small></div></div>
+            <div class="state" id="ulState">等待完整测速</div>
+          </article>
+        </div>
+        <dl class="metrics">
+          <div><dt>空闲延迟</dt><dd id="pingValue">—<small>ms</small></dd></div>
+          <div><dt>抖动</dt><dd id="jitterValue">—<small>ms</small></dd></div>
+          <div><dt>下载负载延迟</dt><dd id="downLoadedValue">—<small>ms</small></dd></div>
+          <div><dt>上传负载延迟</dt><dd id="upLoadedValue">—<small>ms</small></dd></div>
+          <div><dt>HTTP 请求失败率</dt><dd id="lossValue">—<small>%</small></dd><small id="lossCount"></small></div>
+        </dl>
+      </section>
+      <section class="panel readings" id="readings" aria-labelledby="readings-heading">
+        <div class="section-head"><h2 id="readings-heading">测量明细</h2><span id="v19Clock">等待测试</span></div>
+        <div class="chart-box"><div class="chart-head"><h3>实时趋势</h3><div class="legend" aria-label="趋势图图例"><span><i class="dl-key"></i>下载</span><span><i class="ul-key"></i>上传</span><span><i class="ping-key"></i>延迟</span></div></div><canvas class="chart" id="chart" role="img" aria-label="速度和延迟随时间变化，左轴 Mbps，右轴 ms，可在下方查看数值明细。"></canvas><p class="caption">左轴 Mbps · 右轴 ms · 横轴测试时间</p></div>
+        <div class="phase-scroll" role="region" tabindex="0" aria-label="测试阶段数据，可横向滚动"><div class="v19-grid" id="v19Grid"></div></div>
+        <details class="method"><summary>如何看结果</summary><p>空闲延迟是浏览器到 Cloudflare 测速端点的 HTTP 往返时间。HTTP 请求失败率按浏览器请求计数。P90 表示 90% 的采样值位于该数值或以下。并行验证记录有实际传输的请求数与峰值在途请求数。</p></details>
+      </section>
+    </div>
+    <aside class="side" aria-label="连接详情与报告">
+      <section class="panel connection"><div class="section-head"><h2>当前连接</h2></div><div class="chips"><span class="chip" id="autoChip">检测中</span><span class="chip" id="countryChip">—</span></div>
+        <dl class="info"><div><dt>公网 IP</dt><dd id="currentIp">—</dd></div><div><dt>当前网络协议</dt><dd id="currentProtocol">—</dd></div><div><dt>地区</dt><dd id="location">—</dd></div><div hidden><dt>ASN 与运营商</dt><dd id="network">—</dd></div><div><dt>Cloudflare PoP</dt><dd id="serverInfo">—</dd></div></dl>
+      </section>
+      <section class="panel probes-panel"><h2>IPv4 / IPv6 探针</h2><div class="probes"><div class="probe" id="ipv4Card"><b>IPv4 <i class="lamp" aria-hidden="true"></i></b><p id="ipv4Info">检测中</p></div><div class="probe" id="ipv6Card"><b>IPv6 <i class="lamp" aria-hidden="true"></i></b><p id="ipv6Info">检测中</p></div></div><p class="caption probe-legacy"><a href="https://speed.pitopone.com/" target="_blank" rel="noopener noreferrer">旧站协议入口 ↗</a></p></section>
+      <section class="panel report-panel" id="shareCard"><h2>结果与分享</h2><p id="shareStatus" role="status">测试后可复制摘要、生成结果链接。完成完整测速后还可下载报告图片。</p>
+        <div class="share-actions"><button id="copySummaryBtn" type="button" disabled>复制摘要</button><button id="downloadShareBtn" type="button" disabled>下载图片</button></div>
+        <button id="exportBtn" class="secondary publish" type="button" disabled>生成分享链接</button>
+        <p class="caption">分享链接包含测试摘要，图片可另外下载。</p>
+        <div id="shareLinkField" class="share-link" hidden><label for="shareUrl">测试结果链接</label><input id="shareUrl" type="text" readonly><div class="share-actions"><button id="copyShareBtn" type="button">复制链接</button><a id="openShareBtn" target="_blank" rel="noopener noreferrer">打开报告 ↗</a></div></div>
+      </section>
+      <section class="panel counter-card" id="counterCard" hidden><h2>完整测试计数</h2><dl class="counter-grid"><div><dt>累计</dt><dd id="totalTests">—</dd></div><div><dt>今日</dt><dd id="todayTests">—</dd></div></dl><p class="caption" id="rankMessage"></p></section>
+    </aside>
+  </div>
+</main>
+<footer class="wrap footer"><span>PITOPONE Network Lab</span><a href="https://ip-guide.pitopone.com/">返回 IP 选址图鉴 ↗</a></footer>
+</body>
+</html>
