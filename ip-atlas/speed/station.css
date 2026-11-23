@@ -167,12 +167,13 @@ h1,h2,h3,p,dl,dd { margin:0; }
   font-size:13px;
 }
 
-#forumReport { padding:16px; }
+#forumReport { min-width:0; margin-top:16px; padding:16px; }
 #forumReport h2 { font-size:17px; }
 .forum-toolbar { display:flex; align-items:center; justify-content:space-between; gap:8px 12px; flex-wrap:wrap; }
 .forum-caption,.forum-status { margin:8px 0; color:var(--muted); font-size:12px; }
 .forum-preview {
   margin:10px 0;
+  min-width:0;
   max-width:100%;
   overflow-x:auto;
   padding:12px 14px;
@@ -180,7 +181,7 @@ h1,h2,h3,p,dl,dd { margin:0; }
   border-radius:8px;
   color:var(--ink);
   background:var(--inset);
-  font:12.5px/1.65 var(--mono);
+  font:clamp(11px,1.15vw,14px)/1.55 var(--mono);
   font-variant-numeric:tabular-nums;
 }
 .forum-editor { min-width:0; }

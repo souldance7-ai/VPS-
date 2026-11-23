@@ -24,6 +24,10 @@ const ENDPOINTS = {
   counter: 'counter.php',
   share: 'share-result.php'
 };
+const ATLAS_PROBE = '/speed/probe.txt';
+const PROBE_MARKER = 'PITOPONE-SPEED-PROBE';
+const MIN_LOADED_SAMPLES = 5;
+const LOADED_WARMUP_MS = 500;
 const PHASES = [
   {key:'latency', seconds:10, start:0, end:10},
   {key:'singleDl', direction:'download', threads:1, seconds:20, cap:3*1024**3, start:10, end:32},
@@ -34,6 +38,7 @@ const PHASES = [
 const QUICK_PHASE = {...PHASES[0], seconds:5, end:100};
 const FAMILY_HOSTS = {auto:'speed.pitopone.com', ipv4:'speed4.pitopone.com', ipv6:'speed6.pitopone.com'};
 const onAtlas = /^\/speed(?:\/|$)/.test(location.pathname);
+const latencyScope = onAtlas ? 'probeAtlas' : 'probeCloudflare';
 const currentFamily = Object.keys(FAMILY_HOSTS).find(key => FAMILY_HOSTS[key] === location.hostname) || 'auto';
 const progressbar = $('progress').parentElement;
 const familyButtons = [...$('protocolSelector').querySelectorAll('[data-family]')];
@@ -80,17 +85,22 @@ function renderBoard(active=''){
     const latency = phase.key === 'latency';
     const context = [`${phase.seconds} s`];
     if (phase.threads) context.push(t('httpRequests',{n:phase.threads}));
+    else context.push(t(latencyScope));
     if (r && phase.threads > 1) context.push(t('effective',{count:`${r.effectiveWorkers}/${phase.threads}`}),t('inFlight',{count:r.peakActiveRequests}));
     html += `<div class="v19-cell v19-phase ${style}">${t(phase.key)}<small>${context.join(' · ')}</small></div>`;
     for (const key of ['avg','peak','p90','loaded','jitter','probe']) {
       let value = '—', unit = latency || ['loaded','jitter'].includes(key) ? 'ms' : 'Mbps', cell = '';
       if (r && key === 'probe') {
-        value = latency ? `${fmt(r.loss)} %` : `${r.probeTimeouts}/${r.probeTotal}`;
-        unit = latency ? t('failedCount',r) : t('timeouts') + (r.probeValid ? '' : ' · ' + t('insufficient'));
-        cell = latency || (r.parallelVerified && !r.probeTimeouts) ? 'v19-loss' : 'v19-warn';
+        value = latency ? `${fmt(r.loss)} %` : t('probeSamples',{ok:r.probeSuccess,total:r.probeTotal});
+        const failures = t('probeFailures',{timeouts:r.probeTimeouts,errors:r.probeErrors});
+        unit = latency ? t('failedCount',r) : failures + (r.probeValid ? '' : ' · ' + t('insufficient'));
+        cell = latency || (r.probeValid && !r.probeTimeouts && !r.probeErrors) ? 'v19-loss' : 'v19-warn';
       } else if (r) {
         value = Number.isFinite(r[key]) ? fmt(r[key]) : latency && key === 'loaded' ? t('na') : t('insufficient');
         if (!Number.isFinite(r[key])) { unit = ''; cell = 'v19-na'; }
+        else if (!latency && ['loaded','jitter'].includes(key) && !r.probeValid) {
+          unit += ' · ' + t('sampleCount',{n:r.probeSuccess});cell = 'v19-warn';
+        }
       } else if (key === 'probe') unit = '';
       html += `<div class="v19-cell v19-value ${cell} ${style}"><b>${value}</b><small>${unit}</small></div>`;
     }
@@ -125,22 +135,36 @@ function formatNetwork(data) {
   return [asn, primary].filter(Boolean).join(' · ') + (known?.zh && known.zh !== primary ? '\n' + known.zh : '') || t('asnUnavailable');
 }
 
-async function probeOnce(timeout=1800){
-  const c=new AbortController();liveControllers.add(c);const timer=setTimeout(()=>c.abort(),timeout),start=performance.now();
-  try{const url=`${ENDPOINTS.ping}&r=${nonce()}`,response=await fetch(url,{cache:'no-store',signal:c.signal});if(!response.ok)throw Error(`HTTP ${response.status}`);await response.text();const entry=performance.getEntriesByName(url).slice(-1)[0];return{ok:true,ms:performance.now()-start,protocol:entry?.nextHopProtocol||'unknown'}}
-  catch(error){return{ok:false,timeout:error?.name==='AbortError',ms:performance.now()-start}}
-  finally{clearTimeout(timer);liveControllers.delete(c)}
+async function probeOnce(timeout=1800,phaseSignal){
+  const controller = new AbortController();
+  const signal = phaseSignal ? AbortSignal.any([phaseSignal,controller.signal]) : controller.signal;
+  liveControllers.add(controller);
+  const timer = setTimeout(() => controller.abort(),timeout);
+  const url = onAtlas ? `${ATLAS_PROBE}?r=${nonce()}` : `${ENDPOINTS.ping}&r=${nonce()}`;
+  const start = performance.now();
+  try {
+    const response = await fetch(url,{cache:'no-store',credentials:'omit',redirect:'error',priority:'high',signal});
+    if (!response.ok) throw Error(`HTTP ${response.status}`);
+    const body = await response.text();
+    if (onAtlas && body.trim() !== PROBE_MARKER) throw Error('Wrong HTTP probe body');
+    return {ok:true,ms:performance.now()-start};
+  } catch {
+    return {ok:false,canceled:phaseSignal?.aborted === true,timeout:controller.signal.aborted};
+  } finally {
+    clearTimeout(timer);
+    liveControllers.delete(controller);
+  }
 }
 
 async function runLatencyPhase(phase,token){
   const samples=[];let failed=0,total=0;const start=performance.now(),deadline=start+phase.seconds*1000;
   paintText('testStatus',() => currentMode === 'quick' ? t('quickBtn') : t('stageActive',{n:1,phase:t('latency')}));
-  paintText('serviceText','testingHttp');
+  paintText('serviceText',() => t('testingHttp',{target:t(latencyScope)}));
   paintRaw('v19Clock',phase.seconds.toFixed(1) + ' s');
   renderBoard(phase.key);
   while(!stopped&&token===runId&&performance.now()<deadline){const tick=performance.now(),p=await probeOnce(1800);total++;if(p.ok){samples.push(p.ms);chartSeries.lat.push({t:nowSec(),v:p.ms});const warmed=warmedSamples(samples);setMetric('pingValue',mean(warmed));setMetric('jitterValue',jitter(warmed));drawChart()}else failed++;const elapsed=performance.now()-start;setProgress(phase.start+(elapsed/(phase.seconds*1000))*(phase.end-phase.start));$('v19Clock').textContent=Math.max(0,(deadline-performance.now())/1000).toFixed(1)+'s';await sleep(Math.max(0,250-(performance.now()-tick)))}
   if(stopped||token!==runId)throw Error('STOPPED');if(samples.length<3)throw new MeasurementError('httpFailed',{ok:samples.length,total});
-  const warmed=warmedSamples(samples),httpAvg=mean(warmed);results[phase.key]={avg:httpAvg,peak:Math.max(...warmed),p90:percentile(warmed,.9),loaded:null,httpAvg,jitter:jitter(warmed),loss:total?failed/total*100:0,failed,total,referenceTarget:'Cloudflare browser HTTP',warmupDiscarded:samples.length-warmed.length};setMetric('pingValue',httpAvg);setMetric('jitterValue',results[phase.key].jitter);setMetric('lossValue',results[phase.key].loss,'%');paintText('lossCount','failedCount',{failed,total});paintText('serviceText','httpMeasured');renderBoard();return results[phase.key];
+  const warmed=warmedSamples(samples),httpAvg=mean(warmed);results[phase.key]={avg:httpAvg,peak:Math.max(...warmed),p90:percentile(warmed,.9),loaded:null,httpAvg,jitter:jitter(warmed),loss:total?failed/total*100:0,failed,total,referenceTarget:onAtlas?'Atlas edge HTTP probe':'Cloudflare speed endpoint',warmupDiscarded:samples.length-warmed.length};setMetric('pingValue',httpAvg);setMetric('jitterValue',results[phase.key].jitter);setMetric('lossValue',results[phase.key].loss,'%');paintText('lossCount','failedCount',{failed,total});paintText('serviceText','httpMeasured');renderBoard();return results[phase.key];
 }
 
 function markRequestStart(meter,workerId){meter.activeRequests++;meter.peakActiveRequests=Math.max(meter.peakActiveRequests,meter.activeRequests);meter.startedWorkers.add(workerId)}
@@ -164,21 +188,23 @@ function recordTransferFailure(meter,message,requestMb,generation){
 }
 
 async function streamDownload(blockMb,meter,workerId,deadline,token){
-  while(!stopped&&!meter.fatal&&token===runId&&performance.now()<deadline&&meter.bytes<meter.cap){
+  while(!stopped&&!meter.fatal&&!meter.controller.signal.aborted&&token===runId&&performance.now()<deadline&&meter.bytes<meter.cap){
     const controller=new AbortController();liveControllers.add(controller);
+    const signal=AbortSignal.any([meter.controller.signal,controller.signal]);
     const timeout = setTimeout(() => controller.abort(), Math.max(1,deadline-performance.now()));
     const requestMb=meter.blockMb,generation=meter.endpointGeneration,endpoint=meter.endpoint;
     markRequestStart(meter,workerId);
     try{
-      const url=endpoint==='cloudflare'?`${ENDPOINTS.download}?bytes=${requestMb*1024*1024}&r=${nonce()}`:`${ENDPOINTS.localDownload}?ckSize=${requestMb}&r=${nonce()}`,response=await fetch(url,{cache:'no-store',signal:controller.signal});
+      const url=endpoint==='cloudflare'?`${ENDPOINTS.download}?bytes=${requestMb*1024*1024}&r=${nonce()}`:`${ENDPOINTS.localDownload}?ckSize=${requestMb}&r=${nonce()}`,response=await fetch(url,{cache:'no-store',signal});
       if(!response.ok)throw Error(`HTTP ${response.status}`);if(!response.body)throw Error('HTTP 200 EMPTY BODY');
       const reader=response.body.getReader();let received=false;
       while(!stopped&&generation===meter.endpointGeneration&&token===runId&&performance.now()<deadline&&meter.bytes<meter.cap){
         const {done,value}=await reader.read();if(done)break;
+        if(signal.aborted||token!==runId||performance.now()>=deadline||meter.bytes>=meter.cap)break;
         if(value?.byteLength){if(!received){received=true;recordTransferSuccess(meter,requestMb,generation)}meter.bytes+=value.byteLength;meter.workerTotalBytes.set(workerId,(meter.workerTotalBytes.get(workerId)||0)+value.byteLength)}
       }
       if(generation!==meter.endpointGeneration||performance.now()>=deadline||meter.bytes>=meter.cap)controller.abort();else if(received){meter.completed++;const entry=performance.getEntriesByName(url).slice(-1)[0];if(entry?.nextHopProtocol)meter.protocols.add(entry.nextHopProtocol)}
-    }catch(error){if(!controller.signal.aborted&&performance.now()<deadline)recordTransferFailure(meter,error?.message||'FETCH ERROR',requestMb,generation);if(!meter.fatal)await sleep(250)}
+    }catch(error){if(!signal.aborted&&performance.now()<deadline){recordTransferFailure(meter,error?.message||'FETCH ERROR',requestMb,generation);if(!meter.fatal)await sleep(250);}}
     finally{clearTimeout(timeout);markRequestEnd(meter);liveControllers.delete(controller)}
   }
 }
@@ -197,13 +223,40 @@ function xhrUpload(blockMb,meter,workerId,deadline,token){
   })
 }
 
-async function loadedProbeLoop(meter,deadline,token){
-  const idleP90=results.latency?.p90||100,timeout=Math.max(3000,Math.min(8000,idleP90*20));
-  while(!stopped&&!meter.fatal&&token===runId&&performance.now()<deadline){const remaining=deadline-performance.now();if(remaining<750)break;const p=await probeOnce(Math.max(500,Math.min(timeout,remaining-150)));meter.probeTotal++;if(p.ok){meter.latencies.push(p.ms);chartSeries.lat.push({t:nowSec(),v:p.ms});drawChart()}else if(p.timeout)meter.probeTimeouts++;else meter.probeErrors++;await sleep(Math.min(350,Math.max(0,deadline-performance.now())))}
+function startLoadedProbes(meter,deadline,token) {
+  const phaseSignal = meter.controller.signal;
+  const timeout = Math.max(2500,Math.min(8000,(results.latency?.p90 || 100)*20));
+  const open = () => !phaseSignal.aborted && !stopped && !meter.fatal && token===runId &&
+    meter.bytes<meter.cap && performance.now()<deadline;
+  async function lane(delay) {
+    await sleep(LOADED_WARMUP_MS + delay);
+    while (open()) {
+      const remaining = deadline-performance.now();
+      if (remaining < 800) return;
+      if (!meter.bytes || !meter.activeRequests) {
+        await sleep(100);
+        continue;
+      }
+      const sent = performance.now();
+      const probe = await probeOnce(Math.min(timeout,remaining),phaseSignal);
+      // Reject late responses after the throughput window has closed. They are
+      // explicitly canceled and are not counted as network failures/timeouts.
+      if (!open() || probe.canceled) return;
+      meter.probeTotal++;
+      if (probe.ok) {
+        meter.latencies.push({sent,ms:probe.ms});
+        chartSeries.lat.push({t:nowSec(),v:probe.ms});
+        drawChart();
+      } else if (probe.timeout) meter.probeTimeouts++;
+      else meter.probeErrors++;
+      await sleep(Math.min(350,Math.max(0,deadline-performance.now())));
+    }
+  }
+  return Promise.all([lane(0),lane(325)]);
 }
 
 async function runTransferPhase(phase,token){
-  performance.clearResourceTimings();const start=performance.now(),deadline=start+phase.seconds*1000,blockMb=phase.direction==='download'?64:(phase.threads===1?8:4),meter={bytes:0,cap:phase.cap,blockMb,direction:phase.direction,threads:phase.threads,endpoint:'cloudflare',endpointGeneration:0,endpointSwitches:0,consecutiveErrors:0,downgradeCount:0,warningVisible:false,firstError:'',fatal:'',workerBytes:new Map(),workerRates:new Map(),workerTotalBytes:new Map(),startedWorkers:new Set(),activeRequests:0,peakActiveRequests:0,transferErrors:0,completed:0,protocols:new Set(),probeTimeouts:0,probeErrors:0,probeTotal:0,latencies:[]},samples=[];
+  performance.clearResourceTimings();const start=performance.now(),deadline=start+phase.seconds*1000,blockMb=phase.direction==='download'?64:(phase.threads===1?8:4),meter={bytes:0,cap:phase.cap,blockMb,direction:phase.direction,threads:phase.threads,controller:new AbortController(),endpoint:'cloudflare',endpointGeneration:0,endpointSwitches:0,consecutiveErrors:0,downgradeCount:0,warningVisible:false,firstError:'',fatal:'',workerBytes:new Map(),workerRates:new Map(),workerTotalBytes:new Map(),startedWorkers:new Set(),activeRequests:0,peakActiveRequests:0,transferErrors:0,completed:0,protocols:new Set(),probeTimeouts:0,probeErrors:0,probeTotal:0,latencies:[]},samples=[];
   const direction=phase.direction,isDl=direction==='download',stateId=isDl?'dlState':'ulState';
   paintText('testStatus',() => t('stageActive',{n:PHASES.indexOf(phase)+1,phase:t(phase.key)}));
   paintText('serviceText',() => t('testing',{phase:t(phase.key)}));
@@ -212,12 +265,19 @@ async function runTransferPhase(phase,token){
   renderBoard(phase.key);
   let lastMeterAt=start,lastMeterBytes=0,lastStatsAt=start,lastStatsBytes=0,lastChartAt=start;
   const meterTimer=setInterval(()=>{const now=performance.now(),deltaBytes=Math.max(0,meter.bytes-lastMeterBytes),deltaSeconds=Math.max(.001,(now-lastMeterAt)/1000),current=deltaBytes*8/1e6/deltaSeconds;lastMeterAt=now;lastMeterBytes=meter.bytes;if(current>0){setGauge(direction,current);if(now-lastChartAt>=500){(isDl?chartSeries.dl:chartSeries.ul).push({t:nowSec(),v:gaugeDisplay[direction]});lastChartAt=now;drawChart()}}if(now-lastStatsAt>=1000){const statsRate=Math.max(0,meter.bytes-lastStatsBytes)*8/1e6/Math.max(.001,(now-lastStatsAt)/1000);if(statsRate>0&&now-start>=2000)samples.push(statsRate);lastStatsAt=now;lastStatsBytes=meter.bytes}const elapsed=now-start;setProgress(phase.start+Math.min(1,elapsed/(phase.seconds*1000))*(phase.end-phase.start));$('v19Clock').textContent=Math.max(0,(deadline-now)/1000).toFixed(1)+'s'},250);
-  const probes=loadedProbeLoop(meter,deadline,token);const workers=Array.from({length:phase.threads},(_,i)=>direction==='download'?streamDownload(blockMb,meter,i,deadline,token):xhrUpload(blockMb,meter,i,deadline,token));
+  const workers=Array.from({length:phase.threads},(_,i)=>direction==='download'?streamDownload(blockMb,meter,i,deadline,token):xhrUpload(blockMb,meter,i,deadline,token));
+  const probes=startLoadedProbes(meter,deadline,token);
   while(!stopped&&!meter.fatal&&token===runId&&performance.now()<deadline&&meter.bytes<meter.cap)await sleep(100);
-  for(const xhr of [...liveXhrs])try{xhr.abort()}catch{};await Promise.allSettled(workers);await probes;clearInterval(meterTimer);
-  if(stopped||token!==runId)throw Error('STOPPED');const elapsed=Math.max(.001,(Math.min(performance.now(),deadline)-start)/1000),tailSeconds=Math.max(0,(Math.min(performance.now(),deadline)-lastStatsAt)/1000);if(tailSeconds>=.5){const tailRate=Math.max(0,meter.bytes-lastStatsBytes)*8/1e6/tailSeconds;if(tailRate>0)samples.push(tailRate)}if(meter.fatal)throw new MeasurementError(onAtlas?'edgeFailed':'allFailed');if(meter.bytes<1024*1024||!samples.length)throw new MeasurementError('invalidTransfer',{phase:phase.key,size:(meter.bytes/1024/1024).toFixed(1)});
-  const avg=meter.bytes*8/1e6/elapsed,peak=Math.max(...samples),probeValid=meter.latencies.length>=5,loaded=probeValid?mean(meter.latencies):null,loadedJitter=probeValid?jitter(meter.latencies):null,protocol=[...meter.protocols].join('+')||'browser pool',endpoint=meter.endpoint==='cloudflare'?'Cloudflare Edge':'Pitopone LibreSpeed',effectiveWorkers=[...meter.workerTotalBytes.values()].filter(bytes=>bytes>=1024*1024).length,requiredWorkers=phase.threads,parallelVerified=meter.startedWorkers.size>=requiredWorkers&&meter.peakActiveRequests>=requiredWorkers&&effectiveWorkers>=requiredWorkers;
-  results[phase.key]={avg,peak,p90:percentile(samples,.9),loaded,jitter:loadedJitter,probeTimeouts:meter.probeTimeouts,probeErrors:meter.probeErrors,probeTotal:meter.probeTotal,probeSuccess:meter.latencies.length,probeValid,bytes:meter.bytes,completed:meter.completed,protocol,endpoint,threads:phase.threads,startedWorkers:meter.startedWorkers.size,effectiveWorkers,peakActiveRequests:meter.peakActiveRequests,parallelVerified,transferErrors:meter.transferErrors,downgradeCount:meter.downgradeCount,endpointSwitches:meter.endpointSwitches,blockMb:meter.blockMb};
+  const transferEnd=performance.now();
+  meter.controller.abort();
+  clearInterval(meterTimer);
+  for(const xhr of [...liveXhrs])try{xhr.abort()}catch{};await Promise.allSettled(workers);await probes;
+  if(stopped||token!==runId)throw Error('STOPPED');const elapsed=Math.max(.001,(Math.min(transferEnd,deadline)-start)/1000),tailSeconds=Math.max(0,(Math.min(transferEnd,deadline)-lastStatsAt)/1000);if(tailSeconds>=.5){const tailRate=Math.max(0,meter.bytes-lastStatsBytes)*8/1e6/tailSeconds;if(tailRate>0)samples.push(tailRate)}if(meter.fatal)throw new MeasurementError(onAtlas?'edgeFailed':'allFailed');if(meter.bytes<1024*1024||!samples.length)throw new MeasurementError('invalidTransfer',{phase:phase.key,size:(meter.bytes/1024/1024).toFixed(1)});
+  const latencySamples=meter.latencies.sort((a,b)=>a.sent-b.sent).map(sample=>sample.ms);
+  const probeSuccess=latencySamples.length,probeValid=probeSuccess>=MIN_LOADED_SAMPLES;
+  const loaded=probeSuccess?mean(latencySamples):null,loadedJitter=jitter(latencySamples);
+  const avg=meter.bytes*8/1e6/elapsed,peak=Math.max(...samples),protocol=[...meter.protocols].join('+')||'browser pool',endpoint=meter.endpoint==='cloudflare'?'Cloudflare Edge':'Pitopone LibreSpeed',effectiveWorkers=[...meter.workerTotalBytes.values()].filter(bytes=>bytes>=1024*1024).length,requiredWorkers=phase.threads,parallelVerified=meter.startedWorkers.size>=requiredWorkers&&meter.peakActiveRequests>=requiredWorkers&&effectiveWorkers>=requiredWorkers;
+  results[phase.key]={avg,peak,p90:percentile(samples,.9),loaded,jitter:loadedJitter,probeTimeouts:meter.probeTimeouts,probeErrors:meter.probeErrors,probeTotal:meter.probeTotal,probeSuccess,probeValid,referenceTarget:results.latency.referenceTarget,bytes:meter.bytes,completed:meter.completed,protocol,endpoint,threads:phase.threads,startedWorkers:meter.startedWorkers.size,effectiveWorkers,peakActiveRequests:meter.peakActiveRequests,parallelVerified,transferErrors:meter.transferErrors,downgradeCount:meter.downgradeCount,endpointSwitches:meter.endpointSwitches,blockMb:meter.blockMb};
   setMetric(isDl?'downLoadedValue':'upLoadedValue',loaded);
   const row = results[phase.key];
   setGauge(direction,row.p90);
@@ -479,7 +539,7 @@ function createReport(resultImageUrl=''){
     const tested = resultSnapshot ? new Date(resultSnapshot.timestamp) : new Date();
     x.fillText(tested.toLocaleString(window.SpeedLocale?.localeTag,{hour12:false}),1160,47);
     x.fillStyle='#6f8da2';x.font='700 10px sans-serif';x.fillText(location.host + (onAtlas ? '/speed/' : '/'),1160,67);x.textAlign='left';
-    const badges = [['latency','#403369'],[onAtlas?'reportEndpoint':'reportDual','#365263'],['reportParallel','#26494b']];
+    const badges = [[latencyScope,'#403369'],[onAtlas?'reportEndpoint':'reportDual','#365263'],['reportParallel','#26494b']];
     badges.forEach(([key,color],i)=>{const px=40+i*373;panel(px,97,366,35,color,'rgba(255,255,255,.13)');x.fillStyle='#eef8fe';x.font='800 11px sans-serif';x.fillText(t(key),px+14,119);});
     const cols=[40,292,436,580,724,868,1012],widths=[252,144,144,144,144,144,148];
     ['phase','average','peak','P90','loaded','jitter','probe'].forEach((key,i)=>{panel(cols[i],140,widths[i]-5,30,'#0f2a3d');x.fillStyle='#8eacbf';x.font='800 9px sans-serif';x.fillText(t(key),cols[i]+10,159);});
@@ -490,18 +550,21 @@ function createReport(resultImageUrl=''){
       x.fillStyle='#8aa1b4';x.font='700 8px sans-serif';
       const context = [`${phase.seconds} s`];
       if (r?.endpoint) context.push(r.endpoint);
+      if (r && !latency) context.push(t('effective',{count:`${r.effectiveWorkers}/${r.threads}`}),t('inFlight',{count:r.peakActiveRequests}));
       x.fillText(ellipsis(context.join(' · '),224),51,y+39);
       ['avg','peak','p90','loaded','jitter'].forEach((key,i)=>{
         const value = r?.[key], shown = Number.isFinite(value) ? fmt(value) : latency && key==='loaded' ? t('na') : '—';
         x.fillStyle='#eef7fc';x.font='800 18px sans-serif';x.fillText(shown,cols[i+1]+10,y+24);
         if (!Number.isFinite(value)) return;
         x.fillStyle='#8aa1b4';x.font='700 8px sans-serif';
-        x.fillText(latency||['loaded','jitter'].includes(key)?'ms':'Mbps',cols[i+1]+10,y+41);
+        const loadCell=['loaded','jitter'].includes(key);
+        const unit=latency||loadCell?'ms':'Mbps';
+        x.fillText(!latency&&loadCell&&!r.probeValid?unit+' · '+t('sampleCount',{n:r.probeSuccess}):unit,cols[i+1]+10,y+41);
       });
-      x.fillStyle=latency||r?.parallelVerified?'#69e1db':'#ffca55';x.font='800 18px sans-serif';
-      x.fillText(latency?`${fmt(r?.loss)} %`:`${r?.effectiveWorkers ?? '—'}/${r?.threads || phase.threads}`,cols[6]+10,y+24);
+      x.fillStyle=latency||r?.probeValid?'#69e1db':'#ffca55';x.font='800 18px sans-serif';
+      x.fillText(latency?`${fmt(r?.loss)} %`:`${r?.probeSuccess ?? '—'}/${r?.probeTotal ?? '—'}`,cols[6]+10,y+24);
       x.fillStyle='#8aa1b4';x.font='700 8px sans-serif';
-      x.fillText(latency?t('failedCount',r):t('inFlight',{count:r?.peakActiveRequests ?? '—'}),cols[6]+10,y+41);
+      x.fillText(ellipsis(latency?t('failedCount',r):t('probeFailures',{timeouts:r?.probeTimeouts ?? '—',errors:r?.probeErrors ?? '—'}),124),cols[6]+10,y+41);
     });
     panel(40,472,1120,121,'rgba(7,25,40,.96)','rgba(75,190,242,.35)');
     x.fillStyle='#69e1db';x.font='900 10px sans-serif';x.fillText(t('connectionReport'),53,491);
@@ -597,7 +660,7 @@ function buildSummary(includeIp = true) {
   if (!latency || !lastCompletedMode) return '';
   const lines = [
     'PITOPONE ' + t('title') + ' · ' + t(lastCompletedMode === 'full' ? 'fullSummary' : 'quickSummary'),
-    latencySummary(latency.avg,latency.jitter,latency.failed,latency.total)
+    latencySummary(latency.avg,latency.jitter,latency.failed,latency.total,latencyScope)
   ];
   if (lastCompletedMode === 'full') {
     lines.push(...transferSummary(results.singleDl.avg,results.singleUl.avg,results.multiDl.avg,results.multiUl.avg,
@@ -607,8 +670,8 @@ function buildSummary(includeIp = true) {
   return lines.join('\n');
 }
 
-function latencySummary(latency,jitterMs,failed,total) {
-  return `${t('latency')} ${fmt(latency)} ms · ${t('jitter')} ${fmt(jitterMs)} ms · ${t('failedCount',{failed,total})}`;
+function latencySummary(latency,jitterMs,failed,total,target) {
+  return `${t(target)} ${fmt(latency)} ms · ${t('jitter')} ${fmt(jitterMs)} ms · ${t('failedCount',{failed,total})}`;
 }
 function transferSummary(singleDl,singleUl,multiDl,multiUl,loadedDl,loadedUl,workersDl,workersUl) {
   return [
@@ -627,7 +690,7 @@ const transferMetrics = ['avg','loaded','effectiveWorkers'];
 const compactNumber = value => Number.isFinite(value) ? Math.round(value*100)/100 : null;
 
 function atlasShareSnapshot() {
-  const data = [1, lastCompletedMode === 'full' ? 1 : 0, ...shareMetrics.map(key => compactNumber(results.latency[key]))];
+  const data = [2, lastCompletedMode === 'full' ? 1 : 0, ...shareMetrics.map(key => compactNumber(results.latency[key]))];
   if (data[1]) for (const direction of transferKeys) data.push(...transferMetrics.map(key => compactNumber(results[direction][key])));
   return data;
 }
@@ -641,10 +704,11 @@ function readAtlasShare() {
   const [version,full,latency,jitterMs,failed,total] = data;
   const number = (value,max) => Number.isFinite(value) && value >= 0 && value <= max;
   const nullable = (value,max) => value === null || number(value,max);
-  if (version !== 1 || ![0,1].includes(full) || data.length !== (full ? 18 : 6) ||
+  if (![1,2].includes(version) || ![0,1].includes(full) || data.length !== (full ? 18 : 6) ||
     !number(latency,120000) || !nullable(jitterMs,120000) || !Number.isInteger(failed) ||
     !Number.isInteger(total) || total < 1 || total > 500 || failed < 0 || failed > total) return '';
-  const lines = [t(full ? 'sharedFull' : 'sharedQuick'),latencySummary(latency,jitterMs,failed,total)];
+  const target = version === 2 ? 'probeAtlas' : 'probeCloudflare';
+  const lines = [t(full ? 'sharedFull' : 'sharedQuick'),latencySummary(latency,jitterMs,failed,total,target)];
   if (full) {
     for (let offset = 6; offset < data.length; offset += 3) {
       if (!number(data[offset],10000000) || !nullable(data[offset+1],120000) ||

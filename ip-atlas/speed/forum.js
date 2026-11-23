@@ -10,55 +10,63 @@
       caption:'复制后贴到 NodeSeek 正文的 Markdown 编辑器。', edit:'编辑 Markdown 源码',
       hint:'\\x1b 表示颜色控制符。复制时会自动转回 ANSI。', preview:'ANSI 预览', copied:'已复制，可直接贴到 NodeSeek。',
       copyFailed:'浏览器未允许自动复制。已选中论坛源码，可手动复制。', empty:'请输入要复制的内容。',
-      time:'测试时间', network:'ASN 网络', scope:'测速范围', scopeValue:'浏览器到 Cloudflare 测速端点 · HTTP',
-      quick:'延迟快测', full:'五阶段完整测量', idle:'空闲 HTTP 延迟', singleDl:'单请求下载', singleUl:'单请求上传',
-      multiDl:'16 路并行下载', multiUl:'16 路并行上传', dl:'下载平均速度', ul:'上传平均速度',
-      avg:'平均', peak:'峰值', loaded:'负载延迟', jitter:'抖动', failure:'HTTP 请求失败率',
-      effective:'有效请求', inFlight:'峰值在途', probe:'负载探测超时', weak:'并行样本不足', missing:'未测／样本不足',
+      time:'测试时间', network:'ASN 网络', scope:'测速范围', scopeValue:'延迟 → Atlas 同站 Cloudflare 边缘 · 传输 → Cloudflare Speed',
+      quick:'延迟快测', full:'五阶段完整测量', idle:'空闲 HTTP 延迟', quality:'空闲稳定性', single:'单请求', multi:'16 路并行', dl:'下载', ul:'上传',
+      avg:'平均', peak:'峰值', loaded:'负载延迟', jitter:'抖动', failure:'HTTP 失败', latency:'延迟', scales:'标尺', ratio:'比例',
+      effective:'有效并发', launched:'已启动', inFlight:'峰值在途', probe:'探测成功', timeout:'探测超时', probeErrors:'其他探测失败',
+      bytes:'传输量', requests:'完成请求', transferErrors:'传输错误', downgraded:'降档次数', fallback:'切换端点', block:'请求块大小',
+      weak:'并行样本不足', low:'少量探测，仅供参考', missing:'未测／样本不足',
     },
     tc: {
       title:'R4 網路品質實測', action:'複製為 NodeSeek 格式', reset:'還原產生版本',
       caption:'複製後貼到 NodeSeek 正文的 Markdown 編輯器。', edit:'編輯 Markdown 原始碼',
       hint:'\\x1b 代表顏色控制字元。複製時會自動轉回 ANSI。', preview:'ANSI 預覽', copied:'已複製，可直接貼到 NodeSeek。',
       copyFailed:'瀏覽器未允許自動複製。已選取論壇原始碼，可手動複製。', empty:'請輸入要複製的內容。',
-      time:'測試時間', network:'ASN 網路', scope:'測速範圍', scopeValue:'瀏覽器到 Cloudflare 測速端點 · HTTP',
-      quick:'延遲快測', full:'五階段完整測量', idle:'空閒 HTTP 延遲', singleDl:'單請求下載', singleUl:'單請求上傳',
-      multiDl:'16 路並行下載', multiUl:'16 路並行上傳', dl:'下載平均速度', ul:'上傳平均速度',
-      avg:'平均', peak:'峰值', loaded:'負載延遲', jitter:'抖動', failure:'HTTP 請求失敗率',
-      effective:'有效請求', inFlight:'峰值在途', probe:'負載探測逾時', weak:'並行樣本不足', missing:'未測／樣本不足',
+      time:'測試時間', network:'ASN 網路', scope:'測速範圍', scopeValue:'延遲 → Atlas 同站 Cloudflare 邊緣 · 傳輸 → Cloudflare Speed',
+      quick:'延遲快測', full:'五階段完整測量', idle:'空閒 HTTP 延遲', quality:'空閒穩定性', single:'單請求', multi:'16 路並行', dl:'下載', ul:'上傳',
+      avg:'平均', peak:'峰值', loaded:'負載延遲', jitter:'抖動', failure:'HTTP 失敗', latency:'延遲', scales:'刻度', ratio:'比率',
+      effective:'有效並行', launched:'已啟動', inFlight:'峰值在途', probe:'探測成功', timeout:'探測逾時', probeErrors:'其他探測失敗',
+      bytes:'傳輸量', requests:'完成請求', transferErrors:'傳輸錯誤', downgraded:'降檔次數', fallback:'切換端點', block:'請求區塊大小',
+      weak:'並行樣本不足', low:'探測樣本少，僅供參考', missing:'未測／樣本不足',
     },
     en: {
       title:'R4 Network Quality Test', action:'Copy NodeSeek format', reset:'Reset to generated report',
       caption:'Paste into the Markdown editor in the body of a NodeSeek post.', edit:'Edit Markdown source',
       hint:'\\x1b marks a color control character. Copy converts it back to ANSI.', preview:'ANSI preview', copied:'Copied. Paste directly into NodeSeek.',
       copyFailed:'The browser blocked automatic copying. The source is selected for manual copying.', empty:'Enter some text to copy.',
-      time:'Test time', network:'ASN network', scope:'Measurement scope', scopeValue:'Browser to Cloudflare speed endpoint · HTTP',
-      quick:'Quick latency test', full:'Five-stage test', idle:'Idle HTTP latency', singleDl:'Single-request download', singleUl:'Single-request upload',
-      multiDl:'16-request download', multiUl:'16-request upload', dl:'Average download speed', ul:'Average upload speed',
-      avg:'Mean', peak:'Peak', loaded:'Loaded latency', jitter:'Jitter', failure:'HTTP request failures',
-      effective:'Effective requests', inFlight:'Peak in flight', probe:'Loaded probe timeouts', weak:'Insufficient parallel samples', missing:'Untested / insufficient data',
+      time:'Test time', network:'ASN network', scope:'Scope', scopeValue:'Latency → Atlas Cloudflare edge · Transfer → Cloudflare Speed',
+      quick:'Quick latency test', full:'Five-stage test', idle:'Idle HTTP latency', quality:'Idle stability', single:'Single request', multi:'16 parallel requests', dl:'Download', ul:'Upload',
+      avg:'Mean', peak:'Peak', loaded:'Loaded', jitter:'Jitter', failure:'HTTP failed', latency:'Latency', scales:'Scales', ratio:'Ratio',
+      effective:'Effective', launched:'Started', inFlight:'Peak in flight', probe:'Probes OK', timeout:'Timeouts', probeErrors:'Probe errors',
+      bytes:'Transferred', requests:'Requests done', transferErrors:'Transfer errors', downgraded:'Size reductions', fallback:'Endpoint shifts', block:'Request block',
+      weak:'Insufficient parallel samples', low:'Few probes; indicative only', missing:'Untested / insufficient data',
     },
     ja: {
       title:'R4 ネットワーク品質測定', action:'NodeSeek 形式でコピー', reset:'自動生成版に戻す',
       caption:'コピーした内容を NodeSeek の投稿本文の Markdown エディターに貼り付けます。', edit:'Markdown ソースを編集',
       hint:'\\x1b は色の制御文字です。コピー時に ANSI に戻します。', preview:'ANSI プレビュー', copied:'コピーしました。NodeSeek に貼り付けられます。',
       copyFailed:'自動コピーが許可されませんでした。選択されたソースを手動でコピーできます。', empty:'コピーする内容を入力してください。',
-      time:'測定時刻', network:'ASN ネットワーク', scope:'測定範囲', scopeValue:'ブラウザーから Cloudflare の測定先まで · HTTP',
-      quick:'簡易レイテンシー測定', full:'5 段階の測定', idle:'無負荷時の HTTP 遅延', singleDl:'単一リクエストのダウンロード', singleUl:'単一リクエストのアップロード',
-      multiDl:'16 並列ダウンロード', multiUl:'16 並列アップロード', dl:'平均ダウンロード速度', ul:'平均アップロード速度',
-      avg:'平均', peak:'最大', loaded:'負荷時遅延', jitter:'ジッター', failure:'HTTP リクエストの失敗率',
-      effective:'有効リクエスト', inFlight:'最大同時実行数', probe:'負荷時プローブのタイムアウト', weak:'並列サンプル不足', missing:'未測定／サンプル不足',
+      time:'測定時刻', network:'ASN ネットワーク', scope:'測定範囲', scopeValue:'遅延 → Atlas の Cloudflare エッジ · 転送 → Cloudflare Speed',
+      quick:'簡易レイテンシー測定', full:'5 段階の測定', idle:'無負荷時の HTTP 遅延', quality:'無負荷時の安定性', single:'単一リクエスト', multi:'16 並列', dl:'ダウンロード', ul:'アップロード',
+      avg:'平均', peak:'最大', loaded:'負荷時遅延', jitter:'ジッター', failure:'HTTP 失敗', latency:'遅延', scales:'目盛り', ratio:'割合',
+      effective:'有効', launched:'開始済み', inFlight:'最大同時実行', probe:'プローブ成功', timeout:'タイムアウト', probeErrors:'その他の失敗',
+      bytes:'転送量', requests:'完了数', transferErrors:'転送エラー', downgraded:'サイズ縮小', fallback:'測定先切替', block:'リクエスト容量',
+      weak:'並列サンプル不足', low:'サンプル少数（参考値）', missing:'未測定／サンプル不足',
     },
   };
 
-  const phases = ['latency', 'singleDl', 'singleUl', 'multiDl', 'multiUl'];
+  const transferPhases = ['singleDl', 'singleUl', 'multiDl', 'multiUl'];
   const escape = '\u001b';
   const resetColor = `${escape}[0m`;
   const color = (code, text) => `${escape}[${code}m${text}${resetColor}`;
   const indexed = (code, text) => color(`38;5;${code}`, text);
-  const downloadRamp = [24, 31, 38, 44, 50, 87];
-  const uploadRamp = [54, 55, 92, 129, 135, 177];
-  const barWidth = 20;
+  const downloadRamp = [31, 38, 44, 50, 87, 123];
+  const uploadRamp = [98, 99, 135, 141, 177, 219];
+  const latencyRamp = [136, 172, 208, 214, 222, 229];
+  const jitterRamp = [69, 75, 81, 111, 117, 153];
+  const countRamp = [35, 41, 42, 48, 85, 121];
+  const errorRamp = [131, 167, 203, 209, 216, 224];
+  const barWidth = 10;
 
   function element(tag, id, className) {
     const node = document.createElement(tag);
@@ -83,7 +91,7 @@
   source.setAttribute('aria-labelledby', summary.id = 'forumSourceHeading');
   source.rows = 11;
   source.spellcheck = false;
-  source.maxLength = 12000;
+  source.maxLength = 24000;
   source.wrap = 'off';
   editor.append(summary, hint, source);
   const status = element('p', 'forumStatus', 'caption forum-status');
@@ -126,50 +134,128 @@
     return verified ? cleanNetwork(value) : '';
   }
 
-  function scaleOf(rows) {
-    const largest = Math.max(0, ...rows.map(row => row?.avg).filter(supported));
-    if (largest <= 0) return 0;
+  function scaleOf(values) {
+    const largest = Math.max(0, ...values.filter(supported));
+    if (largest <= 0) return 1;
     const magnitude = 10 ** Math.floor(Math.log10(largest));
     return Number((Math.ceil(largest / magnitude) * magnitude).toPrecision(10));
   }
 
-  function speedBar(value, limit, ramp) {
-    if (!supported(value)) return indexed(245, '—');
-    const units = value > 0 && limit > 0 ? Math.max(1, Math.min(barWidth, Math.round(value / limit * barWidth))) : 0;
+  function gradient(value, max, ramp) {
+    if (!supported(value) || !(max > 0)) return '';
+    const units = value > 0 ? Math.max(1, Math.min(barWidth, Math.round(value / max * barWidth))) : 0;
     let chart = '';
     for (let i = 0; i < ramp.length; i++) {
       const from = Math.ceil(i * barWidth / ramp.length);
       const to = Math.min(units, Math.ceil((i + 1) * barWidth / ramp.length));
-      if (from < to) chart += indexed(ramp[i], '█'.repeat(to - from));
+      if (from < to) chart += `${escape}[38;5;${ramp[i]}m${'█'.repeat(to - from)}`;
     }
-    if (units < barWidth) chart += indexed(238, '░'.repeat(barWidth - units));
-    return `${chart}  ${shown(value, 'Mbps')}`;
+    if (units < barWidth) chart += `${escape}[38;5;238m${'░'.repeat(barWidth - units)}`;
+    return `${chart}${resetColor}`;
   }
 
-  function speedLines(dictionary, report, keys, direction, ramp) {
-    const rows = keys.map(key => report.phases[key]);
-    const limit = scaleOf(rows);
-    const range = limit > 0 ? ` · 0–${limit} Mbps` : '';
-    const chart = rows.map((row, index) => `${speedBar(row?.avg, limit, ramp)}  ${dictionary[keys[index]]}`);
-    return [indexed(ramp.at(-1), `${dictionary[direction]}${range}`), ...chart];
+  function cells(value) {
+    let width = 0;
+    for (const c of value.replace(/\u001b\[[\d;]*m/g, '')) {
+      if (/\p{Mark}|\p{Format}/u.test(c)) continue;
+      const code = c.codePointAt(0);
+      const wide = (code >= 0x1100 && code <= 0x115f) || (code >= 0x2e80 && code <= 0xa4cf) ||
+        (code >= 0xac00 && code <= 0xd7a3) || (code >= 0xf900 && code <= 0xfaff) ||
+        (code >= 0xfe10 && code <= 0xfe6f) || (code >= 0xff01 && code <= 0xff60) ||
+        (code >= 0xffe0 && code <= 0xffe6) || (code >= 0x20000 && code <= 0x3fffd);
+      width += wide ? 2 : 1;
+    }
+    return width;
   }
 
-  function phaseLines(dictionary, report, key) {
-    const row = report.phases[key];
-    const title = color('1;96', dictionary[key === 'latency' ? 'idle' : key]);
-    if (!row) return [title, indexed(245, dictionary.missing)];
-    const idle = key === 'latency';
-    const unit = idle ? 'ms' : 'Mbps';
-    const metrics = `${dictionary.avg}  ${shown(row.avg, unit)}  ·  ${dictionary.peak}  ${shown(row.peak, unit)}  ·  P90  ${shown(row.p90, unit)}`;
-    const jitter = `${dictionary.jitter}  ${shown(row.jitter, 'ms')}`;
-    if (idle) {
-      const failure = `${dictionary.failure}  ${shown(row.loss, '%')}  (${count(row.failed, row.total)})`;
-      return [title, metrics, `${jitter}  ·  ${failure}`];
+  const padRight = (value, width) => value + ' '.repeat(Math.max(0, width - cells(value)));
+  const padLeft = (value, width) => ' '.repeat(Math.max(0, width - cells(value))) + value;
+  const widest = values => Math.max(0, ...values.map(cells));
+  const measure = (label, value, unit, max, ramp) => [label, shown(value, unit), gradient(value, max, ramp)];
+  const tally = (label, value, max, ramp) => [label, supported(value) ? String(value) : '—', gradient(value, max, ramp)];
+  const ratio = (label, part, whole, ramp) => [label, count(part, whole), gradient(supported(part) ? part : null, whole, ramp)];
+  const range = (max, unit) => `0–${max} ${unit}`;
+
+  function formatColumn(rows) {
+    const readings = rows.filter(Array.isArray);
+    const labelWidth = widest(readings.map(row => row[0]));
+    const numberWidth = widest(readings.map(row => row[1]));
+    return rows.map(row => Array.isArray(row)
+      ? `${padRight(row[0], labelWidth)}  ${padLeft(row[1], numberWidth)}${row[2] ? `  ${row[2]}` : ''}` : row);
+  }
+
+  function layOutColumns(pairs) {
+    const leftWidth = widest(pairs.flatMap(pair => pair[0]));
+    return pairs.flatMap(([left, right], index) => {
+      const lines = Array.from({length:Math.max(left.length, right.length)}, (_, i) => {
+        if (!right[i]) return left[i] || '';
+        return `${padRight(left[i] || '', leftWidth)} ${indexed(240, '|')} ${right[i]}`;
+      });
+      return index ? ['', ...lines] : lines;
+    });
+  }
+
+  function idleColumns(dictionary, row, maxLatency, maxJitter) {
+    const successful = supported(row.total) && supported(row.failed) && row.total >= row.failed ? row.total - row.failed : null;
+    const failedText = `${shown(row.loss, '%')}${supported(row.total) && supported(row.failed) ? ` (${count(row.failed, row.total)})` : ''}`;
+    const latency = color('1;96', dictionary.idle);
+    const quality = color('1;96', dictionary.quality);
+    return [
+      formatColumn([latency,
+        measure(dictionary.avg, row.avg, 'ms', maxLatency, latencyRamp),
+        measure(dictionary.peak, row.peak, 'ms', maxLatency, latencyRamp),
+        measure('P90', row.p90, 'ms', maxLatency, latencyRamp),
+      ]),
+      formatColumn([quality,
+        measure(dictionary.jitter, row.jitter, 'ms', maxJitter, jitterRamp),
+        [dictionary.failure, failedText, gradient(row.loss, 100, errorRamp)],
+        ratio(dictionary.probe, successful, row.total, countRamp),
+      ]),
+    ];
+  }
+
+  function transferColumns(dictionary, left, right, label, limits) {
+    const counters = [
+      ['bytes', 'bytes', 'MiB'], ['completed', 'requests'], ['transferErrors', 'transferErrors'],
+      ['downgradeCount', 'downgraded'], ['endpointSwitches', 'fallback'], ['blockMb', 'block', 'MiB'],
+    ].filter(([property]) => supported(left?.[property]) || supported(right?.[property]));
+    const volumes = [left?.bytes, right?.bytes].filter(supported).map(value => value / 1048576);
+    const countersScale = new Map(counters.map(([property]) => [property, scaleOf(
+      property === 'bytes' ? volumes : [left?.[property], right?.[property]],
+    )]));
+
+    function column(row, mode, speedMax, ramp) {
+      const direction = `${mode === 'dl' ? '↓' : '↑'} ${dictionary[mode]} · ${range(speedMax, 'Mbps')}`;
+      const title = indexed(ramp.at(-1), direction);
+      const phase = color('1;96', dictionary[label]);
+      if (!row) return [title, phase, indexed(245, dictionary.missing)];
+      const start = [title, phase,
+        measure(dictionary.avg, row.avg, 'Mbps', speedMax, ramp),
+        measure(dictionary.peak, row.peak, 'Mbps', speedMax, ramp),
+        measure('P90', row.p90, 'Mbps', speedMax, ramp),
+        measure(dictionary.loaded, row.loaded, 'ms', limits.latency, latencyRamp),
+        measure(dictionary.jitter, row.jitter, 'ms', limits.jitter, jitterRamp),
+        ratio(dictionary.probe, row.probeSuccess, row.probeTotal, countRamp),
+        ratio(dictionary.timeout, row.probeTimeouts, row.probeTotal, errorRamp),
+        ratio(dictionary.probeErrors, row.probeErrors, row.probeTotal, errorRamp),
+        ratio(dictionary.effective, row.effectiveWorkers, row.threads, countRamp),
+        ratio(dictionary.launched, row.startedWorkers, row.threads, countRamp),
+        ratio(dictionary.inFlight, row.peakActiveRequests, row.threads, countRamp),
+      ];
+      for (const [property, key, unit] of counters) {
+        const value = row[property];
+        const max = countersScale.get(property);
+        const tone = property === 'transferErrors' ? errorRamp : ramp;
+        if (unit) start.push(measure(dictionary[key], property === 'bytes' && supported(value) ? value / 1048576 : value, unit, max, tone));
+        else start.push(tally(dictionary[key], value, max, tone));
+      }
+      const low = row.probeSuccess > 0 && row.probeSuccess < 5;
+      const parallelMissing = row.threads > 1 && row.parallelVerified === false;
+      if (low) start.push(indexed(220, `${dictionary.low} (${count(row.probeSuccess, row.probeTotal)})`));
+      if (parallelMissing) start.push(indexed(220, dictionary.weak));
+      return formatColumn(start);
     }
-    const parallel = `${dictionary.effective}  ${count(row.effectiveWorkers, row.threads)}  ·  ${dictionary.inFlight}  ${count(row.peakActiveRequests, row.threads)}`;
-    const verdict = row.threads > 1 && row.parallelVerified === false ? `  ·  ${indexed(220, dictionary.weak)}` : '';
-    const probe = `${dictionary.probe}  ${count(row.probeTimeouts, row.probeTotal)}`;
-    return [title, metrics, `${dictionary.loaded}  ${shown(row.loaded, 'ms')}  ·  ${jitter}`, `${parallel}  ·  ${probe}${verdict}`];
+    return [column(left, 'dl', limits.dl, downloadRamp), column(right, 'ul', limits.ul, uploadRamp)];
   }
 
   function generate(report) {
@@ -184,11 +270,24 @@
     if (date) lines.push(indexed(247, `${dictionary.time}  ${date} (UTC+8)`));
     lines.push(indexed(247, scope));
     if (network) lines.push(indexed(247, `${dictionary.network}  ${network}`));
+    const idle = report.phases.latency;
+    const transfers = transferPhases.map(key => report.phases[key]).filter(Boolean);
+    const transferMax = keys => scaleOf(keys.flatMap(key => {
+      const row = report.phases[key];
+      return [row?.avg, row?.peak, row?.p90];
+    }));
+    const limits = {
+      latency:scaleOf([idle.avg, idle.peak, idle.p90, ...transfers.map(row => row.loaded)]),
+      jitter:scaleOf([idle.jitter, ...transfers.map(row => row.jitter)]),
+      dl:transferMax(['singleDl','multiDl']), ul:transferMax(['singleUl','multiUl']),
+    };
+    lines.push(indexed(247, `${dictionary.scales}  ${dictionary.latency} ${range(limits.latency, 'ms')} · ${dictionary.jitter} ${range(limits.jitter, 'ms')} · ${dictionary.ratio} 0–100%`));
+    const columns = [idleColumns(dictionary, idle, limits.latency, limits.jitter)];
     if (report.mode === 'full') {
-      lines.push('', ...speedLines(dictionary, report, ['singleDl','multiDl'], 'dl', downloadRamp));
-      lines.push('', ...speedLines(dictionary, report, ['singleUl','multiUl'], 'ul', uploadRamp));
+      columns.push(transferColumns(dictionary, report.phases.singleDl, report.phases.singleUl, 'single', limits));
+      columns.push(transferColumns(dictionary, report.phases.multiDl, report.phases.multiUl, 'multi', limits));
     }
-    for (const key of report.mode === 'quick' ? ['latency'] : phases) lines.push('', ...phaseLines(dictionary, report, key));
+    lines.push('', ...layOutColumns(columns));
     return `### PITOPONE · ${dictionary.title}\n\n\`\`\`ansi\n${lines.join('\n')}\n\`\`\`\n`;
   }
 

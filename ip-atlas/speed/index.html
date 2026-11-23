@@ -7,11 +7,11 @@
   <meta name="description" content="PITOPONE 网络质量检测站。测量浏览器 HTTP 延迟、抖动、单请求与 16 路并行上传下载，并检查 IPv4／IPv6。">
   <title>网络质量检测站 · PITOPONE</title>
   <link rel="preconnect" href="https://speed.cloudflare.com" crossorigin>
-  <link rel="stylesheet" href="/speed/station.css?v=23-cc31eab0b5">
-  <script defer src="/speed/station-i18n.js?v=23-71dd7fa203"></script>
-  <script defer src="/speed/station.js?v=23-6ee3eb8c83"></script>
+  <link rel="stylesheet" href="/speed/station.css?v=24-b4acac396c">
+  <script defer src="/speed/station-i18n.js?v=24-c59400868c"></script>
+  <script defer src="/speed/station.js?v=24-564ebcb668"></script>
   <script defer src="/speed/network.js?v=23-ad510c6197"></script>
-  <script defer src="/speed/forum.js?v=23-a9eab854e7"></script>
+  <script defer src="/speed/forum.js?v=24-3d0fc25556"></script>
 </head>
 <body>
 <a class="skip" href="#test" data-speed-t="skip">跳到测速</a>
@@ -62,9 +62,8 @@
         <div class="section-head"><h2 id="readings-heading" data-speed-t="readings">测量明细</h2><span id="v19Clock">等待测试</span></div>
         <div class="chart-box"><div class="chart-head"><h3 data-speed-t="trend">实时趋势</h3><div class="legend" aria-label="趋势图图例" data-speed-aria="legend"><span><i class="dl-key"></i><span data-speed-t="download">下载</span></span><span><i class="ul-key"></i><span data-speed-t="upload">上传</span></span><span><i class="ping-key"></i><span data-speed-t="latencyWord">延迟</span></span></div></div><canvas class="chart" id="chart" role="img" aria-label="速度和延迟随时间变化，左轴 Mbps，右轴 ms。" data-speed-aria="chartA11y"></canvas><p class="caption" data-speed-t="chartCaption">左轴 Mbps · 右轴 ms · 横轴测试时间</p></div>
         <div class="phase-scroll" role="region" tabindex="0" aria-label="测试阶段数据，可横向滚动" data-speed-aria="phaseA11y"><div class="v19-grid" id="v19Grid"></div></div>
-        <details class="method"><summary data-speed-t="readingGuide">如何看结果</summary><p data-speed-t="readingGuideBody">空闲延迟是浏览器到 Cloudflare 测速端点的 HTTP 往返时间。HTTP 请求失败率按浏览器请求计数。P90 表示 90% 的采样值位于该数值或以下。并行验证记录有实际传输的请求数与峰值在途请求数。</p></details>
+        <details class="method"><summary data-speed-t="readingGuide">如何看结果</summary><p data-speed-t="readingGuideBody">空闲和负载延迟都由 Atlas 边缘探针测量。上传和下载测量使用 Cloudflare Speed 测速端点。样本偏少时，结果会标明有效样本数。</p></details>
       </section>
-      <section class="panel report-panel" id="forumReport" hidden></section>
     </div>
     <aside class="side" aria-label="连接详情与报告" data-speed-aria="connectionA11y">
       <section class="panel connection"><div class="section-head"><h2 data-speed-t="connection">当前连接</h2></div><div class="chips"><span class="chip" id="autoChip">检测中</span><span class="chip" id="countryChip">—</span></div>
@@ -80,6 +79,7 @@
       <section class="panel counter-card" id="counterCard" hidden><h2 data-speed-t="fullCounter">完整测试计数</h2><dl class="counter-grid"><div><dt data-speed-t="total">累计</dt><dd id="totalTests">—</dd></div><div><dt data-speed-t="today">今日</dt><dd id="todayTests">—</dd></div></dl><p class="caption" id="rankMessage"></p></section>
     </aside>
   </div>
+  <section class="panel report-panel" id="forumReport" hidden></section>
 </main>
 <footer class="wrap footer"><span>PITOPONE Network Lab</span><a href="https://ip-guide.pitopone.com/"><span data-speed-t="atlasBack">返回 IP 选址图鉴</span> ↗</a></footer>
 </body>
