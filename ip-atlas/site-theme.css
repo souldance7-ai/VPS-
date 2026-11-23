@@ -1,0 +1,51 @@
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+.site-preferences {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
+.site-theme {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  flex: none;
+}
+
+.site-theme[hidden] { display: none; }
+.site-theme > span {
+  position: absolute;
+  inset-inline-start: 7px;
+  color: inherit;
+  pointer-events: none;
+  font-size: 13px;
+}
+
+.mast .site-theme select {
+  min-height: 34px;
+  font-size: 13px;
+  border: 1px solid #55536d;
+  border-radius: 7px;
+  padding: 5px 5px 5px 23px;
+  background: #25283e;
+  color: #f1effc;
+  cursor: pointer;
+}
+
+:root[data-theme="light"] .mast .site-theme select {
+  background: #f3f4fc;
+  color: #23283b;
+  border-color: #adb4ce;
+}
+
+.mast .site-theme select:focus-visible { outline: 2px solid #a18cf0; outline-offset: 2px; }
+:root[data-theme="light"] .mast .site-theme select:focus-visible { outline-color: #5e429a; }
+
+@media (max-width: 420px) {
+  .site-preferences { gap: 4px; }
+  .mast .site-theme select { font-size: 12px; padding-inline-start: 21px; }
+  .mast .wordmark > span { display: none; }
+}

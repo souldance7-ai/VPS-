@@ -395,7 +395,69 @@ async function startTest(mode = 'full') {
 async function registerCounter(){try{const response=await fetch(ENDPOINTS.counter,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_id:crypto.randomUUID?.()||nonce()})});const data=await response.json();if(data.ok){$('totalTests').textContent=data.total;$('todayTests').textContent=data.today;paintText('rankMessage','counterRank',{n:data.rank});}}catch{}}
 async function loadCounter(){try{const r=await fetch(`${ENDPOINTS.counter}?r=${nonce()}`,{cache:'no-store'}),d=await r.json();if(d.ok){$('totalTests').textContent=d.total;$('todayTests').textContent=d.today;paintText('rankMessage','counterNote');}}catch{}}
 
-function drawChart(){const c=$('chart'),dpr=devicePixelRatio||1,w=c.clientWidth||800,h=c.clientHeight||180;if(c.width!==Math.round(w*dpr)||c.height!==Math.round(h*dpr)){c.width=Math.round(w*dpr);c.height=Math.round(h*dpr)}const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,w,h);const pad={l:48,r:45,t:12,b:24},pw=w-pad.l-pad.r,ph=h-pad.t-pad.b,maxT=currentMode==='quick'?5:90,speedMax=Math.max(100,percentile([...chartSeries.dl,...chartSeries.ul].map(p=>p.v),.98)*1.15),latMax=Math.max(100,percentile(chartSeries.lat.map(p=>p.v),.98)*1.2);x.strokeStyle='rgba(176,180,228,.16)';x.fillStyle='#a3aecb';x.font='9px sans-serif';for(let i=0;i<=4;i++){const y=pad.t+ph*i/4;x.beginPath();x.moveTo(pad.l,y);x.lineTo(w-pad.r,y);x.stroke();x.textAlign='right';x.fillText(Math.round(speedMax*(1-i/4)),pad.l-6,y+3);x.textAlign='left';x.fillText(Math.round(latMax*(1-i/4)),w-pad.r+6,y+3)}for(let i=0;i<=5;i++){const px=pad.l+pw*i/5;x.beginPath();x.moveTo(px,pad.t);x.lineTo(px,pad.t+ph);x.stroke();x.textAlign='center';x.fillText(Math.round(maxT*i/5)+'s',px,h-7)}const plot=(data,color,max)=>{if(!data.length)return;x.beginPath();data.forEach((p,i)=>{const px=pad.l+Math.min(1,p.t/maxT)*pw,py=pad.t+ph-Math.min(1,p.v/max)*ph;i?x.lineTo(px,py):x.moveTo(px,py)});x.strokeStyle=color;x.lineWidth=2.4;x.lineJoin='round';x.stroke()};plot(chartSeries.dl,'#baa7ff',speedMax);plot(chartSeries.ul,'#69e1db',speedMax);plot(chartSeries.lat,'#f4bb79',latMax)}
+function drawChart() {
+  const canvas = $('chart');
+  const dpr = devicePixelRatio || 1;
+  const width = canvas.clientWidth || 800;
+  const height = canvas.clientHeight || 180;
+  if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(height * dpr)) {
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+  }
+
+  const context = canvas.getContext('2d');
+  const palette = getComputedStyle(canvas);
+  const color = (token, fallback) => palette.getPropertyValue(token).trim() || fallback;
+  const pad = {l:48,r:45,t:12,b:24};
+  const plotWidth = width - pad.l - pad.r;
+  const plotHeight = height - pad.t - pad.b;
+  const maxTime = currentMode === 'quick' ? 5 : 90;
+  const maxSpeed = Math.max(100, percentile([...chartSeries.dl,...chartSeries.ul].map(p => p.v), .98) * 1.15);
+  const maxLatency = Math.max(100, percentile(chartSeries.lat.map(p => p.v), .98) * 1.2);
+
+  context.setTransform(dpr, 0, 0, dpr, 0, 0);
+  context.clearRect(0, 0, width, height);
+  context.strokeStyle = color('--chart-grid', 'rgba(176,180,228,.16)');
+  context.fillStyle = color('--chart-label', '#a3aecb');
+  context.font = '9px sans-serif';
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.t + plotHeight * i / 4;
+    context.beginPath();
+    context.moveTo(pad.l, y);
+    context.lineTo(width - pad.r, y);
+    context.stroke();
+    context.textAlign = 'right';
+    context.fillText(Math.round(maxSpeed * (1 - i / 4)), pad.l - 6, y + 3);
+    context.textAlign = 'left';
+    context.fillText(Math.round(maxLatency * (1 - i / 4)), width - pad.r + 6, y + 3);
+  }
+  for (let i = 0; i <= 5; i++) {
+    const x = pad.l + plotWidth * i / 5;
+    context.beginPath();
+    context.moveTo(x, pad.t);
+    context.lineTo(x, pad.t + plotHeight);
+    context.stroke();
+    context.textAlign = 'center';
+    context.fillText(Math.round(maxTime * i / 5) + 's', x, height - 7);
+  }
+  const plot = (series, stroke, max) => {
+    if (!series.length) return;
+    context.beginPath();
+    series.forEach((point, index) => {
+      const x = pad.l + Math.min(1, point.t / maxTime) * plotWidth;
+      const y = pad.t + plotHeight - Math.min(1, point.v / max) * plotHeight;
+      if (index) context.lineTo(x, y);
+      else context.moveTo(x, y);
+    });
+    context.strokeStyle = stroke;
+    context.lineWidth = 2.4;
+    context.lineJoin = 'round';
+    context.stroke();
+  };
+  plot(chartSeries.dl, color('--chart-download', '#baa7ff'), maxSpeed);
+  plot(chartSeries.ul, color('--chart-upload', '#69e1db'), maxSpeed);
+  plot(chartSeries.lat, color('--chart-latency', '#f4bb79'), maxLatency);
+}
 
 function normalizeIp(value) {
   const host = typeof value === 'string' ? value.trim() : '';
@@ -791,6 +853,7 @@ document.addEventListener('speed:locale',() => {
   localReportPromise = null;
 });
 document.addEventListener('speed:network',() => { localReportPromise = null; });
+document.addEventListener('themechange', drawChart);
 setProgress(0);
 renderBoard();
 drawChart();

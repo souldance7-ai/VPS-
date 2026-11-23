@@ -1,0 +1,119 @@
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f2f5fb;
+  --panel: #ffffff;
+  --inset: #f7f9fd;
+  --line: #cbd4e5;
+  --ink: #19243a;
+  --muted: #4e5c74;
+  --violet: #5e46a3;
+  --mint: #176a65;
+  --amber: #854510;
+  --bad: #912c42;
+  --control-border: #9eacc3;
+  --accent-inset: #ece6fb;
+  --chart-grid: rgba(80, 95, 127, .23);
+  --chart-label: #4e5c74;
+  --chart-download: var(--violet);
+  --chart-upload: var(--mint);
+  --chart-latency: var(--amber);
+}
+
+:root[data-theme="light"] body {
+  background: radial-gradient(ellipse at 82% 0%, #e9e0fa, transparent 44%),
+    radial-gradient(ellipse at 6% 48%, #e1edf7, transparent 42%), var(--bg);
+}
+
+:root[data-theme="light"] .mast {
+  background: rgba(255, 255, 255, .94);
+  border-color: var(--line);
+}
+
+:root[data-theme="light"] .mast nav a,
+:root[data-theme="light"] .edge-readout span { color: var(--muted); }
+
+:root[data-theme="light"] .mast nav a:is(:hover, [aria-current]),
+:root[data-theme="light"] .protocol-selector button[aria-pressed="true"] {
+  background: var(--accent-inset);
+  color: var(--violet);
+}
+
+:root[data-theme="light"] .mast nav .atlas-link,
+:root[data-theme="light"] .probe.ok p { color: var(--mint); }
+
+:root[data-theme="light"] .edge-readout {
+  border-color: var(--line);
+  background: var(--inset);
+}
+
+:root[data-theme="light"] :is(.start, #forumCopy) {
+  color: #ffffff;
+  background: var(--primary-button, var(--violet));
+}
+
+:root[data-theme="light"] :is(.start, #forumCopy):hover:not(:disabled) {
+  color: #ffffff;
+  background: var(--primary-hover, #4a358a);
+}
+
+:root[data-theme="light"] .start.running {
+  --primary-button: var(--bad);
+  --primary-hover: #772236;
+}
+
+:root[data-theme="light"] :is(.secondary, .share-actions button, .share-actions a) {
+  color: var(--violet);
+  background: var(--inset);
+  border-color: var(--control-border);
+}
+
+:root[data-theme="light"] :is(.secondary, .share-actions button, .share-actions a):hover:not(:disabled) {
+  color: var(--violet);
+  background: var(--accent-inset);
+  border-color: var(--violet);
+}
+
+:root[data-theme="light"] .mast .speed-language { border-color: var(--control-border); }
+:root[data-theme="light"] .progress { background: var(--line); }
+:root[data-theme="light"] :is(.test-state strong, .info dd) { color: var(--ink); }
+:root[data-theme="light"] #currentIp { color: var(--violet); }
+:root[data-theme="light"] .info > div { border-color: var(--line); }
+:root[data-theme="light"] :is(.state-dot, .probe.ok .lamp) { box-shadow: none; }
+:root[data-theme="light"] .probe.bad .lamp { background: var(--amber); }
+
+:root[data-theme="light"] .error {
+  background: #fcecef;
+  border-color: #d8a1ac;
+}
+
+:root[data-theme="light"] .gauge-card {
+  background: radial-gradient(ellipse at 50% 54%, var(--accent-inset), transparent 64%), var(--inset);
+}
+
+:root[data-theme="light"] .gauge-card.upload {
+  background: radial-gradient(ellipse at 50% 54%, #dcf1ee, transparent 64%), var(--inset);
+}
+
+:root[data-theme="light"] .track { stroke: var(--line); }
+:root[data-theme="light"] .v19-head { background: #e9edf6; color: var(--ink); }
+:root[data-theme="light"] .v19-active { background: var(--accent-inset); }
+:root[data-theme="light"] :is(.method summary, .forum-editor summary, .footer a) { color: var(--violet); }
+
+:root[data-theme="light"] .chip {
+  color: var(--muted);
+  background: var(--inset);
+  border-color: var(--line);
+}
+
+:root[data-theme="light"] .chip.ok {
+  color: var(--mint);
+  border-color: #88b6af;
+  background: #e8f5f3;
+}
+
+/* Keep ANSI output on the terminal background used for its color palette. */
+:root[data-theme="light"] .forum-preview {
+  color-scheme: dark;
+  color: #eef1ff;
+  background: #101426;
+}

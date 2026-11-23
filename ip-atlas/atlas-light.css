@@ -1,0 +1,374 @@
+:root[data-theme="light"] {
+  color-scheme: light;
+  --canvas: #f4f6f3;
+  --paper: #fff;
+  --surface: #f7f9fa;
+  --surface-strong: #e9efee;
+  --white: #fff;
+  --ink: #192a2b;
+  --text: var(--ink);
+  --navy: var(--ink);
+  --muted: #4e6368;
+  --rule: #ccd9d7;
+  --line: var(--rule);
+  --blue: #315588;
+  --mint: #156852;
+  --sun: #865710;
+  --red: #8b3542;
+  --accent: #564581;
+  --orange: var(--sun);
+  --era-mint: var(--mint);
+  --era-amber: var(--sun);
+  --era-line: var(--rule);
+  --light-control: #aebfbc;
+  --light-hover: #edf4f1;
+  --light-active: #d8ece2;
+  --light-violet: #eee9f7;
+  --light-gold: #fbf0d5;
+  --light-rose: #fae9eb;
+}
+
+:root[data-theme="light"] body[data-book] main#top,
+:root[data-theme="light"] main#top {
+  background: radial-gradient(ellipse at 83% 0%, #e6efed, transparent 49%), var(--canvas);
+}
+
+:root[data-theme="light"] .mast {
+  background: var(--paper);
+  border-color: var(--rule);
+  color: var(--ink);
+}
+
+:root[data-theme="light"] .mast nav a:hover,
+:root[data-theme="light"] .mast nav a[aria-current] {
+  background: var(--light-active);
+  border-color: var(--light-control);
+  color: var(--mint);
+}
+
+:root[data-theme="light"] .mast select {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--light-control);
+}
+
+/* The cover and illustrated headings keep their photographic contrast. */
+:root[data-theme="light"] .portal-label,
+:root[data-theme="light"] .section-head .folio,
+:root[data-theme="light"] .section-head .folio span {
+  color: #c9f4e7;
+}
+
+:root[data-theme="light"] .portal-primary {
+  background: #ffe2a3;
+  border-color: #ffe9bc;
+  color: #332517;
+}
+
+:root[data-theme="light"] .home-offers h2,
+:root[data-theme="light"] .era-story-head h2,
+:root[data-theme="light"] .featured-offer h3,
+:root[data-theme="light"] .featured-offer .board-product {
+  color: var(--ink);
+}
+
+:root[data-theme="light"] .featured-offer {
+  border-color: var(--rule);
+  border-top-color: #6ab39a;
+  background: linear-gradient(145deg, #e9f4ee, #fff 78%);
+  box-shadow: 0 6px 18px -15px #2a4f4663;
+}
+
+:root[data-theme="light"] .featured-offer:nth-child(3n+2) {
+  border-top-color: #bf9355;
+  background: linear-gradient(145deg, #f8f0e0, #fff 78%);
+}
+
+:root[data-theme="light"] .featured-offer:nth-child(3n) {
+  border-top-color: #9c88ba;
+  background: linear-gradient(145deg, #f0edf7, #fff 78%);
+}
+
+:root[data-theme="light"] .featured-offer::before { opacity: .35; }
+:root[data-theme="light"] .featured-price,
+:root[data-theme="light"] .era-notes { border-color: var(--rule); }
+
+:root[data-theme="light"] :is(.featured-location, .featured-quote small, .board-count,
+  .featured-offer p, .featured-offer .board-specs, .featured-offer .board-deadline,
+  .featured-offer .board-eligibility, .era-story-head p, .era-notes p) {
+  color: var(--muted);
+}
+
+:root[data-theme="light"] .featured-offer .board-product { color: var(--ink); }
+
+:root[data-theme="light"] :is(.portal-all, .task-doors a, .starter-links a, .starter-links b,
+  .board-order, .board-auto, .featured-offer .board-stock, .featured-empty a,
+  .home-comic-details > summary) { color: var(--mint); }
+
+:root[data-theme="light"] :is(.board-coupon, .board-conditional .board-coupon) {
+  background: var(--light-gold);
+  color: #644308;
+  border-color: #a08556;
+}
+
+:root[data-theme="light"] .board-coupon:hover { background: #f4e5bd; }
+:root[data-theme="light"] .board-conditional small { color: #765218; }
+
+:root[data-theme="light"] :is(.era-story, .featured-empty, .home-dispatch, .traffic-panel,
+  .carrier-nav.merchant-browser, .residential-guide, .residential-evidence, .benchmark-sample,
+  .commerce-deal-details, #probe-status) {
+  color: var(--ink);
+  background: var(--paper);
+  border-color: var(--rule);
+}
+
+:root[data-theme="light"] :is(.home-dispatch, .residential-guide, .residential-evidence) {
+  border-inline-start-color: #70ad97;
+}
+
+:root[data-theme="light"] :is(.home-dispatch-meta, .home-dispatch small, .traffic-panel dt,
+  .traffic-panel small, .forum-feed-post small, .merchant-evidence small, .merchant-scope) {
+  color: var(--muted);
+}
+
+:root[data-theme="light"] .traffic-panel dl > div { background: var(--light-hover); }
+:root[data-theme="light"] .traffic-panel dd { color: var(--mint); }
+
+/* Directory surfaces and reusable controls */
+:root[data-theme="light"] :is(.index-side, .merchant-scope, .route-proof, .journal-entry,
+  .journal-entry-body, .residential-sample, .commerce-deal-details .commerce-deal-row,
+  .compare-order, .colheads) { border-color: var(--rule); }
+
+:root[data-theme="light"] :is(.index-side, .colheads, #scope-banner, #quick-pick .quick-mast,
+  #quick-pick .quick-footer, #quick-pick .quick-foot, #quick-pick .quick-map,
+  .quick-evidence-section > h3, .community-head, .procurement-guide h3, .purchase-heading,
+  .route-table thead, .route-table tbody th) {
+  color: var(--ink);
+  background: var(--surface-strong);
+  border-color: var(--rule);
+}
+
+:root[data-theme="light"] #quick-pick {
+  --quick-yellow: var(--light-gold);
+  --quick-paper: var(--paper);
+  --quick-ink: var(--ink);
+}
+
+:root[data-theme="light"] #quick-pick .quick-mast::after {
+  background-color: var(--surface-strong);
+  opacity: .14;
+}
+
+:root[data-theme="light"] #scope-banner::before,
+:root[data-theme="light"] .region-print[data-area] {
+  background-image: linear-gradient(90deg, #e9efee 5%, #e9efeeed 47%, #e9efeeaf), url(art/chronoroute.webp);
+}
+
+:root[data-theme="light"] #scope-banner::after { opacity: .28; }
+
+:root[data-theme="light"] :is(.mast, main, dialog) :is(input, select, textarea) {
+  background: var(--paper);
+  border-color: var(--light-control);
+  color: var(--ink);
+}
+
+:root[data-theme="light"] :is(input, textarea)::placeholder { color: #5b6e73; }
+:root[data-theme="light"] .filters option { color: var(--ink); }
+:root[data-theme="light"] :is(input[type="checkbox"], input[type="radio"]) { accent-color: var(--mint); }
+
+:root[data-theme="light"] :is(.featured-action, .board-more, .deal-switch button,
+  .era-story .play-controls button, .era-story .entry, .carrier-nav a,
+  .residential-option, .continents button, .market-counts button, .journal-modes button,
+  .offer-tabs button, .forum-feed button, .paging button, .record .pick),
+:root[data-theme="light"] #close {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--light-control);
+}
+
+:root[data-theme="light"] :is(.featured-action, .board-more, .deal-switch button,
+  .carrier-nav a, .residential-option, .continents button, .market-counts button,
+  .journal-modes button, .offer-tabs button, .forum-feed button, .paging button, .record .pick):hover {
+  color: var(--mint);
+  background: var(--light-hover);
+  border-color: #7caaa0;
+}
+
+:root[data-theme="light"] :is(.deal-switch button[aria-pressed="true"],
+  .residential-option[aria-pressed="true"], .quick-chip[aria-pressed="true"],
+  .continents button[aria-pressed="true"], .record .pick[aria-pressed="true"],
+  .market-counts button[aria-pressed="true"], .offer-tabs button[aria-selected="true"],
+  .forum-feed button[aria-pressed="true"], .journal-modes button[aria-pressed="true"],
+  .paging button[aria-current], .carrier-nav a[aria-current]) {
+  color: var(--mint);
+  background: var(--light-active);
+  border-color: #88b4a0;
+  box-shadow: none;
+}
+
+:root[data-theme="light"] #quick-pick :is(.quick-chip, .quick-option, .quick-filter,
+  .quick-button, .quick-action, .quick-clear, .quick-copy, .quick-market-shortcut, button, select),
+:root[data-theme="light"] .filter-interior button,
+:root[data-theme="light"] :is(.filter-toggle, .resultbar button) {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--light-control);
+}
+
+:root[data-theme="light"] #quick-pick button[aria-pressed="true"],
+:root[data-theme="light"] .filter-interior button[aria-pressed="true"] {
+  color: var(--mint);
+  background: var(--light-active);
+  border-color: #88b4a0;
+}
+
+:root[data-theme="light"] #quick-pick :is(.quick-chip small, .quick-chip[aria-pressed="true"] small) {
+  color: var(--ink);
+  background: var(--surface-strong);
+}
+
+:root[data-theme="light"] #quick-pick :is(.quick-heading h3, .quick-title, .quick-count, .quick-summary, .quick-total),
+:root[data-theme="light"] :is(.community-count, .resultbar output, .record .prod strong,
+  .record .place strong, .merchant-browser > strong, .journal-entry h4 a, .probe-metrics dd) {
+  color: var(--ink);
+}
+
+:root[data-theme="light"] .record:has(.pick[aria-pressed="true"]) {
+  border-color: #87b49f;
+  box-shadow: 0 0 0 1px #87b49f44;
+}
+
+:root[data-theme="light"] :is(.community-summary:hover, .community-record[open] .community-summary) {
+  background: var(--light-hover);
+}
+
+:root[data-theme="light"] :is(.go, .solid, .resultbar .solid:not(:disabled), .community-actions button),
+:root[data-theme="light"] #journal-more,
+:root[data-theme="light"] #quick-pick .quick-share {
+  color: #fff;
+  background: var(--mint);
+  border-color: var(--mint);
+}
+
+:root[data-theme="light"] .resultbar .solid:disabled {
+  color: var(--muted);
+  background: var(--surface-strong);
+  border-color: var(--rule);
+}
+
+:root[data-theme="light"] :is(.record .read, .record .spec-summary b, .quick-proof a,
+  .forum-feed-post .feed-to-catalog, .procurement-guide .guide-query, .community-actions a,
+  .deal a, .deal strong.rate, .community-price strong, .journal-actions a, .journal-profiles a,
+  .journal-related a, .journal-resultbar button, .journal-resultbar button:hover, #probe-status a,
+  .commerce-stock-source, .commerce-stock-source:hover, .commerce-evidence a, .commerce-evidence a:hover,
+  .fx-conversion, .billing-rates a) { color: var(--blue); }
+
+:root[data-theme="light"] :is(.residential-option-label small, .residential-links a, .residential-evidence a,
+  .residential-card-label, .route-glossary summary, .route-citation, .merchant-picker summary,
+  .merchant-source-panel summary, .carrier-nav .merchant-additional summary,
+  .journal-month, .journal-entry h4 a:hover) { color: var(--mint); }
+
+:root[data-theme="light"] :is(.residential-option-note, .residential-sample time, .residential-sample small,
+  .residential-evidence .residential-evidence-note, .route-glossary, .journal-meta, .journal-day,
+  .journal-summary, .journal-profiles, #journal-count, .billing-rates time,
+  .commerce-deadline, .commerce-evidence time, .commerce-deal-details small, .commerce-last-stock) {
+  color: var(--muted);
+}
+
+:root[data-theme="light"] :is(.route-glossary, .route-table td, .route-table th) { border-color: var(--rule); }
+:root[data-theme="light"] :is(.route-table td, .route-table th) { color: var(--ink); }
+
+/* Product details, verification and comparison */
+:root[data-theme="light"] .verify {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--rule);
+}
+
+:root[data-theme="light"] :is(.verify .eyebrow, .verify p, .verify small, .lab label, .lab .label) { color: var(--muted); }
+:root[data-theme="light"] #verify .lab { border-color: var(--rule); }
+:root[data-theme="light"] .lab .linkline a { color: var(--blue); }
+
+:root[data-theme="light"] dialog#drawer {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--rule);
+  box-shadow: -10px 0 45px #1328272b;
+}
+
+:root[data-theme="light"] .compare-stamp { color: var(--mint); background: var(--light-active); }
+:root[data-theme="light"] :is(.hardware > div, .stock-probe, .stock-list, .active-coupon) {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--rule);
+}
+
+:root[data-theme="light"] :is(.stock-probe[data-stock-state="sold-out"], .stock-list[data-stock-state="sold-out"]) {
+  color: var(--red);
+  background: var(--light-rose);
+  border-color: #d2a9af;
+}
+
+:root[data-theme="light"] :is(.stock-probe[data-stock-state="unreported"], .stock-probe[data-stock-state="offline"]) {
+  color: var(--muted);
+  background: var(--surface);
+  border-color: var(--rule);
+}
+
+:root[data-theme="light"] .stock-list[data-stock-state="in-stock"] {
+  color: var(--mint);
+  background: var(--light-hover);
+  border-color: #9ec2b3;
+}
+
+:root[data-theme="light"] .stock-list[data-stock-state="low"] {
+  color: var(--sun);
+  background: var(--light-gold);
+  border-color: #c8b17a;
+}
+
+:root[data-theme="light"] .stock-list[data-commerce-quote] { color: var(--muted); background: transparent; }
+:root[data-theme="light"] :is(.offer-condition, .residential-evidence .residential-mixed-note) { color: var(--sun); }
+
+:root[data-theme="light"] :is(.commerce-copy, .commerce-copy:hover, .commerce-copy:focus-visible) {
+  color: var(--mint);
+  background: var(--light-hover);
+  border-color: #9ec2b3;
+}
+
+:root[data-theme="light"] :is(.commerce-net-price, .commerce-conditions summary) { color: var(--mint); }
+:root[data-theme="light"] :is(.community-badge, .state, .commerce-stock, .stock-probe[data-stock-state]) {
+  --status: var(--muted);
+  --tint: var(--surface-strong);
+}
+
+:root[data-theme="light"] :is(.community-badge[data-stage="offer"], .state.active, .state.offer,
+  .commerce-stock[data-state="in-stock"], .stock-probe[data-stock-state="in-stock"]) {
+  --status: var(--mint);
+  --tint: var(--light-active);
+}
+
+:root[data-theme="light"] :is(.community-badge[data-stage="limited"], .community-badge[data-stage="checkout"], .state.limited,
+  .commerce-stock[data-state="low"], .stock-probe[data-stock-state="low"], .commerce-stock[data-state="offline"]) {
+  --status: var(--sun);
+  --tint: var(--light-gold);
+}
+
+:root[data-theme="light"] :is(.community-badge[data-stage="expired"], .state.expired,
+  .commerce-stock[data-state="historical"]) {
+  --status: var(--accent);
+  --tint: var(--light-violet);
+}
+
+:root[data-theme="light"] :is(.commerce-stock[data-state="sold-out"], .stock-probe[data-stock-state="sold-out"]) {
+  --status: var(--red);
+  --tint: var(--light-rose);
+}
+
+:root[data-theme="light"] :is(.community-badge, .state) {
+  color: var(--status);
+  background: var(--tint);
+  border-color: color-mix(in srgb, var(--status) 32%, var(--tint));
+}
+
+:root[data-theme="light"] #toast { color: var(--ink); background: var(--light-active); }
