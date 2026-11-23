@@ -214,6 +214,9 @@ body.paused .portal-sweep, body.paused .featured-offer::after, body.paused .sect
   .portal-hero { min-height: 318px; }
   .featured-offer { padding: 12px; }
 }
+@media (701px <= width <= 950px) {
+  .mast nav { min-width: 0; flex-wrap: wrap; justify-content: center; }
+}
 @media(max-width: 700px) {
   .mast-inner { min-height: 62px; }
   .mast nav a { min-height: 30px; }
