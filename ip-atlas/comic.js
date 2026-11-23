@@ -13,7 +13,6 @@ const scrollMemory=new Map(), reduceMotion=matchMedia('(prefers-reduced-motion: 
 const canMove=()=>!paused&&!reduceMotion.matches;
 function localizeComic(){
  $('portal-motion')?.setAttribute('aria-label',tr('portalMotion'));
- document.title=tr('title')+' · PITOPONE';
 }
 function syncComicMotion(){
  const motionButton=$('portal-motion');

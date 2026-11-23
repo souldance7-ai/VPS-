@@ -323,7 +323,7 @@ function countryLinks(){
 }
 function motion(){document.body.classList.toggle('paused',paused);$('portal-motion').textContent=paused?'▶':'Ⅱ';$('portal-motion').title=tr(paused?'play':'pause');$('portal-motion').setAttribute('aria-label',$('portal-motion').title);$('portal-motion').setAttribute('aria-pressed',paused)}
 function render(){
- document.documentElement.lang=tags[lang];document.title=tr('title')+' · PITOPONE';$('language').value=lang;$('language').setAttribute('aria-label',tr('selectLang'));
+ document.documentElement.lang=tags[lang];document.title='IP-Guide';$('language').value=lang;$('language').setAttribute('aria-label',tr('selectLang'));
  document.querySelectorAll('[data-t]').forEach(n=>n.textContent=tr(n.dataset.t));
  $('cpu-query').placeholder=tr('cpuQueryHint');
  $('search').placeholder=tr('searchHint');$('close').setAttribute('aria-label',tr('back'));$('zones').setAttribute('aria-label',tr('region'));
