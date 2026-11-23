@@ -2,6 +2,17 @@
 
 (() => {
 const $ = id => document.getElementById(id);
+const t = (key, args) => window.SpeedLocale?.t(key,args) || key;
+const translatedUi = new Map();
+function paintText(id, key, args) {
+  const draw = () => { $(id).textContent = typeof key === 'function' ? key() : t(key,args); };
+  translatedUi.set(id,draw);
+  draw();
+}
+function paintRaw(id, value) {
+  translatedUi.delete(id);
+  $(id).textContent = value;
+}
 const EDGE_BASE = 'https://speed.cloudflare.com';
 const ENDPOINTS = {
   download: `${EDGE_BASE}/__down`,
@@ -14,11 +25,11 @@ const ENDPOINTS = {
   share: 'share-result.php'
 };
 const PHASES = [
-  {key:'latency', label:'网页HTTP延迟', en:'BROWSER HTTP RTT', seconds:10, start:0, end:10},
-  {key:'singleDl', label:'单请求下载', en:'1× DOWNLOAD REQUEST', direction:'download', threads:1, seconds:20, cap:3*1024**3, start:10, end:32},
-  {key:'singleUl', label:'单请求上传', en:'1× UPLOAD REQUEST', direction:'upload', threads:1, seconds:20, cap:1024**3, start:32, end:54},
-  {key:'multiDl', label:'16并行下载', en:'16× PARALLEL DOWNLOAD', direction:'download', threads:16, seconds:20, cap:8*1024**3, start:54, end:76},
-  {key:'multiUl', label:'16并行上传', en:'16× PARALLEL UPLOAD', direction:'upload', threads:16, seconds:20, cap:4*1024**3, start:76, end:98}
+  {key:'latency', seconds:10, start:0, end:10},
+  {key:'singleDl', direction:'download', threads:1, seconds:20, cap:3*1024**3, start:10, end:32},
+  {key:'singleUl', direction:'upload', threads:1, seconds:20, cap:1024**3, start:32, end:54},
+  {key:'multiDl', direction:'download', threads:16, seconds:20, cap:8*1024**3, start:54, end:76},
+  {key:'multiUl', direction:'upload', threads:16, seconds:20, cap:4*1024**3, start:76, end:98}
 ];
 const QUICK_PHASE = {...PHASES[0], seconds:5, end:100};
 const FAMILY_HOSTS = {auto:'speed.pitopone.com', ipv4:'speed4.pitopone.com', ipv6:'speed6.pitopone.com'};
@@ -33,12 +44,18 @@ const liveControllers = new Set();
 const gaugeDisplay = {download:0,upload:0};
 const gaugeTarget = {download:0,upload:0};
 let running=false, stopped=false, runId=0, startedAt=0, reportBlob=null, reportUrl='';
-let connectionNetworkText = '—';
 let connectionAddress = '';
 let lastCompletedMode = '';
 let currentMode = 'full';
 let shareController = null;
 let localReportPromise = null;
+let activeBoardPhase = '';
+let resultSnapshot = null;
+function updateResult(mode) {
+  resultSnapshot = mode ? {mode,timestamp:new Date().toISOString(),phases:structuredClone(results)} : null;
+  document.dispatchEvent(new CustomEvent('speed:result',{detail:structuredClone(resultSnapshot)}));
+}
+window.SpeedStation = {result:() => structuredClone(resultSnapshot)};
 
 const ASN_DIRECTORY={
   AS3258:{zh:'xTom 日本株式会社',en:'xTom Japan Corporation'}
@@ -54,9 +71,30 @@ const nonce = () => Date.now().toString(36)+Math.random().toString(36).slice(2);
 const warmedSamples = values => values.slice(Math.min(2,Math.max(0,values.length-1)));
 
 function renderBoard(active=''){
-  const columns=['测试阶段','平均','最高','P90','负载延迟','抖动','HTTP 探测'];
+  activeBoardPhase = active;
+  const columns=['phase','average','peak','P90','loaded','jitter','probe'].map(name => t(name));
   let html=columns.map(x=>`<div class="v19-cell v19-head">${x}</div>`).join('');
-  for(const originalPhase of PHASES){const phase=currentMode==='quick'&&originalPhase.key==='latency'?QUICK_PHASE:originalPhase;const r=results[phase.key],cls=phase.key===active?'v19-active':r?'v19-done':'';const latencyPhase=phase.key==='latency',parallelNote=r&&phase.threads>1?` · 有效 ${r.effectiveWorkers}/${phase.threads} · 峰值在途 ${r.peakActiveRequests}`:'';html+=`<div class="v19-cell v19-phase ${cls}">${phase.label}<small>${phase.en} · ${phase.seconds}s${phase.threads?' · '+phase.threads+' HTTP REQUEST'+(phase.threads>1?'S':''):''}${parallelNote}</small></div>`;for(const key of ['avg','peak','p90','loaded','jitter','probe']){let value='—',unit=latencyPhase||['loaded','jitter'].includes(key)?'ms':'Mbps',extra='',cellClass='';if(r){if(key==='probe'){if(latencyPhase){value=fmt(r.loss);unit='% HTTP LOSS';extra=`${r.failed}/${r.total}`;cellClass='v19-loss'}else{value=`${r.probeTimeouts}/${r.probeTotal}`;unit='TIMEOUT';extra=`有效 ${r.effectiveWorkers}/${r.threads}`+(r.probeValid?'':' · 样本不足');cellClass=r.parallelVerified?(r.probeTimeouts?'v19-warn':'v19-loss'):'v19-warn'}}else if(latencyPhase&&key==='loaded'){value='不适用';unit='N/A';cellClass='v19-na'}else if(r[key]===null||r[key]===undefined){value='样本不足';unit='INSUFFICIENT';cellClass='v19-na'}else{value=fmt(r[key]);if(latencyPhase&&key==='avg')extra='Cloudflare浏览器HTTP'}}html+=`<div class="v19-cell v19-value ${cellClass} ${cls}"><b>${value}</b><small>${unit}${extra?' · '+extra:''}</small></div>`}}
+  for (const fullPhase of PHASES) {
+    const phase = currentMode === 'quick' && fullPhase.key === 'latency' ? QUICK_PHASE : fullPhase;
+    const r = results[phase.key], style = phase.key === active ? 'v19-active' : r ? 'v19-done' : '';
+    const latency = phase.key === 'latency';
+    const context = [`${phase.seconds} s`];
+    if (phase.threads) context.push(t('httpRequests',{n:phase.threads}));
+    if (r && phase.threads > 1) context.push(t('effective',{count:`${r.effectiveWorkers}/${phase.threads}`}),t('inFlight',{count:r.peakActiveRequests}));
+    html += `<div class="v19-cell v19-phase ${style}">${t(phase.key)}<small>${context.join(' · ')}</small></div>`;
+    for (const key of ['avg','peak','p90','loaded','jitter','probe']) {
+      let value = '—', unit = latency || ['loaded','jitter'].includes(key) ? 'ms' : 'Mbps', cell = '';
+      if (r && key === 'probe') {
+        value = latency ? `${fmt(r.loss)} %` : `${r.probeTimeouts}/${r.probeTotal}`;
+        unit = latency ? t('failedCount',r) : t('timeouts') + (r.probeValid ? '' : ' · ' + t('insufficient'));
+        cell = latency || (r.parallelVerified && !r.probeTimeouts) ? 'v19-loss' : 'v19-warn';
+      } else if (r) {
+        value = Number.isFinite(r[key]) ? fmt(r[key]) : latency && key === 'loaded' ? t('na') : t('insufficient');
+        if (!Number.isFinite(r[key])) { unit = ''; cell = 'v19-na'; }
+      } else if (key === 'probe') unit = '';
+      html += `<div class="v19-cell v19-value ${cell} ${style}"><b>${value}</b><small>${unit}</small></div>`;
+    }
+  }
   $('v19Grid').innerHTML=html;
 }
 
@@ -72,7 +110,10 @@ let lastGaugeFrame=performance.now();
 function animateGauges(now){const dt=Math.min(80,Math.max(0,now-lastGaugeFrame));lastGaugeFrame=now;const alpha=1-Math.exp(-dt/850);for(const direction of ['download','upload']){const current=gaugeDisplay[direction]||0,target=gaugeTarget[direction]||0;if(Math.abs(target-current)>.01)paintGauge(direction,current+(target-current)*alpha)}requestAnimationFrame(animateGauges)}
 requestAnimationFrame(animateGauges);
 function abortEverything(){stopped=true;for(const xhr of liveXhrs)try{xhr.abort()}catch{};liveXhrs.clear();for(const c of liveControllers)try{c.abort()}catch{};liveControllers.clear()}
-function showError(text=''){$('errorBox').textContent=text;$('errorBox').classList.toggle('show',!!text)}
+function showError(key='',args){paintText('errorBox',key,args);$('errorBox').classList.toggle('show',!!key)}
+class MeasurementError extends Error {
+  constructor(key,args){super(key);this.args = args;}
+}
 
 function normalizeAsn(value){const match=String(value||'').toUpperCase().match(/(?:AS)?\s*(\d+)/);return match?'AS'+match[1]:String(value||'').trim()}
 function formatNetwork(data) {
@@ -81,7 +122,7 @@ function formatNetwork(data) {
   const known = ASN_DIRECTORY[asn];
   const supplied = String(data?.org || '').replace(/^AS\d+\s*[·\-:]?\s*/i,'').trim();
   const primary = known?.en || supplied;
-  return [asn, primary].filter(Boolean).join(' · ') + (known?.zh && known.zh !== primary ? '\n' + known.zh : '') || '运营商暂无法识别';
+  return [asn, primary].filter(Boolean).join(' · ') + (known?.zh && known.zh !== primary ? '\n' + known.zh : '') || t('asnUnavailable');
 }
 
 async function probeOnce(timeout=1800){
@@ -93,13 +134,13 @@ async function probeOnce(timeout=1800){
 
 async function runLatencyPhase(phase,token){
   const samples=[];let failed=0,total=0;const start=performance.now(),deadline=start+phase.seconds*1000;
-  $('testStatus').textContent = currentMode === 'quick' ? '快速延迟检测' : '第 1 阶段 · 网页 HTTP 延迟';
-  $('serviceText').textContent = '正在测量浏览器到 Cloudflare 的 HTTP 往返时间';
-  $('v19Clock').textContent = phase.seconds.toFixed(1) + ' 秒';
+  paintText('testStatus',() => currentMode === 'quick' ? t('quickBtn') : t('stageActive',{n:1,phase:t('latency')}));
+  paintText('serviceText','testingHttp');
+  paintRaw('v19Clock',phase.seconds.toFixed(1) + ' s');
   renderBoard(phase.key);
   while(!stopped&&token===runId&&performance.now()<deadline){const tick=performance.now(),p=await probeOnce(1800);total++;if(p.ok){samples.push(p.ms);chartSeries.lat.push({t:nowSec(),v:p.ms});const warmed=warmedSamples(samples);setMetric('pingValue',mean(warmed));setMetric('jitterValue',jitter(warmed));drawChart()}else failed++;const elapsed=performance.now()-start;setProgress(phase.start+(elapsed/(phase.seconds*1000))*(phase.end-phase.start));$('v19Clock').textContent=Math.max(0,(deadline-performance.now())/1000).toFixed(1)+'s';await sleep(Math.max(0,250-(performance.now()-tick)))}
-  if(stopped||token!==runId)throw Error('STOPPED');if(samples.length<3)throw Error(`网页 HTTP 延迟测试失败：成功 ${samples.length}／${total}`);
-  const warmed=warmedSamples(samples),httpAvg=mean(warmed);results[phase.key]={avg:httpAvg,peak:Math.max(...warmed),p90:percentile(warmed,.9),loaded:null,httpAvg,jitter:jitter(warmed),loss:total?failed/total*100:0,failed,total,referenceTarget:'Cloudflare browser HTTP',warmupDiscarded:samples.length-warmed.length};setMetric('pingValue',httpAvg);setMetric('jitterValue',results[phase.key].jitter);setMetric('lossValue',results[phase.key].loss,'%');$('lossCount').textContent=`网页 HTTP ${fmt(httpAvg)} ms · ${failed}/${total} 失败`;$('serviceText').textContent='网页 HTTP 延迟已测量';renderBoard();return results[phase.key];
+  if(stopped||token!==runId)throw Error('STOPPED');if(samples.length<3)throw new MeasurementError('httpFailed',{ok:samples.length,total});
+  const warmed=warmedSamples(samples),httpAvg=mean(warmed);results[phase.key]={avg:httpAvg,peak:Math.max(...warmed),p90:percentile(warmed,.9),loaded:null,httpAvg,jitter:jitter(warmed),loss:total?failed/total*100:0,failed,total,referenceTarget:'Cloudflare browser HTTP',warmupDiscarded:samples.length-warmed.length};setMetric('pingValue',httpAvg);setMetric('jitterValue',results[phase.key].jitter);setMetric('lossValue',results[phase.key].loss,'%');paintText('lossCount','failedCount',{failed,total});paintText('serviceText','httpMeasured');renderBoard();return results[phase.key];
 }
 
 function markRequestStart(meter,workerId){meter.activeRequests++;meter.peakActiveRequests=Math.max(meter.peakActiveRequests,meter.activeRequests);meter.startedWorkers.add(workerId)}
@@ -108,7 +149,7 @@ function markRequestEnd(meter){meter.activeRequests=Math.max(0,meter.activeReque
 function recordTransferSuccess(meter,requestMb,generation){
   if(generation!==meter.endpointGeneration||requestMb!==meter.blockMb)return;
   meter.consecutiveErrors=0;
-  if(meter.warningVisible){showError('');meter.warningVisible=false;$('serviceText').textContent=meter.endpoint==='same-origin'?'LibreSpeed 同源引擎已接管 / LOCAL ENGINE ACTIVE':`${meter.blockMb} MiB 请求已恢复 / TRANSFER RECOVERED`}
+  if(meter.warningVisible){showError('');meter.warningVisible=false;paintText('serviceText',meter.endpoint==='same-origin'?'localActive':'recovered',{size:meter.blockMb});}
 }
 function recordTransferFailure(meter,message,requestMb,generation){
   if(generation!==meter.endpointGeneration)return;
@@ -116,11 +157,10 @@ function recordTransferFailure(meter,message,requestMb,generation){
   if(requestMb!==meter.blockMb||meter.fatal)return;
   meter.consecutiveErrors++;
   if(meter.consecutiveErrors<3)return;
-  const source=meter.endpoint==='cloudflare'?'Cloudflare':'LibreSpeed 同源';
-  if(meter.blockMb>16){meter.blockMb=Math.max(16,Math.floor(meter.blockMb/2));meter.endpointGeneration++;meter.consecutiveErrors=0;meter.downgradeCount++;meter.warningVisible=true;showError(`${source}端点返回 ${message}，自动降至 ${meter.blockMb} MiB 重试 / AUTO FALLBACK`);$('serviceText').textContent=`${source} ${message}，降至 ${meter.blockMb} MiB`}
-  else if(meter.endpoint==='cloudflare'&&!onAtlas){meter.endpoint='same-origin';meter.blockMb=meter.direction==='download'?64:(meter.threads===1?8:4);meter.endpointGeneration++;meter.consecutiveErrors=0;meter.endpointSwitches++;meter.warningVisible=true;showError(`Cloudflare 跨域端点不可用，已切换本站 LibreSpeed 同源引擎 / SAME-ORIGIN FALLBACK`);$('serviceText').textContent='LibreSpeed 同源引擎接管 / LOCAL ENGINE ACTIVE'}
-  else if(onAtlas){meter.fatal=`${message} @ ${requestMb} MiB`;showError('Cloudflare 测速端点连续请求失败，稍后可重试。');}
-  else{meter.fatal=`${message} @ ${requestMb} MiB`;showError(`Cloudflare 与本站同源端点均失败：${meter.fatal} / CIRCUIT BREAKER`)}
+  const source=meter.endpoint==='cloudflare'?'Cloudflare':'LibreSpeed';
+  if(meter.blockMb>16){meter.blockMb=Math.max(16,Math.floor(meter.blockMb/2));meter.endpointGeneration++;meter.consecutiveErrors=0;meter.downgradeCount++;meter.warningVisible=true;showError('retrySize',{source,error:message,size:meter.blockMb});}
+  else if(meter.endpoint==='cloudflare'&&!onAtlas){meter.endpoint='same-origin';meter.blockMb=meter.direction==='download'?64:(meter.threads===1?8:4);meter.endpointGeneration++;meter.consecutiveErrors=0;meter.endpointSwitches++;meter.warningVisible=true;showError('localActive');paintText('serviceText','localActive');}
+  else {meter.fatal=`${message} @ ${requestMb} MiB`;showError(onAtlas ? 'edgeFailed' : 'allFailed');}
 }
 
 async function streamDownload(blockMb,meter,workerId,deadline,token){
@@ -165,16 +205,29 @@ async function loadedProbeLoop(meter,deadline,token){
 async function runTransferPhase(phase,token){
   performance.clearResourceTimings();const start=performance.now(),deadline=start+phase.seconds*1000,blockMb=phase.direction==='download'?64:(phase.threads===1?8:4),meter={bytes:0,cap:phase.cap,blockMb,direction:phase.direction,threads:phase.threads,endpoint:'cloudflare',endpointGeneration:0,endpointSwitches:0,consecutiveErrors:0,downgradeCount:0,warningVisible:false,firstError:'',fatal:'',workerBytes:new Map(),workerRates:new Map(),workerTotalBytes:new Map(),startedWorkers:new Set(),activeRequests:0,peakActiveRequests:0,transferErrors:0,completed:0,protocols:new Set(),probeTimeouts:0,probeErrors:0,probeTotal:0,latencies:[]},samples=[];
   const direction=phase.direction,isDl=direction==='download',stateId=isDl?'dlState':'ulState';
-  $('testStatus').textContent=`第 ${PHASES.indexOf(phase)+1} 阶段 · ${phase.label}`;$('serviceText').textContent=`正在测试${phase.label}`;$(stateId).textContent=`${phase.threads} 个并行 HTTP 请求 / ${phase.threads} PARALLEL REQUEST${phase.threads>1?'S':''}`;$('v19Clock').textContent=phase.seconds.toFixed(1)+'s';renderBoard(phase.key);
+  paintText('testStatus',() => t('stageActive',{n:PHASES.indexOf(phase)+1,phase:t(phase.key)}));
+  paintText('serviceText',() => t('testing',{phase:t(phase.key)}));
+  paintText(stateId,'httpRequests',{n:phase.threads});
+  paintRaw('v19Clock',phase.seconds.toFixed(1) + ' s');
+  renderBoard(phase.key);
   let lastMeterAt=start,lastMeterBytes=0,lastStatsAt=start,lastStatsBytes=0,lastChartAt=start;
   const meterTimer=setInterval(()=>{const now=performance.now(),deltaBytes=Math.max(0,meter.bytes-lastMeterBytes),deltaSeconds=Math.max(.001,(now-lastMeterAt)/1000),current=deltaBytes*8/1e6/deltaSeconds;lastMeterAt=now;lastMeterBytes=meter.bytes;if(current>0){setGauge(direction,current);if(now-lastChartAt>=500){(isDl?chartSeries.dl:chartSeries.ul).push({t:nowSec(),v:gaugeDisplay[direction]});lastChartAt=now;drawChart()}}if(now-lastStatsAt>=1000){const statsRate=Math.max(0,meter.bytes-lastStatsBytes)*8/1e6/Math.max(.001,(now-lastStatsAt)/1000);if(statsRate>0&&now-start>=2000)samples.push(statsRate);lastStatsAt=now;lastStatsBytes=meter.bytes}const elapsed=now-start;setProgress(phase.start+Math.min(1,elapsed/(phase.seconds*1000))*(phase.end-phase.start));$('v19Clock').textContent=Math.max(0,(deadline-now)/1000).toFixed(1)+'s'},250);
   const probes=loadedProbeLoop(meter,deadline,token);const workers=Array.from({length:phase.threads},(_,i)=>direction==='download'?streamDownload(blockMb,meter,i,deadline,token):xhrUpload(blockMb,meter,i,deadline,token));
   while(!stopped&&!meter.fatal&&token===runId&&performance.now()<deadline&&meter.bytes<meter.cap)await sleep(100);
   for(const xhr of [...liveXhrs])try{xhr.abort()}catch{};await Promise.allSettled(workers);await probes;clearInterval(meterTimer);
-  if(stopped||token!==runId)throw Error('STOPPED');const elapsed=Math.max(.001,(Math.min(performance.now(),deadline)-start)/1000),tailSeconds=Math.max(0,(Math.min(performance.now(),deadline)-lastStatsAt)/1000);if(tailSeconds>=.5){const tailRate=Math.max(0,meter.bytes-lastStatsBytes)*8/1e6/tailSeconds;if(tailRate>0)samples.push(tailRate)}if(meter.fatal)throw Error(`${phase.label}端点熔断：${meter.fatal}；首次错误 ${meter.firstError}；共 ${meter.transferErrors} 次`);if(meter.bytes<1024*1024||!samples.length)throw Error(`${phase.label}无有效数据：${(meter.bytes/1024/1024).toFixed(1)} MB；首次错误 ${meter.firstError||'无状态码'}；共 ${meter.transferErrors} 次`);
+  if(stopped||token!==runId)throw Error('STOPPED');const elapsed=Math.max(.001,(Math.min(performance.now(),deadline)-start)/1000),tailSeconds=Math.max(0,(Math.min(performance.now(),deadline)-lastStatsAt)/1000);if(tailSeconds>=.5){const tailRate=Math.max(0,meter.bytes-lastStatsBytes)*8/1e6/tailSeconds;if(tailRate>0)samples.push(tailRate)}if(meter.fatal)throw new MeasurementError(onAtlas?'edgeFailed':'allFailed');if(meter.bytes<1024*1024||!samples.length)throw new MeasurementError('invalidTransfer',{phase:phase.key,size:(meter.bytes/1024/1024).toFixed(1)});
   const avg=meter.bytes*8/1e6/elapsed,peak=Math.max(...samples),probeValid=meter.latencies.length>=5,loaded=probeValid?mean(meter.latencies):null,loadedJitter=probeValid?jitter(meter.latencies):null,protocol=[...meter.protocols].join('+')||'browser pool',endpoint=meter.endpoint==='cloudflare'?'Cloudflare Edge':'Pitopone LibreSpeed',effectiveWorkers=[...meter.workerTotalBytes.values()].filter(bytes=>bytes>=1024*1024).length,requiredWorkers=phase.threads,parallelVerified=meter.startedWorkers.size>=requiredWorkers&&meter.peakActiveRequests>=requiredWorkers&&effectiveWorkers>=requiredWorkers;
   results[phase.key]={avg,peak,p90:percentile(samples,.9),loaded,jitter:loadedJitter,probeTimeouts:meter.probeTimeouts,probeErrors:meter.probeErrors,probeTotal:meter.probeTotal,probeSuccess:meter.latencies.length,probeValid,bytes:meter.bytes,completed:meter.completed,protocol,endpoint,threads:phase.threads,startedWorkers:meter.startedWorkers.size,effectiveWorkers,peakActiveRequests:meter.peakActiveRequests,parallelVerified,transferErrors:meter.transferErrors,downgradeCount:meter.downgradeCount,endpointSwitches:meter.endpointSwitches,blockMb:meter.blockMb};
-  if(isDl)setMetric('downLoadedValue',loaded);else setMetric('upLoadedValue',loaded);setGauge(direction,results[phase.key].p90);const parallelText=phase.threads>1?` · 有效 ${effectiveWorkers}/${phase.threads} · 峰值在途 ${meter.peakActiveRequests}/${phase.threads} · ${parallelVerified?'并行有效':'并行不足'}`:` · 单请求有效`;$(stateId).textContent=`平均 ${fmt(avg)} · P90 ${fmt(results[phase.key].p90)}${parallelText} · ${endpoint} · ${protocol}`;if(phase.threads>1&&!parallelVerified)$('serviceText').textContent=`${phase.label}并行验证不足：有效 ${effectiveWorkers}/${phase.threads}，峰值在途 ${meter.peakActiveRequests}/${phase.threads}`;renderBoard();return results[phase.key];
+  setMetric(isDl?'downLoadedValue':'upLoadedValue',loaded);
+  const row = results[phase.key];
+  setGauge(direction,row.p90);
+  const effective = {count:`${effectiveWorkers}/${phase.threads}`};
+  const peakRequests = {count:`${meter.peakActiveRequests}/${phase.threads}`};
+  paintText(stateId,() => [t('average') + ' ' + fmt(avg),'P90 ' + fmt(row.p90),
+    ...(phase.threads>1?[t('effective',effective),t('inFlight',peakRequests),t(parallelVerified?'parallelYes':'parallelNo')]:[t('singleYes')]),
+    endpoint,protocol === 'browser pool' ? t('browserPool') : protocol].join(' · '));
+  if(phase.threads>1&&!parallelVerified)paintText('serviceText',() => [t(phase.key),t('parallelNo'),t('effective',effective),t('inFlight',peakRequests)].join(' · '));
+  renderBoard();return row;
 }
 
 function setControlsBusy(busy) {
@@ -189,6 +242,7 @@ function resetRun(mode) {
   stopped = false;
   currentMode = mode;
   lastCompletedMode = '';
+  updateResult();
   for (const key of Object.keys(results)) delete results[key];
   for (const values of Object.values(chartSeries)) values.length = 0;
   localReportPromise = null;
@@ -199,21 +253,21 @@ function resetRun(mode) {
   $('openShareBtn').removeAttribute('href');
   $('openShareBtn').setAttribute('aria-disabled','true');
   $('copyShareBtn').disabled = true;
-  $('copyShareBtn').textContent = '复制链接';
+  paintText('copyShareBtn','copyLink');
   $('exportBtn').disabled = true;
   $('downloadShareBtn').disabled = true;
   $('copySummaryBtn').disabled = true;
-  $('copySummaryBtn').textContent = '复制摘要';
+  paintText('copySummaryBtn','copySummary');
   $('shareCard').classList.remove('ready');
-  $('shareStatus').textContent = onAtlas ? '测试完成后可复制摘要或生成分享链接' : '完成完整测试后可下载本地 PNG 或发布分享链接';
-  $('dlState').textContent = '等待测试';
-  $('ulState').textContent = '等待测试';
+  paintText('shareStatus','shareIntro');
+  paintText('dlState','waitingFull');
+  paintText('ulState','waitingFull');
   showError();
   setGauge('download',0,true);
   setGauge('upload',0,true);
   for (const id of ['pingValue','jitterValue','downLoadedValue','upLoadedValue']) setMetric(id,null);
   setMetric('lossValue',null,'%');
-  $('lossCount').textContent = '等待采样';
+  paintText('lossCount','waitingSamples');
   setProgress(0);
   renderBoard();
   drawChart();
@@ -225,7 +279,7 @@ async function startTest(mode = 'full') {
   running = true;
   const token = ++runId;
   startedAt = performance.now();
-  $('startBtn').textContent = '停止测试';
+  paintText('startBtn','stopBtn');
   $('startBtn').classList.add('running');
   setControlsBusy(true);
   try {
@@ -237,43 +291,49 @@ async function startTest(mode = 'full') {
     const complete = mode === 'full';
     const verified = results.multiDl?.parallelVerified && results.multiUl?.parallelVerified;
     setMetric('lossValue',latency.loss,'%');
-    $('lossCount').textContent = latency.failed + '/' + latency.total + ' 请求失败';
-    $('testStatus').textContent = complete ? '五阶段测试完成' : '快速延迟检测完成';
-    $('serviceText').textContent = complete ? (verified ? '16 路 HTTP 并行验证通过' : '测试完成，16 路并行样本不足') : '快速检测完成，可继续运行五阶段测试';
-    $('v19Clock').textContent = '已完成';
+    paintText('lossCount','failedCount',latency);
+    paintText('testStatus',complete ? 'fullDone' : 'quickDone');
+    paintText('serviceText',complete ? (verified ? 'fullVerified' : 'fullUnverified') : 'quickHelp');
+    paintText('v19Clock','done');
     setProgress(100);
     lastCompletedMode = mode;
+    updateResult(mode);
     $('copySummaryBtn').disabled = false;
     if (onAtlas) {
       $('shareCard').classList.add('ready');
-      $('shareStatus').textContent = complete ? '可下载本地 PNG 或生成脱敏分享链接' : '可生成脱敏延迟摘要链接';
+      paintText('shareStatus',complete ? 'shareFull' : 'shareQuick');
       $('exportBtn').disabled = false;
     }
     if (complete) {
       $('shareCard').classList.add('ready');
-      if (!onAtlas) $('shareStatus').textContent = '可下载本地 PNG，或发布脱敏分享图';
+      if (!onAtlas) paintText('shareStatus','shareFull');
       $('exportBtn').disabled = false;
       $('downloadShareBtn').disabled = false;
       if (!onAtlas) void registerCounter();
     }
   } catch (error) {
     const canceled = error.message === 'STOPPED';
-    if (!canceled) showError(error.message);
-    $('testStatus').textContent = canceled ? '测试已停止' : '测试未完成';
-    $('serviceText').textContent = $('testStatus').textContent;
-    $('v19Clock').textContent = canceled ? '已停止' : '未完成';
+    if (!canceled) {
+      if (error.message === 'invalidTransfer') {
+        paintText('errorBox',() => t('invalidTransfer',{...error.args,phase:t(error.args.phase)}));
+        $('errorBox').classList.add('show');
+      } else showError(error instanceof MeasurementError ? error.message : 'incomplete',error.args);
+    }
+    paintText('testStatus',canceled ? 'stopped' : 'incomplete');
+    paintText('serviceText',canceled ? 'stopped' : 'incomplete');
+    paintText('v19Clock',canceled ? 'stopped' : 'incomplete');
     renderBoard();
   } finally {
     running = false;
     abortEverything();
-    $('startBtn').textContent = '开始完整测速';
+    paintText('startBtn','startBtn');
     $('startBtn').classList.remove('running');
     setControlsBusy(false);
   }
 }
 
-async function registerCounter(){try{const response=await fetch(ENDPOINTS.counter,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_id:crypto.randomUUID?.()||nonce()})});const data=await response.json();if(data.ok){$('totalTests').textContent=data.total;$('todayTests').textContent=data.today;$('rankMessage').textContent=`本站第 ${data.rank} 次完整测试 / COMPLETED TEST #${data.rank}`}}catch{}}
-async function loadCounter(){try{const r=await fetch(`${ENDPOINTS.counter}?r=${nonce()}`,{cache:'no-store'}),d=await r.json();if(d.ok){$('totalTests').textContent=d.total;$('todayTests').textContent=d.today;$('rankMessage').textContent='仅统计五阶段完整测试 / COMPLETE RUNS ONLY'}}catch{}}
+async function registerCounter(){try{const response=await fetch(ENDPOINTS.counter,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event_id:crypto.randomUUID?.()||nonce()})});const data=await response.json();if(data.ok){$('totalTests').textContent=data.total;$('todayTests').textContent=data.today;paintText('rankMessage','counterRank',{n:data.rank});}}catch{}}
+async function loadCounter(){try{const r=await fetch(`${ENDPOINTS.counter}?r=${nonce()}`,{cache:'no-store'}),d=await r.json();if(d.ok){$('totalTests').textContent=d.total;$('todayTests').textContent=d.today;paintText('rankMessage','counterNote');}}catch{}}
 
 function drawChart(){const c=$('chart'),dpr=devicePixelRatio||1,w=c.clientWidth||800,h=c.clientHeight||180;if(c.width!==Math.round(w*dpr)||c.height!==Math.round(h*dpr)){c.width=Math.round(w*dpr);c.height=Math.round(h*dpr)}const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,w,h);const pad={l:48,r:45,t:12,b:24},pw=w-pad.l-pad.r,ph=h-pad.t-pad.b,maxT=currentMode==='quick'?5:90,speedMax=Math.max(100,percentile([...chartSeries.dl,...chartSeries.ul].map(p=>p.v),.98)*1.15),latMax=Math.max(100,percentile(chartSeries.lat.map(p=>p.v),.98)*1.2);x.strokeStyle='rgba(176,180,228,.16)';x.fillStyle='#a3aecb';x.font='9px sans-serif';for(let i=0;i<=4;i++){const y=pad.t+ph*i/4;x.beginPath();x.moveTo(pad.l,y);x.lineTo(w-pad.r,y);x.stroke();x.textAlign='right';x.fillText(Math.round(speedMax*(1-i/4)),pad.l-6,y+3);x.textAlign='left';x.fillText(Math.round(latMax*(1-i/4)),w-pad.r+6,y+3)}for(let i=0;i<=5;i++){const px=pad.l+pw*i/5;x.beginPath();x.moveTo(px,pad.t);x.lineTo(px,pad.t+ph);x.stroke();x.textAlign='center';x.fillText(Math.round(maxT*i/5)+'s',px,h-7)}const plot=(data,color,max)=>{if(!data.length)return;x.beginPath();data.forEach((p,i)=>{const px=pad.l+Math.min(1,p.t/maxT)*pw,py=pad.t+ph-Math.min(1,p.v/max)*ph;i?x.lineTo(px,py):x.moveTo(px,py)});x.strokeStyle=color;x.lineWidth=2.4;x.lineJoin='round';x.stroke()};plot(chartSeries.dl,'#baa7ff',speedMax);plot(chartSeries.ul,'#69e1db',speedMax);plot(chartSeries.lat,'#f4bb79',latMax)}
 
@@ -314,19 +374,22 @@ async function detectAtlasConnection() {
     connectionAddress = normalizeIp(match('ip'));
     const country = /^[A-Z]{2}$/.test(match('loc')) ? match('loc') : '';
     const edge = /^[A-Z0-9]{3,5}$/.test(match('colo')) ? match('colo') : '';
-    $('currentIp').textContent = connectionAddress || '—';
-    $('currentProtocol').textContent = connectionAddress ? (connectionAddress.includes(':') ? 'IPv6' : 'IPv4') : '自动';
-    $('countryChip').textContent = country || '—';
-    $('location').textContent = country || '—';
-    $('topColo').textContent = edge || '—';
-    $('serverInfo').textContent = edge ? 'Cloudflare ' + edge : 'Cloudflare 自动选择';
+    paintRaw('currentIp',connectionAddress || '—');
+    if (connectionAddress) paintRaw('currentProtocol',connectionAddress.includes(':') ? 'IPv6' : 'IPv4');
+    else paintText('currentProtocol','auto');
+    paintRaw('countryChip',country || '—');
+    paintRaw('location',country || '—');
+    paintRaw('topColo',edge || '—');
+    if (edge) paintRaw('serverInfo','Cloudflare ' + edge);
+    else paintText('serverInfo','edgeAuto');
     $('autoChip').classList.toggle('ok', Boolean(connectionAddress));
+    document.dispatchEvent(new CustomEvent('speed:connection',{detail:{ip:connectionAddress,country,pop:edge}}));
   } catch {
-    for (const id of ['currentIp','location','topColo']) $(id).textContent = '暂无法获取';
-    $('currentProtocol').textContent = '自动';
+    for (const id of ['currentIp','location','topColo']) paintText(id,'unavailable');
+    paintText('currentProtocol','auto');
+    document.dispatchEvent(new CustomEvent('speed:connection',{detail:{ip:'',country:'',pop:''}}));
   }
-  $('network').textContent = '暂未提供';
-  $('autoChip').textContent = '自动入口';
+  paintText('autoChip','autoEntry');
 }
 
 async function readText(url,timeout) {
@@ -340,20 +403,21 @@ async function detectIdentity() {
     const text = await readText(ENDPOINTS.ip + '?isp=true&cors=true&r=' + nonce(),4500);
     const data = parseConnection(text);
     connectionAddress = data.ip;
-    $('currentIp').textContent = data.ip || '—';
-    $('location').textContent = [data.city,data.country].filter(Boolean).join(', ') || '—';
-    connectionNetworkText = formatNetwork(data);
-    $('network').textContent = connectionNetworkText;
+    paintRaw('currentIp',data.ip || '—');
+    paintRaw('location',[data.city,data.country].filter(Boolean).join(', ') || '—');
+    paintText('network',() => formatNetwork(data));
     if (data.country) {
-      $('countryChip').textContent = data.country;
+      paintRaw('countryChip',data.country);
       $('countryChip').classList.add('ok');
     }
   } catch {
-    for (const id of ['currentIp','location','network','countryChip']) $(id).textContent = '暂无法获取';
+    for (const id of ['currentIp','location','network','countryChip']) paintText(id,'unavailable');
   }
   const family = connectionAddress ? (connectionAddress.includes(':') ? 'IPv6' : 'IPv4') : '';
-  $('currentProtocol').textContent = family || (currentFamily === 'auto' ? '自动' : currentFamily === 'ipv6' ? 'IPv6 入口' : 'IPv4 入口');
-  $('autoChip').textContent = {auto:'自动入口',ipv4:'固定 IPv4',ipv6:'固定 IPv6'}[currentFamily];
+  const entrance = {auto:'autoEntry',ipv4:'fixed4',ipv6:'fixed6'}[currentFamily];
+  if (family) paintRaw('currentProtocol',family);
+  else paintText('currentProtocol',entrance);
+  paintText('autoChip',entrance);
   $('autoChip').classList.toggle('ok', Boolean(connectionAddress));
 }
 
@@ -362,27 +426,27 @@ async function detectEdge() {
     const trace = await readText(EDGE_BASE + '/cdn-cgi/trace?r=' + nonce(),4500);
     const edge = /^colo=([A-Z0-9]{3,5})$/m.exec(trace)?.[1];
     if (!edge) throw Error('No edge code');
-    $('topColo').textContent = edge;
-    $('serverInfo').textContent = 'Cloudflare ' + edge;
+    paintRaw('topColo',edge);
+    paintRaw('serverInfo','Cloudflare ' + edge);
   } catch {
-    $('topColo').textContent = '暂无法获取';
-    $('serverInfo').textContent = 'Cloudflare 自动选择';
+    paintText('topColo','unavailable');
+    paintText('serverInfo','edgeAuto');
   }
 }
 
 async function detectFamily(family) {
   const card = $(family + 'Card');
-  const info = $(family + 'Info');
+  const info = family + 'Info';
   card.classList.remove('ok','bad');
   try {
     const text = await readText('https://' + FAMILY_HOSTS[family] + '/' + ENDPOINTS.ip + '?cors=true&r=' + nonce(),3500);
     const ip = parseConnection(text).ip;
     if (!ip || ip.includes(':') !== (family === 'ipv6')) throw Error('Unexpected address');
     card.classList.add('ok');
-    info.textContent = ip;
+    paintRaw(info,ip);
   } catch {
     card.classList.add('bad');
-    info.textContent = '本次未连通';
+    paintText(info,'unreachable');
   }
 }
 
@@ -407,17 +471,51 @@ function createReport(resultImageUrl=''){
     const glow=x.createRadialGradient(995,78,0,995,78,330);glow.addColorStop(0,'rgba(255,143,55,.32)');glow.addColorStop(.46,'rgba(29,169,240,.12)');glow.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=glow;x.fillRect(600,0,600,330);
     x.strokeStyle='rgba(83,163,213,.11)';for(let i=0;i<1200;i+=32){x.beginPath();x.moveTo(i,0);x.lineTo(i,630);x.stroke()}for(let i=0;i<630;i+=32){x.beginPath();x.moveTo(0,i);x.lineTo(1200,i);x.stroke()}
     x.fillStyle='#baa7ff';x.fillRect(0,0,600,6);x.fillStyle='#69e1db';x.fillRect(600,0,600,6);
-    x.fillStyle='#f4faff';x.font='900 29px "Microsoft YaHei UI",sans-serif';x.fillText('网络质量五阶段测试报告',38,49);x.fillStyle='#61d7ff';x.font='800 10px sans-serif';x.fillText('PITOPONE / NETWORK QUALITY',40,69);x.fillStyle='#8faabd';x.font='700 10px sans-serif';x.fillText('五阶段详细结果与连接信息',40,84);
-    x.textAlign='right';x.fillStyle='#e2edf4';x.font='700 13px sans-serif';x.fillText(new Date().toLocaleString('zh-CN',{hour12:false}),1160,47);x.fillStyle='#6f8da2';x.font='700 10px sans-serif';x.fillText('speed.pitopone.com',1160,67);x.textAlign='left';
-    [['浏览器 HTTP 延迟','#403369'],[onAtlas?'Cloudflare 测速端点':'Cloudflare＋LibreSpeed 双引擎','#365263'],['16 路并行有效性验证','#26494b']].forEach((item,i)=>{const px=40+i*373;panel(px,97,366,35,item[1],'rgba(255,255,255,.13)');x.fillStyle='#eef8fe';x.font='800 11px sans-serif';x.fillText(item[0],px+14,119)});
-    const cols=[40,292,436,580,724,868,1012],widths=[252,144,144,144,144,144,148],heads=['测试阶段 / PHASE','平均 / AVG','最高 / PEAK','P90','负载 / HTTP','抖动 / JITTER','LOSS / PROBE'];heads.forEach((h,i)=>{panel(cols[i],140,widths[i]-5,30,'#0f2a3d');x.fillStyle='#8eacbf';x.font='800 9px sans-serif';x.fillText(h,cols[i]+10,159)});
-    PHASES.forEach((p,row)=>{const r=results[p.key],y=174+row*58,latency=p.key==='latency',parallel=r&&p.threads>1?` · ${r.effectiveWorkers}/${p.threads} 有效 · 峰值 ${r.peakActiveRequests}`:'';panel(40,y,1120,53,row%2?'rgba(6,22,36,.94)':'rgba(9,29,46,.94)');x.save();x.beginPath();x.rect(45,y+2,240,49);x.clip();x.fillStyle='#f0f7fb';x.font='800 13px sans-serif';x.fillText(ellipsis(p.label,224),51,y+21);x.fillStyle='#6f8da2';x.font='700 8px sans-serif';x.fillText(ellipsis(`${p.en} · ${p.seconds}s${parallel}${r?.endpoint?' · '+r.endpoint:''}`,224),51,y+39);x.restore();['avg','peak','p90','loaded','jitter'].forEach((k,i)=>{x.fillStyle='#eef7fc';x.font='800 18px "Arial Narrow",Arial,sans-serif';x.fillText(r?.[k]===null?'N/A':fmt(r?.[k]),cols[i+1]+10,y+24);x.fillStyle='#6f8da2';x.font='700 8px sans-serif';const unit=latency&&k==='avg'?'ms · HTTP RTT':latency&&k==='loaded'?'N/A':latency||['loaded','jitter'].includes(k)?'ms':'Mbps';x.fillText(unit,cols[i+1]+10,y+41)});x.fillStyle=latency||r?.parallelVerified?'#2be0aa':'#ffca55';x.font='800 18px "Arial Narrow",Arial,sans-serif';x.fillText(latency?fmt(r?.loss):`${r?.effectiveWorkers||0}/${r?.threads||p.threads}`,cols[6]+10,y+24);x.fillStyle='#6f8da2';x.font='700 8px sans-serif';x.fillText(latency?`% HTTP · ${r?.failed||0}/${r?.total||0}`:`EFFECTIVE · PEAK ${r?.peakActiveRequests||0}`,cols[6]+10,y+41)});
-    panel(40,472,1120,121,'rgba(7,25,40,.96)','rgba(75,190,242,.35)');x.fillStyle='#53d5ff';x.font='900 10px sans-serif';x.fillText('CONNECTION IDENTITY / 连接信息',53,491);
-    const ip=maskPublicIp($('currentIp').textContent),protocol=$('currentProtocol').textContent||'—',locationText=$('location').textContent||'—',edge=$('serverInfo').textContent||'—',networkLines=connectionNetworkText.split('\n');
-    const field=(label,value,px,py,max)=>{x.fillStyle='#6f8da2';x.font='800 8px sans-serif';x.fillText(label,px,py);x.fillStyle='#edf7fc';fit(value,max,13,800);x.fillText(value,px,py+18)};
-    field('PUBLIC IP / 公网 IP',ip,53,510,280);field('PROTOCOL / 协议',protocol,350,510,300);field('LOCATION / 地区',locationText,665,510,205);field('EDGE POP / 边缘机房',edge,885,510,260);
-    x.fillStyle='#6f8da2';x.font='800 8px sans-serif';x.fillText('ASN / AS NETWORK / 网络商家',53,553);x.fillStyle='#f0f8fc';fit(networkLines[0]||connectionNetworkText,1080,14,800);x.fillText(networkLines[0]||connectionNetworkText,53,570);if(networkLines[1]){x.fillStyle='#8eb2c7';fit(networkLines[1],1080,11,700);x.fillText(networkLines[1],53,585)}
-    x.fillStyle='#48d8ff';fit(`IMAGE URL / 图片网址：${resultImageUrl||'本地报告'}`,790,9,800);x.fillText(`IMAGE URL / 图片网址：${resultImageUrl||'生成中 / PENDING'}`,40,606);x.fillStyle='#657f92';x.font='700 7.5px sans-serif';x.fillText('浏览器 HTTP RTT 不等同代理客户端节点延迟',40,619);x.textAlign='right';x.fillStyle='#42d8ff';x.font='800 9px sans-serif';x.fillText('2400 × 1260 · MASKED IP',1160,619);x.textAlign='left';c.toBlob(resolve,'image/png')
+    const title = t('reportTitle');
+    x.fillStyle='#f4faff';fit(title,850,29,900);x.fillText(title,38,49);
+    x.fillStyle='#61d7ff';x.font='800 10px sans-serif';x.fillText('PITOPONE / NETWORK QUALITY',40,69);
+    x.fillStyle='#8faabd';x.font='700 10px sans-serif';x.fillText(t('reportSubtitle'),40,84);
+    x.textAlign='right';x.fillStyle='#e2edf4';x.font='700 13px sans-serif';
+    const tested = resultSnapshot ? new Date(resultSnapshot.timestamp) : new Date();
+    x.fillText(tested.toLocaleString(window.SpeedLocale?.localeTag,{hour12:false}),1160,47);
+    x.fillStyle='#6f8da2';x.font='700 10px sans-serif';x.fillText(location.host + (onAtlas ? '/speed/' : '/'),1160,67);x.textAlign='left';
+    const badges = [['latency','#403369'],[onAtlas?'reportEndpoint':'reportDual','#365263'],['reportParallel','#26494b']];
+    badges.forEach(([key,color],i)=>{const px=40+i*373;panel(px,97,366,35,color,'rgba(255,255,255,.13)');x.fillStyle='#eef8fe';x.font='800 11px sans-serif';x.fillText(t(key),px+14,119);});
+    const cols=[40,292,436,580,724,868,1012],widths=[252,144,144,144,144,144,148];
+    ['phase','average','peak','P90','loaded','jitter','probe'].forEach((key,i)=>{panel(cols[i],140,widths[i]-5,30,'#0f2a3d');x.fillStyle='#8eacbf';x.font='800 9px sans-serif';x.fillText(t(key),cols[i]+10,159);});
+    PHASES.forEach((phase,row)=>{
+      const r=results[phase.key], y=174+row*58, latency=phase.key==='latency';
+      panel(40,y,1120,53,row%2?'rgba(6,22,36,.94)':'rgba(9,29,46,.94)');
+      x.fillStyle='#f0f7fb';x.font='800 13px sans-serif';x.fillText(ellipsis(t(phase.key),224),51,y+21);
+      x.fillStyle='#8aa1b4';x.font='700 8px sans-serif';
+      const context = [`${phase.seconds} s`];
+      if (r?.endpoint) context.push(r.endpoint);
+      x.fillText(ellipsis(context.join(' · '),224),51,y+39);
+      ['avg','peak','p90','loaded','jitter'].forEach((key,i)=>{
+        const value = r?.[key], shown = Number.isFinite(value) ? fmt(value) : latency && key==='loaded' ? t('na') : '—';
+        x.fillStyle='#eef7fc';x.font='800 18px sans-serif';x.fillText(shown,cols[i+1]+10,y+24);
+        if (!Number.isFinite(value)) return;
+        x.fillStyle='#8aa1b4';x.font='700 8px sans-serif';
+        x.fillText(latency||['loaded','jitter'].includes(key)?'ms':'Mbps',cols[i+1]+10,y+41);
+      });
+      x.fillStyle=latency||r?.parallelVerified?'#69e1db':'#ffca55';x.font='800 18px sans-serif';
+      x.fillText(latency?`${fmt(r?.loss)} %`:`${r?.effectiveWorkers ?? '—'}/${r?.threads || phase.threads}`,cols[6]+10,y+24);
+      x.fillStyle='#8aa1b4';x.font='700 8px sans-serif';
+      x.fillText(latency?t('failedCount',r):t('inFlight',{count:r?.peakActiveRequests ?? '—'}),cols[6]+10,y+41);
+    });
+    panel(40,472,1120,121,'rgba(7,25,40,.96)','rgba(75,190,242,.35)');
+    x.fillStyle='#69e1db';x.font='900 10px sans-serif';x.fillText(t('connectionReport'),53,491);
+    const field=(key,value,px,py,max)=>{x.fillStyle='#8aa1b4';x.font='800 8px sans-serif';x.fillText(t(key),px,py);x.fillStyle='#edf7fc';fit(value,max,13,800);x.fillText(ellipsis(value,max),px,py+18);};
+    const textContent = id => $(id).textContent || '—';
+    field('publicIp',maskPublicIp(connectionAddress),53,510,280);field('protocol',textContent('currentProtocol'),350,510,300);
+    field('location',textContent('location'),665,510,205);field('edge',textContent('serverInfo'),885,510,260);
+    const [network,...rest] = textContent('network').split('\n');
+    field('network',network,53,553,1080);
+    if (rest.length) {x.fillStyle='#8eb2c7';fit(rest[0],1080,11,700);x.fillText(ellipsis(rest[0],1080),53,585);}
+    const reference = resultImageUrl ? t('reportImage') + ' · ' + resultImageUrl : t('reportLocal');
+    x.fillStyle='#69e1db';fit(reference,790,9,800);x.fillText(reference,40,606);
+    x.fillStyle='#8aa1b4';x.font='700 7.5px sans-serif';x.fillText(t('reportFooter'),40,619);
+    x.textAlign='right';x.fillStyle='#69e1db';x.font='800 9px sans-serif';x.fillText('2400 × 1260 · ' + t('masked'),1160,619);x.textAlign='left';c.toBlob(resolve,'image/png');
   })
 }
 const encodeReportMeta=value=>{const bytes=new TextEncoder().encode(String(value||'—'));let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);return btoa(binary)};
@@ -429,7 +527,7 @@ async function publishReport() {
   const controller = new AbortController();
   shareController = controller;
   $('exportBtn').disabled = true;
-  $('shareStatus').textContent = '正在发布脱敏分享图…';
+  paintText('shareStatus','publishBusy');
   try {
     const resultId = createShareId();
     const plannedUrl = new URL('/result/' + resultId + '.png',location.origin).href;
@@ -441,7 +539,7 @@ async function publishReport() {
       'X-Result-IP':encodeReportMeta(maskPublicIp(connectionAddress)),
       'X-Result-Protocol':encodeReportMeta($('currentProtocol').textContent),
       'X-Result-Location':encodeReportMeta($('location').textContent),
-      'X-Result-ASN':encodeReportMeta(connectionNetworkText)
+      'X-Result-ASN':encodeReportMeta($('network').textContent)
     };
     const response = await fetch(ENDPOINTS.share,{method:'POST',headers,body:blob,signal:AbortSignal.any([controller.signal,AbortSignal.timeout(12000)])});
     const data = await response.json();
@@ -458,9 +556,9 @@ async function publishReport() {
     $('openShareBtn').href = page.href;
     $('openShareBtn').removeAttribute('aria-disabled');
     $('copyShareBtn').disabled = false;
-    $('shareStatus').textContent = '脱敏分享图已发布';
+    paintText('shareStatus','publishDone');
   } catch {
-    if (token === runId) $('shareStatus').textContent = '发布失败，可重试或下载本地 PNG';
+    if (token === runId) paintText('shareStatus','publishFailed');
   } finally {
     if (shareController === controller) shareController = null;
     if (token === runId) $('exportBtn').disabled = false;
@@ -487,7 +585,7 @@ async function downloadReport() {
   } catch {
     if (token === runId) {
       localReportPromise = null;
-      $('shareStatus').textContent = '本地 PNG 暂未生成，请重试';
+      paintText('shareStatus','pngFailed');
     }
   } finally {
     if (token === runId) button.disabled = false;
@@ -498,17 +596,27 @@ function buildSummary(includeIp = true) {
   const latency = results.latency;
   if (!latency || !lastCompletedMode) return '';
   const lines = [
-    'Pitopone 网络质量检测 · ' + (lastCompletedMode === 'full' ? '完整测试' : '快速延迟'),
-    '浏览器 HTTP 延迟 ' + fmt(latency.avg) + ' ms · 抖动 ' + fmt(latency.jitter) + ' ms · HTTP 失败 ' + latency.failed + '/' + latency.total
+    'PITOPONE ' + t('title') + ' · ' + t(lastCompletedMode === 'full' ? 'fullSummary' : 'quickSummary'),
+    latencySummary(latency.avg,latency.jitter,latency.failed,latency.total)
   ];
   if (lastCompletedMode === 'full') {
-    lines.push('单请求下载 / 上传 ' + fmt(results.singleDl.avg) + ' / ' + fmt(results.singleUl.avg) + ' Mbps');
-    lines.push('16 并行下载 / 上传 ' + fmt(results.multiDl.avg) + ' / ' + fmt(results.multiUl.avg) + ' Mbps');
-    lines.push('负载延迟（下载 / 上传） ' + fmt(results.multiDl.loaded) + ' / ' + fmt(results.multiUl.loaded) + ' ms');
-    lines.push('并行有效请求（下载 / 上传） ' + results.multiDl.effectiveWorkers + '/16 · ' + results.multiUl.effectiveWorkers + '/16');
+    lines.push(...transferSummary(results.singleDl.avg,results.singleUl.avg,results.multiDl.avg,results.multiUl.avg,
+      results.multiDl.loaded,results.multiUl.loaded,results.multiDl.effectiveWorkers,results.multiUl.effectiveWorkers));
   }
-  if (includeIp) lines.push('公网 IP ' + maskPublicIp(connectionAddress) + ' · ' + $('currentProtocol').textContent);
+  if (includeIp) lines.push(t('publicIp') + ' ' + maskPublicIp(connectionAddress) + ' · ' + $('currentProtocol').textContent);
   return lines.join('\n');
+}
+
+function latencySummary(latency,jitterMs,failed,total) {
+  return `${t('latency')} ${fmt(latency)} ms · ${t('jitter')} ${fmt(jitterMs)} ms · ${t('failedCount',{failed,total})}`;
+}
+function transferSummary(singleDl,singleUl,multiDl,multiUl,loadedDl,loadedUl,workersDl,workersUl) {
+  return [
+    `${t('singleDu')} ${fmt(singleDl)} / ${fmt(singleUl)} Mbps`,
+    `${t('parallelDu')} ${fmt(multiDl)} / ${fmt(multiUl)} Mbps`,
+    `${t('loadedDu')} ${fmt(loadedDl)} / ${fmt(loadedUl)} ms`,
+    `${t('effectiveDu')} ${workersDl}/16 · ${workersUl}/16`
+  ];
 }
 
 // The fragment stores a compact numerical snapshot. Visitors may change fragments,
@@ -536,17 +644,13 @@ function readAtlasShare() {
   if (version !== 1 || ![0,1].includes(full) || data.length !== (full ? 18 : 6) ||
     !number(latency,120000) || !nullable(jitterMs,120000) || !Number.isInteger(failed) ||
     !Number.isInteger(total) || total < 1 || total > 500 || failed < 0 || failed > total) return '';
-  const lines = [full ? '五阶段测速 · 分享摘要' : '快速延迟 · 分享摘要',
-    '浏览器 HTTP 延迟 ' + fmt(latency) + ' ms · 抖动 ' + fmt(jitterMs) + ' ms · HTTP 失败 ' + failed + '/' + total];
+  const lines = [t(full ? 'sharedFull' : 'sharedQuick'),latencySummary(latency,jitterMs,failed,total)];
   if (full) {
     for (let offset = 6; offset < data.length; offset += 3) {
       if (!number(data[offset],10000000) || !nullable(data[offset+1],120000) ||
         !Number.isInteger(data[offset+2]) || !number(data[offset+2],offset>=12?16:1)) return '';
     }
-    lines.push('单请求下载 / 上传 ' + fmt(data[6]) + ' / ' + fmt(data[9]) + ' Mbps');
-    lines.push('16 并行下载 / 上传 ' + fmt(data[12]) + ' / ' + fmt(data[15]) + ' Mbps');
-    lines.push('负载延迟（下载 / 上传） ' + fmt(data[13]) + ' / ' + fmt(data[16]) + ' ms');
-    lines.push('并行有效请求（下载 / 上传） ' + data[14] + '/16 · ' + data[17] + '/16');
+    lines.push(...transferSummary(data[6],data[9],data[12],data[15],data[13],data[16],data[14],data[17]));
   }
   return lines.join('\n');
 }
@@ -560,6 +664,7 @@ function renderAtlasShare() {
 function showAtlasShare() {
   if (!lastCompletedMode || !results.latency) return;
   const url = new URL('/speed/',location.origin);
+  if (window.SpeedLocale?.locale) url.searchParams.set('lang',window.SpeedLocale.locale);
   url.hash = 'result=' + JSON.stringify(atlasShareSnapshot());
   reportUrl = url.href;
   $('shareUrl').value = reportUrl;
@@ -567,18 +672,19 @@ function showAtlasShare() {
   $('openShareBtn').href = reportUrl;
   $('openShareBtn').removeAttribute('aria-disabled');
   $('copyShareBtn').disabled = false;
-  $('shareStatus').textContent = '已生成脱敏结果链接，可复制或打开';
+  paintText('shareStatus','linkReady');
 }
 
-async function copyText(button,text,normalLabel) {
+async function copyText(button,text,labelKey) {
   if (!text) return;
   try {
     await navigator.clipboard.writeText(text);
-    button.textContent = '已复制';
-    setTimeout(() => { if (button.textContent === '已复制') button.textContent = normalLabel; },2200);
+    paintText(button.id,'copied');
+    const copyState = translatedUi.get(button.id);
+    setTimeout(() => { if (translatedUi.get(button.id) === copyState) paintText(button.id,labelKey); },2200);
   } catch {
     if (button === $('copyShareBtn')) $('shareUrl').select();
-    showError('未能访问剪贴板，请确认浏览器权限');
+    showError('clipboardError');
   }
 }
 
@@ -601,10 +707,26 @@ $('startBtn').addEventListener('click',() => { if (running) abortEverything(); e
 $('quickBtn').addEventListener('click',() => startTest('quick'));
 $('exportBtn').addEventListener('click',publishReport);
 $('downloadShareBtn').addEventListener('click',downloadReport);
-$('copySummaryBtn').addEventListener('click',() => copyText($('copySummaryBtn'),buildSummary(),'复制摘要'));
-$('copyShareBtn').addEventListener('click',() => copyText($('copyShareBtn'),reportUrl,'复制链接'));
+$('copySummaryBtn').addEventListener('click',() => copyText($('copySummaryBtn'),buildSummary(),'copySummary'));
+$('copyShareBtn').addEventListener('click',() => copyText($('copyShareBtn'),reportUrl,'copyLink'));
 $('openShareBtn').addEventListener('click',event => { if (!reportUrl) event.preventDefault(); });
 addEventListener('resize',drawChart);
+for (const [id,key] of Object.entries({startBtn:'startBtn',testStatus:'ready',serviceText:'edgeNet',
+  dlState:'waitingFull',ulState:'waitingFull',v19Clock:'waitingTest',topColo:'detecting',autoChip:'detecting',
+  ipv4Info:'detecting',ipv6Info:'detecting',shareStatus:'shareIntro',copySummaryBtn:'copySummary',copyShareBtn:'copyLink',copySharedSummaryBtn:'copySummary'})) {
+  if ($(id)) paintText(id,key);
+}
+document.addEventListener('speed:locale',() => {
+  for (const draw of translatedUi.values()) draw();
+  renderBoard(activeBoardPhase);
+  drawChart();
+  if (onAtlas) {
+    for (const button of familyButtons) if (button.dataset.family !== 'auto') button.title = t('legacyFamilyTip');
+    renderAtlasShare();
+  }
+  localReportPromise = null;
+});
+document.addEventListener('speed:network',() => { localReportPromise = null; });
 setProgress(0);
 renderBoard();
 drawChart();
@@ -612,12 +734,12 @@ if (onAtlas) {
   $('counterCard').hidden = true;
   for (const button of familyButtons) {
     if (button.dataset.family === 'auto') continue;
-    button.title = '固定 IPv4／IPv6 入口请使用原版测速站';
+    button.title = t('legacyFamilyTip');
   }
   setControlsBusy(false);
   renderAtlasShare();
   addEventListener('hashchange',renderAtlasShare);
-  $('copySharedSummaryBtn')?.addEventListener('click',() => copyText($('copySharedSummaryBtn'),$('sharedSummary').textContent,'复制摘要'));
+  $('copySharedSummaryBtn')?.addEventListener('click',() => copyText($('copySharedSummaryBtn'),$('sharedSummary').textContent,'copySummary'));
   detectAtlasConnection();
 } else {
   loadCounter();

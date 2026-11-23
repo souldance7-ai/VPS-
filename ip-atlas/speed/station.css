@@ -156,3 +156,48 @@ h1,h2,h3,p,dl,dd { margin:0; }
 .shared-report { margin:0 0 16px; }
 .shared-report pre { white-space:pre-wrap; overflow-wrap:anywhere; color:var(--ink); font:13px/1.6 var(--mono); margin:12px 0; }
 .probe-legacy { margin-top:7px; }
+
+.mast .speed-language {
+  color:var(--ink);
+  background:var(--inset);
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:5px 7px;
+  font:inherit;
+  font-size:13px;
+}
+
+#forumReport { padding:16px; }
+#forumReport h2 { font-size:17px; }
+.forum-toolbar { display:flex; align-items:center; justify-content:space-between; gap:8px 12px; flex-wrap:wrap; }
+.forum-caption,.forum-status { margin:8px 0; color:var(--muted); font-size:12px; }
+.forum-preview {
+  margin:10px 0;
+  max-width:100%;
+  overflow-x:auto;
+  padding:12px 14px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  color:var(--ink);
+  background:var(--inset);
+  font:12.5px/1.65 var(--mono);
+  font-variant-numeric:tabular-nums;
+}
+.forum-editor { min-width:0; }
+.forum-editor summary { cursor:pointer; color:#dfd4ff; font-size:13px; font-weight:700; }
+.forum-source {
+  display:block;
+  width:100%;
+  min-height:175px;
+  margin:8px 0;
+  padding:9px 11px;
+  resize:vertical;
+  border:1px solid var(--line);
+  border-radius:7px;
+  color:var(--ink);
+  background:var(--inset);
+  font:12px/1.5 var(--mono);
+}
+#forumCopy { color:#17102a; background:var(--violet); }
+#forumCopy:hover { color:#17102a; background:#d5c8ff; }
+@media(max-width:500px) { #forumReport { padding:12px; } .forum-preview { padding:9px 10px; font-size:11px; } }

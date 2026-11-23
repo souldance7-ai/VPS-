@@ -4933,8 +4933,18 @@ async function serveFx(req,ctx){
  }catch{return json({error:'FX rates temporarily unavailable'},503)}
 }
 
+function serveSpeedConnection(req){
+ const headers={'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'};
+ if(req.method!=='GET')return Response.json({error:'GET required'},{status:405,headers:{...headers,Allow:'GET'}});
+ if(new URL(req.url).search)return Response.json({error:'Unexpected parameters'},{status:400,headers});
+ const {asn,asOrganization}=req.cf||{};
+ const organization=typeof asOrganization==='string'?asOrganization.replace(/[\p{Cc}\p{Cf}]/gu,' ').replace(/\s+/gu,' ').trim().slice(0,160):'';
+ return Response.json({asn:Number.isInteger(asn)&&asn>0&&asn<=0xffffffff?asn:null,organization},{headers});
+}
+
 export default {async fetch(req,env,ctx){
  const url=new URL(req.url);
+ if(url.pathname==='/speed/api/connection')return serveSpeedConnection(req);
  if(url.pathname==='/api/fx')return serveFx(req,ctx);
  if(url.pathname.startsWith('/api/greencloud-prices/'))return serveGreenCloudRates(req,ctx);
  if(url.pathname==='/api/deal-feed/channel-products'){
